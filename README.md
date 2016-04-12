@@ -77,3 +77,25 @@ $ composer install
 ``` bash
 $ app/console modera:security:create-user
 ```
+
+## Composer installation
+
+If you have locally installed composer you can just run:
+``` bash
+$ composer.phar create-project modera/foundation project_dir
+```
+
+after that 
+
+* Download `http://cdn.sencha.com/ext/gpl/ext-4.2.1-gpl.zip` and extract it to `web/extjs` directory
+* Download `http://mjr.dev.modera.org/releases/mjr.tar.gz` and extract it to `web/modera/mjr` directory
+* Download `http://mjr.dev.modera.org/releases/mjr-theme.tar.gz` and extract it to `web/modera/theme` directory
+
+#### P.S Don't forget check folders permissions, in case you may get an error on some files
+
+## Problems solving
+####1. Unable to find required configuration property home_section
+to solve this problem just run:
+```
+$ app/console modera:config:install-config-entries
+```
