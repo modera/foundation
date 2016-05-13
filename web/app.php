@@ -17,7 +17,7 @@ if ($mode['debug']) {
 $kernel = new AppKernel($mode['env'], $mode['debug']);
 
 // http://symfony.com/doc/current/cookbook/debugging.html
-if ($mode['debug']) {
+if (!$mode['debug']) {
     $kernel->loadClassCache();
 }
 // http://symfony.com/doc/current/book/http_cache.html
