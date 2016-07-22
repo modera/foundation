@@ -1,6 +1,5 @@
 {
-    "origin": "git@github.com:modera/foundation-test.git",
-    "_origin": "git@github.com:modera/foundation.git",
+    "origin": "git@github.com:modera/foundation.git",
     "splits": {
         "src/Modera/ActivityLoggerBundle": "git@github.com:modera/ModeraActivityLoggerBundle.git",
         "src/Modera/BackendConfigUtilsBundle": "git@github.com:modera/ModeraBackendConfigUtilsBundle.git",
