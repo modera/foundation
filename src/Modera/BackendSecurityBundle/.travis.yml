@@ -13,4 +13,4 @@ php:
 
 before_script:
   - composer install
-  - mysql -e 'CREATE DATABASE modera_backend_security'
+  - mysql -e 'CREATE DATABASE modera_backend_security_bundle'

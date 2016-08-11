@@ -25,7 +25,7 @@ doctrine:
         port:     %db_port%
         user:     %db_user%
         password: %db_password%
-        dbname:   modera_backend_security
+        dbname:   modera_backend_security_bundle
         charset:  UTF8
 
     orm:
