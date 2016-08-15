@@ -5,9 +5,9 @@
 # Internlinks nested composer packages and runs tests
 # Sample usage:
 ## Run tests for all packages, before running tests create a temporary MySQL container:
-# ./phpunit.sh --path=foundation/src --functional
+# ./phpunit.sh --path=src --functional
 ## This will only run "foo/bar" package's tests without bootstrapping a temporary MySQL container and linking it with the runner:
-# ./phpunit.sh --path=foundation/src --package=foo/bar
+# ./phpunit.sh --path=src --package=foo/bar
 
 RUNNER_GIT_DIR=".mtr"
 
@@ -41,7 +41,7 @@ if [[ "$ARGS" == "" ]]; then
 
   sleep 15
 
-  ARGS="--path=foundation/src --functional"
+  ARGS="--path=src --functional"
 fi
 
 docker run \
