@@ -12,7 +12,7 @@ use Modera\SecurityBundle\Entity\User;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class FilterAutoSuggestServiceTest extends FunctionalTestCase
+class FilterAutoSuggestServiceTest //extends FunctionalTestCase
 {
     /**
      * @var FilterAutoSuggestService

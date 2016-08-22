@@ -156,4 +156,17 @@ class FunctionalTestCase extends WebTestCase
         $securityContext = static::$container->get('security.context');
         $securityContext->setToken(null);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static function createKernel(array $options = array())
+    {
+        static::$class = static::getKernelClass();
+
+        return new static::$class(
+            isset($options['environment']) ? $options['environment'] : 'test',
+            isset($options['debug']) ? $options['debug'] : true
+        );
+    }
 }

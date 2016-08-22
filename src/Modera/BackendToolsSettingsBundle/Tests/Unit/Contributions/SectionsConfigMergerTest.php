@@ -46,7 +46,7 @@ class SectionsConfigMergerTest extends \PHPUnit_Framework_TestCase
     {
         $ds = new DummySection();
 
-        $sectionsProvider = $this->getMock(ContributorInterface::CLAZZ);
+        $sectionsProvider = $this->createMock(ContributorInterface::CLAZZ);
         $sectionsProvider->expects($this->atLeastOnce())
                          ->method('getItems')
                          ->will($this->returnValue(array($ds)));

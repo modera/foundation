@@ -19,8 +19,8 @@
         "modera/direct-bundle": "~1.0|~2.0"
     },
     "require-dev": {
-        "phake/phake": "2.*",
-        "phpunit/phpunit": "3.*"
+        "phake/phake": "~2.0",
+        "phpunit/phpunit": "^5.5"
     },
     "autoload": {
         "psr-0": { "Modera\\MjrIntegrationBundle": "" }

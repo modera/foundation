@@ -9,8 +9,8 @@
         }
     ],
     "require-dev": {
-        "phake/phake": "2.0.*@dev",
-        "phpunit/phpunit": "3.*"
+        "phake/phake": "~2.0",
+        "phpunit/phpunit": "^5.5"
     },
     "require": {
         "php": ">=5.4.0",

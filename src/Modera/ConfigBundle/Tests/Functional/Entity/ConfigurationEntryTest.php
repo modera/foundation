@@ -105,7 +105,7 @@ class ConfigurationEntryTest extends FunctionalTestCase
 
     private function createMockContainer($handlerId, $handlerInstance)
     {
-        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $container->expects($this->atLeastOnce())
             ->method('get')
             ->with($this->equalTo($handlerId))
@@ -119,7 +119,7 @@ class ConfigurationEntryTest extends FunctionalTestCase
         $handlerServiceId = 'foo_handler';
         $expectedValue = 'jfksdljfdks';
 
-        $handler = $this->getMock('Modera\ConfigBundle\Config\HandlerInterface');
+        $handler = $this->createMock('Modera\ConfigBundle\Config\HandlerInterface');
         $handler->expects($this->atLeastOnce())
             ->method('getValue')
             ->with($this->isInstanceOf(CE::clazz()))
@@ -144,7 +144,7 @@ class ConfigurationEntryTest extends FunctionalTestCase
         $clientValue = 'foo bar baz';
         $convertedValue = 'converted foo bar baz';
 
-        $handler = $this->getMock('Modera\ConfigBundle\Config\HandlerInterface');
+        $handler = $this->createMock('Modera\ConfigBundle\Config\HandlerInterface');
         $handler->expects($this->atLeastOnce())
                ->method('convertToStorageValue')
                ->with($this->equalTo($clientValue), $this->isInstanceOf(CE::clazz()))
@@ -166,7 +166,7 @@ class ConfigurationEntryTest extends FunctionalTestCase
     {
         $id = 'update_handler';
 
-        $handler = $this->getMock('Modera\ConfigBundle\Config\ValueUpdatedHandlerInterface');
+        $handler = $this->createMock('Modera\ConfigBundle\Config\ValueUpdatedHandlerInterface');
         $container = $this->createMockContainer($id, $handler);
 
         $ce = new CE('foo_prop');

@@ -41,7 +41,7 @@ class TTest extends \PHPUnit_Framework_TestCase
     {
         $this->t = new MockTranslator() ;
 
-        $this->c = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $this->c = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $this->c->expects($this->atLeastOnce())
              ->method('get')
              ->with($this->equalTo('translator'))

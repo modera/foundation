@@ -41,7 +41,7 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
             'fooService', 'barService',
         );
 
-        $clientDiDefinitionsProvider = $this->getMock(ContributorInterface::CLAZZ);
+        $clientDiDefinitionsProvider = $this->createMock(ContributorInterface::CLAZZ);
         $clientDiDefinitionsProvider->expects($this->atLeastOnce())
             ->method('getItems')
             ->will($this->returnValue($serviceDefinitions));

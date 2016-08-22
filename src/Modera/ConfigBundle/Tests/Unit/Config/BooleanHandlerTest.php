@@ -16,7 +16,7 @@ class BooleanHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->entry = $this->getMock(
+        $this->entry = $this->createMock(
             ConfigurationEntry::clazz(), array(), array(), '', null, false
         );
         $this->handler = new BooleanHandler();
@@ -42,7 +42,7 @@ class BooleanHandlerTest extends \PHPUnit_Framework_TestCase
 
     private function createEntryWithServerConfig($clientValue, array $config)
     {
-        $entry = $this->getMock(
+        $entry = $this->createMock(
             ConfigurationEntry::clazz(), array(), array(), '', null, false
         );
 
