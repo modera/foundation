@@ -25,7 +25,7 @@ class MenuItemsProvider implements OrderedContributorInterface
      *
      * @param $tabOrder
      */
-    public function __construct($tabOrder)
+    public function __construct($tabOrder = 0)
     {
         $this->tabOrder = $tabOrder;
 

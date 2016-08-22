@@ -7,6 +7,8 @@ use Modera\BackendDashboardBundle\Dashboard\SimpleDashboard;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
+ * @deprecated Seems to be not used anymore anywhere ?
+ *
  * Contributes js-runtime menu items.
  *
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>

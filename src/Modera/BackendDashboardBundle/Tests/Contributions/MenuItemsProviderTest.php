@@ -4,7 +4,6 @@ namespace Modera\BackendDashboardBundle\Tests\Contributions;
 
 use Modera\BackendDashboardBundle\Contributions\MenuItemsProvider;
 
-
 /**
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation

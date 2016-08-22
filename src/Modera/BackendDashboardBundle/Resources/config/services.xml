@@ -10,11 +10,16 @@
             <tag name="modera_mjr_integration.menu.menu_items_provider" />
         </service>
 
-        <!--<service id="modera_backend_dashboard.contributions.dashboard_provider" class="Modera\BackendDashboardBundle\Contributions\DashboardProvider">-->
+        <!-- It seems this has been commented out because there's no need in dummy default dashboard anymore -->
+        <!--<service id="modera_backend_dashboard.contributions.dashboard_provider"-->
+                 <!--class="Modera\BackendDashboardBundle\Contributions\DashboardProvider">-->
+             <!-- -->
             <!--<tag name="modera_backend_dashboard.dashboard_provider" />-->
         <!--</service>-->
 
-        <service id="modera_backend_dashboard.dashboard_service" class="Modera\BackendDashboardBundle\Dashboard\DashboardService">
+        <service id="modera_backend_dashboard.dashboard_service"
+                 class="Modera\BackendDashboardBundle\Dashboard\DashboardService">
+
             <argument type="service" id="modera_backend_dashboard.dashboard_provider" />
         </service>
 
