@@ -1,0 +1,21 @@
+<?php
+
+return [
+    new \Modera\TestsRunner\Interceptors\ServerEnvExportingInterceptor(array(
+        'SYMFONY__DB_HOST' => 'mysql',
+        'SYMFONY__DB_PORT' => 3306,
+        'SYMFONY__DB_USER' => 'root',
+        'SYMFONY__DB_PASSWORD' => '123123'
+    )),
+    new \Modera\TestsRunner\Interceptors\SymfonyPhpUnitEnvInterceptor(),
+    new \Modera\TestsRunner\Interceptors\MySqlInterceptor(
+        function() { // config provider
+            return array(
+                'host' => $_SERVER['SYMFONY__DB_HOST'],
+                'user' => $_SERVER['SYMFONY__DB_USER'],
+                'password' => $_SERVER['SYMFONY__DB_PASSWORD'],
+                'attempts' => isset($_SERVER['DB_ATTEMPTS']) ? $_SERVER['DB_ATTEMPTS'] : 40,
+            );
+        }
+    ),
+];

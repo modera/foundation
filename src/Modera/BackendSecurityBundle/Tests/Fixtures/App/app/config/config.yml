@@ -1,6 +1,6 @@
 imports:
     - { resource: parameters.yml }
-    - { resource: @ModeraSecurityBundle/Resources/config/security.yml}
+    - { resource: "@ModeraSecurityBundle/Resources/config/security.yml" }
 
 framework:
     secret:          Hell yeah!

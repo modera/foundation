@@ -1,5 +1,5 @@
 modera_config:
-    owner_entity: "Modera\ConfigBundle\Tests\Fixtures\Entities\\User"
+    owner_entity: "Modera\\ConfigBundle\\Tests\\Fixtures\\Entities\\User"
 
 parameters:
     locale: en
@@ -34,4 +34,4 @@ doctrine:
               type: annotation
               dir: '%kernel.root_dir%/../../Entities'
               is_bundle: false
-              prefix: "Modera\ConfigBundle\Tests\Fixtures\Entities"
+              prefix: "Modera\\ConfigBundle\\Tests\\Fixtures\\Entities"
