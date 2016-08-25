@@ -30,7 +30,7 @@ fi
 if [ ! -d "$RUNNER_GIT_DIR" ]; then
   echo "# Cloning and installing test-runner"
 
-  git clone git@github.com:modera/tests-runner.git $RUNNER_GIT_DIR
+  git clone https://github.com/modera/tests-runner.git $RUNNER_GIT_DIR
 
   docker run \
   -it \

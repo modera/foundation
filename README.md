@@ -1,4 +1,4 @@
-# Foundation
+# Modera Foundation [![Build Status](https://travis-ci.org/modera/foundation.svg?branch=MPFE-915)](https://travis-ci.org/modera/foundation)
 
 A monolith repository for Modera Foundation platform.
 
