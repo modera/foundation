@@ -14,6 +14,7 @@ return [
                 'host' => $_SERVER['SYMFONY__DB_HOST'],
                 'user' => $_SERVER['SYMFONY__DB_USER'],
                 'password' => $_SERVER['SYMFONY__DB_PASSWORD'],
+                'port' => $_SERVER['SYMFONY__DB_PORT'],
                 'attempts' => isset($_SERVER['DB_ATTEMPTS']) ? $_SERVER['DB_ATTEMPTS'] : 40,
             );
         }
