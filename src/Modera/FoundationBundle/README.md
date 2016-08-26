@@ -1,4 +1,4 @@
-# ModeraFoundationBundle [![Build Status](https://travis-ci.org/modera/ModeraFoundationBundle.svg?branch=master)](https://travis-ci.org/modera/ModeraFoundationBundle)
+# ModeraFoundationBundle [![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
 
 Bundle ships some very basic utility classes
 

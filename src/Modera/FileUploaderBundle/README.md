@@ -1,6 +1,6 @@
 # ModeraFileUploaderBundle
 
-[![Build Status](https://travis-ci.org/modera/ModeraFileUploaderBundle.svg?branch=master)](https://travis-ci.org/modera/ModeraFileUploaderBundle)
+[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
 [![StyleCI](https://styleci.io/repos/29134461/shield)](https://styleci.io/repos/29134461)
 
 The bundle simplifies and introduces a consistent approach to uploading and storing uploaded files.
