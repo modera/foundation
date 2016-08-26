@@ -18,6 +18,7 @@ class LanguageTranslationTokenListener
     {
         $this->updateTranslationToken($args);
     }
+
     /**
      * @param LifecycleEventArgs $args
      */

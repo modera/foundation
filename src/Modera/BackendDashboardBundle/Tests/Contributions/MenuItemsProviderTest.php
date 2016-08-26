@@ -24,6 +24,6 @@ class MenuItemsProviderTest extends \PHPUnit_Framework_TestCase
     public function testOrder()
     {
         $provider = new MenuItemsProvider();
-        $this->assertTrue(is_integer($provider->getOrder()));
+        $this->assertTrue(is_int($provider->getOrder()));
     }
 }

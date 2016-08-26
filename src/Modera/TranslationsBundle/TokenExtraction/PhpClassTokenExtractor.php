@@ -276,7 +276,7 @@ class PhpClassTokenExtractor implements ExtractorInterface
         if (\T_CONSTANT_ENCAPSED_STRING == $valueToken[0]) {
             // just a string literal
 
-            return trim($valueToken[1], $valueToken[1]{0});
+            return trim($valueToken[1], $valueToken[1][0]);
         } elseif (\T_VARIABLE == $valueToken[0]) {
             // variable is used, we are going to try to resolve its value even if it is composite
             // ( made up of several assign statements )
@@ -324,9 +324,9 @@ class PhpClassTokenExtractor implements ExtractorInterface
                             $assignStmt = $this->normalizeToken($assignValueTokenValue);
 
                             if ('=' == $assignStmt) {
-                                $variableValue = trim($value, $value{0});
+                                $variableValue = trim($value, $value[0]);
                             } elseif ('.=' == $assignStmt) {
-                                $variableValue .= trim($value, $value{0});
+                                $variableValue .= trim($value, $value[0]);
                             }
                         }
                     }

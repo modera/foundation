@@ -1,13 +1,13 @@
 <?php
-/**
- * @copyright 2013 Modera Foundation
- * @author Alex Rudakov <alexandr.rudakov@modera.net>
- */
 
 namespace Modera\BackendDashboardBundle\Tests\Dashboard;
 
 use Modera\BackendDashboardBundle\Dashboard\SimpleDashboard;
 
+/**
+ * @copyright 2013 Modera Foundation
+ * @author Alex Rudakov <alexandr.rudakov@modera.net>
+ */
 class SimpleDashboardTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()

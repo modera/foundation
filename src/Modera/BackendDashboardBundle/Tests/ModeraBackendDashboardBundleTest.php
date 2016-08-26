@@ -1,14 +1,14 @@
 <?php
-/**
- * @copyright 2013 Modera Foundation
- * @author Alex Rudakov <alexandr.rudakov@modera.net>
- */
 
 namespace Modera\BackendDashboardBundle\Tests;
 
 use Modera\BackendDashboardBundle\ModeraBackendDashboardBundle;
 use Sli\ExpanderBundle\DependencyInjection\CompositeContributorsProviderCompilerPass;
 
+/**
+ * @copyright 2013 Modera Foundation
+ * @author Alex Rudakov <alexandr.rudakov@modera.net>
+ */
 class ModeraBackendDashboardBundleTest extends \PHPUnit_Framework_TestCase
 {
     public function testContributorIsInjected()

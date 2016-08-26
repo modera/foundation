@@ -5,3 +5,6 @@ finder:
     - "src"
   not-path:
     - "Modera/ServerCrudBundle/Tests/Functional/entities.php"
+
+disabled:
+  - empty_return

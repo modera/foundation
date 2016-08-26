@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright 2013 Modera Foundation
- * @author Alex Rudakov <alexandr.rudakov@modera.net>
- */
 
 namespace Modera\BackendDashboardBundle\Dashboard;
 
