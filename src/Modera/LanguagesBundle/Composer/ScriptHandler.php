@@ -19,15 +19,16 @@ class ScriptHandler extends AbstractScriptHandler
         $options = static::getOptions($event);
         $appDir = $options['symfony-app-dir'];
 
-        echo '>>> ModeraLanguagesBundle: Config sync' . PHP_EOL;
+        echo '>>> ModeraLanguagesBundle: Config sync'.PHP_EOL;
 
         if (!is_dir($appDir)) {
-            echo 'The symfony-app-dir (' . $appDir . ') specified in composer.json was not found in ' . getcwd() . '.' . PHP_EOL;
+            echo 'The symfony-app-dir ('.$appDir.') specified in composer.json was not found in '.getcwd().'.'.PHP_EOL;
+
             return;
         }
 
         static::executeCommand($event, $appDir, 'modera:languages:config-sync', $options['process-timeout']);
 
-        echo '>>> ModeraLanguagesBundle: done' . PHP_EOL;
+        echo '>>> ModeraLanguagesBundle: done'.PHP_EOL;
     }
 }

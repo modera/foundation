@@ -18,18 +18,17 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
     /**
      * @var SchemaTool
      */
-    static private $st;
+    private static $st;
 
     // override
-    static public function doSetUpBeforeClass()
+    public static function doSetUpBeforeClass()
     {
         self::$st = new SchemaTool(self::$em);
         self::$st->createSchema(array(self::$em->getClassMetadata(Language::clazz())));
-
     }
 
     // override
-    static public function doTearDownAfterClass()
+    public static function doTearDownAfterClass()
     {
         self::$st->dropSchema(array(self::$em->getClassMetadata(Language::clazz())));
     }
@@ -43,7 +42,7 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
         $app->setAutoExit(false);
         $input = new ArrayInput(array(
             'command' => 'modera:languages:config-sync-dummy',
-            'config'  => $config ? json_encode($config) : null
+            'config' => $config ? json_encode($config) : null,
         ));
         $input->setInteractive(false);
 
@@ -63,7 +62,7 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
         $dbLanguages = self::$em->getRepository(Language::clazz())->findAll();
         foreach ($dbLanguages as $dbLanguage) {
             if ($dbLanguage->getEnabled()) {
-                $actual++;
+                ++$actual;
             }
         }
         $this->assertEquals($expected, $actual);
@@ -90,7 +89,7 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
 
         $this->launchCommand(array(
             array(
-                'locale'     => 'en',
+                'locale' => 'en',
                 'is_enabled' => true,
             ),
         ));
@@ -99,7 +98,7 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
 
         $this->launchCommand(array(
             array(
-                'locale'     => 'en',
+                'locale' => 'en',
                 'is_enabled' => false,
             ),
         ));
@@ -108,11 +107,11 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
 
         $this->launchCommand(array(
             array(
-                'locale'     => 'en',
+                'locale' => 'en',
                 'is_enabled' => true,
             ),
             array(
-                'locale'     => 'ru',
+                'locale' => 'ru',
                 'is_enabled' => true,
             ),
         ));
@@ -121,11 +120,11 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
 
         $this->launchCommand(array(
             array(
-                'locale'     => 'en',
+                'locale' => 'en',
                 'is_enabled' => false,
             ),
             array(
-                'locale'     => 'ru',
+                'locale' => 'ru',
                 'is_enabled' => true,
             ),
         ));
@@ -134,11 +133,11 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
 
         $this->launchCommand(array(
             array(
-                'locale'     => 'en',
+                'locale' => 'en',
                 'is_enabled' => true,
             ),
             array(
-                'locale'     => 'ru',
+                'locale' => 'ru',
                 'is_enabled' => false,
             ),
         ));
@@ -147,7 +146,7 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
 
         $this->launchCommand(array(
             array(
-                'locale'     => 'ru',
+                'locale' => 'ru',
                 'is_enabled' => true,
             ),
         ));
@@ -156,7 +155,7 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
 
         $this->launchCommand(array(
             array(
-                'locale'     => 'ru',
+                'locale' => 'ru',
                 'is_enabled' => false,
             ),
         ));
@@ -165,11 +164,11 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
 
         $this->launchCommand(array(
             array(
-                'locale'     => 'en',
+                'locale' => 'en',
                 'is_enabled' => true,
             ),
             array(
-                'locale'     => 'ru',
+                'locale' => 'ru',
                 'is_enabled' => true,
             ),
         ));

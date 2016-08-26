@@ -27,11 +27,11 @@ class FunctionalTestCase extends WebTestCase
     const IM_CLASS = 'class';
 
     /* @var \Doctrine\ORM\EntityManager */
-    static protected $em;
+    protected static $em;
     /* @var \Symfony\Component\DependencyInjection\ContainerInterface */
-    static protected $container;
+    protected static $container;
 
-    static private function rollbackTransaction()
+    private static function rollbackTransaction()
     {
         $c = static::$em->getConnection();
         // having this check if there's an active transaction will let us
@@ -42,15 +42,15 @@ class FunctionalTestCase extends WebTestCase
         }
     }
 
-    static private function emExists()
+    private static function emExists()
     {
         return static::$container->has('doctrine.orm.entity_manager');
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    final static public function setUpBeforeClass()
+    final public static function setUpBeforeClass()
     {
         static::$kernel = static::createKernel();
         static::$kernel->boot();
@@ -70,15 +70,14 @@ class FunctionalTestCase extends WebTestCase
     /**
      * Template method.
      */
-    static public function doSetUpBeforeClass()
+    public static function doSetUpBeforeClass()
     {
-
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    final static public function tearDownAfterClass()
+    final public static function tearDownAfterClass()
     {
         if (static::getIsolationLevel() == self::IM_CLASS && self::emExists()) {
             static::rollbackTransaction();
@@ -90,9 +89,8 @@ class FunctionalTestCase extends WebTestCase
     /**
      * Template method.
      */
-    static public function doTearDownAfterClass()
+    public static function doTearDownAfterClass()
     {
-
     }
 
     /**
@@ -100,13 +98,13 @@ class FunctionalTestCase extends WebTestCase
      *
      * @return string
      */
-    static protected function getIsolationLevel()
+    protected static function getIsolationLevel()
     {
         return self::IM_METHOD;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     final public function setUp()
     {
@@ -118,14 +116,14 @@ class FunctionalTestCase extends WebTestCase
     }
 
     /**
-     * Template method
+     * Template method.
      */
     public function doSetUp()
     {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     final public function tearDown()
     {
@@ -141,7 +139,7 @@ class FunctionalTestCase extends WebTestCase
     }
 
     /**
-     * Template method
+     * Template method.
      */
     public function doTearDown()
     {

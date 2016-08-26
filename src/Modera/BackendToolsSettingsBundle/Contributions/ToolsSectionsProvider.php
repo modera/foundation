@@ -7,7 +7,7 @@ use Modera\FoundationBundle\Translation\T;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
- * Contributes a section to Backend/Tools
+ * Contributes a section to Backend/Tools.
  *
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
@@ -25,12 +25,12 @@ class ToolsSectionsProvider implements ContributorInterface
                 T::trans('Configure the current site.'),
                 '', '',
                 'modera-backend-tools-settings-icon'
-            )
+            ),
         );
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getItems()
     {

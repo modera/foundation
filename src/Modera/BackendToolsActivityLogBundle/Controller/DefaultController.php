@@ -49,26 +49,26 @@ class DefaultController extends Controller
 
         return array(
             'groups' => array(
-                'list' => function(ActivityInterface $activity, $container) use($authorResolver) {
+                'list' => function (ActivityInterface $activity, $container) use ($authorResolver) {
                     $hydrator = DoctrineEntityHydrator::create(['meta', 'createdAt', 'author']);
 
                     return array_merge($hydrator($activity, $container), array(
                         'createdAt' => $activity->getCreatedAt()->format(\DateTime::RFC1123),
-                        'author' => json_encode($authorResolver->resolve($activity))
+                        'author' => json_encode($authorResolver->resolve($activity)),
                     ));
                 },
-                'details' => function(ActivityInterface $activity, ContainerInterface $container) use($authorResolver) {
+                'details' => function (ActivityInterface $activity, ContainerInterface $container) use ($authorResolver) {
                     $hydrator = DoctrineEntityHydrator::create();
 
                     return array_merge($hydrator($activity, $container), array(
                         'createdAt' => $activity->getCreatedAt()->format(\DateTime::RFC1123),
-                        'author' => $authorResolver->resolve($activity)
+                        'author' => $authorResolver->resolve($activity),
                     ));
-                }
+                },
             ),
             'profiles' => array(
-                'list', 'details'
-            )
+                'list', 'details',
+            ),
         );
     }
 
@@ -82,12 +82,12 @@ class DefaultController extends Controller
         if (count($result['items']) == 1) {
             return array(
                 'result' => $this->getHydrationService()->hydrate($result['items'][0], $this->getConfig(), 'details'),
-                'success' => true
+                'success' => true,
             );
         } else {
             return array(
                 'success' => false,
-                'message' => 'Unable to find activity by given query'
+                'message' => 'Unable to find activity by given query',
             );
         }
     }
@@ -100,7 +100,7 @@ class DefaultController extends Controller
         $result = $this->getActivityManager()->query($params);
 
         $response = array(
-            'items' => []
+            'items' => [],
         );
 
         foreach ($result['items'] as $activity) {
@@ -110,7 +110,7 @@ class DefaultController extends Controller
         }
 
         return array_merge($result, $response, array(
-            'success' => true
+            'success' => true,
         ));
     }
 

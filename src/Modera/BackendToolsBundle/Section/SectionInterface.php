@@ -36,12 +36,12 @@ interface SectionInterface
     public function getDescription();
 
     /**
-     * @return array  Optional metadata
+     * @return array Optional metadata
      */
     public function getMeta();
 
     /**
-     * @return string  ID of a section to activate
+     * @return string ID of a section to activate
      */
     public function getSection();
 

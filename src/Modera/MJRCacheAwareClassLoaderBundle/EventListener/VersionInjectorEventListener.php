@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
  *
  * For requests which match path defined in semantic configuration at
  * modera_mjr_cache_aware_class_loader/listener_response_paths this listener will add a header containing version
- * number.
+ * number
  *
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation

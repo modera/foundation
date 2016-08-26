@@ -14,7 +14,7 @@ class ExtensionTest extends \PHPUnit_Framework_TestCase
     private $ext;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setUp()
     {
@@ -23,12 +23,12 @@ class ExtensionTest extends \PHPUnit_Framework_TestCase
 
     public function testFilter_prepend_every_line()
     {
-        $input = <<<TEXT
+        $input = <<<'TEXT'
 foo
 bar
 TEXT;
 
-        $expectedOutput = <<<TEXT
+        $expectedOutput = <<<'TEXT'
    foo
    bar
 TEXT;
@@ -37,12 +37,12 @@ TEXT;
 
         // ---
 
-        $input = <<<TEXT
+        $input = <<<'TEXT'
  foo
   bar
 TEXT;
 
-        $expectedOutput = <<<TEXT
+        $expectedOutput = <<<'TEXT'
 ---- foo
 ----  bar
 TEXT;
@@ -50,20 +50,18 @@ TEXT;
 
         // --
 
-        $input = <<<JSON
+        $input = <<<'JSON'
 {
     foo: {}
 }
 JSON;
 
-        $expectedOutput = <<<JSON
+        $expectedOutput = <<<'JSON'
 {
         foo: {}
     }
 JSON;
 
         $this->assertEquals($expectedOutput, $this->ext->filter_prepend_every_line($input, 4, ' ', true));
-
-
     }
 }

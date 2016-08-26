@@ -25,6 +25,7 @@ class ActivityAuthorResolver
 
     /**
      * @param ActivityInterface $activity
+     *
      * @return array
      */
     public function resolve(ActivityInterface $activity)
@@ -39,19 +40,19 @@ class ActivityAuthorResolver
                     'id' => $user->getId(),
                     'isUser' => true,
                     'fullName' => $user->getFullName(),
-                    'username' => $user->getUsername()
+                    'username' => $user->getUsername(),
                 );
             } else {
                 return array(
                     'isUser' => false,
-                    'identity' => $activity->getAuthor()
+                    'identity' => $activity->getAuthor(),
                 );
             }
         } else {
             return array(
                 'isUser' => false,
-                'identity' => $activity->getAuthor() ? $activity->getAuthor() : T::trans('Unknown')
+                'identity' => $activity->getAuthor() ? $activity->getAuthor() : T::trans('Unknown'),
             );
         }
     }
-} 
+}

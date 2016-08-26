@@ -8,7 +8,7 @@ class ModeraFoundationAppKernel extends \Modera\FoundationBundle\Testing\Abstrac
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
 
-            new Modera\FoundationBundle\ModeraFoundationBundle()
+            new Modera\FoundationBundle\ModeraFoundationBundle(),
         );
     }
 }

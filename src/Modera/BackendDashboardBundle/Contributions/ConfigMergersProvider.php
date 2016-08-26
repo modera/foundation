@@ -11,7 +11,6 @@ use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 use Modera\SecurityBundle\Entity\User;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Modera\MjrIntegrationBundle\Config\CallbackConfigMerger;
 
 /**
  * Adds dashboard list to config for backend. It allows
@@ -73,7 +72,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
                 'uiClass' => $dashboard->getUiClass(),
                 'iconCls' => $dashboard->getIcon(),
                 'description' => $dashboard->getDescription(),
-                'default' => $isDefault
+                'default' => $isDefault,
             );
             if ($default) {
                 $selectedAsDefault = $default;
@@ -86,19 +85,19 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
                 'name' => $dashboard->getName(),
                 'label' => $dashboard->getLabel(),
                 'uiClass' => $dashboard->getUiClass(),
-                'default' => true
+                'default' => true,
             );
         }
 
         return array_merge($currentConfig, array(
                 'modera_backend_dashboard' => array(
-                    'dashboards' => $result
-                )
+                    'dashboards' => $result,
+                ),
             ));
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @return array
      */
@@ -108,7 +107,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     }
 
     /**
-     * Return container
+     * Return container.
      *
      * @return mixed
      */
@@ -118,7 +117,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     }
 
     /**
-     * Return dashboardProvider
+     * Return dashboardProvider.
      *
      * @return mixed
      */
@@ -136,7 +135,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
         $settings = [];
-        foreach($user->getGroups() as $group) {
+        foreach ($user->getGroups() as $group) {
             /** @var GroupSettings $groupSettings */
             $groupSettings = $em->getRepository(GroupSettings::clazz())->findOneBy(['group' => $group]);
             if ($groupSettings) {
@@ -152,7 +151,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         $dashboards = [];
         $defaults = [];
 
-        foreach($settings as $data) {
+        foreach ($settings as $data) {
             $dashboards = array_merge($dashboards, $data['hasAccess']);
             if ($data['defaultDashboard']) {
                 $defaults[] = $data['defaultDashboard'];
@@ -162,7 +161,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         if (!count($dashboards)) {
             $dashboards = [];
             $default = null;
-        }  else {
+        } else {
             $default = count($defaults) ? $defaults[count($defaults) - 1] : null;
         }
 

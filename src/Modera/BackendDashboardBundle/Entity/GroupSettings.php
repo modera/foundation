@@ -33,16 +33,17 @@ class GroupSettings implements SettingsEntityInterface
      */
     private $dashboardSettings = array(
         'defaultDashboard' => null,
-        'hasAccess' => []
+        'hasAccess' => [],
     );
 
-    static public function clazz()
+    public static function clazz()
     {
         return get_called_class();
     }
 
     /**
      * @param string $dashboardId
+     *
      * @return bool
      */
     public function hasAccessToDashboard($dashboardId)

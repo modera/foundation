@@ -10,7 +10,7 @@ use Modera\LanguagesBundle\Entity\Language;
 use Modera\LanguagesBundle\DependencyInjection\ModeraLanguagesExtension;
 
 /**
- * From config to database
+ * From config to database.
  *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
@@ -59,7 +59,7 @@ class SyncLanguagesCommand extends ContainerAwareCommand
 
         foreach ($languages as $language) {
             if (!in_array($language['locale'], $updated)) {
-                $dbLanguage = new Language;
+                $dbLanguage = new Language();
                 $dbLanguage->setLocale($language['locale']);
                 $dbLanguage->setEnabled($language['is_enabled'] ? true : false);
                 $em->persist($dbLanguage);
@@ -85,6 +85,7 @@ class SyncLanguagesCommand extends ContainerAwareCommand
 
     /**
      * @param Language $dbLanguage
+     *
      * @return array
      */
     private function tableRow(Language $dbLanguage)

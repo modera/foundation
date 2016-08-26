@@ -8,7 +8,7 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
- * Contributes a section to Backend/Tools
+ * Contributes a section to Backend/Tools.
  *
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
@@ -28,7 +28,7 @@ class ToolsSectionsProvider implements ContributorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getItems()
     {

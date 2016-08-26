@@ -9,7 +9,7 @@ namespace Modera\BackendDashboardBundle\Dashboard;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class SimpleDashboard
+ * Class SimpleDashboard.
  *
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation
@@ -21,13 +21,13 @@ class SimpleDashboard implements DashboardInterface
     private $uiClass;
 
     /**
-     * @param string $name    Technical name of dashboard
-     * @param string $label   Human readable label
-     * @param string $uiClass ExtJs class that provide ui (Derivative of Ext.container.Container or similar)
+     * @param string $name        Technical name of dashboard
+     * @param string $label       Human readable label
+     * @param string $uiClass     ExtJs class that provide ui (Derivative of Ext.container.Container or similar)
      * @param string $description
      * @param string $icon
      */
-    public function __construct($name, $label, $uiClass, $description='', $icon='modera-backend-dashboard-default-icon')
+    public function __construct($name, $label, $uiClass, $description = '', $icon = 'modera-backend-dashboard-default-icon')
     {
         $this->label = $label;
         $this->name = $name;
@@ -37,7 +37,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Return name
+     * Return name.
      *
      * @return string
      */
@@ -47,7 +47,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Short dashboard description
+     * Short dashboard description.
      *
      * @return string
      */
@@ -57,7 +57,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Short dashboard description
+     * Short dashboard description.
      *
      * @return string
      */
@@ -67,7 +67,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Return uiClass
+     * Return uiClass.
      *
      * @return mixed
      */
@@ -77,7 +77,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Return label
+     * Return label.
      *
      * @return mixed
      */

@@ -4,13 +4,12 @@ namespace Modera\BackendDashboardBundle\Tests\Contributions;
 
 use Modera\BackendDashboardBundle\Contributions\ConfigMergersProvider;
 
-
 /**
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class ConfigMergerProviderTest extends \PHPUnit_Framework_TestCase {
-
+class ConfigMergerProviderTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
@@ -33,7 +32,6 @@ class ConfigMergerProviderTest extends \PHPUnit_Framework_TestCase {
         $this->contributor = \Phake::mock('Sli\ExpanderBundle\Ext\ContributorInterface');
         $this->provider = new ConfigMergersProvider($this->container, $this->contributor);
     }
-
 
     public function testItems()
     {
@@ -81,7 +79,7 @@ class ConfigMergerProviderTest extends \PHPUnit_Framework_TestCase {
                 'name' => 'name1',
                 'label' => 'label1',
                 'uiClass' => 'class1',
-                'default' => true
+                'default' => true,
             ), $result['dashboards'][0]);
     }
 
@@ -111,7 +109,7 @@ class ConfigMergerProviderTest extends \PHPUnit_Framework_TestCase {
                 'name' => 'allowed_name1',
                 'label' => 'allowed_label1',
                 'uiClass' => 'allowed_class1',
-                'default' => true
+                'default' => true,
             ), $result['dashboards'][0]);
     }
 
@@ -120,4 +118,4 @@ class ConfigMergerProviderTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($this->container, $this->provider->getContainer());
         $this->assertSame($this->contributor, $this->provider->getDashboardProvider());
     }
-} 
+}

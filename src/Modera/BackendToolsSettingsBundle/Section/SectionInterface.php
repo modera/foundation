@@ -13,30 +13,30 @@ namespace Modera\BackendToolsSettingsBundle\Section;
 interface SectionInterface
 {
     /**
-     * @return string  A technical ID that will be used in URL.
+     * @return string A technical ID that will be used in URL
      */
     public function getId();
 
     /**
-     * @return string  A human readable name of the section.
+     * @return string A human readable name of the section
      */
     public function getName();
 
     /**
-     * See http://fortawesome.github.io/Font-Awesome/icons/
+     * See http://fortawesome.github.io/Font-Awesome/icons/.
      *
-     * @return string  An optional glyph name that will be used as an icon for this section.
+     * @return string An optional glyph name that will be used as an icon for this section
      */
     public function getGlyph();
 
     /**
-     * @return string  Fully qualified javascript class name of activity class that will represent this section.
+     * @return string Fully qualified javascript class name of activity class that will represent this section
      */
     public function getActivityClass();
 
     /**
      * If your javascript activity class needs to accept some activation parameters then you can use 'activationParams'
-     * configuration key in meta information. For example:
+     * configuration key in meta information. For example:.
      *
      *     array(
      *         'activationParams' => array(
@@ -44,7 +44,7 @@ interface SectionInterface
      *         )
      *     )
      *
-     * @return array Optional metadata this this section may have.
+     * @return array Optional metadata this this section may have
      */
     public function getMeta();
-} 
+}

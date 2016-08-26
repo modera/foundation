@@ -9,7 +9,7 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 /**
  * @deprecated Seems to be not used anymore anywhere ?
  *
- * Contributes js-runtime menu items.
+ * Contributes js-runtime menu items
  *
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation
@@ -19,12 +19,12 @@ class DashboardProvider implements ContributorInterface
     private $items;
 
     /**
-     * Adds couple example dashboard by default
+     * Adds couple example dashboard by default.
      */
     public function __construct()
     {
         $this->items = array(
-            new SimpleDashboard('default', 'Default dashboard', 'Modera.backend.dashboard.runtime.SampleDashboardActivity')
+            new SimpleDashboard('default', 'Default dashboard', 'Modera.backend.dashboard.runtime.SampleDashboardActivity'),
         );
     }
 

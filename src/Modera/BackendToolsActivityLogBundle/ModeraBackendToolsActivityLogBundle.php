@@ -15,13 +15,13 @@ use Modera\FoundationBundle\Translation\T;
 class ModeraBackendToolsActivityLogBundle extends Bundle implements ExtensionPointsAwareBundleInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getExtensionPointContributions()
     {
         return array(
             'modera_mjr_integration.css_resources_provider' => array(
-                '/bundles/moderabackendtoolsactivitylog/css/styles.css'
+                '/bundles/moderabackendtoolsactivitylog/css/styles.css',
             ),
             'modera_backend_tools.sections_provider' => array(
                 new ToolsSection(
@@ -30,15 +30,14 @@ class ModeraBackendToolsActivityLogBundle extends Bundle implements ExtensionPoi
                     T::trans('See what activities recently have happened on the site'),
                     '', '',
                     'modera-backend-tools-activity-log-icon'
-                )
+                ),
             ),
             'modera_mjr_integration.sections_provider' => array(
                 new MJRSection('tools.activitylog', 'Modera.backend.tools.activitylog.runtime.Section', array(
                     MJRSection::META_NAMESPACE => 'Modera.backend.tools.activitylog',
-                    MJRSection::META_NAMESPACE_PATH => '/bundles/moderabackendtoolsactivitylog/js'
-                ))
-            )
+                    MJRSection::META_NAMESPACE_PATH => '/bundles/moderabackendtoolsactivitylog/js',
+                )),
+            ),
         );
     }
-
 }

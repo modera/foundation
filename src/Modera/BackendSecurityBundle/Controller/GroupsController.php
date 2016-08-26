@@ -25,7 +25,6 @@ class GroupsController extends AbstractCrudController
         $em = $this->getDoctrine();
 
         $groupEntityValidator = function (array $params, Group $group, DefaultEntityValidator $defaultValidator, array $config, ContainerInterface $container) use ($em) {
-
             $validationResult = $defaultValidator->validate($group, $config);
 
             if (!$group->getRefName()) {
@@ -50,7 +49,6 @@ class GroupsController extends AbstractCrudController
             }
 
             return $validationResult;
-
         };
 
         $mapEntity = function (array $params, Group $group, DataMapperInterface $defaultMapper, ContainerInterface $container) {
@@ -71,7 +69,6 @@ class GroupsController extends AbstractCrudController
                  */
                 $group->setRefName(Group::normalizeRefNameString($refName));
             }
-
         };
 
         return array(

@@ -2,7 +2,6 @@
 
 namespace Modera\BackendToolsActivityLogBundle\Tests\Functional\AutoSuggest;
 
-use Modera\ActivityLoggerBundle\Entity\Activity;
 use Modera\ActivityLoggerBundle\Manager\ActivityManagerInterface;
 use Modera\BackendToolsActivityLogBundle\AutoSuggest\FilterAutoSuggestService;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
@@ -52,7 +51,7 @@ class FilterAutoSuggestServiceTest //extends FunctionalTestCase
 
 //        $this->assertTrue(is_array($result));
 //        $this->assertEquals(0, count($result));
-//
+
 //        /* @var ActivityManagerInterface $activityMgr */
 //        $activityMgr = self::$container->get('modera_activity_logger.manager.activity_manager');
 //        $activityMgr->info('some message', array(
@@ -74,7 +73,7 @@ class FilterAutoSuggestServiceTest //extends FunctionalTestCase
         /* @var ActivityManagerInterface $activityMgr */
         $activityMgr = self::$container->get('modera_activity_logger.manager.activity_manager');
         $activityMgr->info('some message', array(
-            'type' => 'dat_foox_type'
+            'type' => 'dat_foox_type',
         ));
 
         $result = $this->s->suggest('eventType', 'foox');
@@ -100,4 +99,4 @@ class FilterAutoSuggestServiceTest //extends FunctionalTestCase
         $this->assertEquals($u->getId(), $result[0]['id']);
         $this->assertEquals(sprintf('%s (%s)', $u->getFullName(), $u->getUsername()), $result[0]['value']);
     }
-} 
+}

@@ -11,12 +11,12 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 class CssResourcesProvider implements ContributorInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getItems()
     {
         return array(
-            '/bundles/moderabackendmodule/css/styles.css'
+            '/bundles/moderabackendmodule/css/styles.css',
         );
     }
 }

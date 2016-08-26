@@ -25,13 +25,13 @@ class CssResourcesProvider implements ContributorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getItems()
     {
         return array(
-            $this->themeIntegrationConfig['theme_path'] . '/build/resources/modera-theme-all-debug.css',
-            $this->mjrInteggrationConfig['runtime_path'] . '/build/resources/MJR-all-debug.css'
+            $this->themeIntegrationConfig['theme_path'].'/build/resources/modera-theme-all-debug.css',
+            $this->mjrInteggrationConfig['runtime_path'].'/build/resources/MJR-all-debug.css',
         );
     }
 }

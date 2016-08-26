@@ -39,7 +39,7 @@ class TTest extends \PHPUnit_Framework_TestCase
     // override
     public function setUp()
     {
-        $this->t = new MockTranslator() ;
+        $this->t = new MockTranslator();
 
         $this->c = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $this->c->expects($this->atLeastOnce())
@@ -62,7 +62,7 @@ class TTest extends \PHPUnit_Framework_TestCase
     public function testTrans()
     {
         $expectedOutput = array(
-            'foo id', array('params'), 'foo domain', 'foo locale'
+            'foo id', array('params'), 'foo domain', 'foo locale',
         );
 
         $this->assertSame($expectedOutput, T::trans('foo id', array('params'), 'foo domain', 'foo locale'));
@@ -71,7 +71,7 @@ class TTest extends \PHPUnit_Framework_TestCase
     public function testTransChoice()
     {
         $expectedOutput = array(
-            'foo id', 'foo number', array('params'), 'foo domain', 'foo locale'
+            'foo id', 'foo number', array('params'), 'foo domain', 'foo locale',
         );
 
         $this->assertSame(

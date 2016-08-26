@@ -3,9 +3,6 @@
 namespace Modera\BackendDashboardBundle\Controller;
 
 use Modera\BackendDashboardBundle\Entity\UserSettings;
-use Modera\SecurityBundle\Entity\User;
-use Modera\ServerCrudBundle\Exceptions\NothingFoundException;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
@@ -17,5 +14,4 @@ class UserSettingsController extends AbstractSettingsController
     {
         return UserSettings::clazz();
     }
-
 }

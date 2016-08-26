@@ -2,12 +2,8 @@
 
 namespace Modera\BackendToolsSettingsBundle;
 
-use Modera\BackendToolsSettingsBundle\Contributions\MixedProvider;
-use Sli\ExpanderBundle\Contributing\ExtensionPointsAwareBundleInterface;
-use Sli\ExpanderBundle\DependencyInjection\CompositeContributorsProviderCompilerPass;
 use Sli\ExpanderBundle\Ext\ExtensionPoint;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**

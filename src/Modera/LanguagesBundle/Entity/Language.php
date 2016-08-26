@@ -4,7 +4,6 @@ namespace Modera\LanguagesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Intl;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -30,13 +29,12 @@ class Language
     private $locale;
 
     /**
-     * @var boolean
+     * @var bool
      * @ORM\Column(type="boolean", nullable=false)
      */
     private $isEnabled = false;
 
-
-    static public function clazz()
+    public static function clazz()
     {
         return get_called_class();
     }
@@ -57,7 +55,8 @@ class Language
         $enc = 'utf-8';
         $names = Intl::getLocaleBundle()->getLocaleNames($locale ?: $this->locale);
         $str = isset($names[$this->locale]) ? $names[$this->locale] : $this->locale;
-        return mb_strtoupper(mb_substr($str, 0, 1, $enc), $enc) . mb_substr($str, 1, mb_strlen($str, $enc), $enc);
+
+        return mb_strtoupper(mb_substr($str, 0, 1, $enc), $enc).mb_substr($str, 1, mb_strlen($str, $enc), $enc);
     }
 
     /**
@@ -77,8 +76,9 @@ class Language
     }
 
     /**
-     * For ModeraServerCrudBundle
-     * @return boolean
+     * For ModeraServerCrudBundle.
+     *
+     * @return bool
      */
     public function getIsEnabled()
     {
@@ -86,7 +86,7 @@ class Language
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getEnabled()
     {
@@ -94,7 +94,7 @@ class Language
     }
 
     /**
-     * @param boolean $isEnabled
+     * @param bool $isEnabled
      */
     public function setEnabled($isEnabled)
     {

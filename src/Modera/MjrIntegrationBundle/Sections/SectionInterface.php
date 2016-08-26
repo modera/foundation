@@ -28,19 +28,19 @@ interface SectionInterface
     const META_ACTIVATION_PARAMS = 'activation_params';
 
     /**
-     * @return string A short string which will be used to reference a section represented by this menu item.
+     * @return string A short string which will be used to reference a section represented by this menu item
      */
     public function getId();
 
     /**
      * @return string A javascript controller class name which will serve as entry point to a section represented
-     *                by this menu item.
+     *                by this menu item
      */
     public function getController();
 
     /**
      * @return array Optional additional metadata that may be used by some server-side/client-side runtime
-     *               components to treat this menu item in some special way.
+     *               components to treat this menu item in some special way
      */
     public function getMetadata();
 }

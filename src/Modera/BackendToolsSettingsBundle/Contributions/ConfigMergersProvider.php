@@ -21,12 +21,12 @@ class ConfigMergersProvider implements ContributorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getItems()
     {
         return array(
-            $this->merger
+            $this->merger,
         );
     }
 }

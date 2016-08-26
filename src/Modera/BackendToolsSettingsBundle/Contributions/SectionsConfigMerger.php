@@ -17,7 +17,7 @@ class SectionsConfigMerger implements ConfigMergerInterface
     private $sectionsProvider;
 
     /**
-     * @param ContributorInterface $sectionsProvider  Settings sections provider
+     * @param ContributorInterface $sectionsProvider Settings sections provider
      */
     public function __construct(ContributorInterface $sectionsProvider)
     {
@@ -25,7 +25,7 @@ class SectionsConfigMerger implements ConfigMergerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function merge(array $existingConfig)
     {
@@ -39,7 +39,7 @@ class SectionsConfigMerger implements ConfigMergerInterface
                 'name' => $section->getName(),
                 'activityClass' => $section->getActivityClass(),
                 'glyph' => $section->getGlyph(),
-                'meta' =>$section->getMeta()
+                'meta' => $section->getMeta(),
             );
         }
 

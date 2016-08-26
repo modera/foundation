@@ -23,12 +23,12 @@ class JsResourcesProvider implements ContributorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getItems()
     {
         return array(
-            $this->themeIntegrationConfig['theme_path'] . '/build/modera-theme.js'
+            $this->themeIntegrationConfig['theme_path'].'/build/modera-theme.js',
         );
     }
 }
