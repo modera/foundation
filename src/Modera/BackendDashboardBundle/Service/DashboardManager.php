@@ -31,7 +31,7 @@ class DashboardManager
     private $dashboards;
 
     /**
-     * @param EntityManager $em
+     * @param EntityManager        $em
      * @param ContributorInterface $dashboardsProvider
      */
     public function __construct(EntityManager $em, ContributorInterface $dashboardsProvider)

@@ -48,18 +48,17 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     /**
      * @internal
      *
-     * @param ContainerInterface   $container         Symfony container for isAllowed() method
-     * @param ContributorInterface $dashboardProvider
+     * @param ContainerInterface    $container         Symfony container for isAllowed() method
+     * @param ContributorInterface  $dashboardProvider
      * @param TokenStorageInterface $tokenStorage
-     * @param DashboardManager $dashboardMgr
+     * @param DashboardManager      $dashboardMgr
      */
     public function __construct(
         ContainerInterface $container,
         ContributorInterface $dashboardProvider,
         TokenStorageInterface $tokenStorage,
         DashboardManager $dashboardMgr
-    )
-    {
+    ) {
         $this->container = $container;
         $this->dashboardProvider = $dashboardProvider;
         $this->tokenStorage = $tokenStorage;
@@ -157,7 +156,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     }
 
     /**
-     * @deprecated  Use DashboardManager class methods instead.
+     * @deprecated  Use DashboardManager class methods instead
      *
      * @return array
      */

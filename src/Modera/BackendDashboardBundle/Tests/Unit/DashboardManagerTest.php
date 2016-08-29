@@ -75,7 +75,7 @@ class DashboardManagerTest extends \PHPUnit_Framework_TestCase
             ->getDashboardSettings()
             ->thenReturn(array(
                 'hasAccess' => ['bar', 'blabla'],
-                'defaultDashboard' => 'fofo'
+                'defaultDashboard' => 'fofo',
             ))
         ;
 

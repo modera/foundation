@@ -42,7 +42,7 @@ class GroupSettings implements SettingsEntityInterface
     );
 
     /**
-     * @deprecated Use native ::class property.
+     * @deprecated Use native ::class property
      *
      * @return string
      */
