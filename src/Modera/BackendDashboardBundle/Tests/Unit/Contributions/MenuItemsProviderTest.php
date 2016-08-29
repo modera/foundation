@@ -1,8 +1,9 @@
 <?php
 
-namespace Modera\BackendDashboardBundle\Tests\Contributions;
+namespace Modera\BackendDashboardBundle\Tests\Unit\Contributions;
 
 use Modera\BackendDashboardBundle\Contributions\MenuItemsProvider;
+use Modera\MjrIntegrationBundle\Menu\MenuItem;
 
 /**
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
@@ -18,7 +19,7 @@ class MenuItemsProviderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, count($items));
 
-        $this->assertInstanceOf('Modera\MjrIntegrationBundle\Menu\MenuItem', $items[0]);
+        $this->assertInstanceOf(MenuItem::class, $items[0]);
     }
 
     public function testOrder()

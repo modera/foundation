@@ -1,6 +1,6 @@
 <?php
 
-namespace Modera\BackendDashboardBundle\Tests\DependencyInjection;
+namespace Modera\BackendDashboardBundle\Tests\Unit\DependencyInjection;
 
 use Modera\BackendDashboardBundle\DependencyInjection\ModeraBackendDashboardExtension;
 use Modera\BackendDashboardBundle\ModeraBackendDashboardBundle;

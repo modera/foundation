@@ -1,6 +1,6 @@
 <?php
 
-namespace Modera\BackendDashboardBundle\Tests\Dashboard;
+namespace Modera\BackendDashboardBundle\Tests\Unit\Dashboard;
 
 use Modera\BackendDashboardBundle\Dashboard\SimpleDashboard;
 

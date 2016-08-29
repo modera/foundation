@@ -12,9 +12,30 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class SimpleDashboard implements DashboardInterface
 {
+    /**
+     * @var string
+     */
     private $name;
+
+    /**
+     * @var string
+     */
     private $label;
+
+    /**
+     * @var string
+     */
     private $uiClass;
+
+    /**
+     * @var string
+     */
+    private $description;
+
+    /**
+     * @var string
+     */
+    private $icon;
 
     /**
      * @param string $name        Technical name of dashboard
@@ -33,9 +54,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Return name.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -43,9 +62,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Short dashboard description.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -53,9 +70,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Short dashboard description.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getIcon()
     {
@@ -63,9 +78,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Return uiClass.
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getUiClass()
     {
@@ -73,9 +86,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Return label.
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getLabel()
     {
@@ -83,12 +94,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Checks if dashboard is allowed within given environment.
-     * May be used as security check, but also may check for installed modules, settings etc.
-     *
-     * @param ContainerInterface $container
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function isAllowed(ContainerInterface $container)
     {

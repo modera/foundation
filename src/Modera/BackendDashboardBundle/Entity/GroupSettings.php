@@ -2,10 +2,13 @@
 
 namespace Modera\BackendDashboardBundle\Entity;
 
+use Modera\BackendDashboardBundle\Traits\DashboardSettingsTrait;
 use Modera\SecurityBundle\Entity\Group;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @internal
+ *
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation
  *
@@ -14,6 +17,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class GroupSettings implements SettingsEntityInterface
 {
+    use DashboardSettingsTrait;
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -33,38 +38,21 @@ class GroupSettings implements SettingsEntityInterface
      */
     private $dashboardSettings = array(
         'defaultDashboard' => null,
-        'hasAccess' => [],
+        'hasAccess' => [], // contains "names" of dashboard given group will have access to
     );
 
+    /**
+     * @deprecated Use native ::class property.
+     *
+     * @return string
+     */
     public static function clazz()
     {
         return get_called_class();
     }
 
     /**
-     * @param string $dashboardId
-     *
-     * @return bool
-     */
-    public function hasAccessToDashboard($dashboardId)
-    {
-        $bs = $this->getDashboardSettings();
-
-        return isset($bs['hasAccess']) && is_array($bs['hasAccess']) && in_array($dashboardId, $bs['hasAccess']);
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDefaultDashboardId()
-    {
-        $bs = $this->getDashboardSettings();
-
-        return isset($bs['defaultDashboard']) ? $bs['defaultDashboard'] : null;
-    }
-
-    /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -72,7 +60,7 @@ class GroupSettings implements SettingsEntityInterface
     }
 
     /**
-     * @param array $dashboardSettings
+     * {@inheritdoc}
      */
     public function setDashboardSettings(array $dashboardSettings)
     {
@@ -80,7 +68,7 @@ class GroupSettings implements SettingsEntityInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getDashboardSettings()
     {

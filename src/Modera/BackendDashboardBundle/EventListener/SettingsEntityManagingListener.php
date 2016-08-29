@@ -14,6 +14,9 @@ use Modera\SecurityBundle\Entity\User;
  */
 class SettingsEntityManagingListener
 {
+    /**
+     * @param OnFlushEventArgs $event
+     */
     public function onFlush(OnFlushEventArgs $event)
     {
         $em = $event->getEntityManager();

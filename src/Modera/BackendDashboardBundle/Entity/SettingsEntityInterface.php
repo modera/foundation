@@ -8,6 +8,9 @@ namespace Modera\BackendDashboardBundle\Entity;
  */
 interface SettingsEntityInterface
 {
+    /**
+     * @return int
+     */
     public function getId();
 
     /**
@@ -23,7 +26,7 @@ interface SettingsEntityInterface
     public function getDashboardSettings();
 
     /**
-     * @return array
+     * @return string
      */
     public function describeEntity();
 }

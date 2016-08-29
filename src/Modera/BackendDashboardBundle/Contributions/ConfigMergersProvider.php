@@ -7,14 +7,18 @@ use Modera\BackendDashboardBundle\Dashboard\DashboardInterface;
 use Modera\BackendDashboardBundle\Dashboard\SimpleDashboard;
 use Modera\BackendDashboardBundle\Entity\GroupSettings;
 use Modera\BackendDashboardBundle\Entity\UserSettings;
+use Modera\BackendDashboardBundle\Service\DashboardManager;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 use Modera\SecurityBundle\Entity\User;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Adds dashboard list to config for backend. It allows
- * to show dashboards immediately without loading remote data through Direct.
+ * Adds dashboard list to config for backend. It allows to show dashboards immediately without loading remote data
+ * through Direct.
+ *
+ * @internal
  *
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation
@@ -27,79 +31,105 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     private $container;
 
     /**
-     * @var \Sli\ExpanderBundle\Ext\ContributorInterface
+     * @var ContributorInterface
      */
     private $dashboardProvider;
 
     /**
-     * @param ContainerInterface   $container         Symfony container for isAllowed() method
-     * @param ContributorInterface $dashboardProvider Dashboard providers are collected automatically by Expander bundle
+     * @var DashboardManager
      */
-    public function __construct(ContainerInterface $container, ContributorInterface $dashboardProvider)
+    private $dashboardMgr;
+
+    /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
+
+    /**
+     * @internal
+     *
+     * @param ContainerInterface   $container         Symfony container for isAllowed() method
+     * @param ContributorInterface $dashboardProvider
+     * @param TokenStorageInterface $tokenStorage
+     * @param DashboardManager $dashboardMgr
+     */
+    public function __construct(
+        ContainerInterface $container,
+        ContributorInterface $dashboardProvider,
+        TokenStorageInterface $tokenStorage,
+        DashboardManager $dashboardMgr
+    )
     {
         $this->container = $container;
         $this->dashboardProvider = $dashboardProvider;
+        $this->tokenStorage = $tokenStorage;
+        $this->dashboardMgr = $dashboardMgr;
     }
 
     /**
      * Merge in dashboard list into runtime configuration.
      *
-     * @param array $currentConfig
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function merge(array $currentConfig)
     {
-        list($default, $userDashboards) = $this->getUserDashboards();
+        /** @var User $user */
+        $user = $this->tokenStorage->getToken()->getUser();
+
+        $defaultDashboardNames = [];
+        foreach ($this->dashboardMgr->getDefaultDashboards($user) as $dashboard) {
+            $defaultDashboardNames[] = $dashboard->getName();
+        }
 
         $result = array();
-        $selectedAsDefault = null;
-        foreach ($this->dashboardProvider->getItems() as $dashboard) {
-            /* @var DashboardInterface $dashboard */
-
+        foreach ($this->dashboardMgr->getUserDashboards($user) as $dashboard) {
             if (!$dashboard->isAllowed($this->container)) {
                 continue;
             }
 
-            if (!in_array($dashboard->getName(), $userDashboards)) {
-                continue;
-            }
-
-            $isDefault = $dashboard->getName() == $default;
-            $result[] = array(
-                'name' => $dashboard->getName(),
-                'label' => $dashboard->getLabel(),
-                'uiClass' => $dashboard->getUiClass(),
-                'iconCls' => $dashboard->getIcon(),
-                'description' => $dashboard->getDescription(),
+            $isDefault = in_array($dashboard->getName(), $defaultDashboardNames);
+            $result[] = array_merge($this->serializeDashboard($dashboard), array(
                 'default' => $isDefault,
-            );
-            if ($default) {
-                $selectedAsDefault = $default;
-            }
+            ));
         }
 
-        if (!$selectedAsDefault) {
-            $dashboard = new SimpleDashboard('default', 'List of user dashboards', 'Modera.backend.dashboard.runtime.DashboardListDashboardActivity');
-            $result[] = array(
-                'name' => $dashboard->getName(),
-                'label' => $dashboard->getLabel(),
-                'uiClass' => $dashboard->getUiClass(),
-                'default' => true,
+        if (count($defaultDashboardNames) == 0 && count($result) == 0) {
+            $dashboard = new SimpleDashboard(
+                'default',
+                'List of user dashboards',
+                'Modera.backend.dashboard.runtime.DashboardListDashboardActivity'
             );
+
+            $result[] = array_merge($this->serializeDashboard($dashboard), array(
+                'default' => true,
+            ));
         }
 
         return array_merge($currentConfig, array(
-                'modera_backend_dashboard' => array(
-                    'dashboards' => $result,
-                ),
-            ));
+            'modera_backend_dashboard' => array(
+                'dashboards' => $result,
+            ),
+        ));
+    }
+
+    /**
+     * @param DashboardInterface $dashboard
+     *
+     * @return array
+     */
+    private function serializeDashboard(DashboardInterface $dashboard)
+    {
+        return array(
+            'name' => $dashboard->getName(),
+            'label' => $dashboard->getLabel(),
+            'uiClass' => $dashboard->getUiClass(),
+            'iconCls' => $dashboard->getIcon(),
+            'description' => $dashboard->getDescription(),
+        );
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @return array
      */
     public function getItems()
     {
@@ -107,7 +137,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     }
 
     /**
-     * Return container.
+     * @deprecated
      *
      * @return mixed
      */
@@ -126,6 +156,11 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         return $this->dashboardProvider;
     }
 
+    /**
+     * @deprecated  Use DashboardManager class methods instead.
+     *
+     * @return array
+     */
     public function getUserDashboards()
     {
         /** @var EntityManager $em */
@@ -137,13 +172,13 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         $settings = [];
         foreach ($user->getGroups() as $group) {
             /** @var GroupSettings $groupSettings */
-            $groupSettings = $em->getRepository(GroupSettings::clazz())->findOneBy(['group' => $group]);
+            $groupSettings = $em->getRepository(GroupSettings::clazz())->findOneBy(array('group' => $group));
             if ($groupSettings) {
                 $settings[] = $groupSettings->getDashboardSettings();
             }
         }
         /** @var UserSettings $userSettings */
-        $userSettings = $em->getRepository(UserSettings::clazz())->findOneBy(['user' => $user]);
+        $userSettings = $em->getRepository(UserSettings::clazz())->findOneBy(array('user' => $user));
         if ($userSettings) {
             $settings[] = $userSettings->getDashboardSettings();
         }
