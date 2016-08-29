@@ -27,6 +27,7 @@
                  class="Modera\BackendDashboardBundle\Service\DashboardManager">
 
             <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="modera_backend_dashboard.dashboard_provider" />
         </service>
 
         <service id="modera_backend_dashboard.contributions.config_mergers_provider"
