@@ -16,6 +16,10 @@ class ModeraBackendDashboardExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $builder = new ContainerBuilder();
 
+        // external services
+        $builder->set('doctrine.orm.entity_manager', new \stdClass());
+        $builder->set('security.token_storage', new \stdClass());
+
         $bundle = new ModeraBackendDashboardBundle();
 
         $bundle->build($builder);
