@@ -60,6 +60,7 @@ class ServiceDefinitionsProvider implements ContributorInterface
                             'logout' => $this->getUrl($bundleConfig['logout_url']),
                         ),
                         'authorizationMgr' => '@authorization_mgr',
+                        'interceptor' => '@security_manager_interceptor', // MPFE-922
                     ),
                 ),
             ),
