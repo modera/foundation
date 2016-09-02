@@ -19,7 +19,7 @@
         "modera/mjr-integration-bundle": "~1.4|~2.0",
         "modera/foundation-bundle": "~1.1|~2.0",
         "modera/security-bundle": "~2.0",
-        "doctrine/orm": "~2.2,>=2.2.3,<2.5"
+        "doctrine/orm": "~2.2,>=2.2.3"
     },
     "require-dev": {
         "phake/phake": "~2.0",
