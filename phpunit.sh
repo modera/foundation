@@ -47,11 +47,13 @@ if [[ `docker ps` != *"mtr_mysql"* ]]; then
   docker run -d -e MYSQL_ROOT_PASSWORD=123123 --name mtr_mysql mysql:5 > /dev/null
 fi
 
+# MONOLITH_TEST_SUITE env variable is used by FunctionalTestClass
 docker run \
 -it \
 --rm \
 -v `pwd`:/mnt/tmp \
 -w /mnt/tmp \
+-e MONOLITH_TEST_SUITE=1 \
 --link mtr_mysql:mysql \
 modera/php7-fpm \
 bash -c "vendor/bin/phpunit"
