@@ -5,16 +5,15 @@ namespace Modera\BackendDashboardBundle\Dashboard;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Implement this interface in case you want to provide your custom dashboard
+ * Implement this interface in case you want to provide your custom dashboard.
  *
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation
  */
 interface DashboardInterface
 {
-
     /**
-     * Technical name of dashboard. Used as a key in arrays/db/forms
+     * Technical name of dashboard. Used as a key in arrays/db/forms.
      *
      * @return string
      */
@@ -28,14 +27,14 @@ interface DashboardInterface
     public function getLabel();
 
     /**
-     * Short dashboard description
+     * Short dashboard description.
      *
      * @return string
      */
     public function getDescription();
 
     /**
-     * Icon cls
+     * Icon cls.
      *
      * @return string
      */
@@ -57,4 +56,4 @@ interface DashboardInterface
      * @return bool
      */
     public function isAllowed(ContainerInterface $container);
-} 
+}

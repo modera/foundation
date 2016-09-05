@@ -1,0 +1,10 @@
+preset: symfony
+
+finder:
+  path:
+    - "src"
+  not-path:
+    - "Modera/ServerCrudBundle/Tests/Functional/entities.php"
+
+disabled:
+  - empty_return

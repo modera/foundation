@@ -13,7 +13,7 @@ final class Extension extends \Twig_Extension
     const NAME = 'modera-foundation-extension';
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -21,12 +21,12 @@ final class Extension extends \Twig_Extension
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter('mf_prepend_every_line', array($this, 'filter_prepend_every_line'))
+            new \Twig_SimpleFilter('mf_prepend_every_line', array($this, 'filter_prepend_every_line')),
         );
     }
 
@@ -44,12 +44,12 @@ final class Extension extends \Twig_Extension
     {
         $output = explode("\n", $input);
 
-        foreach ($output as $i=>&$line) {
+        foreach ($output as $i => &$line) {
             if ($skipFirstLine && 0 === $i) {
                 continue;
             }
 
-            $line = str_repeat($prefix, $multiplier) . $line;
+            $line = str_repeat($prefix, $multiplier).$line;
         }
 
         return implode("\n", $output);

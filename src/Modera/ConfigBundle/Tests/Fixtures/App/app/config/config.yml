@@ -1,8 +1,5 @@
-imports:
-    - { resource: parameters.yml }
-
 modera_config:
-    owner_entity: "Modera\ConfigBundle\Tests\Fixtures\Entities\\User"
+    owner_entity: "Modera\\ConfigBundle\\Tests\\Fixtures\\Entities\\User"
 
 parameters:
     locale: en
@@ -19,12 +16,13 @@ framework:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver:   %database_driver%
-        host:     %database_host%
-        port:     %database_port%
-        dbname:   %database_name%
-        user:     %database_user%
-        password: %database_password%
+        # http://symfony.com/doc/current/configuration/external_parameters.html
+        driver:   pdo_mysql
+        host:     %db_host%
+        port:     %db_port%
+        user:     %db_user%
+        password: %db_password%
+        dbname:   modera_config_bundle
         charset:  UTF8
 
     orm:
@@ -36,4 +34,4 @@ doctrine:
               type: annotation
               dir: '%kernel.root_dir%/../../Entities'
               is_bundle: false
-              prefix: "Modera\ConfigBundle\Tests\Fixtures\Entities"
+              prefix: "Modera\\ConfigBundle\\Tests\\Fixtures\\Entities"

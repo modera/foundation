@@ -29,7 +29,9 @@ abstract class AbstractScriptHandler
         }
 
         $process = new Process($php.' '.$console.' '.$cmd, null, null, null, $timeout);
-        $process->run(function ($type, $buffer) { echo $buffer; });
+        $process->run(function ($type, $buffer) {
+            echo $buffer;
+        });
         if (!$process->isSuccessful()) {
             throw new \RuntimeException(sprintf('An error occurred when executing the "%s" command.', escapeshellarg($cmd)));
         }

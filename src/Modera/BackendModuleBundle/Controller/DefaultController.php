@@ -39,7 +39,7 @@ class DefaultController extends Controller
      */
     private function getModuleServicePort()
     {
-        return $this->container->getParameter(ModeraBackendModuleExtension::CONFIG_KEY . '.module-service-port');
+        return $this->container->getParameter(ModeraBackendModuleExtension::CONFIG_KEY.'.module-service-port');
     }
 
     /**
@@ -47,7 +47,7 @@ class DefaultController extends Controller
      */
     private function getModuleServicePathPrefix()
     {
-        return $this->container->getParameter(ModeraBackendModuleExtension::CONFIG_KEY . '.module-service-path-prefix');
+        return $this->container->getParameter(ModeraBackendModuleExtension::CONFIG_KEY.'.module-service-path-prefix');
     }
 
     /**
@@ -60,16 +60,19 @@ class DefaultController extends Controller
 
     /**
      * @param array $versions
+     *
      * @return \Packagist\Api\Result\Package\Version
      */
     private function getPackageLatestVersion(array $versions)
     {
         ksort($versions);
+
         return end($versions);
     }
 
     /**
      * @param $name
+     *
      * @return array|null
      */
     private function getModuleInfo($name, $extended = false)
@@ -93,16 +96,16 @@ class DefaultController extends Controller
         }
 
         $result = array(
-            'id'              => $latest->getName(),
-            'logo'            => $this->getDefaultLogo(),
-            'name'            => $latest->getName(),
-            'description'     => $latest->getDescription(),
-            'license'         => $latest->getLicense(),
-            'lastVersion'     => $lastVersion,
-            'currentVersion'  => $currentVersion,
-            'installed'       => $installed ? true : false,
+            'id' => $latest->getName(),
+            'logo' => $this->getDefaultLogo(),
+            'name' => $latest->getName(),
+            'description' => $latest->getDescription(),
+            'license' => $latest->getLicense(),
+            'lastVersion' => $lastVersion,
+            'currentVersion' => $currentVersion,
+            'installed' => $installed ? true : false,
             'updateAvailable' => $updateAvailable,
-            'isDependency'    => $this->getModuleRepository()->isInstalledAsDependency($latest->getName()),
+            'isDependency' => $this->getModuleRepository()->isInstalledAsDependency($latest->getName()),
         );
 
         if ($extended) {
@@ -111,11 +114,11 @@ class DefaultController extends Controller
 
             $screenshots = array();
             if (isset($extra['screenshots']) && is_array($extra['screenshots'])) {
-                foreach($extra['screenshots'] as $key => $screenshot) {
+                foreach ($extra['screenshots'] as $key => $screenshot) {
                     if (!is_array($screenshot)) {
                         $screenshot = array(
                             'thumbnail' => $screenshot,
-                            'src'       => $screenshot,
+                            'src' => $screenshot,
                         );
                     }
                     $screenshots[] = $screenshot;
@@ -129,7 +132,7 @@ class DefaultController extends Controller
                     $longDescription = implode("\n", $longDescription);
                 }
                 $longDescription = strip_tags($longDescription);
-                $longDescription = str_replace("\n", "<br />", $longDescription);
+                $longDescription = str_replace("\n", '<br />', $longDescription);
             }
 
             $authors = array();
@@ -139,10 +142,10 @@ class DefaultController extends Controller
             $createdAt = new \DateTime($latest->getTime());
 
             $result += array(
-                'authors'         => count($authors) ? implode(", ", $authors) : null,
-                'createdAt'       => $createdAt->format(\DateTime::RFC1123),
+                'authors' => count($authors) ? implode(', ', $authors) : null,
+                'createdAt' => $createdAt->format(\DateTime::RFC1123),
                 'longDescription' => $longDescription,
-                'screenshots'     => $screenshots,
+                'screenshots' => $screenshots,
             );
         }
 
@@ -163,6 +166,7 @@ class DefaultController extends Controller
      * @Remote
      *
      * @param array $params
+     *
      * @return array
      */
     public function getInstalledModulesAction(array $params)
@@ -185,6 +189,7 @@ class DefaultController extends Controller
      * @Remote
      *
      * @param array $params
+     *
      * @return array
      */
     public function getAvailableModulesAction(array $params)
@@ -207,6 +212,7 @@ class DefaultController extends Controller
      * @Remote
      *
      * @param array $params
+     *
      * @return array|null
      */
     public function getModuleDetailsAction(array $params)
@@ -218,15 +224,17 @@ class DefaultController extends Controller
 
     /**
      * @param $url
+     *
      * @return array
      */
     private function remoteUrls($url)
     {
         $port = $this->getModuleServicePort();
         $pathPrefix = $this->getModuleServicePathPrefix();
+
         return array(
-            'call'   => $url . ':' . $port . $pathPrefix . '/call',
-            'status' => $url . ':' . $port . $pathPrefix . '/status',
+            'call' => $url.':'.$port.$pathPrefix.'/call',
+            'status' => $url.':'.$port.$pathPrefix.'/status',
         );
     }
 
@@ -234,6 +242,7 @@ class DefaultController extends Controller
      * @Remote
      *
      * @param array $params
+     *
      * @return array
      */
     public function requireAction(array $params)
@@ -242,8 +251,8 @@ class DefaultController extends Controller
 
         $response = array(
             'success' => false,
-            'params'  => array(),
-            'urls'    => $this->remoteUrls($params['url']),
+            'params' => array(),
+            'urls' => $this->remoteUrls($params['url']),
         );
 
         $package = $this->getModuleRepository()->getPackage($params['id']);
@@ -251,8 +260,8 @@ class DefaultController extends Controller
             $latest = $this->getPackageLatestVersion($package->getVersions());
             $response['success'] = true;
             $response['params'] = array(
-                'method'  => 'require',
-                'name'    => $latest->getName(),
+                'method' => 'require',
+                'name' => $latest->getName(),
                 'version' => $latest->getVersion(),
             );
         }
@@ -264,6 +273,7 @@ class DefaultController extends Controller
      * @Remote
      *
      * @param array $params
+     *
      * @return array
      */
     public function removeAction(array $params)
@@ -272,11 +282,11 @@ class DefaultController extends Controller
 
         $response = array(
             'success' => true,
-            'params'  => array(
-                'method'  => 'remove',
-                'name'    => $params['id'],
+            'params' => array(
+                'method' => 'remove',
+                'name' => $params['id'],
             ),
-            'urls'    => $this->remoteUrls($params['url']),
+            'urls' => $this->remoteUrls($params['url']),
         );
 
         return $response;
@@ -286,6 +296,7 @@ class DefaultController extends Controller
      * @Remote
      *
      * @param array $params
+     *
      * @return array
      */
     public function checkAction(array $params)
@@ -293,7 +304,7 @@ class DefaultController extends Controller
         $this->checkAccess();
 
         $response = array(
-            'success'        => true,
+            'success' => true,
             'updated_models' => array(
                 'modera.backend_module_bundle.module' => [$params['id']],
             ),

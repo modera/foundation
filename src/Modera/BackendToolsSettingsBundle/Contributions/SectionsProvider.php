@@ -18,13 +18,13 @@ class SectionsProvider implements ContributorInterface
         $this->items = array(
             new Section('tools.settings', 'Modera.backend.tools.settings.runtime.Section', array(
                 Section::META_NAMESPACE => 'Modera.backend.tools.settings',
-                Section::META_NAMESPACE_PATH => '/bundles/moderabackendtoolssettings/js'
-            ))
+                Section::META_NAMESPACE_PATH => '/bundles/moderabackendtoolssettings/js',
+            )),
         );
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getItems()
     {

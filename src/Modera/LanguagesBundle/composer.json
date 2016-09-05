@@ -16,7 +16,7 @@
     },
     "require-dev": {
         "modera/foundation-bundle": "~1.0|~2.0",
-        "phpunit/phpunit": "3.*"
+        "phpunit/phpunit": "^5.5"
     },
     "autoload": {
         "psr-0": { "Modera\\LanguagesBundle": "" }
@@ -24,7 +24,7 @@
     "target-dir": "Modera/LanguagesBundle",
     "extra": {
         "branch-alias": {
-            "dev-master": "3.x-dev"
+            "dev-master": "2.x-dev"
         }
     }
 }

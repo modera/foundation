@@ -1,0 +1,9 @@
+sudo: required
+
+language: php
+
+services:
+  - docker
+
+script:
+  - bash phpunit.sh

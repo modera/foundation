@@ -12,7 +12,7 @@ class LanguageTest extends \PHPUnit_Framework_TestCase
 {
     public function testName()
     {
-        $language = new Language;
+        $language = new Language();
 
         $language->setLocale('en');
         $this->assertEquals('English', $language->getName());

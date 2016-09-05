@@ -25,8 +25,8 @@ class Section implements SectionInterface
      * @param string $description
      * @param string $glyph
      * @param string $iconClass
-     * @param array $sectionActivationParams
-     * @param array $meta
+     * @param array  $sectionActivationParams
+     * @param array  $meta
      */
     public function __construct($name, $section, $description = '', $glyph = '', $iconSrc = '', $iconClass = '', array $sectionActivationParams = array(), array $meta = array())
     {
@@ -41,7 +41,7 @@ class Section implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -49,7 +49,7 @@ class Section implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getGlyph()
     {
@@ -57,7 +57,7 @@ class Section implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getIconSrc()
     {
@@ -65,7 +65,7 @@ class Section implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getIconClass()
     {
@@ -73,7 +73,7 @@ class Section implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getMeta()
     {
@@ -81,7 +81,7 @@ class Section implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -89,7 +89,7 @@ class Section implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getSection()
     {
@@ -97,7 +97,7 @@ class Section implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getSectionActivationParams()
     {

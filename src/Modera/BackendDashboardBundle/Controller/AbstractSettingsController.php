@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Modera\BackendDashboardBundle\Controller;
 
 use Modera\BackendDashboardBundle\Dashboard\DashboardInterface;
@@ -15,7 +14,7 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 abstract class AbstractSettingsController extends AbstractCrudController
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getConfig()
     {
@@ -25,17 +24,17 @@ abstract class AbstractSettingsController extends AbstractCrudController
             'entity' => $this->getEntityClass(),
             'hydration' => array(
                 'groups' => array(
-                    'main' => function($settings) use($me) {
-                            return $me->hydrateSettings($settings);
-                        }
+                    'main' => function ($settings) use ($me) {
+                        return $me->hydrateSettings($settings);
+                    },
                 ),
                 'profiles' => array(
-                    'main'
-                )
+                    'main',
+                ),
             ),
-            'map_data_on_update' => function($params, $entity, $defaultMapper) use ($me) {
-                    $me->mapEntityOnUpdate($params, $entity, $defaultMapper);
-                }
+            'map_data_on_update' => function ($params, $entity, $defaultMapper) use ($me) {
+                $me->mapEntityOnUpdate($params, $entity, $defaultMapper);
+            },
         );
     }
 
@@ -49,7 +48,7 @@ abstract class AbstractSettingsController extends AbstractCrudController
         if (isset($params['dashboards']) && is_array($params['dashboards'])) {
             $dashboardSettings = array(
                 'hasAccess' => array(),
-                'defaultDashboard' => null
+                'defaultDashboard' => null,
             );
 
             foreach ($params['dashboards'] as $dashboard) {
@@ -91,7 +90,7 @@ abstract class AbstractSettingsController extends AbstractCrudController
 
             $dashboards[] = array(
                 'id' => $dashboard->getName(),
-                'name' => $dashboard->getLabel()
+                'name' => $dashboard->getLabel(),
             );
         }
 
@@ -103,7 +102,7 @@ abstract class AbstractSettingsController extends AbstractCrudController
                 $dashboard,
                 array(
                     'hasAccess' => in_array($dashboard['id'], $userDashboardSettings['hasAccess']),
-                    'isDefault' => $dashboard['id'] == $userDashboardSettings['defaultDashboard']
+                    'isDefault' => $dashboard['id'] == $userDashboardSettings['defaultDashboard'],
                 )
             );
         }
@@ -111,7 +110,7 @@ abstract class AbstractSettingsController extends AbstractCrudController
         return array(
             'id' => $e->getId(),
             'title' => $e->describeEntity(),
-            'dashboardSettings' => $preparedDashboardSettings
+            'dashboardSettings' => $preparedDashboardSettings,
         );
     }
 }

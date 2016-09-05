@@ -25,7 +25,7 @@ class MenuItemsProvider implements ContributorInterface
 
     /**
      * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param int $tabOrder
+     * @param int                           $tabOrder
      */
     public function __construct(AuthorizationCheckerInterface $authorizationChecker, $tabOrder)
     {
@@ -34,7 +34,7 @@ class MenuItemsProvider implements ContributorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getItems()
     {
@@ -44,7 +44,7 @@ class MenuItemsProvider implements ContributorInterface
             if ($this->authorizationChecker->isGranted(ModeraBackendToolsBundle::ROLE_ACCESS_TOOLS_SECTION)) {
                 $this->items[] = new MenuItem('Tools', 'Modera.backend.tools.runtime.Section', 'tools', array(
                     MenuItemInterface::META_NAMESPACE => 'Modera.backend.tools',
-                    MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackendtools/js'
+                    MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackendtools/js',
                 ), FontAwesome::resolve('wrench'));
             }
         }
@@ -53,7 +53,7 @@ class MenuItemsProvider implements ContributorInterface
     }
 
     /**
-     * Return tab order
+     * Return tab order.
      *
      * @return int
      */

@@ -18,7 +18,7 @@ class StandardSection implements SectionInterface
      * @param string $id
      * @param string $name
      * @param string $activityClass
-     * @param array $meta
+     * @param array  $meta
      */
     public function __construct($id, $name, $activityClass, $glyph = null, array $meta = array())
     {
@@ -30,7 +30,7 @@ class StandardSection implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -38,7 +38,7 @@ class StandardSection implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -46,15 +46,15 @@ class StandardSection implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getActivityClass()
     {
-       return $this->activityClass;
+        return $this->activityClass;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getGlyph()
     {
@@ -62,7 +62,7 @@ class StandardSection implements SectionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getMeta()
     {

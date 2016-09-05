@@ -37,7 +37,7 @@ class ModeraMjrIntegrationExtension extends Extension
                 'modera_mjr_integration/route_prefix is deprecated since version 1.4.1',
                 'and will be removed in 2.0. Use modera_mjr_integration/routes_prefix instead.',
             ]);
-            trigger_error($msg, E_USER_DEPRECATED);
+            @trigger_error($msg, E_USER_DEPRECATED);
 
             $config['routes_prefix'] = $config['route_prefix'];
         }

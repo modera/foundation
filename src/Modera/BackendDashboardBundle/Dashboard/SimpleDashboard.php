@@ -1,33 +1,50 @@
 <?php
-/**
- * @copyright 2013 Modera Foundation
- * @author Alex Rudakov <alexandr.rudakov@modera.net>
- */
 
 namespace Modera\BackendDashboardBundle\Dashboard;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class SimpleDashboard
+ * Class SimpleDashboard.
  *
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class SimpleDashboard implements DashboardInterface
 {
+    /**
+     * @var string
+     */
     private $name;
+
+    /**
+     * @var string
+     */
     private $label;
+
+    /**
+     * @var string
+     */
     private $uiClass;
 
     /**
-     * @param string $name    Technical name of dashboard
-     * @param string $label   Human readable label
-     * @param string $uiClass ExtJs class that provide ui (Derivative of Ext.container.Container or similar)
+     * @var string
+     */
+    private $description;
+
+    /**
+     * @var string
+     */
+    private $icon;
+
+    /**
+     * @param string $name        Technical name of dashboard
+     * @param string $label       Human readable label
+     * @param string $uiClass     ExtJs class that provide ui (Derivative of Ext.container.Container or similar)
      * @param string $description
      * @param string $icon
      */
-    public function __construct($name, $label, $uiClass, $description='', $icon='modera-backend-dashboard-default-icon')
+    public function __construct($name, $label, $uiClass, $description = '', $icon = 'modera-backend-dashboard-default-icon')
     {
         $this->label = $label;
         $this->name = $name;
@@ -37,9 +54,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Return name
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -47,9 +62,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Short dashboard description
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -57,9 +70,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Short dashboard description
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getIcon()
     {
@@ -67,9 +78,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Return uiClass
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getUiClass()
     {
@@ -77,9 +86,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Return label
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getLabel()
     {
@@ -87,12 +94,7 @@ class SimpleDashboard implements DashboardInterface
     }
 
     /**
-     * Checks if dashboard is allowed within given environment.
-     * May be used as security check, but also may check for installed modules, settings etc.
-     *
-     * @param ContainerInterface $container
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function isAllowed(ContainerInterface $container)
     {

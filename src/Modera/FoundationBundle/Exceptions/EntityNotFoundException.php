@@ -12,7 +12,7 @@ namespace Modera\FoundationBundle\Exceptions;
 class EntityNotFoundException extends \RuntimeException
 {
     /**
-     * Fully qualified class name of exception
+     * Fully qualified class name of exception.
      *
      * @var string
      */
@@ -22,7 +22,7 @@ class EntityNotFoundException extends \RuntimeException
      * A query/criteria/dql/sql/you name it you used when tried to find the entity. For example:
      * - array('id' => 5)
      * - array('fistname' => 'John', 'lastname' => 'Doe')
-     * - SELECT u FROM MyCompanyFooBundle:User u WHERE u.id = ?0
+     * - SELECT u FROM MyCompanyFooBundle:User u WHERE u.id = ?0.
      *
      * @var mixed
      */

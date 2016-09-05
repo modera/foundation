@@ -35,7 +35,7 @@ class DefaultController extends AbstractBaseController
                 'iconCls' => $section->getIconClass(),
                 'description' => $section->getDescription(),
                 'section' => $section->getSection(),
-                'activationParams' => $section->getSectionActivationParams()
+                'activationParams' => $section->getSectionActivationParams(),
             );
         }
 

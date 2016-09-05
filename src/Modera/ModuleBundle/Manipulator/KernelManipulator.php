@@ -17,13 +17,13 @@ class KernelManipulator extends Manipulator
     protected $reflected;
 
     protected $doc =
-<<<DOC
+<<<'DOC'
     /**
      * Auto generated, do not change!
      *
      * Makes it possible to dynamically inject bundles to kernel.
      *
-     * @param array \$bundles
+     * @param array $bundles
      *
      * @return array
      */
@@ -66,7 +66,7 @@ TEMPLATE;
     }
 
     /**
-     * @param string $bundlesFilename A name of a file which will hold dynamically instantiated bundles.
+     * @param string $bundlesFilename A name of a file which will hold dynamically instantiated bundles
      *
      * @return bool
      */

@@ -12,27 +12,27 @@ use Symfony\Component\Translation\TranslatorInterface;
  *
  * @author Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
- */ 
+ */
 class T
 {
     /**
-     * Property is going to be dynamically inject by \Modera\TranslationsBundle\ModeraTranslationsBundle::boot() method
+     * Property is going to be dynamically inject by \Modera\TranslationsBundle\ModeraTranslationsBundle::boot() method.
      *
      * @var ContainerInterface
      */
-    static private $container;
+    private static $container;
 
     /**
      * @see \Symfony\Component\Translation\TranslatorInterface::trans
      *
      * @param string $id
-     * @param array $parameters
+     * @param array  $parameters
      * @param string $domain
      * @param string $locale
      *
      * @return string
      */
-    static public function trans($id, array $parameters = array(), $domain = null, $locale = null)
+    public static function trans($id, array $parameters = array(), $domain = null, $locale = null)
     {
         if (self::$container) {
             /* @var TranslatorInterface $translator */
@@ -49,13 +49,13 @@ class T
      *
      * @param string $id
      * @param number $number
-     * @param array $parameters
+     * @param array  $parameters
      * @param string $domain
      * @param string $locale
      *
      * @return string
      */
-    static public function transChoice($id, $number, array $parameters = array(), $domain = null, $locale = null)
+    public static function transChoice($id, $number, array $parameters = array(), $domain = null, $locale = null)
     {
         if (self::$container) {
             /* @var Translator $translator */
@@ -67,7 +67,7 @@ class T
         return $id;
     }
 
-    static public function clazz()
+    public static function clazz()
     {
         return get_called_class();
     }

@@ -39,8 +39,8 @@ class EntityRepositoryHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->em = $this->getMock('Doctrine\ORM\EntityManager', array(), array(), '', false);
-        $this->ce = $this->getMock(ConfigurationEntry::clazz(), array(), array(), '', false);
+        $this->em = $this->createMock('Doctrine\ORM\EntityManager', array(), array(), '', false);
+        $this->ce = $this->createMock(ConfigurationEntry::clazz(), array(), array(), '', false);
         $this->handler = new EntityRepositoryHandler($this->em);
     }
 

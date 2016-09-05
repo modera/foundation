@@ -16,7 +16,7 @@ class AsIsHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->entry = $this->getMock(
+        $this->entry = $this->createMock(
             ConfigurationEntry::clazz(), array(), array(), '', null, false
         );
         $this->handler = new AsIsHandler();

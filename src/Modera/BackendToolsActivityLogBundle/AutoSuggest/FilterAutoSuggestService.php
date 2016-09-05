@@ -37,6 +37,7 @@ class FilterAutoSuggestService
     /**
      * @param string $queryType
      * @param string $query
+     *
      * @return array[]
      */
     public function suggest($queryType, $query)
@@ -46,7 +47,7 @@ class FilterAutoSuggestService
                 'SELECT u FROM %s u WHERE u.firstName LIKE ?0 OR u.lastName LIKE ?0 OR u.username LIKE ?0 OR u.email LIKE ?0',
                 User::clazz()
             ));
-            $dql->setParameter(0, '%' . $query . '%');
+            $dql->setParameter(0, '%'.$query.'%');
 
             $rawResult = [];
             foreach ($dql->getResult() as $user) {
@@ -61,7 +62,7 @@ class FilterAutoSuggestService
             }
 
             return $rawResult;
-        } else if ('exact-user' == $queryType) { // find by ID
+        } elseif ('exact-user' == $queryType) { // find by ID
             $user = $this->em->find(User::clazz(), $query);
 
             if (!$user) {
@@ -71,14 +72,14 @@ class FilterAutoSuggestService
             return [
                 array(
                     'id' => $user->getId(),
-                    'value' => $this->stringifyUser($user)
-                )
+                    'value' => $this->stringifyUser($user),
+                ),
             ];
-        } else if ('eventType' == $queryType) {
+        } elseif ('eventType' == $queryType) {
             $activities = $this->activityManager->query(array(
                 'filter' => [
-                    array('property' => 'type', 'value' => 'like:%' . $query . '%')
-                ]
+                    array('property' => 'type', 'value' => 'like:%'.$query.'%'),
+                ],
             ));
 
             $rawResult = [];
@@ -93,7 +94,7 @@ class FilterAutoSuggestService
             foreach ($rawResult as $item) {
                 $result[] = array(
                     'id' => $item,
-                    'value' => $item
+                    'value' => $item,
                 );
             }
 
@@ -101,7 +102,7 @@ class FilterAutoSuggestService
         }
     }
 
-    static public function clazz()
+    public static function clazz()
     {
         return get_called_class();
     }

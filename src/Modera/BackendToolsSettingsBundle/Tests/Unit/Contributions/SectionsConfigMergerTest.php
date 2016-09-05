@@ -31,7 +31,7 @@ class DummySection implements SectionInterface
     public function getMeta()
     {
         return array(
-            'megameta'
+            'megameta',
         );
     }
 }
@@ -46,7 +46,7 @@ class SectionsConfigMergerTest extends \PHPUnit_Framework_TestCase
     {
         $ds = new DummySection();
 
-        $sectionsProvider = $this->getMock(ContributorInterface::CLAZZ);
+        $sectionsProvider = $this->createMock(ContributorInterface::CLAZZ);
         $sectionsProvider->expects($this->atLeastOnce())
                          ->method('getItems')
                          ->will($this->returnValue(array($ds)));
@@ -54,7 +54,7 @@ class SectionsConfigMergerTest extends \PHPUnit_Framework_TestCase
         $configMerger = new SectionsConfigMerger($sectionsProvider);
 
         $existingConfig = array(
-            'someKey' => 'someValue'
+            'someKey' => 'someValue',
         );
 
         $result = $configMerger->merge($existingConfig);
@@ -81,4 +81,4 @@ class SectionsConfigMergerTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('meta', $section);
         $this->assertEquals($ds->getMeta(), $section['meta']);
     }
-} 
+}
