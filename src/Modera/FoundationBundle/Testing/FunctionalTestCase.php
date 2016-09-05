@@ -3,6 +3,7 @@
 namespace Modera\FoundationBundle\Testing;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
 /**
@@ -30,6 +31,11 @@ class FunctionalTestCase extends WebTestCase
     protected static $em;
     /* @var \Symfony\Component\DependencyInjection\ContainerInterface */
     protected static $container;
+
+    /**
+     * @var KernelInterface[]
+     */
+    private static $kernels = array();
 
     private static function rollbackTransaction()
     {
@@ -160,11 +166,24 @@ class FunctionalTestCase extends WebTestCase
      */
     protected static function createKernel(array $options = array())
     {
-        static::$class = static::getKernelClass();
+        global $_SERVER;
 
-        return new static::$class(
-            isset($options['environment']) ? $options['environment'] : 'test',
-            isset($options['debug']) ? $options['debug'] : true
-        );
+        // "MONOLITH_TEST_SUITE" variable can be set by a script which initiates running tests to signal
+        // that this is a monolith repository, that is - the repository contains functional tests
+        // for different bundles and in scope of one test run there's a chance that many app kernel instances
+        // will be instantiated and as result we want to avoid in-memory caching (this is what original
+        // "createClient" method actually does). In-memory caching speeds up test run but at the same
+        // time might in case of monolithic repositories will lead to re-using of wrong app kernels
+        $isMonolithTestSuite = isset($_SERVER['MONOLITH_TEST_SUITE']) && $_SERVER['MONOLITH_TEST_SUITE'];
+        if ($isMonolithTestSuite) {
+            static::$class = static::getKernelClass();
+
+            return new static::$class(
+                isset($options['environment']) ? $options['environment'] : 'test',
+                isset($options['debug']) ? $options['debug'] : true
+            );
+        } else {
+            parent::createClient($options);
+        }
     }
 }
