@@ -94,7 +94,6 @@ class ScriptHandler extends AbstractScriptHandler
             $operation = $event->getAliasOf()->getOperation();
             if ($operation instanceof UpdateOperation) {
                 $package = $operation->getTargetPackage();
-
             } else {
                 $package = $operation->getPackage();
             }
@@ -121,8 +120,7 @@ class ScriptHandler extends AbstractScriptHandler
                                     'script' => $script,
                                     'event' => $event,
                                 );
-
-                            } else if (is_callable($script)) {
+                            } elseif (is_callable($script)) {
                                 $className = substr($script, 0, strpos($script, '::'));
                                 $methodName = substr($script, strpos($script, '::') + 2);
                                 $className::$methodName($event);
@@ -131,8 +129,7 @@ class ScriptHandler extends AbstractScriptHandler
                     }
                 }
             }
-
-        } else if (in_array($event->getName(), array('post-install-cmd', 'post-update-cmd'))) {
+        } elseif (in_array($event->getName(), array('post-install-cmd', 'post-update-cmd'))) {
             foreach ($_scripts as $eventName => $scripts) {
                 foreach ($scripts as $data) {
                     if (is_callable($data['script'])) {
