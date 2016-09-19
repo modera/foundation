@@ -4,11 +4,13 @@ namespace Modera\ModuleBundle\Composer;
 
 use Composer\Composer;
 use Composer\Script\Event;
-use Composer\Script\PackageEvent;
+use Composer\Installer\PackageEvent;
+use Composer\EventDispatcher\Event as BaseEvent;
 use Composer\DependencyResolver\Operation\UpdateOperation;
 use Symfony\Component\Yaml\Yaml;
-use Modera\Module\Service\ComposerService;
 use Symfony\Component\Filesystem\Filesystem;
+use Modera\Module\Service\ComposerService;
+use Modera\ModuleBundle\Composer\Script\AliasPackageEvent;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -62,14 +64,34 @@ class ScriptHandler extends AbstractScriptHandler
     }
 
     /**
+     * @param PackageEvent $event
+     */
+    public static function packageEventDispatcher(PackageEvent $event)
+    {
+        static::baseEventDispatcher($event);
+    }
+
+    /**
      * @param Event $event
      */
     public static function eventDispatcher(Event $event)
     {
+        static::baseEventDispatcher($event);
+    }
+
+    /**
+     * @param BaseEvent $event
+     */
+    private static function baseEventDispatcher(BaseEvent $event)
+    {
         static $_scripts = array();
 
         if ($event instanceof PackageEvent) {
-            $operation = $event->getOperation();
+            $event = new AliasPackageEvent($event);
+        }
+
+        if ($event instanceof AliasPackageEvent) {
+            $operation = $event->getAliasOf()->getOperation();
             if ($operation instanceof UpdateOperation) {
                 $package = $operation->getTargetPackage();
             } else {
@@ -145,7 +167,7 @@ class ScriptHandler extends AbstractScriptHandler
      * @param array $bundles
      * @param $outputFile
      */
-    protected static function createRegisterBundlesFile(array $bundles, $outputFile)
+    private static function createRegisterBundlesFile(array $bundles, $outputFile)
     {
         $data = array('<?php return array(');
         foreach ($bundles as $bundleClassName) {
