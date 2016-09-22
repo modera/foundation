@@ -1,5 +1,10 @@
 # CHANGELOG, 2.x
 
+## 2.52.2 (22.09.2016)
+
+* bugfix [MPFE-933] Running functional tests (which use FunctionalTestCase class) outside of monolithic repository causes 
+"Segmentation Fault (core dump)" error
+
 ## 2.52.1 (19.09.2016)
 
 * bugfix [MPFE-930] Command `modera:file-repository:generate-thumbnails` now won't generate duplicate thumbnails if thumbnails
