@@ -183,7 +183,8 @@ class FunctionalTestCase extends WebTestCase
                 isset($options['debug']) ? $options['debug'] : true
             );
         } else {
-            parent::createClient($options);
+            // letting to use runtime-caching
+            return parent::createKernel($options);
         }
     }
 }
