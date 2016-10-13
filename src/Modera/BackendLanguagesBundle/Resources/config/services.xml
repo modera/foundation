@@ -25,10 +25,10 @@
             <tag name="modera_routing.routing_resources_provider" />
         </service>
 
-        <service id="modera_backend_languages.event_listener.language_listener"
-                 class="Modera\BackendLanguagesBundle\EventListener\LanguageListener">
+        <service id="modera_backend_languages.event_listener.locale_listener"
+                 class="Modera\BackendLanguagesBundle\EventListener\LocaleListener">
 
-            <tag name="kernel.event_listener" event="kernel.request" method="setLocale" />
+            <tag name="kernel.event_subscriber" />
         </service>
 
         <service id="modera_backend_languages.event_listener.settings_entity_managing_listener"
