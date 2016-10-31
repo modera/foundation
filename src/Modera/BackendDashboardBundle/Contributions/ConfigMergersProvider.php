@@ -21,6 +21,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  * @internal
  *
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
+ * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterface
@@ -80,6 +81,8 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
             $defaultDashboardNames[] = $dashboard->getName();
         }
 
+        $isDefaultFound = false;
+
         $result = array();
         foreach ($this->dashboardMgr->getUserDashboards($user) as $dashboard) {
             if (!$dashboard->isAllowed($this->container)) {
@@ -87,21 +90,34 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
             }
 
             $isDefault = in_array($dashboard->getName(), $defaultDashboardNames);
+            if ($isDefault) {
+                $isDefaultFound = true;
+            }
+
             $result[] = array_merge($this->serializeDashboard($dashboard), array(
                 'default' => $isDefault,
             ));
         }
 
-        if (count($defaultDashboardNames) == 0 && count($result) == 0) {
-            $dashboard = new SimpleDashboard(
-                'default',
-                'List of user dashboards',
-                'Modera.backend.dashboard.runtime.DashboardListDashboardActivity'
-            );
+        if (!$isDefaultFound) {
+            if (count($result) > 0) {
+                // if user has access to some dashboards but a default one wasn't explicitly specified then
+                // we will mark first dashboard as default one
+                $result[0]['default'] = true;
+            } else {
+                // if there're no dashboards available at all for a given user then we will create a dummy one here
+                // because UI on frontend must still display something (there must be at least one dashboard with
+                // default=true)
+                $dashboard = new SimpleDashboard(
+                    'default',
+                    'List of user dashboards',
+                    'Modera.backend.dashboard.runtime.DashboardListDashboardActivity'
+                );
 
-            $result[] = array_merge($this->serializeDashboard($dashboard), array(
-                'default' => true,
-            ));
+                $result[] = array_merge($this->serializeDashboard($dashboard), array(
+                    'default' => true,
+                ));
+            }
         }
 
         return array_merge($currentConfig, array(

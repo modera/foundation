@@ -82,6 +82,50 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('label', $config['dashboards'][0]);
     }
 
+    /**
+     * @group MPFE-936
+     */
+    public function testMerge_noDefaultDashboard()
+    {
+        $user = \Phake::mock(User::class);
+
+        $this->teachTokenStorage($user);
+
+        $dashboard = $this->createDashboard('name1');
+        \Phake::when($dashboard)->getLabel()->thenReturn('label1');
+        \Phake::when($dashboard)->getUiClass()->thenReturn('class1');
+        \Phake::when($dashboard)->getDescription()->thenReturn('desc1');
+        \Phake::when($dashboard)->getIcon()->thenReturn('icon1');
+        \Phake::when($dashboard)->isAllowed($this->container)->thenReturn(true);
+
+        \Phake::when($this->dashboardMgr)
+            ->getDefaultDashboards($user)
+            ->thenReturn([])
+        ;
+        \Phake::when($this->dashboardMgr)
+            ->getUserDashboards($user)
+            ->thenReturn([$dashboard,])
+        ;
+
+        $result = $this->provider->merge(array('foo' => 'foo-val'));
+
+        $this->assertArrayHasKey('foo', $result);
+        $this->assertEquals('foo-val', $result['foo']);
+
+        $this->assertArrayHasKey('modera_backend_dashboard', $result);
+        $this->assertTrue(is_array($result['modera_backend_dashboard']));
+
+        $config = $result['modera_backend_dashboard'];
+
+        $this->assertArrayHasKey('dashboards', $config);
+        $this->assertEquals(1, count($config['dashboards'])); // default dashboard
+        $this->assertArrayHasKey('name', $config['dashboards'][0]);
+        $this->assertArrayHasKey('uiClass', $config['dashboards'][0]);
+        $this->assertArrayHasKey('label', $config['dashboards'][0]);
+        $this->assertArrayHasKey('default', $config['dashboards'][0]);
+        $this->assertTrue($config['dashboards'][0]['default']);
+    }
+
     private function createDashboard($name)
     {
         $item = \Phake::mock(DashboardInterface::class);
