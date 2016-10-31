@@ -6,7 +6,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.NewWindow', {
     alias: 'widget.modera-backend-security-user-newwindow',
 
     // l10n
-    newRecordTitle: 'Create new user',
+    newRecordTitleText: 'Create new user',
     placeHolderText: 'Type here',
     firstNameLabelText: 'First name',
     lastNameLabelText: 'Last name',

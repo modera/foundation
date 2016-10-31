@@ -10,7 +10,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
     ],
 
     // l10n
-    recordTitle: 'Change group for "{0}"',
+    recordTitleText: 'Change group for "{0}"',
     usersCountText: '{0} users',
     availableGroupsText: 'Groups available',
     assignedGroupsText: 'Groups assigned',

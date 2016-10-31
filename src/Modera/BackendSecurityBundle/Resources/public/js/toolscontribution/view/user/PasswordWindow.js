@@ -6,8 +6,8 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
     alias: 'widget.modera-backend-security-user-passwordwindow',
 
     // l10n
-    recordTitle: 'Change password for "{0}"',
-    recordNewTitle: 'Create password for user',
+    recordTitleText: 'Change password for "{0}"',
+    recordNewTitleText: 'Create password for user',
     placeHolderText: 'Type here',
     passwordLabelText: 'Password',
     repeatPasswordLabelText: '... again',
