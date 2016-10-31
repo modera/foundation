@@ -1,4 +1,4 @@
-# Modera Foundation [![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation) [![StyleCI](https://styleci.io/repos/30350143/shield)](https://styleci.io/repos/30350143)
+# Modera Foundation [![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
 
 A monolith repository for Modera Foundation platform.
 

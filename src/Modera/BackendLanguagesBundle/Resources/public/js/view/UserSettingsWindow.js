@@ -6,7 +6,7 @@ Ext.define('Modera.backend.languages.view.UserSettingsWindow', {
     alias: 'widget.modera-backend-languages-usersettingswindow',
 
     // l10n
-    editRecordTitle: 'Language preference for "{0}"',
+    editRecordTitleText: 'Language preference for "{0}"',
     usersCountText: '{0} users',
 
     // override

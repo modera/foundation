@@ -6,7 +6,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
     alias: 'widget.modera-backend-security-user-editwindow',
 
     // l10n
-    editRecordTitle: 'Edit user',
+    editRecordTitleText: 'Edit user',
     placeHolderText: 'Type here',
     firstNameLabelText: 'First name',
     lastNameLabelText: 'Last name',
