@@ -100,24 +100,17 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         }
 
         if (!$isDefaultFound) {
-            if (count($result) > 0) {
-                // if user has access to some dashboards but a default one wasn't explicitly specified then
-                // we will mark first dashboard as default one
-                $result[0]['default'] = true;
-            } else {
-                // if there're no dashboards available at all for a given user then we will create a dummy one here
-                // because UI on frontend must still display something (there must be at least one dashboard with
-                // default=true)
-                $dashboard = new SimpleDashboard(
-                    'default',
-                    'List of user dashboards',
-                    'Modera.backend.dashboard.runtime.DashboardListDashboardActivity'
-                );
+            // if there's no default dashboard available for a given user then we will display a dashboard
+            // where user will be able to pick one he/she needs
+            $dashboard = new SimpleDashboard(
+                'default',
+                'List of user dashboards',
+                'Modera.backend.dashboard.runtime.DashboardListDashboardActivity'
+            );
 
-                $result[] = array_merge($this->serializeDashboard($dashboard), array(
-                    'default' => true,
-                ));
-            }
+            $result[] = array_merge($this->serializeDashboard($dashboard), array(
+                'default' => true,
+            ));
         }
 
         return array_merge($currentConfig, array(

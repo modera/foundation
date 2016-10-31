@@ -77,9 +77,8 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertArrayHasKey('dashboards', $config);
         $this->assertEquals(1, count($config['dashboards'])); // default dashboard
-        $this->assertArrayHasKey('name', $config['dashboards'][0]);
-        $this->assertArrayHasKey('uiClass', $config['dashboards'][0]);
-        $this->assertArrayHasKey('label', $config['dashboards'][0]);
+
+        $this->assertValidDashboard($config['dashboards'][0]);
     }
 
     /**
@@ -118,12 +117,22 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
         $config = $result['modera_backend_dashboard'];
 
         $this->assertArrayHasKey('dashboards', $config);
-        $this->assertEquals(1, count($config['dashboards'])); // default dashboard
-        $this->assertArrayHasKey('name', $config['dashboards'][0]);
-        $this->assertArrayHasKey('uiClass', $config['dashboards'][0]);
-        $this->assertArrayHasKey('label', $config['dashboards'][0]);
-        $this->assertArrayHasKey('default', $config['dashboards'][0]);
-        $this->assertTrue($config['dashboards'][0]['default']);
+        $this->assertEquals(2, count($config['dashboards']));
+
+        $this->assertValidDashboard($config['dashboards'][0]);
+        $this->assertFalse($config['dashboards'][0]['default']);
+
+        $this->assertValidDashboard($config['dashboards'][1]);
+        $this->assertTrue($config['dashboards'][1]['default']);
+    }
+
+    private function assertValidDashboard($dashboard)
+    {
+        $this->assertTrue(is_array($dashboard));
+        $this->assertArrayHasKey('name', $dashboard);
+        $this->assertArrayHasKey('uiClass', $dashboard);
+        $this->assertArrayHasKey('label', $dashboard);
+        $this->assertArrayHasKey('default', $dashboard);
     }
 
     private function createDashboard($name)
