@@ -4,6 +4,7 @@ namespace Modera\ModuleBundle\Composer;
 
 use Composer\Composer;
 use Composer\Script\Event;
+use Composer\Json\JsonFile;
 use Composer\Installer\PackageEvent;
 use Composer\EventDispatcher\Event as BaseEvent;
 use Composer\DependencyResolver\Operation\UpdateOperation;
@@ -80,6 +81,69 @@ class ScriptHandler extends AbstractScriptHandler
     }
 
     /**
+     * @param array $extra
+     * @param string $type
+     * @param string $packageDir
+     * @return array
+     */
+    private static function combineScripts(array $extra, $type, $packageDir)
+    {
+        $scripts = array();
+        if (isset($extra[$type])) {
+            if (isset($extra[$type]['scripts'])) {
+                if (is_array($extra[$type]['scripts'])) {
+                    foreach ($extra[$type]['scripts'] as $event => $handler) {
+                        if (!isset($scripts[$event])) {
+                            $scripts[$event] = array();
+                        }
+
+                        if (!is_array($handler)) {
+                            $handler = array($handler);
+                        }
+
+                        $scripts[$event] = array_merge($scripts[$event], $handler);
+                    }
+                }
+            }
+
+            if (isset($extra[$type]['include'])) {
+                $patterns = array();
+                foreach ($extra[$type]['include'] as $path) {
+                    $patterns[] = $packageDir . DIRECTORY_SEPARATOR . $path;
+                }
+
+                $files = array_map(
+                    function ($files, $pattern) {
+                        return $files;
+                    },
+                    array_map('glob', $patterns),
+                    $patterns
+                );
+
+                foreach (array_reduce($files, 'array_merge', array()) as $path) {
+                    $file = new JsonFile($path);
+                    $json = $file->read();
+                    if (isset($json['extra'])) {
+                        foreach (static::combineScripts($json['extra'], $type, dirname($path)) as $event => $handler) {
+                            if (!isset($scripts[$event])) {
+                                $scripts[$event] = array();
+                            }
+
+                            if (!is_array($handler)) {
+                                $handler = array($handler);
+                            }
+
+                            $scripts[$event] = array_merge($scripts[$event], $handler);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $scripts;
+    }
+
+    /**
      * @param BaseEvent $event
      */
     private static function baseEventDispatcher(BaseEvent $event)
@@ -107,12 +171,15 @@ class ScriptHandler extends AbstractScriptHandler
             $delayedEvents = array('post-package-install', 'post-package-update');
 
             if (is_array($extra) && isset($extra[$options['type']])) {
-                if (isset($extra[$options['type']]['scripts'])) {
-                    if (isset($extra[$options['type']]['scripts'][$event->getName()])) {
-                        $scripts = $extra[$options['type']]['scripts'][$event->getName()];
-                        if (!is_array($scripts)) {
-                            $scripts = array($scripts);
-                        }
+
+                $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
+                $extraScripts = static::combineScripts(
+                    $extra, $options['type'], $vendorDir . DIRECTORY_SEPARATOR . $package->getName()
+                );
+
+                if (count($extraScripts)) {
+                    if (isset($extraScripts[$event->getName()])) {
+                        $scripts = $extraScripts[$event->getName()];
 
                         foreach ($scripts as $script) {
                             if (in_array($event->getName(), $delayedEvents)) {
