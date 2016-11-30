@@ -2,6 +2,10 @@
 
 A monolith repository for Modera Foundation platform.
 
+This project's composer.json is managed in semi-automatic mode by https://github.com/modera/composer-monorepo-plugin
+plugin, please make sure that you use this plugin when you are making changes to this monolithic repository and
+before making a commit verify that a proper composer.json is generated and tests pass.
+
 Branches:
 
  * master - will eventually be compatible with Symfony 3.x

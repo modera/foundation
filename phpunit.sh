@@ -27,19 +27,14 @@ if ! type docker > /dev/null; then
 fi
 
 if [ ! -d "vendor" ]; then
-  echo "# No vendor dir detected, installing modera/composer-monorepo-plugin and then project's dependencies"
-
-  printf "composer global require modera/composer-monorepo-plugin:dev-master\ncomposer install" > install.sh
-  chmod +x install.sh
+  echo "# No vendor dir detected, installing dependencies first then"
 
   docker run \
   -it \
   --rm \
   -v `pwd`:/mnt/tmp \
   -w /mnt/tmp \
-  modera/php7-fpm "./install.sh"
-
-  rm install.sh
+  modera/php7-fpm "composer install"
 fi
 
 if [ ! -d "$RUNNER_GIT_DIR" ]; then
