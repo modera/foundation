@@ -6,7 +6,7 @@
     <link rel="shortcut icon" href="{{ asset('bundles/moderamjrsecurityintegration/favicon.ico') }}" />
 
 {% for resource in css_resources %}
-    <link href="{{ asset(resource) }}" rel="stylesheet" />
+    <link href="{{ asset(resource)|mf_modification_time }}" rel="stylesheet" />
 {% endfor %}
 
     <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
