@@ -1,5 +1,12 @@
 # UPGRADE GUIDE, 2.x
 
+## 2.53.0 (08.12.16)
+
+* In scope of MPFE-852 a DI service `modera_server_crud.persistence.default_handler` has been renamed to 
+`modera_server_crud.persistence.doctrine_handler`, the service references now deprecated DoctrinePersistenceHandler. A new
+service `modera_server_crud.persistence.doctrine_registry_handler` is added which you should start using now, the
+AbstractCrudController class has also been updated to start using `doctrine_registry_handler` instead.
+
 ## 2.52.0 (19.09.2016)
 
 * In scope of MPFE-929 (see changelog file) new properties were added to StoredFile entity, database schema update is 

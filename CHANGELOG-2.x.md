@@ -1,5 +1,42 @@
 # CHANGELOG, 2.x
 
+## 2.53.0 (08.12.16)
+
+* feature [MPFE-852] ModeraServerCrudBundle now is able to deal with optionally custom EntityManager, to achieve
+ this a new implementation of PersistenceHandlerInterface has been added - DoctrineRegistryPersistenceHandler, which
+ uses an implementation of RegistryInterface to resolve entity manager which should be used for an entity. See
+ UPGRADE-2.x.md for more details.
+* feature [MPFE-949] now all CSS script URLs in /backend section will contain timestamp of their last modification
+* feature [MPFE-950] a composer.json has been regenerated with help of modera/composer-monorepo-plugin, now it
+ contains all dependencies of nested bundles and therefore can be easily installed as a standalone package
+* feature [MPFE-946] Added ability to run scripts from nested JSON (usually are composer.json) files. By specifying
+ this kind of "extra" in your root composer.json:
+ 
+         "extra": {
+            "modera-module": {
+                "include": [
+                    "src/Modera/*/composer.json"
+                ]
+            }
+         }
+         
+ All composer.json files which match "include" GLOB expression would have their "scripts" tags executed as if they were
+ declared in root composer.json. Here's a sample part of nested composer.json:
+   
+        // included
+        "extra": {
+           "modera-module": {
+               "scripts": {
+                   "post-package-install": [
+                       "Modera\\ModuleBundle\\Composer\\ScriptHandler::doctrineSchemaUpdate"
+                   ],
+                   "post-package-update": [
+                       "Modera\\ModuleBundle\\Composer\\ScriptHandler::doctrineSchemaUpdate"
+                   ]
+               }
+           }
+        }
+
 ## 2.52.2 (22.09.2016)
 
 * bugfix [MPFE-933] Running functional tests (which use FunctionalTestCase class) outside of monolithic repository causes 
