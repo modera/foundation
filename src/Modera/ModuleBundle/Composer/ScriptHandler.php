@@ -81,9 +81,10 @@ class ScriptHandler extends AbstractScriptHandler
     }
 
     /**
-     * @param array $extra
+     * @param array  $extra
      * @param string $type
      * @param string $packageDir
+     *
      * @return array
      */
     private static function combineScripts(array $extra, $type, $packageDir)
@@ -109,7 +110,7 @@ class ScriptHandler extends AbstractScriptHandler
             if (isset($extra[$type]['include'])) {
                 $patterns = array();
                 foreach ($extra[$type]['include'] as $path) {
-                    $patterns[] = $packageDir . DIRECTORY_SEPARATOR . $path;
+                    $patterns[] = $packageDir.DIRECTORY_SEPARATOR.$path;
                 }
 
                 $files = array_map(
@@ -171,10 +172,9 @@ class ScriptHandler extends AbstractScriptHandler
             $delayedEvents = array('post-package-install', 'post-package-update');
 
             if (is_array($extra) && isset($extra[$options['type']])) {
-
                 $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
                 $extraScripts = static::combineScripts(
-                    $extra, $options['type'], $vendorDir . DIRECTORY_SEPARATOR . $package->getName()
+                    $extra, $options['type'], $vendorDir.DIRECTORY_SEPARATOR.$package->getName()
                 );
 
                 if (count($extraScripts)) {
