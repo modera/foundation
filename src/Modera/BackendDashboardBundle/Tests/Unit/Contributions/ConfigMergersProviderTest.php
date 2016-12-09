@@ -103,7 +103,7 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
         ;
         \Phake::when($this->dashboardMgr)
             ->getUserDashboards($user)
-            ->thenReturn([$dashboard,])
+            ->thenReturn([$dashboard])
         ;
 
         $result = $this->provider->merge(array('foo' => 'foo-val'));
