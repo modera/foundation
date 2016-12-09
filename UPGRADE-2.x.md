@@ -1,5 +1,9 @@
 # UPGRADE GUIDE, 2.x
 
+## 2.54.0 (not released yet, in development)
+
+* [MPFE-951] Make sure that you have MJR version at least 0.3.0 (in your composer.json file it is `modera/mjr` package).
+
 ## 2.53.0 (08.12.16)
 
 * In scope of MPFE-852 a DI service `modera_server_crud.persistence.default_handler` has been renamed to 

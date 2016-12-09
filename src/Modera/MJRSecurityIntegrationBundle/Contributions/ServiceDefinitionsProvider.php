@@ -4,6 +4,7 @@ namespace Modera\MJRSecurityIntegrationBundle\Contributions;
 
 use Modera\MJRSecurityIntegrationBundle\DependencyInjection\ModeraMJRSecurityIntegrationExtension;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\MjrIntegrationBundle\Help\HelpMenuItemInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -40,6 +41,34 @@ class ServiceDefinitionsProvider implements ContributorInterface
         }
 
         return $route;
+    }
+
+    /**
+     * @since 2.54.0
+     *
+     * @return array
+     */
+    private function getSerializedHelpMenuItems()
+    {
+        /* @var ContributorInterface $helpMenuItemsProvider */
+        $helpMenuItemsProvider = $this->container->get('modera_mjr_integration.help_menu_items_provider');
+
+        $result = [];
+
+        foreach ($helpMenuItemsProvider->getItems() as $item) {
+            /* @var HelpMenuItemInterface $item */
+
+            $result[] = array(
+                'label' => $item->getLabel(),
+                'activityId' => $item->getActivityId(),
+                'activityParams' => $item->getActivityParams(),
+                'intentId' => $item->getIntentId(),
+                'intentParams' => $item->getIntentParams(),
+                'url' => $item->getUrl(),
+            );
+        }
+
+        return $result;
     }
 
     /**
@@ -95,6 +124,17 @@ class ServiceDefinitionsProvider implements ContributorInterface
                     ),
                 ),
                 'tags' => array('delegated_server_error_handler'),
+            ),
+            'header_help_button_plugin' => array( // since 2.54.0
+                'className' => 'Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin',
+                'args' => [
+                    array(
+                        'helpMenuItems' => $this->getSerializedHelpMenuItems(),
+                        'workbench' => '@workbench',
+                        'intentsMgr' => '@intent_manager',
+                    ),
+                ],
+                'tags' => ['runtime_plugin'],
             ),
         );
     }

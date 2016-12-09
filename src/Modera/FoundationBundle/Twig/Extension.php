@@ -40,7 +40,7 @@ final class Extension extends \Twig_Extension
      * @internal
      *
      * Do not use this method! It is a temporary solution which is going to be removed at some point when high-level
-     * API for managing assets is added to the platform.
+     * API for managing assets is added to the platform
      *
      * @param string $webPath
      *
