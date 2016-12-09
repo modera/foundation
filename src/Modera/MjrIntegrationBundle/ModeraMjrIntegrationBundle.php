@@ -210,7 +210,7 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 class JsResourcesProvider implements ContributorInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getItems()
     {
@@ -233,5 +233,31 @@ TEXT;
             'Allows to contribute ExtJs classname:path mappings that will be configured before runtime is initialized.'
         );
         $container->addCompilerPass($bootstrappingClassLoaderMappingsProvider->createCompilerPass());
+
+        $helpMenuItemsProvider = new ExtensionPoint('modera_mjr_integration.help_menu_items');
+        $helpMenuItemsProvider->setDescription('Allows to contribute items to "Help" menu in backend.');
+        $helpMenuItemDetailedDescription = <<<'TEXT'
+You can use this extension point to contribute items to a Help menu (usually rendered in backend's header, next to where
+username and exit button are located). This is how sample contribution can look like:
+
+use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\MjrIntegrationBundle\Help\SimpleHelpMenuItem;
+
+class HelpMenuItemsProvider implements ContributorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function getItems()
+    {
+        return [
+            SimpleHelpMenuItem::createUrlAware('Help / Support', 'https://confluence.dev.modera.org'),
+            SimpleHelpMenuItem::createActivityAware('About', 'product-about-info');
+        ];
+    }
+}
+TEXT;
+        $helpMenuItemsProvider->setDetailedDescription($helpMenuItemDetailedDescription);
+        $container->addCompilerPass($helpMenuItemsProvider->createCompilerPass());
     }
 }

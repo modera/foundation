@@ -1,5 +1,16 @@
 # CHANGELOG, 2.x
 
+## 2.54.0 (not released yet, in development)
+
+* feature [MPFE-951] ModeraMjrIntegrationBundle now provides new extension-point "modera_mjr_integration.help_menu_items",
+which adds support for contributing implementations of `\Modera\MjrIntegrationBundle\Help\HelpMenuItemInterface` to a newly
+added "Help" menu (which is rendered if there's at least one HelpMenuItem available, the Help icon is rendered where
+username and exit buttons are in the Backend's header). To see more information regarding how you a contribution
+to this extension points could look like run 
+`app/console sli:expander:explore-extension-point modera_mjr_integration.help_menu_items`, if you want to generate an 
+empty contribution for then you can use `app/console sli:expander:list-extension-points` command. **This feature requires
+MJR version to be at least 0.3.0.**
+
 ## 2.53.0 (08.12.16)
 
 * feature [MPFE-852] ModeraServerCrudBundle now is able to deal with optionally custom EntityManager, to achieve
