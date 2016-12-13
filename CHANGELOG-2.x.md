@@ -2,6 +2,7 @@
 
 ## 2.54.0 (not released yet, in development)
 
+* [MPFE-954] "modera_server_crud.persistence.default_handler" service reverted and can be used now.  
 * feature [MPFE-951] ModeraMjrIntegrationBundle now provides new extension-point "modera_mjr_integration.help_menu_items",
 which adds support for contributing implementations of `\Modera\MjrIntegrationBundle\Help\HelpMenuItemInterface` to a newly
 added "Help" menu (which is rendered if there's at least one HelpMenuItem available, the Help icon is rendered where
