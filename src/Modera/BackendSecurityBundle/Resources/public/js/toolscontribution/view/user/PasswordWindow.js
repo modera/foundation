@@ -26,7 +26,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
         }
 
         var defaults = {
-            title: (me.newUser)? me.recordNewTitle : me.recordTitle,
+            title: (me.newUser)? me.recordNewTitle : me.recordTitleText,
             groupName: 'compact-list',
             resizable: false,
             autoScroll: true,
@@ -130,7 +130,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
 
     loadData: function(data) {
         var me = this;
-        me.setTitle(Ext.String.format(me.recordTitle, data['username']));
+        me.setTitle(Ext.String.format(me.recordTitleText, data['username']));
         me.down('form').getForm().setValues(data);
     },
 

@@ -21,7 +21,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
         var me = this;
 
         var defaults = {
-            title: me.recordTitle,
+            title: me.recordTitleText,
             groupName: 'compact-list',
             resizable: false,
             autoScroll: true,
@@ -152,10 +152,10 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
 
         if (Ext.isArray(data['id'])) {
             var title = Ext.String.format(me.usersCountText, data['id'].length);
-            me.setTitle(Ext.String.format(me.recordTitle, title));
+            me.setTitle(Ext.String.format(me.recordTitleText, title));
             me.down('#available').getStore().load();
         } else {
-            me.setTitle(Ext.String.format(me.recordTitle, data['username']));
+            me.setTitle(Ext.String.format(me.recordTitleText, data['username']));
             me.down('#available').getStore().filterByUser(data['id'], 'notIn');
             me.down('#assigned').getStore().filterByUser(data['id'], 'in');
         }

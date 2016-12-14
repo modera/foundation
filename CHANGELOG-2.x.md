@@ -2,6 +2,8 @@
 
 ## 2.54.0 (not released yet, in development)
 
+* bugfix [CLS-534][MPFE-941] some backend classes' translation tokens now are properly now, it was preventing UI
+from being rendered.
 * [MPFE-954] "modera_server_crud.persistence.default_handler" service reverted and can be used now.  
 * feature [MPFE-951] ModeraMjrIntegrationBundle now provides new extension-point "modera_mjr_integration.help_menu_items",
 which adds support for contributing implementations of `\Modera\MjrIntegrationBundle\Help\HelpMenuItemInterface` to a newly
