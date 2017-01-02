@@ -1,6 +1,6 @@
 # ModeraDynamicallyConfigurableMJRBundle
 
-[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
+[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=2.x)](https://travis-ci.org/modera/foundation)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/modera/ModeraDynamicallyConfigurableMJRBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/modera/ModeraDynamicallyConfigurableMJRBundle/?branch=master)
 [![StyleCI](https://styleci.io/repos/29132444/shield)](https://styleci.io/repos/29132444)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/1152f2c6-ed58-448f-8e69-d1fd03eaba4e/mini.png)](https://insight.sensiolabs.com/projects/1152f2c6-ed58-448f-8e69-d1fd03eaba4e)

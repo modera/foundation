@@ -1,6 +1,6 @@
 # ModeraMJRCacheAwareClassLoaderBundle
 
-[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
+[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=2.x)](https://travis-ci.org/modera/foundation)
 [![StyleCI](https://styleci.io/repos/29132526/shield)](https://styleci.io/repos/29132526)
 
 This bundles enables browser caching mechanism for MJR application, so once page is loaded then all scripts will be
