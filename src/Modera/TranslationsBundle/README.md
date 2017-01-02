@@ -1,6 +1,6 @@
 # ModeraTranslationsBundle 
 
-[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=2.x)](https://travis-ci.org/modera/foundation)
+[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
 
 Bundle defines architecture and provides utilities which make process of translating your web-site to many languages
 an easier process.
