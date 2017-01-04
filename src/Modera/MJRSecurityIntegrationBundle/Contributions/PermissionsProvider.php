@@ -26,7 +26,7 @@ class PermissionsProvider implements ContributorInterface
         if (!$this->items) {
             $this->items = [
                 new Permission(
-                    T::trans('Access administration interface'),
+                    T::trans('Access Backend'), // MPFE-959; before 2.54.0 it was "Access administration interface"
                     ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER,
                     'site'
                 ),

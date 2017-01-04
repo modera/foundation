@@ -23,17 +23,17 @@ class PermissionsProvider implements ContributorInterface
         if (!$this->items) {
             $this->items = [
                 new Permission(
-                    T::trans('Access users and groups manager'),
+                    T::trans('Access Users Manager'), // MPFE-959; before 2.54.0 it was "Access users and groups manager"
                     ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
                     'user-management'
                 ),
                 new Permission(
-                    T::trans('Manage user profiles'),
+                    T::trans('Manage User Profiles'), // MPFE-959; before 2.54.0 it was "Manage user profiles"
                     ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
                     'user-management'
                 ),
                 new Permission(
-                    T::trans('Manage permissions'),
+                    T::trans('Manage Permissions'), // MPFE-959; before 2.54.0 it was "Manage permissions"
                     ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
                     'user-management'
                 ),

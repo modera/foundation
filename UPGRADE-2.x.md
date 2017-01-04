@@ -2,6 +2,10 @@
 
 ## 2.54.0 (not released yet, in development)
 
+* [MPFE-959] Run `app/console modera:security:install-permission-categories` and 
+  `app/console modera:security:install-permissions` to have permission categories and permissions automatically renamed.
+  Permission category IDs were not renamed at the moment, it might be done later in scope of MPFE-963.
+    
 * [MPFE-951] Make sure that you have MJR version at least 0.3.0 (in your composer.json file it is `modera/mjr` package).
 
 ## 2.53.0 (08.12.16)

@@ -2,6 +2,21 @@
 
 ## 2.54.0 (not released yet, in development)
 
+* [MPFE-959] Some permissions and permission categories labels were renamed:
+
+    | Old name                        | New name             | Type       |
+    |---------------------------------|----------------------|------------|
+    | Site                            | General              | Category   |
+    | User management                 | Administration       | Category   |
+    | Access administration interface | Access Backend       | Permission |
+    | Access Tools section            | Access Tools Section | Permission |
+    | Access users and groups manager | Access Users Manager | Permission |
+    | Manage user profiles            | Manage User Profiles | Permission |
+    | Manage permissions              | Manage Permissions   | Permission |
+    
+ If the labels turn out to be viable then later in scope of MPFE-963 their ID will also be renamed to match labels,
+ for now old IDs can be used to contribute new permission to categories.
+    
 * bugfix [CLS-534][MPFE-941] some backend classes' translation tokens now are properly now, it was preventing UI
 from being rendered.
 * [MPFE-954] "modera_server_crud.persistence.default_handler" service reverted and can be used now.  
