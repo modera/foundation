@@ -23,7 +23,7 @@ class PermissionsProvider implements ContributorInterface
         if (!$this->items) {
             $this->items = [
                 new Permission(
-                    T::trans('Access Tools section'),
+                    T::trans('Access Tools Section'), // MPFE-959; before 2.54.0 it was "Access Tools section"
                     ModeraBackendToolsBundle::ROLE_ACCESS_TOOLS_SECTION,
                     'site'
                 ),

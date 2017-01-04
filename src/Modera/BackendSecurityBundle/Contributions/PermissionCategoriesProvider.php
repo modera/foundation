@@ -22,7 +22,7 @@ class PermissionCategoriesProvider implements ContributorInterface
         if (!$this->items) {
             $this->items = [
                 new PermissionCategory(
-                    T::trans('User management'),
+                    T::trans('Administration'), // MPFE-959; before 2.54.0 it was "User management"
                     'user-management'
                 ),
             ];
