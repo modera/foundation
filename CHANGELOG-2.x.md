@@ -2,6 +2,8 @@
 
 ## 2.54.0 (not released yet, in development)
 
+* [MPFE-964] A separate "Administration" permission group is added, from now on all contributions to old "user-management"
+  group will automatically go to "Administration" instead
 * [MPFE-959] Some permissions and permission categories labels were renamed:
 
     | Old name                        | New name             | Type       |
