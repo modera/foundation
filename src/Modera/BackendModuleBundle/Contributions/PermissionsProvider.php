@@ -13,6 +13,9 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class PermissionsProvider implements ContributorInterface
 {
+    /**
+     * @var Permission[]
+     */
     private $items;
 
     /**
@@ -23,9 +26,9 @@ class PermissionsProvider implements ContributorInterface
         if (!$this->items) {
             $this->items = [
                 new Permission(
-                    T::trans('Access modules manager'),
+                    T::trans('Access Modules Manager'), // MPFE-959; before 2.54.0 it was "Access module manager"
                     ModeraBackendModuleBundle::ROLE_ACCESS_BACKEND_TOOLS_MODULES_SECTION,
-                    'site'
+                    'administration'
                 ),
             ];
         }
