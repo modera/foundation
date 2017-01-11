@@ -49,8 +49,9 @@ Ext.define('Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin', {
         var me = this;
 
         var targetContainer = Ext.ComponentQuery.query('component[extensionPoint=additionalHeaderActions]')[0];
-        if (targetContainer && this.helpMenuItems.length > 0) {
+        if (targetContainer && this.helpMenuItems.length > 0 && !this.isButtonAlreadyContributed()) {
             targetContainer.insert(0, {
+                itemId: 'helpMenuButton',
                 xtype: 'button',
                 scale: 'medium',
                 glyph: FontAwesome.resolve('question-circle'),
@@ -61,6 +62,14 @@ Ext.define('Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin', {
         }
 
         callback();
+    },
+
+    // private
+    isButtonAlreadyContributed: function() {
+        // MPFE-958
+        var query = 'component[extensionPoint=additionalHeaderActions] component[itemId=helpMenuButton]';
+
+        return Ext.ComponentQuery.query(query).length > 0;
     },
 
     // private
