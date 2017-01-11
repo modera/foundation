@@ -2,6 +2,7 @@
 
 ## 2.54.0 (not released yet, in development)
 
+* bugfix [MPFE-958] When clicking on login button twice, help sign appearing twice problem fixed
 * [MPFE-966] Backend / Tools / Security permissions / Permissions UI now lists all available permissions not the first
 25 rows.
 * [MPFE-964] A separate "Administration" permission group is added, from now on all contributions to old "user-management"
