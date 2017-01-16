@@ -2,6 +2,8 @@
 
 ## 2.54.0 (not released yet, in development)
 
+* [MPFE-961] HostPanel of ModeraBackendToolsBundle now generates ID for every nested element, it is easier to write
+E2E tests for it now
 * bugfix [MPFE-958] When clicking on login button twice, help sign appearing twice problem fixed
 * [MPFE-966] Backend / Tools / Security permissions / Permissions UI now lists all available permissions not the first
 25 rows.
