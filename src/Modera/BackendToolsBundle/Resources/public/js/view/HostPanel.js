@@ -30,7 +30,7 @@ Ext.define('Modera.backend.tools.view.HostPanel', {
                     '<tpl if="values.length &gt; 1">',
                     '<ul>',
                         '<tpl for=".">',
-                            '<li>',
+                            '<li id="{[this.generateId()]}">',
                                 '<table class="container">',
                                     '<tr><td>',
                                         '{[this.renderIcon(values)]}',
@@ -47,6 +47,10 @@ Ext.define('Modera.backend.tools.view.HostPanel', {
                             '<p>' + me.nothingToDisplayText + '</p>',
                         '</td></tr></table>',
                     '</tpl>', {
+                        generateId: function() {
+                            // needed to simplify writing E2E tests using Selenium
+                            return Ext.id();
+                        },
                         renderIcon: function(values) {
                             var iconCls = '';
                             if (values.iconCls && values.iconCls.length) {
