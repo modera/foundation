@@ -1,7 +1,10 @@
 # CHANGELOG, 2.x
 
-## 2.54.0 (not released yet, in development)
+## 2.54.0 (30.01.17)
 
+* bugfix [MPFE-974] TranslationsController from BackendTranslationsTooBundle could not properly render exception
+ in listWithFiltersAction() method. This bug was caused by removal of "modera_server_crud.persistence.default_handler"
+ in 2.53.0 (which is restored back in this release, see below MPFE-954).
 * [MPFE-961] HostPanel of ModeraBackendToolsBundle now generates ID for every nested element, it is easier to write
 E2E tests for it now
 * bugfix [MPFE-958] When clicking on login button twice, help sign appearing twice problem fixed
@@ -24,7 +27,7 @@ E2E tests for it now
  If the labels turn out to be viable then later in scope of MPFE-963 their ID will also be renamed to match labels,
  for now old IDs can be used to contribute new permission to categories.
     
-* bugfix [CLS-534][MPFE-941] some backend classes' translation tokens now are properly now, it was preventing UI
+* bugfix [CLS-534][MPFE-941] some backend classes' translation tokens now are formatted properly, they were preventing UI
 from being rendered.
 * [MPFE-954] "modera_server_crud.persistence.default_handler" service reverted and can be used now.  
 * feature [MPFE-951] ModeraMjrIntegrationBundle now provides new extension-point "modera_mjr_integration.help_menu_items",

@@ -3,6 +3,7 @@
 namespace Modera\BackendTranslationsToolBundle\Controller;
 
 use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
+use Modera\ServerCrudBundle\ExceptionHandling\ExceptionHandlerInterface;
 use Modera\ServerCrudBundle\Exceptions\BadRequestException;
 use Modera\DirectBundle\Annotation\Remote;
 use Modera\TranslationsBundle\Compiler\TranslationsCompiler;
