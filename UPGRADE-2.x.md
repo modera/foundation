@@ -1,6 +1,6 @@
 # UPGRADE GUIDE, 2.x
 
-## 2.54.0 (not released yet, in development)
+## 2.54.0 (30.01.17)
 
 * [MPFE-959] Run `app/console modera:security:install-permission-categories` and 
   `app/console modera:security:install-permissions` to have permission categories and permissions automatically renamed.
