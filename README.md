@@ -15,6 +15,8 @@ For more general details see [http://modera.org](http://modera.org)
 * Before starting to work on your feature make sure that tests pass by running `./phpunit.sh`
 * Create a "feature branch"
 * Write tests/your features, make sure that no tests were broken, commit everything into the feature branch
+* Update CHANGELOG to include information regarding work that has been done
+* If your changes require some additional work for developers using foundation then also update UPGRADE doc
 * Merge your feature branch to master / any release branches (if exist)
 
 ### Developing in foundation-standard
