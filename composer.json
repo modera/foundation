@@ -21,7 +21,8 @@
     "require-dev": {
         "phpunit/phpunit": "^5.5",
         "phake/phake": "~2.0",
-        "sergeil/aux-bundle": "~1.0"
+        "sergeil/aux-bundle": "~1.0",
+        "mikey179/vfsstream": "^1.6"
     },
     "autoload": {
         "psr-4": {

@@ -13,9 +13,11 @@ final class Extension extends \Twig_Extension
     const NAME = 'modera-foundation-extension';
 
     /**
+     * @internal
+     *
      * @var string
      */
-    private $kernelPath;
+    public $kernelPath;
 
     /**
      * {@inheritdoc}
@@ -40,9 +42,9 @@ final class Extension extends \Twig_Extension
      * @internal
      *
      * Do not use this method! It is a temporary solution which is going to be removed at some point when high-level
-     * API for managing assets is added to the platform
+     * API for managing assets is added to the platform.
      *
-     * @param string $webPath
+     * @param string $webPath  If URL is given then we won't check modification time
      *
      * @return string
      */
@@ -58,11 +60,12 @@ final class Extension extends \Twig_Extension
         $webDir = $this->kernelPath.'/../web/';
 
         $assumedLocalPath = $webDir.$webPath;
-        if (file_exists($webDir.$webPath)) {
+        if (@file_exists($webDir.$webPath)) {
             $mtime = filemtime($assumedLocalPath);
 
-            // if server uses "expiration caching model" and we were unable to retrieve file's modification time
-            // then every time filename is generate we are going to use current time to invalidate cache
+            // If server uses "expiration caching model" and we were unable to retrieve file's modification time
+            // then every time filename is generated we are going to use current time to invalidate cache,
+            // taking a safe side here
             return $webPath.'?'.(false === $mtime ? time() : $mtime);
         }
 

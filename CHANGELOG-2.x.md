@@ -1,5 +1,11 @@
 # CHANGELOG, 2.x
 
+## 2.55.0 (not released yet, in development)
+
+* [MPFE-980] JavaScript assets dynamically contributed to /backend section now are prefixed with last modification timestamp, 
+ this is required to enable optimistic browser caching (for more details see 
+ [UPGRADE.md for modera/foundation v0.11](https://github.com/modera/foundation-standard/blob/master/UPGRADE.md))
+
 ## 2.54.0 (30.01.17)
 
 * bugfix [MPFE-974] TranslationsController from BackendTranslationsTooBundle could not properly render exception
