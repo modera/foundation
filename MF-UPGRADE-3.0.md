@@ -57,8 +57,9 @@ property. This, for instance, will mark all assets which match `^/bundles/modera
  with static methods; its cache should be stored in app/cache/*/ directory
  * To keep things consistent, ModeraMjrIntegrationBundle must be renamed to ModeraMJRIntegrationBundle
  * \Modera\FileUploaderBundle\Controller\UniversalUploaderController - "error" response codes must be renamed to "errors".
- * \Modera\SecurityBundle\Security\Authenticator should be renamed to something more meaningful, see class docblock for
-  details.
+ * \Modera\SecurityBundle\Security\Authenticator should be refactored into several classes probably - at the moment
+ it is responsible for generating authentication responses as well as changing user status when it is authenticated
+ for the first time. Maybe for changing user-status we should rely on [Symfony events](http://symfony.com/doc/current/components/security/authentication.html#authentication-events).
  * "security.user_provider" service should be removed from @ModeraSecurityBundle:security.yml, it could confuse
  developer that it is a service provided by Symfony (because it is declared in "security" namespace)
  * \Modera\MJRCacheAwareClassLoaderBundle\EventListener\VersionInjectorEventListener now is responsible for injecting
