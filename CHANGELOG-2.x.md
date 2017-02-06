@@ -2,6 +2,7 @@
 
 ## 2.55.0 (not released yet, in development)
 
+* bugfix [MPFE-977] A standard HTTP authentication didn't work properly with Authenticator class from ModeraSecurityBundle.
 * [MPFE-980] JavaScript assets dynamically contributed to /backend section now are prefixed with last modification timestamp, 
  this is required to enable optimistic browser caching (for more details see 
  [UPGRADE.md for modera/foundation v0.11](https://github.com/modera/foundation-standard/blob/master/UPGRADE.md))

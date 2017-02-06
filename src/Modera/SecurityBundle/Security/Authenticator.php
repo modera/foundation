@@ -12,11 +12,14 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Modera\SecurityBundle\Entity\User;
 use Modera\SecurityBundle\Model\UserInterface;
+use Symfony\Component\Security\Http\Authentication\DefaultAuthenticationSuccessHandler;
+use Symfony\Component\Security\Http\Authentication\DefaultAuthenticationFailureHandler;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Security\Http\HttpUtils;
+use Psr\Log\LoggerInterface;
 
 /**
  * @internal
- *
- * TODO since the class is no longer does any kind of authentication it should be renamed to something more meaningful
  *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
@@ -29,11 +32,49 @@ class Authenticator implements AuthenticationFailureHandlerInterface, Authentica
     private $om;
 
     /**
-     * @param RegistryInterface $doctrine
+     * @var DefaultAuthenticationSuccessHandler
      */
-    public function __construct(RegistryInterface $doctrine)
+    private $successHandler;
+
+    /**
+     * @var DefaultAuthenticationFailureHandler
+     */
+    private $failureHandler;
+
+    /**
+     * @param RegistryInterface $doctrine
+     * @param HttpUtils $httpUtils
+     * @param HttpKernelInterface $httpKernel
+     * @param LoggerInterface|null $logger
+     */
+    public function __construct(
+        RegistryInterface $doctrine,
+        HttpUtils $httpUtils,
+        HttpKernelInterface $httpKernel,
+        LoggerInterface $logger = null
+    )
     {
         $this->om = $doctrine->getManager();
+
+        $this->successHandler = new DefaultAuthenticationSuccessHandler($httpUtils);
+        $this->failureHandler = new DefaultAuthenticationFailureHandler($httpKernel, $httpUtils, array(), $logger);
+    }
+
+    /**
+     * @param array $options An array of options
+     */
+    public function setOptions(array $options)
+    {
+        $this->successHandler->setOptions($options);
+        $this->failureHandler->setOptions($options);
+    }
+
+    /**
+     * @param string $providerKey
+     */
+    public function setProviderKey($providerKey)
+    {
+        $this->successHandler->setProviderKey($providerKey);
     }
 
     /**
@@ -49,6 +90,8 @@ class Authenticator implements AuthenticationFailureHandlerInterface, Authentica
 
             return new JsonResponse($result);
         }
+
+        return $this->failureHandler->onAuthenticationFailure($request, $exception);
     }
 
     /**
@@ -69,6 +112,8 @@ class Authenticator implements AuthenticationFailureHandlerInterface, Authentica
 
             return new JsonResponse($result);
         }
+
+        return $this->successHandler->onAuthenticationSuccess($request, $token);
     }
 
     /**
