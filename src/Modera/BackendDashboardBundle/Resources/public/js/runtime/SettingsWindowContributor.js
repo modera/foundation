@@ -15,7 +15,7 @@ Ext.define('Modera.backend.dashboard.runtime.SettingsWindowContributor', {
     ],
 
     // l10n
-    settingsBtnText: 'Dashboards settings',
+    settingsBtnText: 'Landing view settings',
 
     // override
     constructor: function(application) {
@@ -25,7 +25,7 @@ Ext.define('Modera.backend.dashboard.runtime.SettingsWindowContributor', {
         this.groupSettingsWindowView = Ext.create('Modera.backend.dashboard.runtime.GroupDashboardSettingsWindowActivity');
 
         this.contributeButton('modera-backend-security-user-list', 'userActions', this.onUserContributedButtonClicked);
-        this.contributeButton('modera-backend-security-group-overview #groups', 'groupActions', this.onGroupContributedButtonClicked);
+        //this.contributeButton('modera-backend-security-group-overview #groups', 'groupActions', this.onGroupContributedButtonClicked);
     },
 
     // private

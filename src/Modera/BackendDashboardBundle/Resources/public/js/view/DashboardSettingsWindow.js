@@ -11,7 +11,7 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
     ],
 
     // l10n
-    titleText: '{0} dashboard settings',
+    titleText: 'Landing view settings for {0}',
     dashboardNameColumnText: 'Dashboard name',
     hasAccessColumnText: 'Has access',
     isDefaultColumnText: 'Is default',
@@ -19,55 +19,97 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
 
     // override
     constructor: function(config) {
+        var me = this;
+
         // 'data' object must have two fields: "id", "dashboards"
         MF.Util.validateRequiredConfigParams(this, config, ['data']);
+
+        var landingSection = config.data.landingSection || 'dashboard';
 
         var defaults = {
             title: Ext.String.format(this.titleText, config.data.title),
             width: 500,
             height: 400,
             layout: 'fit',
-            items: {
-                xtype: 'grid',
-                border: true,
-                columns: [
-                    {
-                        header: this.dashboardNameColumnText,
-                        dataIndex: 'name',
-                        flex: 1
+            items: [
+                {
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch',
+                        pack: 'start'
                     },
-                    {
-                        xtype: 'checkcolumn',
-                        header: this.hasAccessColumnText,
-                        dataIndex: 'hasAccess',
-                        listeners: {
-                            beforecheckchange: {
-                                fn: this.onHasAccessColumnBeforeCheckChange,
-                                scope: this
-                            }
-                        }
-                    },
-                    {
-                        xtype: 'checkcolumn',
-                        header: this.isDefaultColumnText,
-                        dataIndex: 'isDefault',
-                        listeners: {
-                            checkchange: {
-                                fn: this.onIsDefaultColumnCheckChange,
-                                scope: this
+                    items: [
+                        {
+                            itemId: 'landingSection',
+                            xtype: 'combo',
+                            editable: false,
+                            labelWidth: 150,
+                            fieldLabel: 'Default landing view',
+                            store: Ext.create('Ext.data.Store', {
+                                fields: ['id', 'label'],
+                                data: config.data.views || []
+                            }),
+                            queryMode: 'local',
+                            displayField: 'label',
+                            valueField: 'id',
+                            value: landingSection,
+                            listeners: {
+                                change: function(combo, newValue, oldValue) {
+                                    if ('dashboard' === newValue) {
+                                        me.down('#dashboards').enable();
+                                    } else {
+                                        me.down('#dashboards').disable();
+                                    }
+                                }
                             }
                         },
-                        scope: this
-                    }
-                ],
-                store: Ext.create('Ext.data.Store', {
-                    proxy: {
-                        type: 'memory'
-                    },
-                    fields: ['id', 'name', 'hasAccess', 'isDefault'],
-                    data: config.data.dashboardSettings
-                })
-            },
+                        {
+                            flex: 1,
+                            itemId: 'dashboards',
+                            disabled: 'dashboard' !== landingSection,
+                            xtype: 'grid',
+                            border: true,
+                            columns: [
+                                {
+                                    header: this.dashboardNameColumnText,
+                                    dataIndex: 'name',
+                                    flex: 1
+                                },
+                                {
+                                    xtype: 'checkcolumn',
+                                    header: this.hasAccessColumnText,
+                                    dataIndex: 'hasAccess',
+                                    listeners: {
+                                        beforecheckchange: {
+                                            fn: this.onHasAccessColumnBeforeCheckChange,
+                                            scope: this
+                                        }
+                                    }
+                                },
+                                {
+                                    xtype: 'checkcolumn',
+                                    header: this.isDefaultColumnText,
+                                    dataIndex: 'isDefault',
+                                    listeners: {
+                                        checkchange: {
+                                            fn: this.onIsDefaultColumnCheckChange,
+                                            scope: this
+                                        }
+                                    },
+                                    scope: this
+                                }
+                            ],
+                            store: Ext.create('Ext.data.Store', {
+                                proxy: {
+                                    type: 'memory'
+                                },
+                                fields: ['id', 'name', 'hasAccess', 'isDefault'],
+                                data: config.data.dashboardSettings
+                            })
+                        }
+                    ]
+                }
+            ],
             actions: [
                 '->',
                 {
@@ -99,12 +141,15 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
 
         this.down('#updateBtn').on('click', function() {
             var dashboards = [];
-
             me.down('grid').getStore().each(function(iteratedRecord) {
                 dashboards.push(iteratedRecord.data);
             });
 
-            me.fireEvent('update', me, { dashboards: dashboards, id: me.config.data.id });
+            me.fireEvent('update', me, {
+                landingSection: me.down('#landingSection').getValue(),
+                dashboards: dashboards,
+                id: me.config.data.id
+            });
         });
     },
 

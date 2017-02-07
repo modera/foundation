@@ -6,6 +6,7 @@
 * [MPFE-980] JavaScript assets dynamically contributed to /backend section now are prefixed with last modification timestamp, 
  this is required to enable optimistic browser caching (for more details see 
  [UPGRADE.md for modera/foundation v0.11](https://github.com/modera/foundation-standard/blob/master/UPGRADE.md))
+* [MPFE-975] Customize landing view per user
 
 ## 2.54.0 (30.01.17)
 

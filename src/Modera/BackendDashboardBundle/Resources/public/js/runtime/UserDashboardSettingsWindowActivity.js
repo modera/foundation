@@ -38,10 +38,28 @@ Ext.define('Modera.backend.dashboard.runtime.UserDashboardSettingsWindowActivity
         };
 
         var createWindow = function(data) {
-            var window = Ext.create('Modera.backend.dashboard.view.DashboardSettingsWindow', {
-                data: data
+            me.workbench.getService('config_provider').getConfig(function(response) {
+                data['views'] = [
+                    {
+                        id: 'dashboard',
+                        label: 'Dashboard'
+                    }
+                ];
+
+                Ext.each(response['menuItems'], function(item) {
+                    if ('dashboard' !== item.id) {
+                        data['views'].push({
+                            id: item.id,
+                            label: item.label
+                        });
+                    }
+                });
+
+                var window = Ext.create('Modera.backend.dashboard.view.DashboardSettingsWindow', {
+                    data: data
+                });
+                onReadyCallback(window);
             });
-            onReadyCallback(window);
         };
 
         if (Ext.isArray(params.id)) {
@@ -62,6 +80,7 @@ Ext.define('Modera.backend.dashboard.runtime.UserDashboardSettingsWindowActivity
                             createWindow({
                                 id: ids,
                                 title: '',
+                                landingSection: 'dashboard',
                                 dashboardSettings: dashboardSettings
                             });
                         }
