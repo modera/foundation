@@ -49,6 +49,7 @@ abstract class AbstractSettingsController extends AbstractCrudController
             $dashboardSettings = array(
                 'hasAccess' => array(),
                 'defaultDashboard' => null,
+                'landingSection' => isset($params['landingSection']) ? $params['landingSection'] : 'dashboard',
             );
 
             foreach ($params['dashboards'] as $dashboard) {
@@ -107,9 +108,15 @@ abstract class AbstractSettingsController extends AbstractCrudController
             );
         }
 
+        $landingSection = 'dashboard';
+        if (isset($userDashboardSettings['landingSection'])) {
+            $landingSection = $userDashboardSettings['landingSection'];
+        }
+
         return array(
             'id' => $e->getId(),
             'title' => $e->describeEntity(),
+            'landingSection' => $landingSection,
             'dashboardSettings' => $preparedDashboardSettings,
         );
     }

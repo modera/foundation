@@ -114,6 +114,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         }
 
         return array_merge($currentConfig, array(
+            'homeSection' => $this->getUserLandingSection(),
             'modera_backend_dashboard' => array(
                 'dashboards' => $result,
             ),
@@ -209,5 +210,35 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         }
 
         return [$default, $dashboards];
+    }
+
+    /**
+     * @internal
+     *
+     * @return string
+     */
+    public function getUserLandingSection()
+    {
+        $landingSection = 'dashboard';
+
+        /** @var EntityManager $em */
+        $em = $this->container->get('doctrine.orm.entity_manager');
+
+        if ($em) {
+            /** @var User $user */
+            $user = $this->tokenStorage->getToken()->getUser();
+
+            /** @var UserSettings $userSettings */
+            $userSettings = $em->getRepository(UserSettings::class)->findOneBy(array('user' => $user));
+
+            if ($userSettings) {
+                $settings = $userSettings->getDashboardSettings();
+                if (isset($settings['landingSection'])) {
+                    $landingSection = $settings['landingSection'];
+                }
+            }
+        }
+
+        return $landingSection;
     }
 }

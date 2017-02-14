@@ -8,8 +8,8 @@ Ext.define('Modera.backend.dashboard.runtime.Section', {
         'Modera.backend.dashboard.runtime.DashboardsActivity'
     ],
 
-    // override
-    getViews: function() {
+    // private
+    getActivities: function() {
         return {
             dashboard: Ext.create('Modera.backend.dashboard.runtime.DashboardsActivity')
         }
@@ -23,9 +23,9 @@ Ext.define('Modera.backend.dashboard.runtime.Section', {
             throw this.$className + '.activate(workbench, callback): No "data-sync" runtime plugin is detected';
         }
 
-        var views = me.getViews();
+        var activities = me.getActivities();
 
-        me.registerActivitiesManager(workbench, Ext.Object.getValues(views));
+        me.registerActivitiesManager(workbench, Ext.Object.getValues(activities));
 
         callback(function() {
             workbench.getActivitiesManager().iterateActivities(function(view) {
@@ -42,7 +42,6 @@ Ext.define('Modera.backend.dashboard.runtime.Section', {
 
     // private
     configureInteractions: function(workbench, activities) {
-        var me = this;
         Ext.each(Ext.Object.getValues(activities), function(activity) {
             activity.on('handleaction', function(actionName, sourceComponent, params) {
                 if (workbench.getActivitiesManager().getActivity(actionName)) {

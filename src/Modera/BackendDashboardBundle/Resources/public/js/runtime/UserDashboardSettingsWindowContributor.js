@@ -10,7 +10,7 @@ Ext.define('Modera.backend.dashboard.runtime.UserDashboardSettingsWindowContribu
     ],
 
     // l10n
-    dashboardSettingsBtnText: 'Dashboard settings',
+    dashboardSettingsBtnText: 'Landing view settings',
 
     // override
     constructor: function(application) {

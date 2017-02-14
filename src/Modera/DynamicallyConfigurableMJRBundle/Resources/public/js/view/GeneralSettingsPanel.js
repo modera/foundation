@@ -41,11 +41,11 @@ Ext.define('Modera.backend.dcmjr.view.GeneralSettingsPanel', {
                         fieldLabel: this.primaryAddressLabelText,
                         xtype: 'mfc-inplacefield'
                     },
-                    {
-                        name: 'home_section',
-                        fieldLabel: this.defaultSectionLabelText,
-                        xtype: 'mfc-inplacefield'
-                    },
+                    // {
+                    //     name: 'home_section',
+                    //     fieldLabel: this.defaultSectionLabelText,
+                    //     xtype: 'mfc-inplacefield'
+                    // },
                     {
                         xtype: 'mfc-onofffield',
                         fieldLabel: this.developmentModeLabelText,
