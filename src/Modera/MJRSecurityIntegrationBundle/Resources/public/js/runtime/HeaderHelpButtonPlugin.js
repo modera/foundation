@@ -50,10 +50,22 @@ Ext.define('Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin', {
 
         var targetContainer = Ext.ComponentQuery.query('component[extensionPoint=additionalHeaderActions]')[0];
         if (targetContainer && this.helpMenuItems.length > 0 && !this.isButtonAlreadyContributed()) {
-            targetContainer.insert(0, {
+            var usernameButtonIndex = 0;
+            Ext.each(targetContainer.down('component'), function(cmp, i) {
+                if (cmp.hasOwnProperty('itemId') && 'showProfileBtn' == cmp.itemId) {
+                    usernameButtonIndex = i;
+
+                    return false;
+                }
+            });
+
+            var afterUsernamePosition = usernameButtonIndex + 1;
+
+            targetContainer.insert(afterUsernamePosition, {
                 itemId: 'helpMenuButton',
                 xtype: 'button',
                 scale: 'medium',
+                margin: '0 10 0 5',
                 glyph: FontAwesome.resolve('question-circle'),
                 handler: function(btn) {
                     me.showMenu(btn);
