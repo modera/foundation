@@ -7,11 +7,13 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
     alias: 'widget.modera-backend-dashboard-dashboardettingswindow',
 
     requires: [
-        'MF.Util'
+        'MF.Util',
+        'Ext.String'
     ],
 
     // l10n
     titleText: 'Landing view settings for {0}',
+    titleForSeveralUsersText: 'Landing view settings',
     dashboardNameColumnText: 'Dashboard name',
     hasAccessColumnText: 'Has access',
     isDefaultColumnText: 'Is default',
@@ -47,7 +49,7 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
                             fieldLabel: 'Default landing view',
                             store: Ext.create('Ext.data.Store', {
                                 fields: ['id', 'label'],
-                                data: config.data.views || []
+                                data: config.data.sections || []
                             }),
                             queryMode: 'local',
                             displayField: 'label',
@@ -127,7 +129,7 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
             /**
              * @event update
              * @param {Modera.backend.dashboard.view.DashboardSettingsWindow} me
-             * @param {Object[]} data
+             * @param {Object[]} data  See assignListeners() method for the signature of this object
              */
             'update'
         );

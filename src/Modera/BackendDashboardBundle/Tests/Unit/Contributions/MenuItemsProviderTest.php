@@ -21,11 +21,13 @@ class MenuItemsProviderTest extends \PHPUnit_Framework_TestCase
     {
         $this->provider = \Phake::mock(ConfigMergersProvider::class);
 
-        \Phake::when($this->provider)->getUserLandingSection()->thenReturn('dashboard');
+        \Phake::when($this->provider)
+            ->getUserLandingSection()
+            ->thenReturn('dashboard')
+        ;
     }
 
-
-    public function testItems()
+    public function testGetItems()
     {
         $provider = new MenuItemsProvider($this->provider);
 
@@ -39,6 +41,24 @@ class MenuItemsProviderTest extends \PHPUnit_Framework_TestCase
     public function testOrder()
     {
         $provider = new MenuItemsProvider($this->provider);
+
         $this->assertTrue(is_int($provider->getOrder()));
+    }
+
+    /**
+     * @group MPFE-975
+     */
+    public function testGetItems_whenLandingIsNotDashboard()
+    {
+        $p = \Phake::mock(ConfigMergersProvider::class);
+
+        \Phake::when($p)
+            ->getUserLandingSection()
+            ->thenReturn('foo')
+        ;
+
+        $provider = new MenuItemsProvider($p);
+
+        $this->assertEquals(0, count($provider->getItems()));
     }
 }

@@ -2,6 +2,8 @@
 
 ## 2.55.0 (not released yet, in development)
 
+* [MPFE-975] Now it is possible to change landing section per user through UI. With the new requirements "dashboard" section
+  now is shown in the menu only if it is marked as a landing section, otherwise it is hidden.
 * bugfix [MPFE-977] A standard HTTP authentication didn't work properly with Authenticator class from ModeraSecurityBundle.
 * [MPFE-980] JavaScript assets dynamically contributed to /backend section now are prefixed with last modification timestamp, 
  this is required to enable optimistic browser caching (for more details see 

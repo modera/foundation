@@ -9,6 +9,7 @@ Ext.define('Modera.backend.dashboard.runtime.GroupDashboardSettingsWindowActivit
         'Modera.backend.dashboard.view.DashboardSettingsWindow'
     ],
 
+    // override
     getEndpoint: function() {
         return Actions.ModeraBackendDashboard_GroupSettings;
     },
@@ -18,9 +19,10 @@ Ext.define('Modera.backend.dashboard.runtime.GroupDashboardSettingsWindowActivit
         return 'group-dashboard-settings';
     },
 
+    // override
     getFilter: function(params) {
         return [
             { property: 'group.id', value: 'eq:' + params.id }
         ]
     }
-})
+});

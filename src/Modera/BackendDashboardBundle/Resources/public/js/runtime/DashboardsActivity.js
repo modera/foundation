@@ -9,6 +9,11 @@ Ext.define('Modera.backend.dashboard.runtime.DashboardsActivity', {
      * @property {Object[]} dashboards
      */
 
+    /**
+     * @private
+     * @property {Object} dashboardUpdateListener
+     */
+
     // override
     constructor: function() {
         this.callParent(arguments);
@@ -33,7 +38,8 @@ Ext.define('Modera.backend.dashboard.runtime.DashboardsActivity', {
         this.loadConfig(callback);
     },
 
-    loadConfig: function (callback) {
+    // private
+    loadConfig: function(callback) {
         var me = this;
 
         this.workbench.getService('config_provider').getConfig(function(config) {
@@ -42,7 +48,6 @@ Ext.define('Modera.backend.dashboard.runtime.DashboardsActivity', {
             callback(me);
         });
     },
-
 
     // internal
     onSectionLoaded: function(section) {
@@ -104,18 +109,27 @@ Ext.define('Modera.backend.dashboard.runtime.DashboardsActivity', {
         return { name: defaultDashboard.name };
     },
 
+    // override
     attachListeners: function () {
         var me = this;
 
-        this.dashboardUpdateListener = ModeraFoundation.app.on('dashboardsettingsupdated', this.reloadActivity, me, {destroyable: true});
+        this.dashboardUpdateListener = ModeraFoundation.app.on(
+            'dashboardsettingsupdated', // internal event, do not rely on it!
+            this.reloadActivity,
+            me,
+            { destroyable: true }
+        );
+
         me.on('deactivated', this.detachListeners, me);
     },
 
-    detachListeners: function () {
+    // private
+    detachListeners: function() {
         this.dashboardUpdateListener.destroy();
     },
 
-    reloadActivity: function () {
+    // private
+    reloadActivity: function() {
         var me = this;
 
         var activityManager = me.workbench.getActivitiesManager(),
