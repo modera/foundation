@@ -1,5 +1,11 @@
 # UPGRADE GUIDE, 2.x
 
+## 2.55.0 (not released yet, in development)
+
+* [MPFE-975] Install version 0.5.0 of MJR ([see this for all published versions](https://mjr-archives.dev.modera.org/)). 
+  In order to do that update your composer.json's `modera/mjr` dependency so it would point to `0.5.0` and run `composer update`
+  (if 0.5.0 is not released yet then use `dev-master` instead).
+
 ## 2.54.0 (30.01.17)
 
 * [MPFE-959] Run `app/console modera:security:install-permission-categories` and 
