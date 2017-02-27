@@ -16,15 +16,28 @@ use Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBund
 class KernelConfigWriter implements ValueUpdatedHandlerInterface
 {
     /**
+     * @var string
+     */
+    private $kernelClassName;
+
+    /**
+     * @param string $kernelClassName
+     */
+    public function __construct($kernelClassName = 'AppKernel')
+    {
+        $this->kernelClassName = $kernelClassName;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function onUpdate(ConfigurationEntryInterface $entry)
     {
-        if (!in_array($entry->getName(), array(Bundle::CONFIG_KERNEL_DEBUG, Bundle::CONFIG_KERNEL_ENV))) {
+        if (!$this->canHandleEntry($entry)) {
             return;
         }
 
-        $reflKernel = new \ReflectionClass('AppKernel');
+        $reflKernel = new \ReflectionClass($this->kernelClassName);
 
         $path = dirname($reflKernel->getFileName()).DIRECTORY_SEPARATOR.'kernel.json';
 
@@ -34,7 +47,13 @@ class KernelConfigWriter implements ValueUpdatedHandlerInterface
         }
         $kernelJson = json_decode($kernelJson, true);
 
-        $kernelJson['_comment'] = 'this file is used by web/app.php to control with what configuration AppKernel should be created with';
+        $defaultValue = array(
+            'debug' => false,
+            'env' => 'prod',
+        );
+        $kernelJson = array_merge($defaultValue, $kernelJson);
+        $kernelJson['_comment'] = 'This file is used by web/app.php to control with what configuration AppKernel should be created with.';
+
         if ($entry->getName() == Bundle::CONFIG_KERNEL_DEBUG) {
             $kernelJson['debug'] = $entry->getValue() == 'true';
         } elseif ($entry->getName() == Bundle::CONFIG_KERNEL_ENV) {
@@ -42,5 +61,10 @@ class KernelConfigWriter implements ValueUpdatedHandlerInterface
         }
 
         file_put_contents($path, json_encode($kernelJson, \JSON_PRETTY_PRINT));
+    }
+
+    private function canHandleEntry(ConfigurationEntryInterface $entry)
+    {
+        return in_array($entry->getName(), array(Bundle::CONFIG_KERNEL_DEBUG, Bundle::CONFIG_KERNEL_ENV));
     }
 }
