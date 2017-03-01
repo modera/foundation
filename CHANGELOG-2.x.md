@@ -2,6 +2,7 @@
 
 ## 2.55.0 (not released yet, in development)
 
+* [MPFE-984] TranslationToken's entity collation now is utf8_bin.
 * [MPFE-975] Now it is possible to change landing section per user through UI. With the new requirements "dashboard" section
   now is shown in the menu only if it is marked as a landing section, otherwise it is hidden.
 * bugfix [MPFE-977] A standard HTTP authentication didn't work properly with Authenticator class from ModeraSecurityBundle.
