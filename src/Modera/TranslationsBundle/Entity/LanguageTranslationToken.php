@@ -70,7 +70,7 @@ class LanguageTranslationToken
     }
 
     /**
-     * @param \Modera\LanguagesBundle\Entity\Language $language
+     * @param Language $language
      */
     public function setLanguage($language)
     {
@@ -78,7 +78,7 @@ class LanguageTranslationToken
     }
 
     /**
-     * @return \Modera\TranslationsBundle\Entity\TranslationToken
+     * @return TranslationToken
      */
     public function getTranslationToken()
     {
@@ -86,7 +86,7 @@ class LanguageTranslationToken
     }
 
     /**
-     * @param \Modera\TranslationsBundle\Entity\TranslationToken $translationToken
+     * @param TranslationToken $translationToken
      */
     public function setTranslationToken($translationToken)
     {

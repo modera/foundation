@@ -3,6 +3,8 @@
 namespace Modera\TranslationsBundle\Tests\Unit\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Modera\LanguagesBundle\Entity\Language;
+use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\TranslationsBundle\Entity\TranslationToken;
 
 /**
@@ -30,5 +32,20 @@ class TranslationTokenTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($translationTokensMock, $token->getLanguageTranslationTokens());
         $this->assertTrue($token->isObsolete());
         $this->assertEquals('foo-source', $token->getSource());
+    }
+
+    public function testCreateLanguageToken()
+    {
+        $lang = \Phake::mock(Language::clazz());
+
+        $token = new TranslationToken();
+
+        $languageToken = $token->createLanguageToken($lang);
+
+        $this->assertInstanceOf(LanguageTranslationToken::clazz(), $languageToken);
+        $this->assertSame($token, $languageToken->getTranslationToken());
+        $this->assertSame($lang, $languageToken->getLanguage());
+
+        $this->assertSame([$languageToken], $token->getLanguageTranslationTokens()->toArray());
     }
 }

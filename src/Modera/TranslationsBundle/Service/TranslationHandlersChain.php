@@ -16,7 +16,7 @@ class TranslationHandlersChain
     private $handlers = array();
 
     /**
-     * @param $handler
+     * @param TranslationHandlerInterface $handler
      */
     public function addHandler($handler)
     {
@@ -26,7 +26,7 @@ class TranslationHandlersChain
     }
 
     /**
-     * @return array
+     * @return TranslationHandlerInterface[]
      */
     public function getHandlers()
     {

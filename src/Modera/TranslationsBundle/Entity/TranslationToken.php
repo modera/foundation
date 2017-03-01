@@ -4,6 +4,7 @@ namespace Modera\TranslationsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * If you change a table name then don't forget to update
@@ -50,6 +51,9 @@ class TranslationToken
     private $tokenName;
 
     /**
+     * Marks that given token doesn't anymore exists in a source it has been extracted from. For example,
+     * initially a token has been imported from a template, but this template has been deleted since then.
+     *
      * @var bool
      * @ORM\Column(type="boolean", nullable=false)
      */
@@ -72,6 +76,23 @@ class TranslationToken
     public function __construct()
     {
         $this->languageTranslationTokens = new ArrayCollection();
+    }
+
+    /**
+     * @since 2.55.0
+     *
+     * @param Language $language
+     *
+     * @return LanguageTranslationToken
+     */
+    public function createLanguageToken(Language $language)
+    {
+        $languageToken = new LanguageTranslationToken();
+        $languageToken->setLanguage($language);
+
+        $this->addLanguageTranslationToken($languageToken);
+
+        return $languageToken;
     }
 
     public static function clazz()
