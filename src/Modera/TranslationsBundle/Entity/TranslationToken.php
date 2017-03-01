@@ -6,8 +6,11 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
+ * If you change a table name then don't forget to update
+ * \Modera\ModuleBundle\Composer\ScriptHandler::updateTranslationsTableCollation.
+ *
  * @ORM\Entity
- * @ORM\Table(name="modera_translations_translationtoken")
+ * @ORM\Table(name="modera_translations_translationtoken", options={"collate"="utf8_bin"})
  *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
@@ -94,10 +97,14 @@ class TranslationToken
 
     /**
      * @param string $source
+     *
+     * @return TranslationToken
      */
     public function setSource($source)
     {
         $this->source = $source;
+
+        return $this;
     }
 
     /**
@@ -110,10 +117,14 @@ class TranslationToken
 
     /**
      * @param string $bundleName
+     *
+     * @return TranslationToken
      */
     public function setBundleName($bundleName)
     {
         $this->bundleName = $bundleName;
+
+        return $this;
     }
 
     /**
@@ -126,10 +137,14 @@ class TranslationToken
 
     /**
      * @param string $domain
+     *
+     * @return TranslationToken
      */
     public function setDomain($domain)
     {
         $this->domain = $domain;
+
+        return $this;
     }
 
     /**
@@ -142,10 +157,14 @@ class TranslationToken
 
     /**
      * @param string $tokenName
+     *
+     * @return TranslationToken
      */
     public function setTokenName($tokenName)
     {
         $this->tokenName = $tokenName;
+
+        return $this;
     }
 
     /**
@@ -168,10 +187,14 @@ class TranslationToken
 
     /**
      * @param bool $isObsolete
+     *
+     * @return TranslationToken
      */
     public function setObsolete($isObsolete)
     {
         $this->isObsolete = $isObsolete;
+
+        return $this;
     }
 
     /**
@@ -184,14 +207,20 @@ class TranslationToken
 
     /**
      * @param array $translations
+     *
+     * @return TranslationToken
      */
     public function setTranslations(array $translations)
     {
         $this->translations = $translations;
+
+        return $this;
     }
 
     /**
-     * @param LanguageTranslationToken $role
+     * @param LanguageTranslationToken $languageTranslationToken
+     *
+     * @return TranslationToken
      */
     public function addLanguageTranslationToken(LanguageTranslationToken $languageTranslationToken)
     {
@@ -199,6 +228,8 @@ class TranslationToken
             $languageTranslationToken->setTranslationToken($this);
             $this->languageTranslationTokens[] = $languageTranslationToken;
         }
+
+        return $this;
     }
 
     /**
@@ -211,9 +242,13 @@ class TranslationToken
 
     /**
      * @param ArrayCollection $languageTranslationTokens
+     *
+     * @return TranslationToken
      */
     public function setLanguageTranslationTokens(ArrayCollection $languageTranslationTokens)
     {
         $this->languageTranslationTokens = $languageTranslationTokens;
+
+        return $this;
     }
 }

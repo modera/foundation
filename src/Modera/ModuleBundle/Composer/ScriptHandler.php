@@ -14,6 +14,8 @@ use Modera\Module\Service\ComposerService;
 use Modera\ModuleBundle\Composer\Script\AliasPackageEvent;
 
 /**
+ * @internal
+ *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2013 Modera Foundation
  */
@@ -218,7 +220,7 @@ class ScriptHandler extends AbstractScriptHandler
         $appDir = $options['symfony-app-dir'];
 
         if (!is_dir($appDir)) {
-            echo 'The symfony-app-dir ('.$appDir.') specified in composer.json was not found in '.getcwd().'.'.PHP_EOL;
+            self::reportSymfonyAppDirNotFound($appDir);
 
             return;
         }
@@ -261,7 +263,7 @@ class ScriptHandler extends AbstractScriptHandler
         $appDir = $options['symfony-app-dir'];
 
         if (!is_dir($appDir)) {
-            echo 'The symfony-app-dir ('.$appDir.') specified in composer.json was not found in '.getcwd().'.'.PHP_EOL;
+            self::reportSymfonyAppDirNotFound($appDir);
 
             return;
         }
@@ -280,7 +282,7 @@ class ScriptHandler extends AbstractScriptHandler
         $appDir = $options['symfony-app-dir'];
 
         if (!is_dir($appDir)) {
-            echo 'The symfony-app-dir ('.$appDir.') specified in composer.json was not found in '.getcwd().'.'.PHP_EOL;
+            self::reportSymfonyAppDirNotFound($appDir);
 
             return;
         }
@@ -299,15 +301,29 @@ class ScriptHandler extends AbstractScriptHandler
         $appDir = $options['symfony-app-dir'];
 
         if (!is_dir($appDir)) {
-            echo 'The symfony-app-dir ('.$appDir.') specified in composer.json was not found in '.getcwd().'.'.PHP_EOL;
+            self::reportSymfonyAppDirNotFound($appDir);
 
             return;
         }
 
         try {
             static::executeCommand($event, $appDir, 'doctrine:database:create --quiet', $options['process-timeout']);
-            static::doctrineSchemaUpdate($event);
         } catch (\RuntimeException $e) {
+            // The command throws an exception if database already exists, so here we are supressing it
         }
+
+        try {
+            static::doctrineSchemaUpdate($event);
+        } catch (\Exception $e) {
+            echo "Error during database initialization: ".$e->getMessage()."\n";
+        }
+    }
+
+    private static function reportSymfonyAppDirNotFound($appDir)
+    {
+        echo sprintf(
+            "The symfony-app-dir (%s) specified in composer.json was not found in %s\n",
+            $appDir, getcwd()
+        );
     }
 }

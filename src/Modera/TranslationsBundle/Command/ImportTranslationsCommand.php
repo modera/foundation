@@ -3,6 +3,9 @@
 namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Output\Output;
+use Symfony\Component\Translation\Catalogue\TargetOperation;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Catalogue\DiffOperation;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,6 +25,9 @@ use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
  */
 class ImportTranslationsCommand extends ContainerAwareCommand
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -30,123 +36,132 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /* @var EntityManager $em */
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $printMessageNames = $output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE;
 
-        /* @var TranslationHandlersChain $thc */
-        $thc = $this->getContainer()->get('modera_translations.service.translation_handlers_chain');
+        /* @var TranslationHandlersChain $translationHandlersChain */
+        $translationHandlersChain = $this->getContainer()->get('modera_translations.service.translation_handlers_chain');
 
-        $languages = $em->getRepository(Language::clazz())->findBy(array(
+        $languages = $this->em()->getRepository(Language::clazz())->findBy(array(
             'isEnabled' => true,
         ));
         if (!count($languages)) {
-            $defaultLocale = $this->getContainer()->getParameter('locale');
-
-            $language = new Language();
-            $language->setLocale($defaultLocale);
-            $language->setEnabled(true);
-            $em->persist($language);
-            $em->flush();
-
-            $languages = array($language);
+            $languages = array($this->createAndReturnDefaultLanguage());
         }
 
-        $handlers = $thc->getHandlers();
-        if (count($handlers) > 0) {
-            $imported = false;
+        $imported = false;
 
+        $handlers = $translationHandlersChain->getHandlers();
+        if (count($handlers) == 0) {
+            $output->writeln('No translation handler are found, aborting ...');
+
+            return;
+        }
+
+        foreach ($handlers as $handler) {
             /* @var TranslationHandlerInterface $handler */
-            foreach ($handlers as $handler) {
-                $bundleName = $handler->getBundleName();
 
-                foreach ($handler->getSources() as $source) {
-                    $tokens = $em->getRepository(TranslationToken::clazz())->findBy(array(
-                        'source' => $source,
-                        'bundleName' => $bundleName,
-                    ));
+            $bundleName = $handler->getBundleName();
 
-                    /* @var Language $language */
-                    foreach ($languages as $language) {
-                        $locale = $language->getLocale();
+            foreach ($handler->getSources() as $source) {
+                $tokens = $this->em()->getRepository(TranslationToken::clazz())->findBy(array(
+                    'source' => $source,
+                    'bundleName' => $bundleName,
+                ));
 
-                        $extractedCatalogue = $handler->extract($source, $locale);
-                        if (null === $extractedCatalogue) {
+                /* @var Language $language */
+                foreach ($languages as $language) {
+                    $locale = $language->getLocale();
+
+                    $extractedCatalogue = $handler->extract($source, $locale);
+                    if (null === $extractedCatalogue) {
+                        continue;
+                    }
+
+                    $currentCatalogue = new MessageCatalogue($locale);
+                    /* @var TranslationToken $token */
+                    foreach ($tokens as $token) {
+                        if ($token->isObsolete()) {
                             continue;
                         }
 
-                        $currentCatalogue = new MessageCatalogue($locale);
-                        /* @var TranslationToken $token */
-                        foreach ($tokens as $token) {
-                            if ($token->isObsolete()) {
-                                continue;
-                            }
-
+                        foreach ($token->getLanguageTranslationTokens() as $ltt) {
                             /* @var LanguageTranslationToken $ltt */
-                            foreach ($token->getLanguageTranslationTokens() as $ltt) {
-                                $lang = $ltt->getLanguage();
-                                if ($lang && $lang->getLocale() == $locale) {
-                                    $currentCatalogue->set($token->getTokenName(), $ltt->getTranslation(), $token->getDomain());
-                                    break;
-                                }
+
+                            $lang = $ltt->getLanguage();
+                            if ($lang && $lang->getLocale() == $locale) {
+                                $currentCatalogue->set($token->getTokenName(), $ltt->getTranslation(), $token->getDomain());
+
+                                break;
                             }
                         }
+                    }
 
-                        // process catalogues
-                        $operation = new DiffOperation($currentCatalogue, $extractedCatalogue);
+                    // process catalogues
+                    $operation = new TargetOperation($currentCatalogue, $extractedCatalogue);
 
-                        foreach ($operation->getDomains() as $domain) {
-                            $newMessages = $operation->getNewMessages($domain);
-                            $obsoleteMessages = $operation->getObsoleteMessages($domain);
+                    foreach ($operation->getDomains() as $domain) {
+                        $newMessages = $operation->getNewMessages($domain);
+                        $obsoleteMessages = $operation->getObsoleteMessages($domain);
 
-                            if (count($newMessages) || count($obsoleteMessages)) {
-                                $imported = true;
+                        if (count($newMessages) || count($obsoleteMessages)) {
+                            $imported = true;
 
-                                $output->writeln(
-                                    '>>> '.$bundleName.' : '.$source.' : '.$locale.' : '.$domain
+                            $output->writeln(
+                                "Importing a locale <comment>$locale</> from a bundle <comment>$bundleName</> using $source and domain $domain"
+                            );
+                        }
+
+                        if (count($newMessages)) {
+                            $output->writeln(sprintf('  <info>New messages: %s</>', count($newMessages)));
+                            if ($printMessageNames) {
+                                $this->printMessages($output, $newMessages);
+                            }
+
+                            foreach ($newMessages as $tokenName => $translation) {
+                                $token = $this->findOrCreateTranslationToken(
+                                    $source, $bundleName, $domain, $tokenName
                                 );
-                            }
+                                $token->setObsolete(false);
 
-                            if (count($newMessages)) {
-                                $output->writeln(sprintf('    <fg=green>New messages: %s</>', count($newMessages)));
-                                foreach ($newMessages as $tokenName => $translation) {
-                                    $token = $this->findOrCreateTranslationToken(
-                                        $source, $bundleName, $domain, $tokenName
-                                    );
-                                    $token->setObsolete(false);
-
-                                    $ltt = $em->getRepository(LanguageTranslationToken::clazz())->findOneBy(array(
-                                        'language' => $language,
-                                        'translationToken' => $token,
-                                        'translation' => $translation,
-                                    ));
-                                    if (!$ltt) {
-                                        $ltt = new LanguageTranslationToken();
-                                        $ltt->setLanguage($language);
-                                        $token->addLanguageTranslationToken($ltt);
-                                    }
-
-                                    if ($ltt->isNew()) {
-                                        $ltt->setTranslation($translation);
-                                    }
-
-                                    $em->persist($token);
+                                $ltt = $this->em()->getRepository(LanguageTranslationToken::clazz())->findOneBy(array(
+                                    'language' => $language,
+                                    'translationToken' => $token,
+                                    'translation' => $translation,
+                                ));
+                                if (!$ltt) {
+                                    $ltt = new LanguageTranslationToken();
+                                    $ltt->setLanguage($language);
+                                    $token->addLanguageTranslationToken($ltt);
                                 }
-                                $em->flush();
+
+                                if ($ltt->isNew()) {
+                                    $ltt->setTranslation($translation);
+                                }
+
+                                $this->em()->persist($token);
+                            }
+                            $this->em()->flush();
+                        }
+
+                        if (count($obsoleteMessages)) {
+                            $output->writeln(sprintf('  <fg=red>Obsolete messages: %s</>', count($obsoleteMessages)));
+                            if ($printMessageNames) {
+                                $this->printMessages($output, $obsoleteMessages);
                             }
 
-                            if (count($obsoleteMessages)) {
-                                $output->writeln(sprintf('    <fg=red>Obsolete messages: %s</>', count($obsoleteMessages)));
-                                foreach ($obsoleteMessages as $tokenName => $translation) {
-                                    $token = $this->findOrCreateTranslationToken(
-                                        $source, $bundleName, $domain, $tokenName
-                                    );
-                                    $token->setObsolete(true);
-                                    $em->persist($token);
-                                }
-                                $em->flush();
+                            foreach ($obsoleteMessages as $tokenName => $translation) {
+                                $token = $this->findOrCreateTranslationToken(
+                                    $source, $bundleName, $domain, $tokenName
+                                );
+                                $token->setObsolete(true);
+                                $this->em()->persist($token);
                             }
+                            $this->em()->flush();
                         }
                     }
                 }
@@ -160,20 +175,38 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         }
     }
 
+    private function printMessages(OutputInterface $output, $messages)
+    {
+        foreach ($messages as $message) {
+            $output->writeln('    * '.$message);
+        }
+    }
+
+    private function createAndReturnDefaultLanguage()
+    {
+        $defaultLocale = $this->getContainer()->getParameter('locale');
+
+        $language = new Language();
+        $language->setLocale($defaultLocale);
+        $language->setEnabled(true);
+
+        $this->em()->persist($language);
+        $this->em()->flush();
+
+        return $language;
+    }
+
     /**
-     * @param $source
-     * @param $bundleName
-     * @param $domain
-     * @param $tokenName
-     *
-     * @return TranslationToken
+     * @return EntityManagerInterface
      */
+    private function em()
+    {
+        return $this->getContainer()->get('doctrine.orm.entity_manager');
+    }
+
     private function findOrCreateTranslationToken($source, $bundleName, $domain, $tokenName)
     {
-        /* @var EntityManager $em */
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-
-        $token = $em->getRepository(TranslationToken::clazz())->findOneBy(array(
+        $token = $this->em()->getRepository(TranslationToken::clazz())->findOneBy(array(
             'source' => $source,
             'bundleName' => $bundleName,
             'domain' => $domain,
@@ -182,12 +215,15 @@ class ImportTranslationsCommand extends ContainerAwareCommand
 
         if (!$token) {
             $token = new TranslationToken();
-            $token->setSource($source);
-            $token->setBundleName($bundleName);
-            $token->setDomain($domain);
-            $token->setTokenName($tokenName);
-            $em->persist($token);
-            $em->flush();
+            $token
+                ->setSource($source)
+                ->setBundleName($bundleName)
+                ->setDomain($domain)
+                ->setTokenName($tokenName)
+            ;
+
+            $this->em()->persist($token);
+            $this->em()->flush();
         }
 
         return $token;

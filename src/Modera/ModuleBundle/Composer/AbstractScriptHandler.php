@@ -28,12 +28,19 @@ abstract class AbstractScriptHandler
             $console .= ' --ansi';
         }
 
-        $process = new Process($php.' '.$console.' '.$cmd, null, null, null, $timeout);
+        $command = $php.' '.$console.' '.$cmd;
+
+        $process = new Process($command, null, null, null, $timeout);
         $process->run(function ($type, $buffer) {
             echo $buffer;
         });
         if (!$process->isSuccessful()) {
-            throw new \RuntimeException(sprintf('An error occurred when executing the "%s" command.', escapeshellarg($cmd)));
+            $msg = sprintf(
+                "An error occurred when executing the \"%s\" command: \n%s\n%s",
+                escapeshellarg($cmd), $process->getErrorOutput(), $process->getOutput()
+            );
+
+            throw new \RuntimeException($msg);
         }
     }
 
