@@ -82,19 +82,22 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                         continue;
                     }
 
-                    $currentCatalogue = new MessageCatalogue($locale);
-                    /* @var TranslationToken $token */
+                    $databaseCatalogue = new MessageCatalogue($locale);
                     foreach ($tokens as $token) {
+                        /* @var TranslationToken $token */
+
                         if ($token->isObsolete()) {
                             continue;
                         }
 
-                        foreach ($token->getLanguageTranslationTokens() as $ltt) {
-                            /* @var LanguageTranslationToken $ltt */
+                        foreach ($token->getLanguageTranslationTokens() as $languageTranslationToken) {
+                            /* @var LanguageTranslationToken $languageTranslationToken */
 
-                            $lang = $ltt->getLanguage();
+                            $lang = $languageTranslationToken->getLanguage();
                             if ($lang && $lang->getLocale() == $locale) {
-                                $currentCatalogue->set($token->getTokenName(), $ltt->getTranslation(), $token->getDomain());
+                                $databaseCatalogue->set(
+                                    $token->getTokenName(), $languageTranslationToken->getTranslation(), $token->getDomain()
+                                );
 
                                 break;
                             }
@@ -102,7 +105,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                     }
 
                     // process catalogues
-                    $operation = new TargetOperation($currentCatalogue, $extractedCatalogue);
+                    $operation = new TargetOperation($databaseCatalogue, $extractedCatalogue);
 
                     foreach ($operation->getDomains() as $domain) {
                         $newMessages = $operation->getNewMessages($domain);
@@ -112,7 +115,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                             $imported = true;
 
                             $output->writeln(
-                                "Importing a locale <comment>$locale</> from a bundle <comment>$bundleName</> using $source and domain $domain"
+                                "Importing tokens for a locale <comment>$locale</> from a bundle <comment>$bundleName</> using $source and domain <comment>$domain</>"
                             );
                         }
 
@@ -128,19 +131,17 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                                 );
                                 $token->setObsolete(false);
 
-                                $ltt = $this->em()->getRepository(LanguageTranslationToken::clazz())->findOneBy(array(
+                                $languageTranslationToken = $this->em()->getRepository(LanguageTranslationToken::clazz())->findOneBy(array(
                                     'language' => $language,
                                     'translationToken' => $token,
                                     'translation' => $translation,
                                 ));
-                                if (!$ltt) {
-                                    $ltt = new LanguageTranslationToken();
-                                    $ltt->setLanguage($language);
-                                    $token->addLanguageTranslationToken($ltt);
+                                if (!$languageTranslationToken) {
+                                    $languageTranslationToken = $token->createLanguageToken($language);
                                 }
 
-                                if ($ltt->isNew()) {
-                                    $ltt->setTranslation($translation);
+                                if ($languageTranslationToken->isNew()) {
+                                    $languageTranslationToken->setTranslation($translation);
                                 }
 
                                 $this->em()->persist($token);
@@ -177,8 +178,8 @@ class ImportTranslationsCommand extends ContainerAwareCommand
 
     private function printMessages(OutputInterface $output, $messages)
     {
-        foreach ($messages as $message) {
-            $output->writeln('    * '.$message);
+        foreach ($messages as $token => $message) {
+            $output->writeln("    * $message (token: $token)");
         }
     }
 
