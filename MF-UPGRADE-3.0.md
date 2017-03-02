@@ -10,7 +10,7 @@ MF 3.0 will presumably require:
 
 ## API
 
-Questions to asnwer - what is considered to be API of a bundle and how we will designate it ? For example,
+Questions to answer - what is considered to be API of a bundle and how we will designate it ? For example,
 Symfony marks those classes which are part of its public API with annotation @api. By default, all semantic configuration
 exposed by its bundles are also considered as public API. We need to think about similar process for us as well.
 
@@ -44,6 +44,16 @@ property. This, for instance, will mark all assets which match `^/bundles/modera
 
 `non_blocking_assets_patterns` configuration property will be removed from `\Modera\BackendOnSteroidsBundle\DependencyInjection\Configuration`.
 
+### Security permission categories
+
+When contributing permissions (using `modera_security.permissions` extension point) you should rely on new technical
+names, old ones will be removed in 3.0.
+
+| Old technical name              | New technical name   | 
+|---------------------------------|----------------------|
+| site                            | general              |
+| user-management                 | administration       |
+
 ## TODOs
 
  * Stop using [sergeil/extjsintegration-bundle](https://github.com/sergeil/SliExtJsIntegrationBundle) and instead use
@@ -67,3 +77,5 @@ property. This, for instance, will mark all assets which match `^/bundles/modera
   probably version resolving logic should be moved to ModeraFoundationBundle. In other words, ModeraMJRCacheAwareClassLoaderBundle
   would only contain code to update ExtJs class loader (maybe it even makes sense to get rid of
   ModeraMJRCacheAwareClassLoaderBundle bundle at all and move its code to ModeraMjrIntegrationBundle ?)
+ * Remove \Modera\SecurityBundle\DataInstallation\BCLayer and update PermissionAndCategoriesInstaller so it wouldn't use
+ it.

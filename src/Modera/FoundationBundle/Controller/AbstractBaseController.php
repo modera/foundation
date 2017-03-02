@@ -2,6 +2,7 @@
 
 namespace Modera\FoundationBundle\Controller;
 
+use Modera\FoundationBundle\Utils\DeprecationNoticeEmitter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
@@ -31,6 +32,11 @@ class AbstractBaseController extends Controller
      */
     protected function sc()
     {
+        /* @var DeprecationNoticeEmitter $emitter */
+        $emitter = $this->get('modera_foundation.utils.deprecation_notice_emitter');
+
+        $emitter->emit(sprintf('Method %s is deprecated and will be removed in 3.0.', __METHOD__));
+
         return $this->get('security.context');
     }
 }
