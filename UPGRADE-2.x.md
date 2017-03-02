@@ -2,6 +2,14 @@
 
 ## 2.55.0 (not released yet, in development)
 
+* [MPFE-963] Security permission technical names were renamed, see the CHANGELOG-2.x.md for more details. The renaming
+  has been done in a backward compatible manner, so you still are able to contribute to categories using their
+  old technical names, but it is highly recommended though to update your permission contributions so they would
+  use new technical names (in your PermissionsProvider classes, when creating instances of Permission class update its
+  3rd constructor argument using mapping provided in CHANGELOG-2.x). It is also highly desirable to run 
+  `modera:security:install-permission-categories` as it can automatically update your database to use proper technical 
+  names for already existing data. Beside that now whenever you are adding creating a contribution using an old technical 
+  names for a category a deprecation notice is created (you can see it in log files, search for php.INFO substring).
 * bugfix [MPFE-984] Run query `ALTER TABLE modera_translations_translationtoken CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;` 
   in MySQL database.
 * [MPFE-975] Install version 0.5.0 of MJR ([see this for all published versions](https://mjr-archives.dev.modera.org/)). 

@@ -24,9 +24,10 @@ class PermissionCategoriesProvider implements ContributorInterface
     {
         if (!$this->items) {
             $this->items = [
+                // See notes related to MPFE-963 in CHANGELOG-2.x.md (release 2.55.0)
                 new PermissionCategory(
-                    T::trans('General'), // MPFE-959; before 2.54.0 it was "Site"
-                    'site'
+                    T::trans('General'),
+                    'general'
                 ),
             ];
         }

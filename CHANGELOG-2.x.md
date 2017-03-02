@@ -2,6 +2,16 @@
 
 ## 2.55.0 (not released yet, in development)
 
+* [MPFE-963] Technical names for permission categories (extension point modera_security.permission_categories) were 
+  renamed as follows:
+
+    | Old technical name | New technical name |
+    |--------------------|--------------------|
+    | user-management    | administration     |
+    | site               | general            |
+    
+   See UPGRADE-2.x.md for instructions what you might need to do to make your code compatible with the change.
+
 * [MPFE-984] TranslationToken's entity collation now is utf8_bin.
 * [MPFE-975] Now it is possible to change landing section per user through UI. With the new requirements "dashboard" section
   now is shown in the menu only if it is marked as a landing section, otherwise it is hidden.
