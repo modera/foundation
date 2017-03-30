@@ -2,6 +2,7 @@
 
 ## 2.55.0 (not released yet, in development)
 
+* [CLS-675] UI improvement to show user ID
 * [MPFE-963] Technical names for permission categories (extension point modera_security.permission_categories) were 
   renamed as follows:
   

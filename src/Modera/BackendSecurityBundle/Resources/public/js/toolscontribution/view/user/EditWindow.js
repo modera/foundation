@@ -12,6 +12,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
     lastNameLabelText: 'Last name',
     usernameLabelText: 'Principal',
     emailLabelText: 'Email',
+    userIdLabelText: 'User Id',
 
     // override
     constructor: function(config) {
@@ -38,6 +39,11 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
                     {
                         xtype: 'hiddenfield',
                         name: 'id'
+                    },
+                    {
+                        xtype: 'displayfield',
+                        fieldLabel: me.userIdLabelText,
+                        name: 'displayId'
                     },
                     {
                         name: 'firstName',
@@ -68,6 +74,8 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
     },
 
     loadData: function(data) {
+        // we have to introduce a separate field because ExtJs doesn't properly read values of displayfield-s
+        data['displayId'] = data['id'];
         var me = this;
         me.down('form').getForm().setValues(data);
     }
