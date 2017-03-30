@@ -83,7 +83,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                 enableKeyEvents: true,
                 height: 30,
                 value: filterValue,
-                tid: 'filterInput',
+                tid: 'filterInput'
             });
         }
 
@@ -91,6 +91,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
 
         var defaults = {
             cls: 'modera-backend-translations-tool',
+            tid: 'translationTokensGrid',
             monitorModel: ['modera.translations_bundle.translation_token', 'modera.translations_bundle.language_translation_token'],
             basePanel: true,
             padding: 10,
@@ -182,7 +183,8 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                             items: [
                                 {
                                     itemId: 'compile',
-                                    text: me.compileBtnText
+                                    text: me.compileBtnText,
+                                    tid: 'compileBtn'
                                 }
                             ],
                             tid: 'translationsChangedNotification'
@@ -209,7 +211,8 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                             scale: 'medium',
                             //selectionAware: true,
                             //multipleSelectionSupported:true,
-                            disabled: true
+                            disabled: true,
+                            tid: 'deleteTranslationToken'
                         },
                         '->'
                     ].concat(toolbarItems)

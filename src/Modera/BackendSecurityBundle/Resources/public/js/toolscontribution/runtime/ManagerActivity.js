@@ -86,6 +86,7 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.ManagerActivity', 
         });
         panel.addSections(me.sections);
         me.setUpZones(panel);
+
         onReadyCallback(panel);
     },
 

@@ -19,6 +19,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.NewWindow', {
         var me = this;
 
         var defaults = {
+            tid: 'newUserWindow',
             type: 'new',
             groupName: 'main-form',
             resizable: false,
@@ -43,24 +44,28 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.NewWindow', {
                     {
                         name: 'firstName',
                         fieldLabel: me.firstNameLabelText,
-                        emptyText: me.placeHolderText
+                        emptyText: me.placeHolderText,
+                        tid: 'firstNameField'
                     },
                     {
                         name: 'lastName',
                         fieldLabel: me.lastNameLabelText,
-                        emptyText: me.placeHolderText
+                        emptyText: me.placeHolderText,
+                        tid: 'lastNameField'
                     },
                     {
                         name: 'username',
                         fieldLabel: me.usernameLabelText,
-                        emptyText: me.placeHolderText
+                        emptyText: me.placeHolderText,
+                        tid: 'usernameField'
                     },
                     {
                         itemId: 'email',
                         name: 'email',
                         vtype: 'email',
                         fieldLabel: me.emailLabelText,
-                        emptyText: me.placeHolderText
+                        emptyText: me.placeHolderText,
+                        tid: 'emailField'
                     },
                     {
                         itemId: 'sendPassword',

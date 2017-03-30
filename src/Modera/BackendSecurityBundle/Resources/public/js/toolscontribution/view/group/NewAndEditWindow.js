@@ -13,13 +13,14 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.NewAndEditWindo
     nameFieldText: 'Name',
     refNameFieldText: 'Reference name',
     refNameLabelText: 'Reference name',
-    firstNameLabelText: 'Group Name',
+    groupNameLabelText: 'Group Name',
 
     // override
     constructor: function(config) {
         var me = this;
 
         var defaults = {
+            tid: 'newAndEditGroupWindow',
             resizable: false,
             autoScroll: true,
             width: 500,
@@ -47,8 +48,9 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.NewAndEditWindo
                     {
                         name: 'name',
                         labelWidth: 120,
-                        fieldLabel: me.firstNameLabelText,
-                        emptyText: me.nameFieldText
+                        fieldLabel: me.groupNameLabelText,
+                        emptyText: me.nameFieldText,
+                        tid: 'groupNameField'
                     },
                     {
                         name: 'refName',

@@ -26,6 +26,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
         }
 
         var defaults = {
+            tid: 'changePasswordWindow',
             title: (me.newUser)? me.recordNewTitle : me.recordTitleText,
             groupName: 'compact-list',
             resizable: false,

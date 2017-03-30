@@ -20,6 +20,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.Manager', {
         var me = this;
 
         var defaults = {
+            tid: 'permissionsManagerPanel',
             basePanel: true,
             padding: 10,
             tbar: {
@@ -59,19 +60,22 @@ Ext.define('Modera.backend.security.toolscontribution.view.Manager', {
                                 itemId: 'users',
                                 pressed: config.sectionName == 'users',
                                 text: me.btnUsersText,
-                                iconCls: 'modera-backend-security-icon-user-32'
+                                iconCls: 'modera-backend-security-icon-user-32',
+                                tid: 'usersSectionButton'
                             },
                             {
                                 itemId: 'groups',
                                 pressed: config.sectionName == 'groups',
                                 text: me.btnGroupsText,
-                                iconCls: 'modera-backend-security-icon-group-32'
+                                iconCls: 'modera-backend-security-icon-group-32',
+                                tid: 'groupsSectionButton'
                             },
                             {
                                 itemId: 'permissions',
                                 pressed: config.sectionName == 'permissions',
                                 text: me.btnPermissionsText,
-                                iconCls: 'modera-backend-security-icon-permission-32'
+                                iconCls: 'modera-backend-security-icon-permission-32',
+                                tid: 'permissionsSectionButton'
                             }
                         ]
                     }

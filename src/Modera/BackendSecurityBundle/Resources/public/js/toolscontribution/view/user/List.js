@@ -37,6 +37,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
         var store = config.store || Ext.create('Modera.backend.security.toolscontribution.store.Users');
 
         var defaults = {
+            tid: 'usersOverviewView',
             rounded: true,
             border: true,
             monitorModel: 'modera.security_bundle.user',
@@ -124,11 +125,12 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                                         itemId: 'deleteBtn',
                                         text: me.deleteBtnText,
                                         scale: 'medium',
-                                        iconCls: 'mfc-icon-delete-24'
+                                        iconCls: 'mfc-icon-delete-24',
+                                        tid: 'deleteUserButton'
                                     }
                                 ]
                             }),
-                            tid: 'edituserbtn'
+                            tid: 'editUserButton'
                         },
                         {
                             disabled: true,

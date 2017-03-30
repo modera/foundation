@@ -21,6 +21,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
         var me = this;
 
         var defaults = {
+            tid: 'modifyGroupsMembershipWindow',
             title: me.recordTitleText,
             groupName: 'compact-list',
             resizable: false,
@@ -131,7 +132,8 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
                                         grid.view.refresh();
                                     }
                                 },
-                                flex: 1
+                                flex: 1,
+                                tid: 'assignedGroups'
                             }
                         ]
                     }

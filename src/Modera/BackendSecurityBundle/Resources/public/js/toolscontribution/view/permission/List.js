@@ -16,6 +16,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
         var store = Ext.create('Modera.backend.security.toolscontribution.store.Permissions');
 
         var defaults = {
+            tid: 'permissionsOverviewView',
             frame: true,
             rounded: true,
             columnLines: true,

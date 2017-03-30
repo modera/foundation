@@ -22,6 +22,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.Overview', {
     // override
     constructor: function(config) {
         var defaults = {
+            tid: 'groupsOverviewView',
             layout: {
                 type: 'hbox',
                 align: 'stretch'
@@ -51,12 +52,14 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.Overview', {
                                     security: {
                                         role: 'ROLE_MANAGE_PERMISSIONS',
                                         strategy: 'hide'
-                                    }
+                                    },
+                                    tid: 'newGroupBtn'
                                 },
                                 '->',
                                 {
                                     xtype: 'splitbutton',
                                     itemId: 'editGroupBtn',
+                                    tid: 'editGroupBtn',
                                     disabled: true,
                                     text: this.editSelectedBtnText,
                                     iconCls: 'mfc-icon-edit-24',
@@ -68,6 +71,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.Overview', {
                                             {
                                                 itemId: 'deleteBtn',
                                                 text: this.deleteBtnText,
+                                                tid: 'deleteGroupBtn',
                                                 scale: 'medium',
                                                 iconCls: 'mfc-icon-delete-24',
                                                 security: {
@@ -81,11 +85,14 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.Overview', {
                             ]
                         }
                     ],
+                    tid: 'groupsListGrid',
                     xtype: 'grid',
                     hideHeaders: true,
                     columns: [
                         {
                             flex: 1,
+                            // dataIndex is needed for E2E tests
+                            dataIndex: 'name',
                             renderer: function(v, meta, record) {
                                 return Ext.String.format(
                                     '{0} <span class="mfc-box-status modera-backend-security-box-status">{1}</span>',

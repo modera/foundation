@@ -23,6 +23,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.EditTranslati
             autoScroll: true,
             width: 800,
             maxHeight: Ext.getBody().getViewSize().height - 60,
+            tid: 'translationTokenEditWindow',
             items: {
                 xtype: 'form',
                 defaultType: 'displayfield',
