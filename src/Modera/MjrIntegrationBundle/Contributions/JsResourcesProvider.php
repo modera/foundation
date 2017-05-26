@@ -61,7 +61,7 @@ class JsResourcesProvider implements ContributorInterface
 
         return array(
             $extjs,
-            '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment-with-locales.min.js',
+            '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js',
             $this->router->generate('mf_font_awesome'),
             '/bundles/moderamjrintegration/js/orientationchange.js',
             '/bundles/moderamjrintegration/js/stylesheetsloader.js',

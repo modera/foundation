@@ -19,6 +19,6 @@ if (window['Ext']) {
 {% endfor %}
 
     Ext.require('MFC.Date', function() {
-        MFC.Date.moment.lang('{{ locale|replace({ '_': '-' }) }}');
+        MFC.Date.moment.locale('{{ locale|replace({ '_': '-' }) }}');
     });
 }

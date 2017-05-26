@@ -2,6 +2,7 @@
 
 ## 2.55.0 (not released yet, in development)
 
+* [MPFE-1007] Updated Moment.js to v2.18.1
 * [CLS-675] UI improvement to show user ID
 * [MPFE-963] Technical names for permission categories (extension point modera_security.permission_categories) were 
   renamed as follows:
