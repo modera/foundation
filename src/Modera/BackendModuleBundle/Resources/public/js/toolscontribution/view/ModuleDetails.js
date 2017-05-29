@@ -55,7 +55,7 @@ Ext.define('Modera.backend.module.toolscontribution.view.ModuleDetails', {
                         },
                         items: [
                             { name: 'lastVersion', fieldLabel: me.versionFieldText, value: me.config.dto.lastVersion },
-                            { name: 'createdAt', fieldLabel: me.createdAtFieldText, value: MFC.Date.moment(me.config.dto.createdAt).fromNow() },
+                            { name: 'createdAt', fieldLabel: me.createdAtFieldText, value: MFC.Date.moment(new Date(me.config.dto.createdAt)).fromNow() },
                             { name: 'license', fieldLabel: me.licenseFieldText, value: me.config.dto.license },
                             { name: 'authors', fieldLabel: me.authorsFieldText, value: me.config.dto.authors }
                         ]

@@ -63,7 +63,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                                 text: this.timeColumnHeaderText,
                                 width: 150,
                                 renderer: function(v) {
-                                    return MFC.Date.moment(v).fromNow();
+                                    return MFC.Date.moment(new Date(v)).fromNow();
                                 }
                             }
                         ],
@@ -276,7 +276,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                             fieldLabel: this.createdAtLabelText,
                             name: 'createdAt',
                             renderer: function(v) {
-                                var moment = MFC.Date.moment(v);
+                                var moment = MFC.Date.moment(new Date(v));
 
                                 var info = MFC.Date.format(moment, 'datetime');
                                 info += ' (' + moment.fromNow() + ')';
