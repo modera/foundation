@@ -91,8 +91,10 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
                 return false;
             }
 
-            var column = me.columns[cellIndex];
-            if (column['groupId']) {
+            var columns = me.columnManager.getColumns();
+
+            var column = columns[cellIndex];
+            if (column && column['groupId']) {
                 me.toggleChecker(tr, column, record);
             }
         });
