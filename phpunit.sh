@@ -34,7 +34,7 @@ if [ ! -d "vendor" ]; then
   --rm \
   -v `pwd`:/mnt/tmp \
   -w /mnt/tmp \
-  modera/php7-fpm "composer install"
+  modera/php:7.0 "composer install"
 fi
 
 if [ ! -d "$RUNNER_GIT_DIR" ]; then
@@ -47,7 +47,7 @@ if [ ! -d "$RUNNER_GIT_DIR" ]; then
   --rm \
   -v `pwd`/$RUNNER_GIT_DIR:/mnt/tmp \
   -w /mnt/tmp \
-  modera/php7-fpm "composer install"
+  modera/php:7.0 "composer install"
 fi
 
 # if there's no mtr_php image then create a Docker file in $RUNNER_GIT_DIR and build it
@@ -74,7 +74,7 @@ docker run \
 -w /mnt/tmp \
 -e MONOLITH_TEST_SUITE=1 \
 --link mtr_mysql:mysql \
-modera/php7-fpm "vendor/bin/phpunit ${args}"
+modera/php:7.0 "vendor/bin/phpunit ${args}"
 
 exit_code=$?
 
