@@ -73,12 +73,26 @@ class UsersController extends AbstractCrudController
                             'firstName' => $user->getFirstName(),
                             'lastName' => $user->getLastName(),
                             'middleName' => $user->getMiddleName(),
+                            'isActive' => $user->getIsActive(),
                             'state' => $user->getState(),
                             'groups' => $groups,
                             'meta' => $user->getMeta(),
                         );
                     },
-                    'compact-list' => ['id', 'username', 'fullname'],
+                    'compact-list' => function (User $user) {
+                        $groups = array();
+                        foreach ($user->getGroups() as $group) {
+                            $groups[] = $group->getName();
+                        }
+
+                        return array(
+                            'id' => $user->getId(),
+                            'username' => $user->getUsername(),
+                            'fullname' => $user->getFullName(),
+                            'isActive' => $user->getIsActive(),
+                            'state' => $user->getState(),
+                        );
+                    },
                     'delete-user' => ['username'],
                 ),
                 'profiles' => array(
@@ -113,7 +127,26 @@ class UsersController extends AbstractCrudController
                 /* @var TokenStorageInterface $ts */
                 $ts = $container->get('security.token_storage');
 
-                if (isset($params['plainPassword']) && $params['plainPassword']) {
+                if (isset($params['active'])) {
+                    /* @var UserService $userService */
+                    $userService = $container->get('modera_security.service.user_service');
+                    if ($params['active']) {
+                        $userService->enable($entity);
+                        $activityMsg = T::trans('Profile enabled for user "%user%".', array('%user%' => $entity->getUsername()));
+                        $activityContext = array(
+                            'type' => 'user.profile_enabled',
+                            'author' => $ts->getToken()->getUser()->getId(),
+                        );
+                    } else {
+                        $userService->disable($entity);
+                        $activityMsg = T::trans('Profile disabled for user "%user%".', array('%user%' => $entity->getUsername()));
+                        $activityContext = array(
+                            'type' => 'user.profile_disabled',
+                            'author' => $ts->getToken()->getUser()->getId(),
+                        );
+                    }
+                    $activityMgr->info($activityMsg, $activityContext);
+                } else if (isset($params['plainPassword']) && $params['plainPassword']) {
                     $self->setPassword($entity, $params['plainPassword']);
                     if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
                         /* @var MailService $mailService */

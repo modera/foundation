@@ -8,7 +8,7 @@ Ext.define('Modera.backend.security.toolscontribution.store.GroupUsers', {
     constructor: function() {
         this.config = {
             fields: [
-                'id', 'username', 'fullname'
+                'id', 'username', 'fullname', 'isActive', 'state'
             ],
             remoteFilter: true,
             proxy: {

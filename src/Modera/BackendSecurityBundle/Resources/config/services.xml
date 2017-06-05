@@ -65,5 +65,13 @@
             <argument type="service" id="sli.extjsintegration.entity_data_mapper" />
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
+
+        <service id="modera_backend_security.contributions.config_mergers_provider"
+                 class="Modera\BackendSecurityBundle\Contributions\ConfigMergersProvider">
+
+            <argument>%modera_backend_security.config%</argument>
+
+            <tag name="modera_mjr_integration.config.config_mergers_provider" />
+        </service>
     </services>
 </container>

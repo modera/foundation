@@ -2,6 +2,7 @@
 
 ## 2.55.0 (not released yet, in development)
 
+* [MPFE-1005] Added user deactivate functionality in `Backend/Tools/Security permissions`
 * [MPFE-992] Fixed bug what prevent to assign permissions to a freshly created group in `Backend/Tools/Security permissions` section
 * [MPFE-1007] Updated Moment.js to v2.18.1
 * [CLS-675] UI improvement to show user ID

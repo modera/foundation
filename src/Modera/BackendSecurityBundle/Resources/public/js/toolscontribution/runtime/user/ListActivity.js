@@ -21,9 +21,17 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.ListActivity'
 
     // override
     doCreateUi: function(params, callback) {
-        var grid = Ext.create('Modera.backend.security.toolscontribution.view.user.List');
+        var me = this;
 
-        callback(grid);
+        me.workbench.getService('config_provider').getConfig(function(config) {
+            var securityConfig = config['modera_backend_security'] || {};
+
+            var grid = Ext.create('Modera.backend.security.toolscontribution.view.user.List', {
+                hideDeleteUserFunctionality: securityConfig['hideDeleteUserFunctionality']
+            });
+
+            callback(grid);
+        });
     },
 
     // override
@@ -38,6 +46,27 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.ListActivity'
         });
         ui.on('editgroups', function(sourceComponent, params) {
             me.fireEvent('handleaction', 'edit-groups', sourceComponent, params);
+        });
+
+        ui.on('enableprofile', function(sourceComponent, params) {
+            Actions.ModeraBackendSecurity_Users.update({
+                record: {
+                    id: params['id'],
+                    active: true
+                }
+            }, function(response) {
+                //
+            });
+        });
+        ui.on('disableprofile', function(sourceComponent, params) {
+            Actions.ModeraBackendSecurity_Users.update({
+                record: {
+                    id: params['id'],
+                    active: false
+                }
+            }, function(response) {
+                //
+            });
         });
 
         var intentMgr = this.workbench.getService('intent_manager');

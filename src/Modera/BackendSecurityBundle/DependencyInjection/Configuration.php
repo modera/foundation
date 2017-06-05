@@ -32,6 +32,9 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('no-reply@no-reply')
                     ->cannotBeEmpty()
                 ->end()
+                ->booleanNode('hide_delete_user_functionality')
+                    ->defaultFalse()
+                ->end()
             ->end()
         ;
 

@@ -107,9 +107,10 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.Overview', {
                     width: 10
                 },
                 {
-                    itemId: 'groupUsers',
                     flex: 3,
-                    xtype: 'modera-backend-security-group-groupusers'
+                    itemId: 'groupUsers',
+                    xtype: 'modera-backend-security-group-groupusers',
+                    hideDeleteUserFunctionality: config.hideDeleteUserFunctionality
                 }
             ]
         };
@@ -171,7 +172,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.Overview', {
         });
 
         this.relayEvents(me.down('#groupUsers'), [
-            'editrecord', 'deleterecord', 'editgroups'
+            'editrecord', 'deleterecord', 'editgroups', 'enableprofile', 'disableprofile'
         ]);
     },
 
