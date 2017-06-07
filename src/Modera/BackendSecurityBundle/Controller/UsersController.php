@@ -73,7 +73,7 @@ class UsersController extends AbstractCrudController
                             'firstName' => $user->getFirstName(),
                             'lastName' => $user->getLastName(),
                             'middleName' => $user->getMiddleName(),
-                            'isActive' => $user->getIsActive(),
+                            'isActive' => $user->isActive(),
                             'state' => $user->getState(),
                             'groups' => $groups,
                             'meta' => $user->getMeta(),
@@ -89,7 +89,7 @@ class UsersController extends AbstractCrudController
                             'id' => $user->getId(),
                             'username' => $user->getUsername(),
                             'fullname' => $user->getFullName(),
-                            'isActive' => $user->getIsActive(),
+                            'isActive' => $user->isActive(),
                             'state' => $user->getState(),
                         );
                     },

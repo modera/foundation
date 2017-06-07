@@ -35,18 +35,8 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.ListActivity'
     },
 
     // override
-    attachContractListeners: function(ui) {
+    attachListeners: function(ui) {
         var me = this;
-
-        ui.on('newrecord', function(sourceComponent) {
-            me.fireEvent('handleaction', 'new-user', sourceComponent);
-        });
-        ui.on('deleterecord', function(sourceComponent, params) {
-            me.fireEvent('handleaction', 'delete-user', sourceComponent, params);
-        });
-        ui.on('editgroups', function(sourceComponent, params) {
-            me.fireEvent('handleaction', 'edit-groups', sourceComponent, params);
-        });
 
         ui.on('enableprofile', function(sourceComponent, params) {
             Actions.ModeraBackendSecurity_Users.update({
@@ -67,6 +57,21 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.ListActivity'
             }, function(response) {
                 //
             });
+        });
+    },
+
+    // override
+    attachContractListeners: function(ui) {
+        var me = this;
+
+        ui.on('newrecord', function(sourceComponent) {
+            me.fireEvent('handleaction', 'new-user', sourceComponent);
+        });
+        ui.on('deleterecord', function(sourceComponent, params) {
+            me.fireEvent('handleaction', 'delete-user', sourceComponent, params);
+        });
+        ui.on('editgroups', function(sourceComponent, params) {
+            me.fireEvent('handleaction', 'edit-groups', sourceComponent, params);
         });
 
         var intentMgr = this.workbench.getService('intent_manager');

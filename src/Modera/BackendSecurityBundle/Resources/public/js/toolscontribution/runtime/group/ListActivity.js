@@ -36,6 +36,32 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.group.ListActivity
     },
 
     // override
+    attachListeners: function(ui) {
+        var me = this;
+
+        ui.on('enableprofile', function(sourceComponent, params) {
+            Actions.ModeraBackendSecurity_Users.update({
+                record: {
+                    id: params['id'],
+                    active: true
+                }
+            }, function(response) {
+                //
+            });
+        });
+        ui.on('disableprofile', function(sourceComponent, params) {
+            Actions.ModeraBackendSecurity_Users.update({
+                record: {
+                    id: params['id'],
+                    active: false
+                }
+            }, function(response) {
+                //
+            });
+        });
+    },
+
+    // override
     attachContractListeners: function(ui) {
         var me = this;
 
@@ -57,27 +83,6 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.group.ListActivity
         });
         ui.on('editgroups', function(sourceComponent, params) {
             me.fireEvent('handleaction', 'edit-groups', sourceComponent, params);
-        });
-
-        ui.on('enableprofile', function(sourceComponent, params) {
-            Actions.ModeraBackendSecurity_Users.update({
-                record: {
-                    id: params['id'],
-                    active: true
-                }
-            }, function(response) {
-                //
-            });
-        });
-        ui.on('disableprofile', function(sourceComponent, params) {
-            Actions.ModeraBackendSecurity_Users.update({
-                record: {
-                    id: params['id'],
-                    active: false
-                }
-            }, function(response) {
-                //
-            });
         });
     }
 });
