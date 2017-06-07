@@ -16,8 +16,7 @@
         "imagine/imagine": "0.6.*",
         "modera/module": "~1.0|~2.0",
         "sensio/generator-bundle": "~2.3|~3.0",
-        "sergeil/aux-bundle": "~1.0",
-        "modera/mjr": "dev-master"
+        "sergeil/aux-bundle": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.5",
