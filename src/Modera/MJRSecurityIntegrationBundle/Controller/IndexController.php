@@ -135,12 +135,7 @@ class IndexController extends Controller
         $response = Authenticator::getAuthenticationResponse($token);
 
         if ($response['success']) {
-            $roleNames = [];
-            foreach ($token->getRoles() as $roleName) {
-                $roleNames[] = $roleName->getRole();
-            }
-
-            if (!in_array(ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER, $roleNames)) {
+            if (!$this->isGranted(ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER, $token->getUser())) {
                 $response = array(
                     'success' => false,
                     'message' => "You don't have required rights to access administration interface.",

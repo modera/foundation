@@ -22,9 +22,43 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.group.ListActivity
 
     // override
     doCreateUi: function(params, callback) {
-        var grid = Ext.create('Modera.backend.security.toolscontribution.view.group.Overview');
+        var me = this;
 
-        callback(grid);
+        me.workbench.getService('config_provider').getConfig(function(config) {
+            var securityConfig = config['modera_backend_security'] || {};
+
+            var grid = Ext.create('Modera.backend.security.toolscontribution.view.group.Overview', {
+                hideDeleteUserFunctionality: securityConfig['hideDeleteUserFunctionality']
+            });
+
+            callback(grid);
+        });
+    },
+
+    // override
+    attachListeners: function(ui) {
+        var me = this;
+
+        ui.on('enableprofile', function(sourceComponent, params) {
+            Actions.ModeraBackendSecurity_Users.update({
+                record: {
+                    id: params['id'],
+                    active: true
+                }
+            }, function(response) {
+                //
+            });
+        });
+        ui.on('disableprofile', function(sourceComponent, params) {
+            Actions.ModeraBackendSecurity_Users.update({
+                record: {
+                    id: params['id'],
+                    active: false
+                }
+            }, function(response) {
+                //
+            });
+        });
     },
 
     // override

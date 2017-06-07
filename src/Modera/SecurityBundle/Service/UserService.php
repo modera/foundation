@@ -45,6 +45,30 @@ class UserService
     }
 
     /**
+     * @throws \RuntimeException If given used is root user and cannot be disabled
+     *
+     * @param User $user
+     */
+    public function disable(User $user)
+    {
+        if ($this->rootUserHandler->isRootUser($user)) {
+            throw new \RuntimeException(T::trans('Super admin user never can be disabled.'));
+        }
+
+        $user->setActive(false);
+        $this->em->flush();
+    }
+
+    /**
+     * @param User $user
+     */
+    public function enable(User $user)
+    {
+        $user->setActive(true);
+        $this->em->flush();
+    }
+
+    /**
      * Find user by some property.
      *
      * @param $property

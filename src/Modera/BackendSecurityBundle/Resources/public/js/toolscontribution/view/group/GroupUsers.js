@@ -14,9 +14,15 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.GroupUsers', {
     noGroupSelectedText: 'No group selected',
     userIdColumnText: 'User ID',
     fullNameColumnText: 'Full name',
+    stateColumnText: 'State',
+    stateNewText: 'New',
+    stateActiveText: 'Active',
+    stateInactiveText: 'Inactive',
 
     // override
     constructor: function(config) {
+        var me = this;
+
         var defaults = {
             layout: 'card',
             items: [
@@ -25,7 +31,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.GroupUsers', {
                     xtype: 'grid',
                     border: true,
                     hideHeaders: true,
-                    emptyText: this.noGroupSelectedText,
+                    emptyText: me.noGroupSelectedText,
                     emptyCls: 'mfc-grid-empty-text',
                     columns: [],
                     listeners: {
@@ -38,16 +44,31 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.GroupUsers', {
                     itemId: 'users',
                     xtype: 'modera-backend-security-user-list',
                     hideViewAwareComponents: true,
+                    hideDeleteUserFunctionality: config.hideDeleteUserFunctionality,
                     columns: [
                         {
-                            text: this.userIdColumnText,
+                            flex: 1,
+                            text: me.userIdColumnText,
                             dataIndex: 'username',
-                            flex: 1
+                            renderer: me.defaultRenderer()
                         },
                         {
-                            text: this.fullNameColumnText,
+                            flex: 1,
+                            text: me.fullNameColumnText,
                             dataIndex: 'fullname',
-                            flex: 1
+                            renderer: me.defaultRenderer()
+                        },
+                        {
+                            width: 80,
+                            text: me.stateColumnText,
+                            dataIndex: 'state',
+                            renderer: function(v, m, r) {
+                                var state = 'Inactive';
+                                if (r.get('isActive')) {
+                                    state = 1 === v ? 'Active' : 'New';
+                                }
+                                return me['state' + state + 'Text'];
+                            }
                         }
                     ],
                     store: Ext.create('Modera.backend.security.toolscontribution.store.GroupUsers')
@@ -55,16 +76,29 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.GroupUsers', {
             ]
         };
 
-        this.config = Ext.apply(defaults, config || {});
-        this.callParent([this.config]);
+        me.config = Ext.apply(defaults, config || {});
+        me.callParent([me.config]);
 
-        this.assignListeners();
+        me.assignListeners();
+    },
+
+    // private
+    defaultRenderer: function(msg) {
+        return function(value, m, r) {
+            if (Ext.isEmpty(value)) {
+                return '<span class="mfc-empty-text">' + (msg || '-') + '</span>';
+            } else if (!r.get('isActive')) {
+                return '<span class="modera-backend-security-user-disabled">' + value + '</span>';
+            }
+
+            return value;
+        };
     },
 
     // private
     assignListeners: function() {
         this.relayEvents(this.down('modera-backend-security-user-list'), [
-            'editrecord', 'deleterecord', 'editgroups'
+            'editrecord', 'deleterecord', 'editgroups', 'enableprofile', 'disableprofile'
         ]);
     }
 });

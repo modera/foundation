@@ -25,8 +25,11 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
     groupsBtnText: 'Group membership...',
     changePasswordBtnText: 'Change password',
     deleteBtnText: 'Delete',
+    enableBtnText: 'Enable user',
+    disableBtnText: 'Disable user',
     stateNewText: 'New',
     stateActiveText: 'Active',
+    stateInactiveText: 'Inactive',
 
     // override
     constructor: function(config) {
@@ -73,8 +76,11 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                     width: 80,
                     text: me.stateColumnHeaderText,
                     dataIndex: 'state',
-                    renderer: function(v) {
-                        var state = 1 === v ? 'Active' : 'New';
+                    renderer: function(v, m, r) {
+                        var state = 'Inactive';
+                        if (r.get('isActive')) {
+                            state = 1 === v ? 'Active' : 'New';
+                        }
                         return me['state' + state + 'Text'];
                     }
                 },
@@ -122,11 +128,37 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                             menu: Ext.create('Ext.menu.Menu', {
                                 items: [
                                     {
+                                        hidden: !!config.hideDeleteUserFunctionality,
                                         itemId: 'deleteBtn',
                                         text: me.deleteBtnText,
-                                        scale: 'medium',
-                                        iconCls: 'mfc-icon-delete-24',
+                                        iconCls: 'mfc-icon-delete-16',
                                         tid: 'deleteUserButton'
+                                    },
+                                    {
+                                        hidden: true,
+                                        selectionAware: function(selected) {
+                                            if (1 == selected.length && !selected[0].get('isActive')) {
+                                                return this.show();
+                                            }
+                                            this.hide();
+                                        },
+                                        itemId: 'enableBtn',
+                                        text: me.enableBtnText,
+                                        iconCls: 'mfc-icon-apply-16',
+                                        tid: 'enableUserButton'
+                                    },
+                                    {
+                                        hidden: true,
+                                        selectionAware: function(selected) {
+                                            if (1 == selected.length && selected[0].get('isActive')) {
+                                                return this.show();
+                                            }
+                                            this.hide();
+                                        },
+                                        itemId: 'disableBtn',
+                                        text: me.disableBtnText,
+                                        iconCls: 'mfc-icon-error-16',
+                                        tid: 'disableUserButton'
                                     }
                                 ]
                             }),
@@ -197,9 +229,11 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
 
     // private
     defaultRenderer: function(msg) {
-        return function(value) {
+        return function(value, m, r) {
             if (Ext.isEmpty(value)) {
                 return '<span class="mfc-empty-text">' + (msg || '-') + '</span>';
+            } else if (!r.get('isActive')) {
+                return '<span class="modera-backend-security-user-disabled">' + value + '</span>';
             }
 
             return value;
@@ -232,6 +266,21 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
     assignListeners: function() {
         var me = this;
 
+        var firstLoad = true;
+        me.getStore().on('load', function(store, records) {
+            if (!firstLoad) {
+                var selected = [];
+                var selectedIds = me.getSelectedIds();
+                Ext.Array.each(records, function(record, index) {
+                    if (-1 !== selectedIds.indexOf(record.get('id'))) {
+                        selected.push(record);
+                    }
+                });
+                me.getSelectionModel().select(selected);
+            }
+            firstLoad = false;
+        });
+
         me.down('#newRecordBtn').on('click', function() {
             me.fireEvent('newrecord', me);
         });
@@ -260,6 +309,16 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
         me.down('#deleteBtn').on('click', function() {
             var ids = me.getSelectedIds();
             me.fireEvent('deleterecord', me, { id: ids.length > 1 ? ids : ids[0] });
+        });
+
+        me.down('#enableBtn').on('click', function() {
+            var record = me.getSelectedRecord();
+            me.fireEvent('enableprofile', me, { id: record.get('id') });
+        });
+
+        me.down('#disableBtn').on('click', function() {
+            var record = me.getSelectedRecord();
+            me.fireEvent('disableprofile', me, { id: record.get('id') });
         });
 
         me.down('#editPasswordBtn').on('click', function() {
