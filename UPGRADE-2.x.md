@@ -1,6 +1,6 @@
 # UPGRADE GUIDE, 2.x
 
-## 2.55.0 (not released yet, in development)
+## 2.55.0 (18.06.2017)
 
 * [MPFE-963] Security permission technical names were renamed, see the CHANGELOG-2.x.md for more details. The renaming
   has been done in a backward compatible manner, so you still are able to contribute to categories using their
@@ -16,7 +16,7 @@
   In order to do that update your composer.json's `modera/mjr` dependency so it would point to `0.5.0` and run `composer update`
   (if 0.5.0 is not released yet then use `dev-master` instead).
 
-## 2.54.0 (30.01.17)
+## 2.54.0 (30.01.2017)
 
 * [MPFE-959] Run `app/console modera:security:install-permission-categories` and 
   `app/console modera:security:install-permissions` to have permission categories and permissions automatically renamed.
@@ -24,7 +24,7 @@
     
 * [MPFE-951] Make sure that you have MJR version at least 0.3.0 (in your composer.json file it is `modera/mjr` package).
 
-## 2.53.0 (08.12.16)
+## 2.53.0 (08.12.2016)
 
 * In scope of MPFE-852 a DI service `modera_server_crud.persistence.default_handler` has been renamed to 
 `modera_server_crud.persistence.doctrine_handler`, the service references now deprecated DoctrinePersistenceHandler. A new

@@ -1,6 +1,6 @@
 # CHANGELOG, 2.x
 
-## 2.55.0 (not released yet, in development)
+## 2.55.0 (18.06.2017)
 
 * [MPFE-1005] Added user deactivate functionality in `Backend/Tools/Security permissions`
 * [MPFE-992] Fixed bug what prevent to assign permissions to a freshly created group in `Backend/Tools/Security permissions` section
@@ -25,7 +25,7 @@
  [UPGRADE.md for modera/foundation v0.11](https://github.com/modera/foundation-standard/blob/master/UPGRADE.md))
 * [MPFE-975] Customize landing view per user
 
-## 2.54.0 (30.01.17)
+## 2.54.0 (30.01.2017)
 
 * bugfix [MPFE-974] TranslationsController from BackendTranslationsTooBundle could not properly render exception
  in listWithFiltersAction() method. This bug was caused by removal of "modera_server_crud.persistence.default_handler"
@@ -64,7 +64,7 @@ to this extension points could look like run
 empty contribution for then you can use `app/console sli:expander:list-extension-points` command. **This feature requires
 MJR version to be at least 0.3.0.**
 
-## 2.53.0 (08.12.16)
+## 2.53.0 (08.12.2016)
 
 * feature [MPFE-852] ModeraServerCrudBundle now is able to deal with optionally custom EntityManager, to achieve
  this a new implementation of PersistenceHandlerInterface has been added - DoctrineRegistryPersistenceHandler, which
