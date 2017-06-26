@@ -1,6 +1,17 @@
 parameters:
     locale: en
 
+# Needed in order to have "security.token_storage" available
+security:
+    providers:
+        in_memory:
+            memory: ~
+
+    firewalls:
+      secured_area:
+          pattern:   ^/
+          anonymous: ~
+
 framework:
     validation: ~
     secret:          Hell yeah!

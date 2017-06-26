@@ -1,5 +1,11 @@
 # UPGRADE GUIDE, 2.x
 
+## 2.56.0 (not released yet, in development)
+
+* [MPFE-1012][ModeraFileRepositoryBundle] Make sure that \Symfony\Bundle\SecurityBundle\SecurityBundle() is enabled in
+your kernel and there's at least one firewall and user provided configured (file repository now requires
+"security.token_storage" service to be present).
+
 ## 2.55.0 (18.06.2017)
 
 * [MPFE-963] Security permission technical names were renamed, see the CHANGELOG-2.x.md for more details. The renaming

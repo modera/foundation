@@ -79,3 +79,6 @@ names, old ones will be removed in 3.0.
   ModeraMJRCacheAwareClassLoaderBundle bundle at all and move its code to ModeraMjrIntegrationBundle ?)
  * Remove \Modera\SecurityBundle\DataInstallation\BCLayer and update PermissionAndCategoriesInstaller so it wouldn't use
  it.
+ * All methods in \Modera\FileRepositoryBundle\Intercepting\OperationInterceptorInterface must contain last argument $context. See
+ changelog of a commit where this piece of text is written for more details. We coudln't change it in scope of 2.x version
+ without BC break because we it is not possible to change a signature of methods defined in an interface.

@@ -1,5 +1,14 @@
 # CHANGELOG, 2.x
 
+## 2.56.0 (not released yet, in development)
+
+* [MPFE-1012][ModeraFileRepositoryBundle] Whenever a new file is added to a repository, if it happens
+that a user is currently authenticated (using default Symfony security component), then we will try to
+use that user and update "author" property on a created StoredFile automatically. Beside that, whenever you put
+a new file to the repository, you can use "context" argument of \Modera\FileRepositoryBundle\Repository\FileRepository::put
+method to specify "author" and "owner" properties which, if provided, will be set to the corresponding properties on
+a created StoredFile.
+
 ## 2.55.0 (18.06.2017)
 
 * [MPFE-1005] Added user deactivate functionality in `Backend/Tools/Security permissions`
