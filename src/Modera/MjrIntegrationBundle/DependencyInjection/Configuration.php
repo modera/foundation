@@ -122,6 +122,9 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('app_base_class')
                     ->defaultValue('')
                 ->end()
+                ->scalarNode('moment_js_version')
+                    ->defaultValue(null)
+                ->end()
             ->end()
         ;
 
