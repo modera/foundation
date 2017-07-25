@@ -2,7 +2,11 @@
 
 ## 2.56.0 (not released yet, in development)
 
-* [MPFE-1017] Moment.js downgraded to v2.17.1 && added ability to change it from config file
+* [MPFE-1017][ModeraMjrIntegrationBundle] Moment.js downgraded to v2.17.1 && added ability to change it from config file
+    ``` yaml
+    modera_mjr_integration:
+        moment_js_version: 2.17.1
+    ```
 * [MPFE-1012][ModeraFileRepositoryBundle] Whenever a new file is added to a repository, if it happens
 that a user is currently authenticated (using default Symfony security component), then we will try to
 use that user and update "author" property on a created StoredFile automatically. Beside that, whenever you put
