@@ -59,11 +59,9 @@ class JsResourcesProvider implements ContributorInterface
         }
         $extjs .= '.js';
 
-        $momentJsVersion = $this->bundleConfig['moment_js_version'] ?: '2.17.1';
-
         return array(
             $extjs,
-            '//cdnjs.cloudflare.com/ajax/libs/moment.js/' . $momentJsVersion . '/moment-with-locales.min.js',
+            '//cdnjs.cloudflare.com/ajax/libs/moment.js/' . $this->bundleConfig['moment_js_version'] . '/moment-with-locales.min.js',
             $this->router->generate('mf_font_awesome'),
             '/bundles/moderamjrintegration/js/orientationchange.js',
             '/bundles/moderamjrintegration/js/stylesheetsloader.js',
