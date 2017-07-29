@@ -4,6 +4,7 @@ namespace Modera\BackendSecurityBundle\Controller;
 
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\Entity\User;
+use Modera\SecurityBundle\PasswordStrength\PasswordGenerator;
 use Modera\SecurityBundle\PasswordStrength\StrongPassword;
 use Modera\SecurityBundle\Service\UserService;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
@@ -224,19 +225,14 @@ class UsersController extends AbstractCrudController
     }
 
     /**
-     * @param int $length
-     *
      * @return string
      */
-    private function generatePassword($length = 8)
+    private function generatePassword()
     {
-        $plainPassword = '';
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        for ($i = 0; $i < $length; ++$i) {
-            $plainPassword .= $characters[rand(0, strlen($characters) - 1)];
-        }
+        /* @var PasswordGenerator $generator */
+        $generator = $this->get('modera_security.password_strength.password_generator');
 
-        return $plainPassword;
+        return $generator->generatePassword();
     }
 
     /**
