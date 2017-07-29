@@ -3,8 +3,10 @@
 namespace Modera\BackendSecurityBundle\Tests\Unit\Controller;
 
 use Modera\BackendSecurityBundle\Controller\UsersController;
+use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\PasswordStrength\PasswordGenerator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Refactored to be a Unit test.
@@ -34,10 +36,23 @@ class UsersControllerTest extends \PHPUnit_Framework_TestCase
             ->generatePassword()
             ->thenReturn('foo-pwd')
         ;
+        $authCheckerMock = \Phake::mock(AuthorizationCheckerInterface::class);
+        \Phake::when($authCheckerMock)
+            ->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES, $this->anything())
+            ->thenReturn(true)
+        ;
         $containerMock = \Phake::mock(ContainerInterface::class);
         \Phake::when($containerMock)
             ->get('modera_security.password_strength.password_generator')
             ->thenReturn($passwordGeneratorMock)
+        ;
+        \Phake::when($containerMock)
+            ->has('security.authorization_checker')
+            ->thenReturn(true)
+        ;
+        \Phake::when($containerMock)
+            ->get('security.authorization_checker')
+            ->thenReturn($authCheckerMock)
         ;
 
         $this->controller->setContainer($containerMock);

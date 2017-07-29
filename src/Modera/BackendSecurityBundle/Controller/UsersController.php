@@ -12,14 +12,14 @@ use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
 use Modera\ServerCrudBundle\Hydration\HydrationProfile;
 use Modera\ServerCrudBundle\Persistence\OperationResult;
 use Modera\FoundationBundle\Translation\T;
-use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
 use Modera\ServerCrudBundle\Validation\ValidationResult;
 use Psr\Log\LoggerInterface;
+use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filter;
+use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filters;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Modera\BackendSecurityBundle\Service\MailService;
-use Modera\DirectBundle\Annotation\Remote;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -60,6 +60,32 @@ class UsersController extends AbstractCrudController
                         }
                     },
                     'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
+                    'get' => function(AuthorizationCheckerInterface $ac, array $params) {
+                        $userId = null;
+                        if (isset($params['filter'])) {
+                            foreach (new Filters($params['filter']) as $filter) {
+                                /* @var Filter $filter */
+
+                                if ($filter->getProperty() == 'id' && $filter->getComparator() == Filter::COMPARATOR_EQUAL) {
+                                    $userId = $filter->getValue();
+                                }
+                            }
+                        }
+
+                        $isPossiblyEditingOwnProfile = null !== $userId;
+                        if ($isPossiblyEditingOwnProfile) {
+                            /* @var TokenStorageInterface $ts */
+                            $ts = $this->get('security.token_storage');
+                            /* @var User $user */
+                            $user = $ts->getToken()->getUser();
+
+                            if ($user->getId() == $userId) {
+                                return true;
+                            }
+                        }
+
+                        return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+                    },
                     'list' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
                 ),
             ),
@@ -172,6 +198,13 @@ class UsersController extends AbstractCrudController
                 }
             },
             'updated_entity_validator' => function (array $params, User $user) {
+                $result = new ValidationResult();
+
+                $isBatchUpdatedBeingPerformed = !isset($params['record']);
+                if ($isBatchUpdatedBeingPerformed) {
+                    return $result;
+                }
+
                 $params = $params['record'];
 
                 $result = new ValidationResult();
@@ -214,6 +247,8 @@ class UsersController extends AbstractCrudController
      */
     public function generatePasswordAction(array $params)
     {
+        $this->denyAccessUnlessGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+
         $plainPassword = $this->generatePassword();
 
         return array(
