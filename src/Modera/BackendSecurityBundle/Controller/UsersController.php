@@ -5,6 +5,7 @@ namespace Modera\BackendSecurityBundle\Controller;
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\Entity\User;
 use Modera\SecurityBundle\PasswordStrength\PasswordGenerator;
+use Modera\SecurityBundle\PasswordStrength\PasswordManager;
 use Modera\SecurityBundle\PasswordStrength\StrongPassword;
 use Modera\SecurityBundle\Service\UserService;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
@@ -210,11 +211,7 @@ class UsersController extends AbstractCrudController
                 $result = new ValidationResult();
 
                 if (isset($params['plainPassword']) && $params['plainPassword']) {
-                    /* @var ValidatorInterface $validator */
-                    $validator = $this->get('validator');
-
-                    $violations = $validator->validate($params['plainPassword'], new StrongPassword());
-
+                    $violations = $this->getPasswordManager()->validatePassword($params['plainPassword']);
                     if (count($violations)) {
                         foreach ($violations as $violation) {
                             $result->addFieldError('plainPassword', $violation->getMessage());
@@ -291,5 +288,13 @@ class UsersController extends AbstractCrudController
     private function getMailService()
     {
         return $this->get('modera_backend_security.service.mail_service');
+    }
+
+    /**
+     * @return PasswordManager
+     */
+    private function getPasswordManager()
+    {
+        return $this->get('modera_security.password_strength.password_manager');
     }
 }
