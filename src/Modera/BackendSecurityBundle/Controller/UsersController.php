@@ -262,10 +262,10 @@ class UsersController extends AbstractCrudController
      */
     private function generatePassword()
     {
-        /* @var PasswordGenerator $generator */
-        $generator = $this->get('modera_security.password_strength.password_generator');
+        /* @var PasswordManager $pm */
+        $pm = $this->get('modera_security.password_strength.password_manager');
 
-        return $generator->generatePassword();
+        return $pm->generatePassword();
     }
 
     /**

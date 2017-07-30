@@ -5,6 +5,7 @@ namespace Modera\BackendSecurityBundle\Tests\Unit\Controller;
 use Modera\BackendSecurityBundle\Controller\UsersController;
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\PasswordStrength\PasswordGenerator;
+use Modera\SecurityBundle\PasswordStrength\PasswordManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -31,8 +32,8 @@ class UsersControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testGeneratePasswordAction()
     {
-        $passwordGeneratorMock = \Phake::mock(PasswordGenerator::class);
-        \Phake::when($passwordGeneratorMock)
+        $passwordManager = \Phake::mock(PasswordManager::class);
+        \Phake::when($passwordManager)
             ->generatePassword()
             ->thenReturn('foo-pwd')
         ;
@@ -43,8 +44,8 @@ class UsersControllerTest extends \PHPUnit_Framework_TestCase
         ;
         $containerMock = \Phake::mock(ContainerInterface::class);
         \Phake::when($containerMock)
-            ->get('modera_security.password_strength.password_generator')
-            ->thenReturn($passwordGeneratorMock)
+            ->get('modera_security.password_strength.password_manager')
+            ->thenReturn($passwordManager)
         ;
         \Phake::when($containerMock)
             ->has('security.authorization_checker')

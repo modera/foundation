@@ -153,7 +153,7 @@ class UsersControllerTest extends FunctionalTestCase
             'modera_backend_service_account_plugin' => array(
                 'isService' => true,
                 'password' => '1234',
-            ),
+            )
         );
 
         $params = array(
@@ -171,15 +171,19 @@ class UsersControllerTest extends FunctionalTestCase
         $response = $controller->createAction($params);
 
         $this->assertTrue($response['success']);
-        /*
-         * @var User[]
-         */
+
+        /* @var User[] $userList */
         $userList = static::$em->getRepository(User::clazz())->findAll();
 
         $lastUser = array_pop($userList);
 
         $this->assertEquals('test1@test.com', $lastUser->getEmail());
-        $this->assertEquals($userMeta, $lastUser->getMeta());
+        $this->assertArrayHasKey('modera_security', $lastUser->getMeta());
+        $this->assertArrayHasKey('used_passwords', $lastUser->getMeta()['modera_security']);
+        $lastUserMeta = $lastUser->getMeta();
+        unset($lastUserMeta['modera_security']);
+        $this->assertEquals($userMeta, $lastUserMeta);
+        $lastUser->setMeta($lastUserMeta);
 
         return $lastUser;
     }
@@ -201,15 +205,15 @@ class UsersControllerTest extends FunctionalTestCase
         $response = $controller->createAction($params);
 
         $this->assertTrue($response['success']);
-        /*
-         * @var User[]
-         */
+        /* @var User[] $userList */
         $userList = static::$em->getRepository(User::clazz())->findAll();
 
         $lastUser = array_pop($userList);
 
         $this->assertEquals('test3@test.com', $lastUser->getEmail());
-        $this->assertEquals(array(), $lastUser->getMeta());
+        $lastUserMeta = $lastUser->getMeta();
+        unset($lastUserMeta['modera_security']); // we are not going to be checking "password rotation" logic here
+        $this->assertEquals(array(), $lastUserMeta);
 
         return $lastUser;
     }
