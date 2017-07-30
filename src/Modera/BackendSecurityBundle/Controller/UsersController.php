@@ -145,7 +145,8 @@ class UsersController extends AbstractCrudController
                     $plainPassword = $self->generatePassword();
                 }
 
-                $self->encodeAndSetPassword($entity, $plainPassword);
+                $this->getPasswordManager()->encodeAndSetPassword($entity, $plainPassword);
+
                 if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
                     $this->getMailService()->sendPassword($entity, $plainPassword);
                 }
@@ -178,7 +179,7 @@ class UsersController extends AbstractCrudController
                     }
                     $activityMgr->info($activityMsg, $activityContext);
                 } else if (isset($params['plainPassword']) && $params['plainPassword']) {
-                    $self->encodeAndSetPassword($entity, $params['plainPassword']);
+                    $this->getPasswordManager()->encodeAndSetPassword($entity, $params['plainPassword']);
                     if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
                         $this->getMailService()->sendPassword($entity, $params['plainPassword']);
                     }
@@ -265,21 +266,6 @@ class UsersController extends AbstractCrudController
         $generator = $this->get('modera_security.password_strength.password_generator');
 
         return $generator->generatePassword();
-    }
-
-    /**
-     * @param User $user
-     * @param $plainPassword
-     */
-    private function encodeAndSetPassword(User $user, $plainPassword)
-    {
-        /* @var EncoderFactoryInterface $factory */
-        $factory = $this->get('security.encoder_factory');
-        $encoder = $factory->getEncoder($user);
-
-        $password = $encoder->encodePassword($plainPassword, $user->getSalt());
-        $user->setPassword($password);
-        $user->eraseCredentials();
     }
 
     /**
