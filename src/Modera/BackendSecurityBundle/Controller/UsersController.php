@@ -4,6 +4,7 @@ namespace Modera\BackendSecurityBundle\Controller;
 
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\Entity\User;
+use Modera\SecurityBundle\PasswordStrength\BadPasswordException;
 use Modera\SecurityBundle\PasswordStrength\PasswordManager;
 use Modera\SecurityBundle\Service\UserService;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
@@ -11,6 +12,7 @@ use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
 use Modera\ServerCrudBundle\Hydration\HydrationProfile;
 use Modera\ServerCrudBundle\Persistence\OperationResult;
 use Modera\FoundationBundle\Translation\T;
+use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
 use Modera\ServerCrudBundle\Validation\ValidationResult;
 use Psr\Log\LoggerInterface;
 use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filter;
@@ -147,72 +149,69 @@ class UsersController extends AbstractCrudController
                     $this->getMailService()->sendPassword($entity, $plainPassword);
                 }
             },
-            'map_data_on_update' => function (array $params, User $entity, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
-                $defaultMapper->mapData($params, $entity);
+            'map_data_on_update' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
+                $defaultMapper->mapData($params, $user);
 
                 /* @var LoggerInterface $activityMgr */
                 $activityMgr = $container->get('modera_activity_logger.manager.activity_manager');
-                /* @var TokenStorageInterface $ts */
-                $ts = $container->get('security.token_storage');
 
                 if (isset($params['active'])) {
                     /* @var UserService $userService */
                     $userService = $container->get('modera_security.service.user_service');
                     if ($params['active']) {
-                        $userService->enable($entity);
-                        $activityMsg = T::trans('Profile enabled for user "%user%".', array('%user%' => $entity->getUsername()));
+                        $userService->enable($user);
+                        $activityMsg = T::trans('Profile enabled for user "%user%".', array('%user%' => $user->getUsername()));
                         $activityContext = array(
                             'type' => 'user.profile_enabled',
-                            'author' => $ts->getToken()->getUser()->getId(),
+                            'author' => $this->getUser()->getId(),
                         );
                     } else {
-                        $userService->disable($entity);
-                        $activityMsg = T::trans('Profile disabled for user "%user%".', array('%user%' => $entity->getUsername()));
+                        $userService->disable($user);
+                        $activityMsg = T::trans('Profile disabled for user "%user%".', array('%user%' => $user->getUsername()));
                         $activityContext = array(
                             'type' => 'user.profile_disabled',
-                            'author' => $ts->getToken()->getUser()->getId(),
+                            'author' => $this->getUser()->getId(),
                         );
                     }
                     $activityMgr->info($activityMsg, $activityContext);
                 } else if (isset($params['plainPassword']) && $params['plainPassword']) {
-                    $this->getPasswordManager()->encodeAndSetPassword($entity, $params['plainPassword']);
-                    if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
-                        $this->getMailService()->sendPassword($entity, $params['plainPassword']);
-                    }
+                    // Password encoding and setting is done in "updated_entity_validator"
 
-                    $activityMsg = T::trans('Password has been changed for user "%user%".', array('%user%' => $entity->getUsername()));
+                    $activityMsg = T::trans('Password has been changed for user "%user%".', array('%user%' => $user->getUsername()));
                     $activityContext = array(
                         'type' => 'user.password_changed',
-                        'author' => $ts->getToken()->getUser()->getId(),
+                        'author' => $this->getUser()->getId(),
                     );
                     $activityMgr->info($activityMsg, $activityContext);
                 } else {
-                    $activityMsg = T::trans('Profile data is changed for user "%user%".', array('%user%' => $entity->getUsername()));
+                    $activityMsg = T::trans('Profile data is changed for user "%user%".', array('%user%' => $user->getUsername()));
                     $activityContext = array(
                         'type' => 'user.profile_updated',
-                        'author' => $ts->getToken()->getUser()->getId(),
+                        'author' => $this->getUser()->getId(),
                     );
                     $activityMgr->info($activityMsg, $activityContext);
                 }
             },
-            'updated_entity_validator' => function (array $params, User $user) {
-                $result = new ValidationResult();
-
+            'updated_entity_validator' => function (array $params, User $user, EntityValidatorInterface $validator, array $config) {
                 $isBatchUpdatedBeingPerformed = !isset($params['record']);
                 if ($isBatchUpdatedBeingPerformed) {
-                    return $result;
+                    // Because of bug in AbstractCrudController (see MF-UPGRADE3.0 and search for "$recordParams" keyword)
+                    // it is tricky to perform proper validation here, but anyway it not likely that at any
+                    // time we are going to be setting passwords using a batch operation
+                    return new ValidationResult();
                 }
 
+                $result = $validator->validate($user, $config);
+
                 $params = $params['record'];
-
-                $result = new ValidationResult();
-
                 if (isset($params['plainPassword']) && $params['plainPassword']) {
-                    $violations = $this->getPasswordManager()->validatePassword($params['plainPassword']);
-                    if (count($violations)) {
-                        foreach ($violations as $violation) {
-                            $result->addFieldError('plainPassword', $violation->getMessage());
-                        }
+                    try {
+                        // We are force to do it here because we have no access to validation in
+                        // "map_data_on_update"
+                        $this->getPasswordManager()->encodeAndSetPassword($user, $params['plainPassword']);
+                        $this->getMailService()->sendPassword($user, $params['plainPassword']);
+                    } catch (BadPasswordException $e) {
+                        $result->addFieldError('plainPassword', $e->getMessage());
                     }
                 }
 
