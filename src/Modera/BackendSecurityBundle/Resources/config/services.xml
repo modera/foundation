@@ -73,5 +73,11 @@
 
             <tag name="modera_mjr_integration.config.config_mergers_provider" />
         </service>
+
+        <service id="modera_backend_security.contributions.service_definitions_provider"
+                 class="Modera\BackendSecurityBundle\Contributions\ServiceDefinitionsProvider">
+
+            <tag name="modera_mjr_integration.csdi.service_definitions_provider" />
+        </service>
     </services>
 </container>

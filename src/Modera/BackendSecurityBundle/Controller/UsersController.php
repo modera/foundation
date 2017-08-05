@@ -4,9 +4,7 @@ namespace Modera\BackendSecurityBundle\Controller;
 
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\Entity\User;
-use Modera\SecurityBundle\PasswordStrength\PasswordGenerator;
 use Modera\SecurityBundle\PasswordStrength\PasswordManager;
-use Modera\SecurityBundle\PasswordStrength\StrongPassword;
 use Modera\SecurityBundle\Service\UserService;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
@@ -21,8 +19,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Modera\BackendSecurityBundle\Service\MailService;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -142,7 +138,7 @@ class UsersController extends AbstractCrudController
                 if (isset($params['plainPassword']) && $params['plainPassword']) {
                     $plainPassword = $params['plainPassword'];
                 } else {
-                    $plainPassword = $self->generatePassword();
+                    $plainPassword = $this->getPasswordManager()->generatePassword();
                 }
 
                 $this->getPasswordManager()->encodeAndSetPassword($entity, $plainPassword);
@@ -245,27 +241,50 @@ class UsersController extends AbstractCrudController
      */
     public function generatePasswordAction(array $params)
     {
-        $this->denyAccessUnlessGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+        /* @var User $authenticatedUser */
+        $authenticatedUser = $this->getUser();
 
-        $plainPassword = $this->generatePassword();
+        $targetUser = null;
+        if (isset($params['userId'])) {
+            /* @var User $requestedUser */
+            $requestedUser = $this
+                ->getDoctrine()
+                ->getRepository(User::class)
+                ->find($params['userId'])
+            ;
+
+            if ($requestedUser) {
+                if (!$authenticatedUser->isEqualTo($requestedUser)) {
+                    $this->denyAccessUnlessGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+                }
+
+                $targetUser = $requestedUser;
+            } else {
+                throw $this->createAccessDeniedException();
+            }
+        } else {
+            $targetUser = $authenticatedUser;
+        }
 
         return array(
             'success' => true,
             'result' => array(
-                'plainPassword' => $plainPassword,
+                'plainPassword' => $this->getPasswordManager()->generatePassword($targetUser),
             ),
         );
     }
 
     /**
-     * @return string
+     * @Remote
      */
-    private function generatePassword()
+    public function isPasswordRotationNeededAction(array $params)
     {
-        /* @var PasswordManager $pm */
-        $pm = $this->get('modera_security.password_strength.password_manager');
-
-        return $pm->generatePassword();
+        return array(
+            'success' => true,
+            'result' => array(
+                'isRotationNeeded' => $this->getPasswordManager()->isItTimeToRotatePassword($this->getUser()),
+            ),
+        );
     }
 
     /**

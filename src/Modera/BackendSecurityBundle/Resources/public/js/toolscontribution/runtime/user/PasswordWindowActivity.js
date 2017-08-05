@@ -13,12 +13,6 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PasswordWindo
         return 'edit-password';
     },
 
-    getSecurityConfig: function() {
-        return {
-            role: 'ROLE_MANAGE_USER_PROFILES'
-        }
-    },
-
     // override
     doCreateUi: function(params, callback) {
         var requestParams = {
@@ -31,7 +25,11 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PasswordWindo
         };
 
         Actions.ModeraBackendSecurity_Users.get(requestParams, function(response) {
-            var window = Ext.create('Modera.backend.security.toolscontribution.view.user.PasswordWindow');
+            var windowConfig = {};
+            if (params.hasOwnProperty('rotation')) {
+                windowConfig.passwordRotation = params.rotation;
+            }
+            var window = Ext.create('Modera.backend.security.toolscontribution.view.user.PasswordWindow', windowConfig);
 
             window.loadData(response.result);
 

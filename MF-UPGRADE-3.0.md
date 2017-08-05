@@ -84,3 +84,4 @@ names, old ones will be removed in 3.0.
  without BC break because we it is not possible to change a signature of methods defined in an interface.
  * Remove deprecated \Modera\FileRepositoryBundle\StoredFile\UrlGeneratorInterface and 
  \Modera\FileRepositoryBundle\StoredFile\UrlGenerator.
+ * modera_security/password_strength must be enabled by default, remove "enabled" flag and corresponding logic 
