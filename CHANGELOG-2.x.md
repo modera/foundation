@@ -2,6 +2,7 @@
 
 ## 2.56.0 (not released yet, in development)
 
+* [MPFE-1019][ModeraBackendTranslationsToolBundle] UI improvements
 * [MPFE-1017][ModeraMjrIntegrationBundle] Moment.js downgraded to v2.17.1 && added ability to change it from config file
     ``` yaml
     modera_mjr_integration:

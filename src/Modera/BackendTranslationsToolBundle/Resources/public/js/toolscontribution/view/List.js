@@ -6,6 +6,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
     alias: 'widget.modera-backend-translations-tool-list',
 
     requires: [
+        'Ext.Button',
         'MFC.container.Header',
         'MFC.container.Message',
         //'MFC.HasSelectionAwareComponentsPlugin',
@@ -60,7 +61,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
         if (config['filters'].length) {
             toolbarItems.push({
                 xtype: 'box',
-                html: 'Show:'
+                html: '&nbsp;'
             });
             Ext.each(config['filters'], function(filter, index) {
                 toolbarItems.push({
@@ -81,7 +82,8 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                     timeout: 800
                 })],
                 enableKeyEvents: true,
-                height: 30,
+                //height: 30,
+                flex: 1,
                 value: filterValue,
                 tid: 'filterInput'
             });
@@ -146,27 +148,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                     iconCls: 'modera-backend-translations-tool-tools-icon',
                     title: me.titleText,
                     margin: '0 0 9 0',
-                    items: [
-                        '->'
-                        /*{
-                            itemId: 'applications',
-                            xtype: 'combo',
-                            editable: false,
-                            store: Ext.create('Ext.data.Store', {
-                                fields: ['id', 'name'],
-                                data : []
-                            }),
-                            width:320,
-                            queryMode: 'local',
-                            displayField: 'name',
-                            valueField: 'id'
-                        },
-                        {
-                            glyph: FontAwesome.resolve('wrench'),
-                            text: 'Settings...',
-                            scale: 'medium'
-                        },*/
-                    ]
+                    items: toolbarItems
                 },
                 {
                     dock: 'top',
@@ -195,14 +177,15 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                 {
                     dock: 'top',
                     xtype: 'toolbar',
+                    extensionPoint: 'extraActions',
                     //padding: 2,
                     items: [
                         {
+                            tid: 'importBtn',
                             itemId: 'import',
                             iconCls: 'icon-import-24',
                             text: me.importBtnText,
-                            scale: 'medium',
-                            tid: 'importBtn'
+                            scale: 'medium'
                         },
                         {
                             itemId: 'delete',
@@ -215,7 +198,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                             tid: 'deleteTranslationToken'
                         },
                         '->'
-                    ].concat(toolbarItems)
+                    ]
                 },
                 {
                     dock: 'bottom',
@@ -265,6 +248,28 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
         );
 
         me.assignListeners();
+    },
+
+    // public
+    applyFilter: function(value) {
+        var me = this;
+        var field = me.down('#filter');
+        field.setValue(value);
+        field.fireEvent('keyup', field);
+    },
+
+    // public
+    getFilterQwerty: function() {
+        var me = this;
+
+        var id = me.down('button[toggleGroup=show][pressed=true]').getItemId();
+
+        var filter = me.down('#filter').getValue();
+        if (filter.length) {
+            id += '-' + filter;
+        }
+
+        return id;
     },
 
     // public

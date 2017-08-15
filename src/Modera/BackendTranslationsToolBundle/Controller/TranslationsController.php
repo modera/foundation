@@ -66,6 +66,7 @@ class TranslationsController extends AbstractCrudController
                 if ($filterValue) {
                     $params['filter'] = [
                         [
+                            array('property' => 'bundleName', 'value' => 'eq:'.$filterValue),
                             array('property' => 'tokenName', 'value' => 'like:%'.$filterValue.'%'),
                             array(
                                 'property' => 'languageTranslationTokens.translation',

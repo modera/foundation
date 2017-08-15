@@ -37,6 +37,13 @@ Ext.define('Modera.backend.translationstool.toolscontribution.runtime.EditTransl
     attachListeners: function(ui) {
         var me = this;
 
+        ui.on('filterandclose', function(window, filterValue) {
+            if (me.section) {
+                me.section.fireEvent('applyfilter', filterValue);
+            }
+            window.close();
+        });
+
         ui.on('saveandclose', function(window) {
             var values = window.down('form').getForm().getValues();
             values['isNew'] = false;
