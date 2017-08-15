@@ -60,7 +60,7 @@ class TranslationToken
     private $isObsolete = false;
 
     /**
-     * See {@class \Modera\TranslationsBundle\Listener\LanguageTranslationTokenListener} for details.
+     * See {@class \Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener} for details.
      *
      * @var array
      * @ORM\Column(type="json_array", nullable=false)

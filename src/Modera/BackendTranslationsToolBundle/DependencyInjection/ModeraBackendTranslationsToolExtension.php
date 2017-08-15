@@ -30,6 +30,8 @@ class ModeraBackendTranslationsToolExtension extends Extension
 
         if (extension_loaded('apc') && ini_get('apc.enabled')) {
             $container->setAlias('modera_backend_translations_tool.cache', 'modera_backend_translations_tool.apc_cache');
+        } else if (extension_loaded('apcu') && ini_get('apc.enabled')) {
+            $container->setAlias('modera_backend_translations_tool.cache', 'modera_backend_translations_tool.apcu_cache');
         } else {
             $container->setAlias('modera_backend_translations_tool.cache', 'modera_backend_translations_tool.php_file_cache');
         }

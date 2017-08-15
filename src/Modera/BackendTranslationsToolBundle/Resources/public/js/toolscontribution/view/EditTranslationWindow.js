@@ -42,13 +42,28 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.EditTranslati
                     {
                         name: 'bundleName',
                         fieldLabel: me.bundleNameLabelText,
-                        emptyText: me.placeHolderText
+                        renderer: function(value, field) {
+                            if (!this.rndTpl) {
+                                this.rndTpl = new Ext.XTemplate(
+                                    '<a href="#">{[values.bundleName]}</a>'
+                                );
+                            }
+                            return this.rndTpl.apply({
+                                bundleName: value
+                            });
+                        },
+                        listeners: {
+                            afterrender: function(view) {
+                                view.getEl().on('click', function(e) {
+                                    e.stopEvent();
+                                    me.fireEvent('filterandclose', me, view.value);
+                                })
+                            }
+                        }
                     },
                     {
-
                         name: 'tokenName',
                         fieldLabel: me.tokenNameLabelText,
-                        emptyText: me.placeHolderText,
                         listeners: {
                             resize: function(field, width, height) {
                                 if (height > 200) {

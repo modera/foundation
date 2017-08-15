@@ -16,6 +16,10 @@
                  class="Doctrine\Common\Cache\ApcCache">
         </service>
 
+        <service id="modera_backend_translations_tool.apcu_cache"
+                 class="Doctrine\Common\Cache\ApcuCache">
+        </service>
+
         <service id="modera_backend_translations_tool.contributions.filters_provider"
                  class="Modera\BackendTranslationsToolBundle\Contributions\FiltersProvider">
 

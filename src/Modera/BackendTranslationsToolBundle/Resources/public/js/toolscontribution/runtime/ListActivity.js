@@ -157,6 +157,12 @@ Ext.define('Modera.backend.translationstool.toolscontribution.runtime.ListActivi
     attachStateListeners: function(ui) {
         var me = this;
 
+        if (me.section) {
+            me.section.on('applyfilter', function (filterValue) {
+                ui.applyFilter(filterValue);
+            });
+        }
+
         ui.on('filterchanged', function(sourceComponent, params) {
             me.executionContext.updateParams(me, {
                 show: params.id
