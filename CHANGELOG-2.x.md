@@ -2,6 +2,16 @@
 
 ## 2.56.0 (not released yet, in development)
 
+* [MPFE-1014] A unified password management API is added - Modera\SecurityBundle\PasswordStrength. Using this API a 
+password rotation, strength validation and other operations are implemented. For more information regarding how to upgrade
+your code to leverage the API see the UPGRADE-2.x.md file. Here's a short summary of deprecated things and new alternatives:
+
+| Old                                                                                                              | New alternative                                                                                                                    |
+|------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| \Modera\BackendSecurityBundle\Service\MailService and \Modera\BackendSecurityBundle\Service\MailServiceInterface | \Modera\SecurityBundle\PasswordStrength\Mail\MailServiceInterface, \Modera\SecurityBundle\PasswordStrength\Mail\DefaultMailService |
+| Semantic config modera_backend_security's keys - "mail_service" and "mail_sender"                                | See modera_security/password_strength/mail                                                                                         |
+|                                                                                                                  |                                                                                                                                    |
+
 * [MPFE-1019][ModeraBackendTranslationsToolBundle] UI improvements
 * [MPFE-1017][ModeraMjrIntegrationBundle] Moment.js downgraded to v2.17.1 && added ability to change it from config file
     ``` yaml
