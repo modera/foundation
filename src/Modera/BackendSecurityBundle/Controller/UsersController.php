@@ -134,8 +134,8 @@ class UsersController extends AbstractCrudController
                     'modera-backend-security-group-groupusers' => HydrationProfile::create(false)->useGroups(array('compact-list')),
                 ),
             ),
-            'map_data_on_create' => function (array $params, User $entity, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
-                $defaultMapper->mapData($params, $entity);
+            'map_data_on_create' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
+                $defaultMapper->mapData($params, $user);
 
                 if (isset($params['plainPassword']) && $params['plainPassword']) {
                     $plainPassword = $params['plainPassword'];
@@ -143,10 +143,10 @@ class UsersController extends AbstractCrudController
                     $plainPassword = $this->getPasswordManager()->generatePassword();
                 }
 
-                $this->getPasswordManager()->encodeAndSetPassword($entity, $plainPassword);
-
                 if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
-                    $this->getMailService()->sendPassword($entity, $plainPassword);
+                    $this->getPasswordManager()->encodeAndSetPasswordAndThenEmailIt($user, $plainPassword);
+                } else {
+                    $this->getPasswordManager()->encodeAndSetPassword($user, $plainPassword);
                 }
             },
             'map_data_on_update' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
@@ -208,8 +208,11 @@ class UsersController extends AbstractCrudController
                     try {
                         // We are force to do it here because we have no access to validation in
                         // "map_data_on_update"
-                        $this->getPasswordManager()->encodeAndSetPassword($user, $params['plainPassword']);
-                        $this->getMailService()->sendPassword($user, $params['plainPassword']);
+                        if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
+                            $this->getPasswordManager()->encodeAndSetPasswordAndThenEmailIt($user, $params['plainPassword']);
+                        } else {
+                            $this->getPasswordManager()->encodeAndSetPassword($user, $params['plainPassword']);
+                        }
                     } catch (BadPasswordException $e) {
                         $result->addFieldError('plainPassword', $e->getMessage());
                     }
@@ -284,14 +287,6 @@ class UsersController extends AbstractCrudController
                 'isRotationNeeded' => $this->getPasswordManager()->isItTimeToRotatePassword($this->getUser()),
             ),
         );
-    }
-
-    /**
-     * @return MailService
-     */
-    private function getMailService()
-    {
-        return $this->get('modera_backend_security.service.mail_service');
     }
 
     /**

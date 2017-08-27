@@ -1,6 +1,6 @@
 <?php
 
-namespace Modera\BackendSecurityBundle\Service;
+namespace Modera\SecurityBundle\PasswordStrength\Mail;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\SecurityBundle\Entity\User;
@@ -8,12 +8,10 @@ use Modera\FoundationBundle\Translation\T;
 use Modera\BackendLanguagesBundle\Entity\UserSettings;
 
 /**
- * @deprecated  Since v2.56.0, use PasswordManager::encodeAndSetPasswordAndThenEmailIt() method.
- *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class MailService implements MailServiceInterface
+class DefaultMailService implements MailServiceInterface
 {
     /**
      * @var EntityManagerInterface
@@ -35,7 +33,12 @@ class MailService implements MailServiceInterface
     private $mailSender;
 
     /**
+     * @internal Since 2.56.0, use DI service instead
+     *
+     * @param EntityManagerInterface $em
      * @param \Swift_Mailer $mailer
+     * @param string $defaultLocale
+     * @param string $mailSender
      */
     public function __construct(
         EntityManagerInterface $em,

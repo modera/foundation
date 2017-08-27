@@ -24,11 +24,11 @@ class Configuration implements ConfigurationInterface
             ->children()
                 // must contain service container ID of an \Modera\BackendSecurityBundle\Service\MailServiceInterface
                 // implementation.
-                ->scalarNode('mail_service')
+                ->scalarNode('mail_service') // deprecated since 2.56.0, use the same config under "modera_security/password_strength/mail"
                     ->cannotBeEmpty()
                     ->defaultValue('modera_backend_security.service.default_mail_service')
                 ->end()
-                ->scalarNode('mail_sender')
+                ->scalarNode('mail_sender') // deprecated since 2.56.0, use the same config under "modera_security/password_strength/mail"
                     ->defaultValue('no-reply@no-reply')
                     ->cannotBeEmpty()
                 ->end()

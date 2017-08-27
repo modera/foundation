@@ -43,6 +43,7 @@
             <tag name="modera_security.permission_categories_provider" />
         </service>
 
+        <!-- deprecated since 2.56.0, use modera_security.password_strength.mail.mail_service instead -->
         <service id="modera_backend_security.service.default_mail_service"
                  class="Modera\BackendSecurityBundle\Service\MailService">
 
