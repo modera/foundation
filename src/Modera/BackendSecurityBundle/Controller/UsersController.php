@@ -4,18 +4,23 @@ namespace Modera\BackendSecurityBundle\Controller;
 
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\Entity\User;
+use Modera\SecurityBundle\PasswordStrength\BadPasswordException;
+use Modera\SecurityBundle\PasswordStrength\PasswordManager;
 use Modera\SecurityBundle\Service\UserService;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
 use Modera\ServerCrudBundle\Hydration\HydrationProfile;
 use Modera\ServerCrudBundle\Persistence\OperationResult;
 use Modera\FoundationBundle\Translation\T;
+use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
+use Modera\ServerCrudBundle\Validation\ValidationResult;
 use Psr\Log\LoggerInterface;
+use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filter;
+use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filters;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Modera\BackendSecurityBundle\Service\MailService;
-use Modera\DirectBundle\Annotation\Remote;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -54,6 +59,32 @@ class UsersController extends AbstractCrudController
                         }
                     },
                     'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
+                    'get' => function(AuthorizationCheckerInterface $ac, array $params) {
+                        $userId = null;
+                        if (isset($params['filter'])) {
+                            foreach (new Filters($params['filter']) as $filter) {
+                                /* @var Filter $filter */
+
+                                if ($filter->getProperty() == 'id' && $filter->getComparator() == Filter::COMPARATOR_EQUAL) {
+                                    $userId = $filter->getValue();
+                                }
+                            }
+                        }
+
+                        $isPossiblyEditingOwnProfile = null !== $userId;
+                        if ($isPossiblyEditingOwnProfile) {
+                            /* @var TokenStorageInterface $ts */
+                            $ts = $this->get('security.token_storage');
+                            /* @var User $user */
+                            $user = $ts->getToken()->getUser();
+
+                            if ($user->getId() == $userId) {
+                                return true;
+                            }
+                        }
+
+                        return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+                    },
                     'list' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
                 ),
             ),
@@ -103,71 +134,91 @@ class UsersController extends AbstractCrudController
                     'modera-backend-security-group-groupusers' => HydrationProfile::create(false)->useGroups(array('compact-list')),
                 ),
             ),
-            'map_data_on_create' => function (array $params, User $entity, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
-                $defaultMapper->mapData($params, $entity);
+            'map_data_on_create' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
+                $defaultMapper->mapData($params, $user);
 
                 if (isset($params['plainPassword']) && $params['plainPassword']) {
                     $plainPassword = $params['plainPassword'];
                 } else {
-                    $plainPassword = $self->generatePassword();
+                    $plainPassword = $this->getPasswordManager()->generatePassword();
                 }
 
-                $self->setPassword($entity, $plainPassword);
                 if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
-                    /* @var MailService $mailService */
-                    $mailService = $container->get('modera_backend_security.service.mail_service');
-                    $mailService->sendPassword($entity, $plainPassword);
+                    $this->getPasswordManager()->encodeAndSetPasswordAndThenEmailIt($user, $plainPassword);
+                } else {
+                    $this->getPasswordManager()->encodeAndSetPassword($user, $plainPassword);
                 }
             },
-            'map_data_on_update' => function (array $params, User $entity, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
-                $defaultMapper->mapData($params, $entity);
+            'map_data_on_update' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
+                $defaultMapper->mapData($params, $user);
 
                 /* @var LoggerInterface $activityMgr */
                 $activityMgr = $container->get('modera_activity_logger.manager.activity_manager');
-                /* @var TokenStorageInterface $ts */
-                $ts = $container->get('security.token_storage');
 
                 if (isset($params['active'])) {
                     /* @var UserService $userService */
                     $userService = $container->get('modera_security.service.user_service');
                     if ($params['active']) {
-                        $userService->enable($entity);
-                        $activityMsg = T::trans('Profile enabled for user "%user%".', array('%user%' => $entity->getUsername()));
+                        $userService->enable($user);
+                        $activityMsg = T::trans('Profile enabled for user "%user%".', array('%user%' => $user->getUsername()));
                         $activityContext = array(
                             'type' => 'user.profile_enabled',
-                            'author' => $ts->getToken()->getUser()->getId(),
+                            'author' => $this->getUser()->getId(),
                         );
                     } else {
-                        $userService->disable($entity);
-                        $activityMsg = T::trans('Profile disabled for user "%user%".', array('%user%' => $entity->getUsername()));
+                        $userService->disable($user);
+                        $activityMsg = T::trans('Profile disabled for user "%user%".', array('%user%' => $user->getUsername()));
                         $activityContext = array(
                             'type' => 'user.profile_disabled',
-                            'author' => $ts->getToken()->getUser()->getId(),
+                            'author' => $this->getUser()->getId(),
                         );
                     }
                     $activityMgr->info($activityMsg, $activityContext);
                 } else if (isset($params['plainPassword']) && $params['plainPassword']) {
-                    $self->setPassword($entity, $params['plainPassword']);
-                    if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
-                        /* @var MailService $mailService */
-                        $mailService = $container->get('modera_backend_security.service.mail_service');
-                        $mailService->sendPassword($entity, $params['plainPassword']);
-                    }
+                    // Password encoding and setting is done in "updated_entity_validator"
 
-                    $activityMsg = T::trans('Password has been changed for user "%user%".', array('%user%' => $entity->getUsername()));
+                    $activityMsg = T::trans('Password has been changed for user "%user%".', array('%user%' => $user->getUsername()));
                     $activityContext = array(
                         'type' => 'user.password_changed',
-                        'author' => $ts->getToken()->getUser()->getId(),
+                        'author' => $this->getUser()->getId(),
                     );
                     $activityMgr->info($activityMsg, $activityContext);
                 } else {
-                    $activityMsg = T::trans('Profile data is changed for user "%user%".', array('%user%' => $entity->getUsername()));
+                    $activityMsg = T::trans('Profile data is changed for user "%user%".', array('%user%' => $user->getUsername()));
                     $activityContext = array(
                         'type' => 'user.profile_updated',
-                        'author' => $ts->getToken()->getUser()->getId(),
+                        'author' => $this->getUser()->getId(),
                     );
                     $activityMgr->info($activityMsg, $activityContext);
                 }
+            },
+            'updated_entity_validator' => function (array $params, User $user, EntityValidatorInterface $validator, array $config) {
+                $isBatchUpdatedBeingPerformed = !isset($params['record']);
+                if ($isBatchUpdatedBeingPerformed) {
+                    // Because of bug in AbstractCrudController (see MF-UPGRADE3.0 and search for "$recordParams" keyword)
+                    // it is tricky to perform proper validation here, but anyway it not likely that at any
+                    // time we are going to be setting passwords using a batch operation
+                    return new ValidationResult();
+                }
+
+                $result = $validator->validate($user, $config);
+
+                $params = $params['record'];
+                if (isset($params['plainPassword']) && $params['plainPassword']) {
+                    try {
+                        // We are force to do it here because we have no access to validation in
+                        // "map_data_on_update"
+                        if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
+                            $this->getPasswordManager()->encodeAndSetPasswordAndThenEmailIt($user, $params['plainPassword']);
+                        } else {
+                            $this->getPasswordManager()->encodeAndSetPassword($user, $params['plainPassword']);
+                        }
+                    } catch (BadPasswordException $e) {
+                        $result->addFieldError('plainPassword', $e->getMessage());
+                    }
+                }
+
+                return $result;
             },
             'remove_entities_handler' => function ($entities, $params, $defaultHandler, ContainerInterface $container) {
                 /* @var UserService $userService */
@@ -192,42 +243,57 @@ class UsersController extends AbstractCrudController
      */
     public function generatePasswordAction(array $params)
     {
-        $plainPassword = $this->generatePassword();
+        /* @var User $authenticatedUser */
+        $authenticatedUser = $this->getUser();
+
+        $targetUser = null;
+        if (isset($params['userId'])) {
+            /* @var User $requestedUser */
+            $requestedUser = $this
+                ->getDoctrine()
+                ->getRepository(User::class)
+                ->find($params['userId'])
+            ;
+
+            if ($requestedUser) {
+                if (!$authenticatedUser->isEqualTo($requestedUser)) {
+                    $this->denyAccessUnlessGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+                }
+
+                $targetUser = $requestedUser;
+            } else {
+                throw $this->createAccessDeniedException();
+            }
+        } else {
+            $targetUser = $authenticatedUser;
+        }
 
         return array(
             'success' => true,
             'result' => array(
-                'plainPassword' => $plainPassword,
+                'plainPassword' => $this->getPasswordManager()->generatePassword($targetUser),
             ),
         );
     }
 
     /**
-     * @param int $length
-     *
-     * @return string
+     * @Remote
      */
-    private function generatePassword($length = 8)
+    public function isPasswordRotationNeededAction(array $params)
     {
-        $plainPassword = '';
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        for ($i = 0; $i < $length; ++$i) {
-            $plainPassword .= $characters[rand(0, strlen($characters) - 1)];
-        }
-
-        return $plainPassword;
+        return array(
+            'success' => true,
+            'result' => array(
+                'isRotationNeeded' => $this->getPasswordManager()->isItTimeToRotatePassword($this->getUser()),
+            ),
+        );
     }
 
     /**
-     * @param User $user
-     * @param $plainPassword
+     * @return PasswordManager
      */
-    private function setPassword(User $user, $plainPassword)
+    private function getPasswordManager()
     {
-        $factory = $this->get('security.encoder_factory');
-        $encoder = $factory->getEncoder($user);
-        $password = $encoder->encodePassword($plainPassword, $user->getSalt());
-        $user->setPassword($password);
-        $user->eraseCredentials();
+        return $this->get('modera_security.password_strength.password_manager');
     }
 }

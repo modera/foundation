@@ -6,6 +6,8 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 
 /**
+ * @internal
+ *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2017 Modera Foundation
  */
@@ -14,14 +16,14 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     /**
      * @var array
      */
-    private $config = array();
+    private $semanticConfig = array();
 
     /**
-     * @param array $config
+     * @param array $semanticConfig
      */
-    public function __construct(array $config = array())
+    public function __construct(array $semanticConfig = array())
     {
-        $this->config = $config;
+        $this->semanticConfig = $semanticConfig;
     }
 
     /**
@@ -33,7 +35,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     {
         return array_merge($currentConfig, array(
             'modera_backend_security' => array(
-                'hideDeleteUserFunctionality' => $this->config['hide_delete_user_functionality'],
+                'hideDeleteUserFunctionality' => $this->semanticConfig['hide_delete_user_functionality'],
             ),
         ));
     }

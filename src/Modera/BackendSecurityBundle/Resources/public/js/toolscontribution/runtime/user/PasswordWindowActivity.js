@@ -13,12 +13,6 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PasswordWindo
         return 'edit-password';
     },
 
-    getSecurityConfig: function() {
-        return {
-            role: 'ROLE_MANAGE_USER_PROFILES'
-        }
-    },
-
     // override
     doCreateUi: function(params, callback) {
         var requestParams = {
@@ -31,7 +25,11 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PasswordWindo
         };
 
         Actions.ModeraBackendSecurity_Users.get(requestParams, function(response) {
-            var window = Ext.create('Modera.backend.security.toolscontribution.view.user.PasswordWindow');
+            var windowConfig = {};
+            if (params.hasOwnProperty('rotation')) {
+                windowConfig.passwordRotation = params.rotation;
+            }
+            var window = Ext.create('Modera.backend.security.toolscontribution.view.user.PasswordWindow', windowConfig);
 
             window.loadData(response.result);
 
@@ -56,7 +54,9 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PasswordWindo
         });
 
         ui.on('generatePassword', function(window) {
-            Actions.ModeraBackendSecurity_Users.generatePassword({}, function(response) {
+            var values = window.down('form').getForm().getValues();
+
+            Actions.ModeraBackendSecurity_Users.generatePassword({ userId: values.id }, function(response) {
                 if (response.success) {
                     window.setPassword(response.result.plainPassword);
                 } else {

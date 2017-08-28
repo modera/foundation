@@ -84,3 +84,10 @@ names, old ones will be removed in 3.0.
  without BC break because we it is not possible to change a signature of methods defined in an interface.
  * Remove deprecated \Modera\FileRepositoryBundle\StoredFile\UrlGeneratorInterface and 
  \Modera\FileRepositoryBundle\StoredFile\UrlGenerator.
+ * modera_security/password_strength must be enabled by default, remove "enabled" flag and corresponding logic
+ * See \Modera\ServerCrudBundle\Controller\AbstractCrudController::batchUpdateAction FIXME section, we need to pass $recordParams
+ instead of just $params
+ * \Modera\BackendSecurityBundle\Service\MailService and its interface and DI service has been deprecated, classes
+ from package Modera\SecurityBundle\PasswordStrength\Mail must be used instead ; Semantic config modera_backend_security/mail_service, 
+ mail_sender deprecated in favor of modera_security/password_strength/mailer ; \Modera\BackendSecurityBundle\DependencyInjection\ServiceAliasCompilerPass
+ should be removed

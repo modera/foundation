@@ -43,6 +43,7 @@
             <tag name="modera_security.permission_categories_provider" />
         </service>
 
+        <!-- deprecated since 2.56.0, use modera_security.password_strength.mail.mail_service instead -->
         <service id="modera_backend_security.service.default_mail_service"
                  class="Modera\BackendSecurityBundle\Service\MailService">
 
@@ -72,6 +73,12 @@
             <argument>%modera_backend_security.config%</argument>
 
             <tag name="modera_mjr_integration.config.config_mergers_provider" />
+        </service>
+
+        <service id="modera_backend_security.contributions.service_definitions_provider"
+                 class="Modera\BackendSecurityBundle\Contributions\ServiceDefinitionsProvider">
+
+            <tag name="modera_mjr_integration.csdi.service_definitions_provider" />
         </service>
     </services>
 </container>

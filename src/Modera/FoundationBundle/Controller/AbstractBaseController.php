@@ -28,7 +28,7 @@ class AbstractBaseController extends Controller
      *
      * @return \Symfony\Component\Security\Core\SecurityContext
      *
-     * @deprecated Deprecated since version 1.1, to be removed in 2.0
+     * @deprecated Deprecated since version 1.1, to be removed in 3.0
      */
     protected function sc()
     {

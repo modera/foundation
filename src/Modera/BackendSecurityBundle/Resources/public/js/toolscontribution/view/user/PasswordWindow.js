@@ -14,8 +14,10 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
     generatePasswordBtnText: 'Generate',
     wrongPasswordText: 'Passwords must be equal',
     sendPasswordText: 'Send password to user`s e-mail',
+    passwordRotationNeededText: 'It has been a while since you have changed your password last time, for keeping your account secure please change it now.',
 
     newUser: false,
+    passwordRotation: false, // since 2.56.0
 
     // override
     constructor: function(config) {
@@ -24,16 +26,21 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
         if (config && config.newUser) {
             me.newUser = config.newUser;
         }
+        if (config && config.passwordRotation) {
+            me.passwordRotation = config.passwordRotation;
+        }
 
         var defaults = {
             tid: 'changePasswordWindow',
             title: (me.newUser)? me.recordNewTitle : me.recordTitleText,
+            hideCloseButton: me.passwordRotation,
             groupName: 'compact-list',
             resizable: false,
             autoScroll: true,
             width: 500,
             maxHeight: Ext.getBody().getViewSize().height - 60,
             actions: [
+                '->',
                 {
                     itemId: 'saveBtn',
                     disabled: true,
@@ -58,6 +65,11 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                     {
                         xtype: 'hiddenfield',
                         name: 'id'
+                    },
+                    {
+                        hidden: !me.passwordRotation,
+                        html: '<b>'+this.passwordRotationNeededText+'</b>',
+                        margin: '0 0 20 0'
                     },
                     {
                         xtype: 'fieldcontainer',
@@ -114,6 +126,11 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                 ]
             }
         };
+
+        if (me.passwordRotation) {
+            defaults.header = false;
+            defaults.onEsc = Ext.emptyFn;
+        }
 
         me.config = Ext.apply(defaults, config || {});
         me.callParent([this.config]);
