@@ -2,6 +2,12 @@
 
 ## 2.56.0 (not released yet, in development)
 
+* [MPFE-1014] Semantic configuration properties `modera_backend_security/mail_service` and `modera_security/password_strength/mailer`
+ are no longer used, instead use `modera_security/password_strength/mail`. If you need to use custom mailer to send
+ emails with a password for a user then instead of relaying on `\Modera\BackendSecurityBundle\Service\MailServiceInterface` use
+ `\Modera\SecurityBundle\PasswordStrength\Mail\MailServiceInterface` (the interface used to be declared in `ModeraBackendSecurityBundle`, 
+ but now it is in `ModeraSecurityBundle`), semantic configuration property `modera_security/password_strength/mailer/service` now 
+ should point to an implementation of MailServerInterface implementation from `ModeraSecurityBundle`.
 * [MPFE-1012][ModeraFileRepositoryBundle] Make sure that \Symfony\Bundle\SecurityBundle\SecurityBundle() is enabled in
 your kernel and there's at least one firewall and user provided configured (file repository now requires
 "security.token_storage" service to be present).
