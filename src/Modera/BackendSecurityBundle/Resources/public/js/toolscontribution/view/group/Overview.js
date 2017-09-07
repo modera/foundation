@@ -96,7 +96,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.Overview', {
                             renderer: function(v, meta, record) {
                                 return Ext.String.format(
                                     '{0} <span class="mfc-box-status modera-backend-security-box-status">{1}</span>',
-                                    record.get('name'), record.get('usersCount')
+                                    Ext.util.Format.htmlEncode(record.get('name')), record.get('usersCount')
                                 );
                             }
                         }
@@ -185,7 +185,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.Overview', {
 
         var ui = this.down('#groupUsers #users');
 
-        ui.setTitle(groupName);
+        ui.setTitle(Ext.util.Format.htmlEncode(groupName));
         ui.getStore().filterByGroup(groupId);
     }
 });

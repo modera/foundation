@@ -34,17 +34,20 @@ Ext.define('Modera.backend.dcmjr.view.GeneralSettingsPanel', {
                     {
                         name: 'site_name',
                         fieldLabel: this.siteTitleLabelText,
-                        xtype: 'mfc-inplacefield'
+                        xtype: 'mfc-inplacefield',
+                        htmlEncode: true
                     },
                     {
                         name: 'url',
                         fieldLabel: this.primaryAddressLabelText,
-                        xtype: 'mfc-inplacefield'
+                        xtype: 'mfc-inplacefield',
+                        htmlEncode: true
                     },
                     // {
                     //     name: 'home_section',
                     //     fieldLabel: this.defaultSectionLabelText,
-                    //     xtype: 'mfc-inplacefield'
+                    //     xtype: 'mfc-inplacefield',
+                    //     htmlEncode: true
                     // },
                     {
                         xtype: 'mfc-onofffield',

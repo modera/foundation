@@ -24,7 +24,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
             store: store,
             features: [{
                 ftype:'grouping',
-                groupHeaderTpl: '{name}'
+                groupHeaderTpl: '{name:htmlEncode}'
             }],
             viewConfig: {
                 loadMask: false,
@@ -65,13 +65,14 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
                 flex: 4,
                 sortable: false,
                 hideable: false,
-                closable: false
+                closable: false,
+                renderer: 'htmlEncode'
             }
         ];
         groupsStore.each(function(group) {
             columns.push(me.getCheckerColumnConfig({
                 groupId: group.get('id'),
-                text: group.get('name')
+                text: Ext.util.Format.htmlEncode(group.get('name'))
             }));
         });
 
