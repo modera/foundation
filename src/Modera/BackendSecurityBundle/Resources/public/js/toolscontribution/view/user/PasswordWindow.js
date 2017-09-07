@@ -5,6 +5,11 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
     extend: 'MFC.window.NewAndEditRecordWindow',
     alias: 'widget.modera-backend-security-user-passwordwindow',
 
+    requires: [
+        'MFC.container.Header',
+        'MFC.container.Message'
+    ],
+
     // l10n
     recordTitleText: 'Change password for "{0}"',
     recordNewTitleText: 'Create password for user',
@@ -38,6 +43,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
             resizable: false,
             autoScroll: true,
             width: 500,
+            bodyPadding: '0 10 10 10',
             maxHeight: Ext.getBody().getViewSize().height - 60,
             actions: [
                 '->',
@@ -63,16 +69,34 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                 },
                 items: [
                     {
+                        hidden: !me.passwordRotation,
+                        xtype: 'mfc-header',
+                        type: 'notification',
+                        defaults: {
+                            xtype: 'mfc-message',
+                            layout: {
+                                type: 'hbox',
+                                pack: 'center',
+                                align: 'top'
+                            }
+                        },
+                        items: [
+                            {
+                                type: 'warning',
+                                text: {
+                                    width: 425,
+                                    html: this.passwordRotationNeededText
+                                }
+                            }
+                        ]
+                    },
+                    {
                         xtype: 'hiddenfield',
                         name: 'id'
                     },
                     {
-                        hidden: !me.passwordRotation,
-                        html: '<b>'+this.passwordRotationNeededText+'</b>',
-                        margin: '0 0 20 0'
-                    },
-                    {
                         xtype: 'fieldcontainer',
+                        margin: '10 0 0 0',
                         layout: 'hbox',
                         items: [
                             {
@@ -92,13 +116,15 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                                         emptyText: me.placeHolderText,
                                         inputType: 'password',
                                         tid: 'passwordfield',
+                                        msgTarget: 'under'
                                     },
                                     {
                                         name: '_plainPassword',
                                         fieldLabel: me.repeatPasswordLabelText,
                                         emptyText: me.placeHolderText,
                                         inputType: 'password',
-                                        tid: 'passwordagainfield'
+                                        tid: 'passwordagainfield',
+                                        msgTarget: 'under'
                                     },
                                     {
                                         xtype: 'checkbox',
