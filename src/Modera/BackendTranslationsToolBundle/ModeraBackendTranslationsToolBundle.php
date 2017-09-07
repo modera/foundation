@@ -12,6 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class ModeraBackendTranslationsToolBundle extends Bundle
 {
+    const ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION = 'ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION';
+
     /**
      * {@inheritdoc}
      */

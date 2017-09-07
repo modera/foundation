@@ -6,6 +6,7 @@ use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -20,6 +21,9 @@ class LanguageTranslationsController extends AbstractCrudController
     {
         return array(
             'entity' => LanguageTranslationToken::clazz(),
+            'security' => array(
+                'role' => ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION,
+            ),
             'hydration' => array(
                 'groups' => array(
                     'main-form' => function (LanguageTranslationToken $ltt) {

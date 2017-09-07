@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Modera\BackendTranslationsToolBundle\Contributions\FiltersProvider;
+use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -23,6 +24,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class TranslationsController extends AbstractCrudController
 {
+    private function checkAccess()
+    {
+        $role = ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION;
+        if (false === $this->get('security.authorization_checker')->isGranted($role)) {
+            throw $this->createAccessDeniedException();
+        }
+    }
+
     /**
      * @return array
      */
@@ -30,6 +39,9 @@ class TranslationsController extends AbstractCrudController
     {
         return array(
             'entity' => TranslationToken::clazz(),
+            'security' => array(
+                'role' => ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION,
+            ),
             'hydration' => array(
                 'groups' => array(
                     'list' => ['id', 'source', 'bundleName', 'domain', 'tokenName', 'isObsolete', 'translations'],
@@ -48,6 +60,8 @@ class TranslationsController extends AbstractCrudController
      */
     public function listWithFiltersAction(array $params)
     {
+        $this->checkAccess();
+
         try {
             $filterId = null;
             $filterValue = null;
@@ -127,6 +141,8 @@ class TranslationsController extends AbstractCrudController
      */
     public function importAction(array $params)
     {
+        $this->checkAccess();
+
         $app = new Application($this->get('kernel'));
         $app->setAutoExit(false);
 
@@ -150,6 +166,8 @@ class TranslationsController extends AbstractCrudController
      */
     public function compileAction(array $params)
     {
+        $this->checkAccess();
+
         /* @var TranslationsCompiler $compiler */
         $compiler = $this->get('modera_translations.compiler.translations_compiler');
 
@@ -208,6 +226,8 @@ class TranslationsController extends AbstractCrudController
      */
     public function isCompileNeededAction(array $params)
     {
+        $this->checkAccess();
+
         $key = 'modera_backend_translations_tool';
         /* @var \Doctrine\Common\Cache\Cache $cache */
         $cache = $this->get($key.'.cache');

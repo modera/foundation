@@ -2,6 +2,7 @@
 
 ## 2.56.0 (not released yet, in development)
 
+* [MPFE-1030][ModeraBackendTranslationsToolBundle] Added permission for accessing `Backend/Tools/Translations`
 * [MPFE-1014] A unified password management API is added - Modera\SecurityBundle\PasswordStrength. Using this API a 
 password rotation, strength validation and other operations are implemented. For more information regarding how to upgrade
 your code to leverage the API see the UPGRADE-2.x.md file. Here's a short summary of deprecated things and new alternatives:

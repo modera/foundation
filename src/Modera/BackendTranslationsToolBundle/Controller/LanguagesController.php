@@ -4,6 +4,7 @@ namespace Modera\BackendTranslationsToolBundle\Controller;
 
 use Modera\LanguagesBundle\Entity\Language;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -18,6 +19,9 @@ class LanguagesController extends AbstractCrudController
     {
         return array(
             'entity' => Language::clazz(),
+            'security' => array(
+                'role' => ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION,
+            ),
             'hydration' => array(
                 'groups' => array(
                     'list' => ['id', 'name', 'locale', 'isEnabled'],
