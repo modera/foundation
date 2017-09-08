@@ -11,7 +11,8 @@ Ext.define('Modera.backend.configutils.view.PropertiesGrid', {
         'MF.Util',
         'Ext.grid.plugin.CellEditing',
         'MFC.grid.column.WidgetsPoolEditorColumn',
-        'Modera.backend.configutils.store.Properties'
+        'Modera.backend.configutils.store.Properties',
+        'Ext.util.Format.htmlEncode'
     ],
 
     /**
@@ -87,7 +88,7 @@ Ext.define('Modera.backend.configutils.view.PropertiesGrid', {
                             return config.columnRenderer(v, md, record);
                         }
 
-                        return record.get('readableValue');
+                        return Ext.util.Format.htmlEncode(record.get('readableValue'));
                     }
                 }
             ]

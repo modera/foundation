@@ -8,6 +8,8 @@
         <service id="modera_backend_tools_settings.contributions.tools_sections_provider"
                  class="Modera\BackendToolsSettingsBundle\Contributions\ToolsSectionsProvider">
 
+            <argument type="service" id="modera_backend_tools_settings.contributions.mjr_sections_provider" />
+
             <tag name="modera_backend_tools.sections_provider" />
         </service>
 

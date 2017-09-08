@@ -4,6 +4,7 @@ namespace Modera\BackendConfigUtilsBundle\Controller;
 
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -18,6 +19,9 @@ class DefaultController extends AbstractCrudController
     {
         return array(
             'entity' => ConfigurationEntry::clazz(),
+            'security' => array(
+                'role' => ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS,
+            ),
             'hydration' => array(
                 'groups' => array(
                     'list' => function (ConfigurationEntry $entry) {

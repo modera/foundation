@@ -8,6 +8,8 @@
         <service id="modera_dynamically_configurable_mjr.contributions.settings_sections_provider"
                  class="Modera\DynamicallyConfigurableMJRBundle\Contributions\SettingsSectionsProvider">
 
+            <argument type="service" id="security.authorization_checker" />
+
             <tag name="modera_backend_tools_settings.contributions.sections_provider" />
         </service>
 
