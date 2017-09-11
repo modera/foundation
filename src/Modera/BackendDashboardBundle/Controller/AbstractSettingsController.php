@@ -2,10 +2,12 @@
 
 namespace Modera\BackendDashboardBundle\Controller;
 
+
+use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
+use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\BackendDashboardBundle\Dashboard\DashboardInterface;
 use Modera\BackendDashboardBundle\Entity\SettingsEntityInterface;
-use Modera\ServerCrudBundle\Controller\AbstractCrudController;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
@@ -22,6 +24,9 @@ abstract class AbstractSettingsController extends AbstractCrudController
 
         return array(
             'entity' => $this->getEntityClass(),
+            'security' => array(
+                'role' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES
+            ),
             'hydration' => array(
                 'groups' => array(
                     'main' => function ($settings) use ($me) {

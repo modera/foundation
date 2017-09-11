@@ -85,13 +85,23 @@ Ext.define('Modera.backend.languages.runtime.UserSettingsWindowActivity', {
                 records.push(data);
             });
 
-            Actions.ModeraBackendLanguages_UserSettings.batchUpdate({ records: records }, function(response) {
-                if (response.success) {
-                    window.close();
-                } else {
-                    window.showErrors(response);
-                }
-            });
+            if (1 == records.length) {
+                Actions.ModeraBackendLanguages_UserSettings.update({ record: records[0] }, function(response) {
+                    if (response.success) {
+                        window.close();
+                    } else {
+                        window.showErrors(response);
+                    }
+                });
+            } else {
+                Actions.ModeraBackendLanguages_UserSettings.batchUpdate({ records: records }, function(response) {
+                    if (response.success) {
+                        window.close();
+                    } else {
+                        window.showErrors(response);
+                    }
+                });
+            }
         })
     }
 });

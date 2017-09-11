@@ -137,21 +137,23 @@ Ext.define('Modera.backend.dashboard.runtime.UserDashboardSettingsWindowActivity
 
         ui.on('update', function(w, values) {
             w.disable();
-
-            var records = [];
             if (Ext.isArray(values['id'])) {
+                var records = [];
                 Ext.each(values['id'], function(id) {
                     var data = Ext.clone(values);
                     data['id'] = id;
                     records.push(data);
                 });
-            } else {
-                records.push(values);
-            }
 
-            me.getEndpoint().batchUpdate({ records: records }, function(result) {
-                me.onLandingSectionOrDashboardSettingsUpdated(result, records);
-            })
+                me.getEndpoint().batchUpdate({ records: records }, function(result) {
+                    me.onLandingSectionOrDashboardSettingsUpdated(result, records);
+                });
+
+            } else {
+                me.getEndpoint().update({ record: values }, function(result) {
+                    me.onLandingSectionOrDashboardSettingsUpdated(result, records);
+                });
+            }
         });
     },
 

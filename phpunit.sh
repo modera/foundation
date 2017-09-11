@@ -79,7 +79,7 @@ modera/php:7.0 "vendor/bin/phpunit ${args}"
 exit_code=$?
 
 if [ "$is_daemon" = false ] ; then
-  docker rm -f mtr_mysql > /dev/null
+  docker rm -fv mtr_mysql > /dev/null
 fi
 
 exit $exit_code
