@@ -174,7 +174,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
 
     loadData: function(data) {
         var me = this;
-        me.setTitle(Ext.String.format(me.recordTitleText, data['username']));
+        me.setTitle(Ext.String.format(me.recordTitleText, Ext.util.Format.htmlEncode(data['username'])));
         me.down('form').getForm().setValues(data);
     },
 

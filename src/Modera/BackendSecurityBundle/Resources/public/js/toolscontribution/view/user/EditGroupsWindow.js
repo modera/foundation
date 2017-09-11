@@ -58,7 +58,8 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
                                     {
                                         text: me.availableGroupsText,
                                         dataIndex: 'name',
-                                        flex: 1
+                                        flex: 1,
+                                        renderer: 'htmlEncode'
                                     }
                                 ],
                                 viewConfig: {
@@ -116,7 +117,8 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
                                     {
                                         text: me.assignedGroupsText,
                                         dataIndex: 'name',
-                                        flex: 1
+                                        flex: 1,
+                                        renderer: 'htmlEncode'
                                     }
                                 ],
                                 viewConfig: {
@@ -157,7 +159,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
             me.setTitle(Ext.String.format(me.recordTitleText, title));
             me.down('#available').getStore().load();
         } else {
-            me.setTitle(Ext.String.format(me.recordTitleText, data['username']));
+            me.setTitle(Ext.String.format(me.recordTitleText, Ext.util.Format.htmlEncode(data['username'])));
             me.down('#available').getStore().filterByUser(data['id'], 'notIn');
             me.down('#assigned').getStore().filterByUser(data['id'], 'in');
         }

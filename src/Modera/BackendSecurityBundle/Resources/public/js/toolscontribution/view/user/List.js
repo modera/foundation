@@ -233,10 +233,10 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
             if (Ext.isEmpty(value)) {
                 return '<span class="mfc-empty-text">' + (msg || '-') + '</span>';
             } else if (!r.get('isActive')) {
-                return '<span class="modera-backend-security-user-disabled">' + value + '</span>';
+                return '<span class="modera-backend-security-user-disabled">' + Ext.util.Format.htmlEncode(value) + '</span>';
             }
 
-            return value;
+            return Ext.util.Format.htmlEncode(value);
         };
     },
 
