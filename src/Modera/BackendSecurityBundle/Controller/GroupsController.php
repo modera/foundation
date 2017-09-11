@@ -79,6 +79,7 @@ class GroupsController extends AbstractCrudController
                     'create' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
                     'update' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
                     'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
+                    'batchUpdate' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
                 ),
             ),
             'hydration' => array(
