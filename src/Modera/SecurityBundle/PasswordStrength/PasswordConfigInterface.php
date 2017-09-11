@@ -8,6 +8,18 @@ namespace Modera\SecurityBundle\PasswordStrength;
  */
 interface PasswordConfigInterface
 {
+    const LETTER_REQUIRED_TYPE_CAPITAL = 'capital';
+    const LETTER_REQUIRED_TYPE_NON_CAPITAL = 'non_capital';
+    const LETTER_REQUIRED_TYPE_CAPITAL_OR_NON_CAPITAL = 'capital_or_non_capital';
+    const LETTER_REQUIRED_TYPE_CAPITAL_AND_NON_CAPITAL = 'capital_and_non_capital';
+
+    const LETTER_REQUIRED_TYPES = array(
+        self::LETTER_REQUIRED_TYPE_CAPITAL,
+        self::LETTER_REQUIRED_TYPE_NON_CAPITAL,
+        self::LETTER_REQUIRED_TYPE_CAPITAL_OR_NON_CAPITAL,
+        self::LETTER_REQUIRED_TYPE_CAPITAL_AND_NON_CAPITAL,
+    );
+
     /**
      * @deprecated Will be removed in 3.0, it is added as a BC layer to avoid breaking default
      * password changing flow
@@ -29,7 +41,12 @@ interface PasswordConfigInterface
     /**
      * @return boolean
      */
-    public function isCapitalLetterRequired();
+    public function isLetterRequired();
+
+    /**
+     * @return string
+     */
+    public function getLetterRequiredType();
 
     /**
      * @return integer

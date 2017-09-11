@@ -143,10 +143,14 @@ class UsersController extends AbstractCrudController
                     $plainPassword = $this->getPasswordManager()->generatePassword();
                 }
 
-                if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
-                    $this->getPasswordManager()->encodeAndSetPasswordAndThenEmailIt($user, $plainPassword);
-                } else {
-                    $this->getPasswordManager()->encodeAndSetPassword($user, $plainPassword);
+                try {
+                    if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
+                        $this->getPasswordManager()->encodeAndSetPasswordAndThenEmailIt($user, $plainPassword);
+                    } else {
+                        $this->getPasswordManager()->encodeAndSetPassword($user, $plainPassword);
+                    }
+                } catch (BadPasswordException $e) {
+                    throw new BadPasswordException($e->getErrors()[0], null, $e);
                 }
             },
             'map_data_on_update' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
@@ -214,7 +218,7 @@ class UsersController extends AbstractCrudController
                             $this->getPasswordManager()->encodeAndSetPassword($user, $params['plainPassword']);
                         }
                     } catch (BadPasswordException $e) {
-                        $result->addFieldError('plainPassword', $e->getMessage());
+                        $result->addFieldError('plainPassword', $e->getErrors()[0]);
                     }
                 }
 

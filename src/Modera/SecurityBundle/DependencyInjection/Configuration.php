@@ -4,6 +4,7 @@ namespace Modera\SecurityBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Modera\SecurityBundle\PasswordStrength\PasswordConfigInterface;
 
 /**
  * This is the class that validates and merges configuration from your app/config files.
@@ -78,7 +79,23 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('number_required')
                             ->defaultFalse()
                         ->end()
-                        ->scalarNode('capital_letter_required')
+                        ->scalarNode('letter_required')
+                            ->beforeNormalization()
+                                ->always(function ($v) {
+                                    $default = PasswordConfigInterface::LETTER_REQUIRED_TYPE_CAPITAL_OR_NON_CAPITAL;
+                                    if (is_bool($v) && $v) {
+                                        return $default;
+                                    } else if (is_string($v)) {
+                                        if (!in_array($v, PasswordConfigInterface::LETTER_REQUIRED_TYPES)) {
+                                            return $default;
+                                        }
+
+                                        return $v;
+                                    }
+
+                                    return false;
+                                })
+                            ->end()
                             ->defaultFalse()
                         ->end()
                         ->scalarNode('rotation_period')

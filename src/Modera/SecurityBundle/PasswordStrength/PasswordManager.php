@@ -7,6 +7,7 @@ use Modera\SecurityBundle\PasswordStrength\Mail\MailServiceInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Modera\SecurityBundle\PasswordStrength\PasswordConfigInterface;
 
 /**
  * @since 2.56.0
@@ -114,17 +115,19 @@ class PasswordManager
      * @throws BadPasswordException
      *
      * @param User $user
-     *
-     * @param $plainPassword
+     * @param string $plainPassword
      */
     public function encodeAndSetPassword(User $user, $plainPassword)
     {
         if (!$this->isPasswordRotationTurnedOff()) {
             if ($this->hasPasswordAlreadyBeenUsedWithinLastRotationPeriod($user, $plainPassword)) {
-                throw new BadPasswordException(sprintf(
+                $error = sprintf(
                     'Given password cannot be used because it has been already used in last %d days.',
                     $this->passwordConfig->getRotationPeriodInDays()
-                ));
+                );
+                $e = new BadPasswordException($error);
+                $e->setErrors(array($error));
+                throw $e;
             }
         }
 
@@ -135,7 +138,9 @@ class PasswordManager
                 $errors[] = $violation->getMessage();
             }
 
-            throw new BadPasswordException('Given password failed validation: '.implode(', ', $errors));
+            $e = new BadPasswordException(implode(' ', $errors));
+            $e->setErrors($errors);
+            throw $e;
         }
 
         $meta = $user->getMeta();
@@ -207,8 +212,26 @@ class PasswordManager
             if ($this->passwordConfig->isNumberRequired() && !preg_match('/[0-9]/', $plainPassword)) {
                 continue;
             }
-            if ($this->passwordConfig->isCapitalLetterRequired() && !preg_match('/[A-Z]/', $plainPassword)) {
-                continue;
+            if ($this->passwordConfig->isLetterRequired()) {
+                $continue = false;
+                switch ($this->passwordConfig->getLetterRequiredType()) {
+                    case PasswordConfigInterface::LETTER_REQUIRED_TYPE_CAPITAL_OR_NON_CAPITAL:
+                        $continue = !preg_match('/[A-Za-z]/', $plainPassword);
+                        break;
+                    case PasswordConfigInterface::LETTER_REQUIRED_TYPE_CAPITAL_AND_NON_CAPITAL:
+                        $continue = !preg_match('/(?=.*[A-Z])(?=.*[a-z])/', $plainPassword);
+                        break;
+                    case PasswordConfigInterface::LETTER_REQUIRED_TYPE_CAPITAL:
+                        $continue = !preg_match('/[A-Z]/', $plainPassword);
+                        break;
+                    case PasswordConfigInterface::LETTER_REQUIRED_TYPE_NON_CAPITAL:
+                        $continue = !preg_match('/[a-z]/', $plainPassword);
+                        break;
+                }
+
+                if ($continue) {
+                    continue;
+                }
             }
 
             if ($user && $this->hasPasswordAlreadyBeenUsedWithinLastRotationPeriod($user, $plainPassword)) {

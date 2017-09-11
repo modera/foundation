@@ -40,9 +40,17 @@ class SemanticPasswordConfig implements PasswordConfigInterface
     /**
      * {@inheritdoc}
      */
-    public function isCapitalLetterRequired()
+    public function isLetterRequired()
     {
-        return $this->semanticConfig['capital_letter_required'];
+        return false !== $this->semanticConfig['letter_required'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLetterRequiredType()
+    {
+        return $this->semanticConfig['letter_required'];
     }
 
     /**
