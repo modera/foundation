@@ -15,25 +15,35 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PasswordWindo
 
     // override
     doCreateUi: function(params, callback) {
-        var requestParams = {
-            filter: [
-                { property: 'id', value: 'eq:' + params.id }
-            ],
-            hydration: {
-                profile: 'compact-list'
-            }
-        };
+        var me = this;
 
-        Actions.ModeraBackendSecurity_Users.get(requestParams, function(response) {
-            var windowConfig = {};
-            if (params.hasOwnProperty('rotation')) {
-                windowConfig.passwordRotation = params.rotation;
-            }
-            var window = Ext.create('Modera.backend.security.toolscontribution.view.user.PasswordWindow', windowConfig);
+        me.workbench.getService('config_provider').getConfig(function(response) {
+            var userProfile = response['userProfile'];
 
-            window.loadData(response.result);
+            var requestParams = {
+                filter: [
+                    { property: 'id', value: 'eq:' + params.id }
+                ],
+                hydration: {
+                    profile: 'compact-list'
+                }
+            };
 
-            callback(window);
+            Actions.ModeraBackendSecurity_Users.get(requestParams, function(response) {
+                var windowConfig = {};
+                if (params.hasOwnProperty('rotation')) {
+                    windowConfig.passwordRotation = params.rotation;
+                }
+                if (userProfile.id == params.id) {
+                    windowConfig.hideSendPassword = true;
+                    windowConfig.hideGeneratePassword = true;
+                }
+                var window = Ext.create('Modera.backend.security.toolscontribution.view.user.PasswordWindow', windowConfig);
+
+                window.loadData(response.result);
+
+                callback(window);
+            });
         });
     },
 

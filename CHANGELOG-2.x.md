@@ -2,6 +2,7 @@
 
 ## 2.56.0 (not released yet, in development)
 
+* [MPFE-1033] 'Generate' and 'Send password to user`s e-mail' options available only when user is changing other account password
 * [CLS-915] Added permission for accessing System settings; To use the new permission, need to run the console command 'modera:security:install-permissions'
 * [MPFE-1030][ModeraBackendTranslationsToolBundle] Added permission for accessing `Backend/Tools/Translations`
 * [MPFE-1014] A unified password management API is added - Modera\SecurityBundle\PasswordStrength. Using this API a 

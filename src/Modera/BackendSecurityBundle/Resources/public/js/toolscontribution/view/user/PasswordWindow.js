@@ -23,6 +23,8 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
 
     newUser: false,
     passwordRotation: false, // since 2.56.0
+    hideSendPassword: false, // since 2.56.0
+    hideGeneratePassword: false, // since 2.56.0
 
     // override
     constructor: function(config) {
@@ -33,6 +35,12 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
         }
         if (config && config.passwordRotation) {
             me.passwordRotation = config.passwordRotation;
+        }
+        if (config && config.hideSendPassword) {
+            me.hideSendPassword = config.hideSendPassword;
+        }
+        if (config && config.hideGeneratePassword) {
+            me.hideGeneratePassword = config.hideGeneratePassword;
         }
 
         var defaults = {
@@ -116,7 +124,17 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                                         emptyText: me.placeHolderText,
                                         inputType: 'password',
                                         tid: 'passwordfield',
-                                        msgTarget: 'under'
+                                        msgTarget: 'under',
+                                        validateOnBlur: false,
+                                        listeners: {
+                                            blur: function (field) {
+                                                setTimeout(function () {
+                                                    if (!field.hasFocus) {
+                                                        field.validate();
+                                                    }
+                                                }, 200);
+                                            }
+                                        }
                                     },
                                     {
                                         name: '_plainPassword',
@@ -124,14 +142,24 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                                         emptyText: me.placeHolderText,
                                         inputType: 'password',
                                         tid: 'passwordagainfield',
-                                        msgTarget: 'under'
+                                        msgTarget: 'under',
+                                        validateOnBlur: false,
+                                        listeners: {
+                                            blur: function (field) {
+                                                setTimeout(function () {
+                                                    if (!field.hasFocus) {
+                                                        field.validate();
+                                                    }
+                                                }, 200);
+                                            }
+                                        }
                                     },
                                     {
                                         xtype: 'checkbox',
                                         name: 'sendPassword',
                                         fieldLabel: '&nbsp;',
                                         labelSeparator: '',
-                                        hidden: me.newUser,
+                                        hidden: me.hideSendPassword || me.newUser,
                                         boxLabel: me.sendPasswordText,
                                         allowBlank: true,
                                         disabled: false
@@ -143,7 +171,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                                 itemId: 'generatePassword',
                                 xtype: 'button',
                                 scale: 'medium',
-                                hidden: me.newUser,
+                                hidden: me.hideGeneratePassword || me.newUser,
                                 text: me.generatePasswordBtnText,
                                 margins: '0 0 0 5'
                             }
@@ -222,7 +250,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                     if (field.getValue() == value) {
                         me.checkPasswords();
                     }
-                });
+                }, 200);
             });
         });
 
