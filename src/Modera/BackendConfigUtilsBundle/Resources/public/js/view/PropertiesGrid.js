@@ -12,7 +12,7 @@ Ext.define('Modera.backend.configutils.view.PropertiesGrid', {
         'Ext.grid.plugin.CellEditing',
         'MFC.grid.column.WidgetsPoolEditorColumn',
         'Modera.backend.configutils.store.Properties',
-        'Ext.util.Format.htmlEncode'
+        'Ext.util.Format'
     ],
 
     /**
