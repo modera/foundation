@@ -11,7 +11,8 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
         'MFC.container.Message',
         //'MFC.HasSelectionAwareComponentsPlugin',
         'MFC.form.field.plugin.FieldInputFinishedPlugin',
-        'Modera.backend.translationstool.toolscontribution.store.Translations'
+        'Modera.backend.translationstool.toolscontribution.store.Translations',
+        'Ext.util.Format'
     ],
 
     //plugins: [Ext.create('MFC.HasSelectionAwareComponentsPlugin')],
@@ -118,7 +119,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                     renderer: function(value, metaData, record, rowIndex, colIndex, store, view) {
                         var baseCSSPrefix = Ext.baseCSSPrefix;
                         metaData.tdCls = baseCSSPrefix + 'grid-cell-special';
-                        return value;
+                        return Ext.util.Format.htmlEncode(value);
                     }
                 },
                 {
@@ -128,7 +129,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                     renderer: function(value, metaData, record, rowIndex, colIndex, store, view) {
                         var baseCSSPrefix = Ext.baseCSSPrefix;
                         metaData.tdCls = baseCSSPrefix + 'grid-cell-special';
-                        return value;
+                        return Ext.util.Format.htmlEncode(value);
                     }
                 }
             ].concat(columns),

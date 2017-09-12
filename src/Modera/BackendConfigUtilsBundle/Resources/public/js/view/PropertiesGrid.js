@@ -76,7 +76,8 @@ Ext.define('Modera.backend.configutils.view.PropertiesGrid', {
             columns: [
                 {
                     dataIndex: 'readableName',
-                    flex: 1
+                    flex: 1,
+                    renderer: 'htmlEncode'
                 },
                 {
                     xtype: 'mfc-editorcolumn',

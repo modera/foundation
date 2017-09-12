@@ -55,7 +55,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                                 flex: 1,
                                 renderer: function(v, metadata, record) {
                                     metadata.tdCls = 'message ' + record.get('level');
-                                    return v;
+                                    return Ext.util.Format.htmlEncode(v);
                                 }
                             },
                             {
@@ -218,12 +218,12 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
 
                                         if (v.isUser) {
                                             if (v.fullName) {
-                                                return Ext.String.format('<b>{0}</b> ( {1} )', v.fullName, v.username)
+                                                return Ext.String.format('<b>{0}</b> ( {1} )', Ext.util.Format.htmlEncode(v.fullName), Ext.util.Format.htmlEncode(v.username));
                                             } else {
-                                                return '<b>' + v.username + '</b>';
+                                                return '<b>' + Ext.util.Format.htmlEncode(v.username) + '</b>';
                                             }
                                         } else {
-                                            return '<b>' + v.identity + '</b>';
+                                            return '<b>' + Ext.util.Format.htmlEncode(v.identity) + '</b>';
                                         }
                                     }
                                 }

@@ -62,9 +62,9 @@ Ext.define('Modera.backend.languages.view.UserSettingsWindow', {
 
         if (Ext.isArray(data['id'])) {
             var title = Ext.String.format(me.usersCountText, data['id'].length);
-            me.setTitle(Ext.String.format(me.editRecordTitleText, title));
+            me.setTitle(Ext.String.format(me.editRecordTitleText, Ext.util.Format.htmlEncode(title)));
         } else {
-            me.setTitle(Ext.String.format(me.editRecordTitleText, data['username']));
+            me.setTitle(Ext.String.format(me.editRecordTitleText, Ext.util.Format.htmlEncode(data['username'])));
         }
     }
 });

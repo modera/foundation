@@ -8,7 +8,8 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
 
     requires: [
         'MF.Util',
-        'Ext.String'
+        'Ext.String',
+        'Ext.util.Format'
     ],
 
     // l10n
@@ -29,7 +30,7 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
         var landingSection = config.data.landingSection || 'dashboard';
 
         var defaults = {
-            title: Ext.String.format(this.titleText, config.data.title),
+            title: Ext.String.format(this.titleText, Ext.util.Format.htmlEncode(config.data.title)),
             width: 500,
             height: 400,
             layout: 'fit',
@@ -75,7 +76,8 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
                                 {
                                     header: this.dashboardNameColumnText,
                                     dataIndex: 'name',
-                                    flex: 1
+                                    flex: 1,
+                                    renderer: 'htmlEncode'
                                 },
                                 {
                                     xtype: 'checkcolumn',
