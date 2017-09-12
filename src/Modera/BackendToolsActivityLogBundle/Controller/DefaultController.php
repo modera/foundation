@@ -2,16 +2,17 @@
 
 namespace Modera\BackendToolsActivityLogBundle\Controller;
 
+use Sli\AuxBundle\Util\Toolkit;
 use Modera\DirectBundle\Annotation\Remote;
 use Modera\ActivityLoggerBundle\Model\ActivityInterface;
 use Modera\ActivityLoggerBundle\Manager\ActivityManagerInterface;
 use Modera\BackendToolsActivityLogBundle\AuthorResolving\ActivityAuthorResolver;
 use Modera\BackendToolsActivityLogBundle\AutoSuggest\FilterAutoSuggestService;
+use Modera\BackendToolsActivityLogBundle\ModeraBackendToolsActivityLogBundle;
 use Modera\ServerCrudBundle\Hydration\DoctrineEntityHydrator;
-use Modera\ServerCrudBundle\Hydration\HydrationService;
-use Sli\AuxBundle\Util\Toolkit;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Modera\ServerCrudBundle\Hydration\HydrationService;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -19,6 +20,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class DefaultController extends Controller
 {
+    private function checkAccess()
+    {
+        $role = ModeraBackendToolsActivityLogBundle::ROLE_ACCESS_BACKEND_TOOLS_ACTIVITY_LOG_SECTION;
+        if (false === $this->get('security.authorization_checker')->isGranted($role)) {
+            throw $this->createAccessDeniedException();
+        }
+    }
+
     /**
      * @return HydrationService
      */
@@ -77,6 +86,8 @@ class DefaultController extends Controller
      */
     public function getAction(array $params)
     {
+        $this->checkAccess();
+
         $result = $this->getActivityManager()->query($params);
 
         if (count($result['items']) == 1) {
@@ -97,6 +108,8 @@ class DefaultController extends Controller
      */
     public function listAction(array $params)
     {
+        $this->checkAccess();
+
         $result = $this->getActivityManager()->query($params);
 
         $response = array(
@@ -119,6 +132,8 @@ class DefaultController extends Controller
      */
     public function suggestAction(array $params)
     {
+        $this->checkAccess();
+
         Toolkit::validateRequiredRequestParams($params, ['queryType', 'query']);
 
         /* @var FilterAutoSuggestService $service */
