@@ -18,21 +18,14 @@ class ToolsSectionsProvider implements ContributorInterface
 {
     private $items;
 
+    private $sectionsProvider;
+
     /**
      * @param ContributorInterface $sectionsProvider
      */
     public function __construct(ContributorInterface $sectionsProvider)
     {
-        $this->items = array();
-        if (count($sectionsProvider->getItems())) {
-            $this->items[] = new Section(
-                T::trans('Settings'),
-                'tools.settings',
-                T::trans('Configure the current site.'),
-                '', '',
-                'modera-backend-tools-settings-icon'
-            );
-        }
+        $this->sectionsProvider = $sectionsProvider;
     }
 
     /**
@@ -40,6 +33,19 @@ class ToolsSectionsProvider implements ContributorInterface
      */
     public function getItems()
     {
+        if (!$this->items) {
+            $this->items = array();
+            if (count($this->sectionsProvider->getItems())) {
+                $this->items[] = new Section(
+                    T::trans('Settings'),
+                    'tools.settings',
+                    T::trans('Configure the current site.'),
+                    '', '',
+                    'modera-backend-tools-settings-icon'
+                );
+            }
+        }
+
         return $this->items;
     }
 }

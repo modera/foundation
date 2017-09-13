@@ -19,17 +19,25 @@ class MenuItemsProvider implements ContributorInterface
 {
     private $authorizationChecker;
 
-    private $items;
+    private $sectionsProvider;
 
     private $tabOrder;
 
+    private $items;
+
     /**
      * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param ContributorInterface          $sectionsProvider
      * @param int                           $tabOrder
      */
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker, $tabOrder)
+    public function __construct(
+        AuthorizationCheckerInterface $authorizationChecker,
+        ContributorInterface $sectionsProvider,
+        $tabOrder
+    )
     {
         $this->authorizationChecker = $authorizationChecker;
+        $this->sectionsProvider = $sectionsProvider;
         $this->tabOrder = $tabOrder;
     }
 
@@ -42,10 +50,12 @@ class MenuItemsProvider implements ContributorInterface
             $this->items = [];
 
             if ($this->authorizationChecker->isGranted(ModeraBackendToolsBundle::ROLE_ACCESS_TOOLS_SECTION)) {
-                $this->items[] = new MenuItem('Tools', 'Modera.backend.tools.runtime.Section', 'tools', array(
-                    MenuItemInterface::META_NAMESPACE => 'Modera.backend.tools',
-                    MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackendtools/js',
-                ), FontAwesome::resolve('wrench'));
+                if (count($this->sectionsProvider->getItems())) {
+                    $this->items[] = new MenuItem('Tools', 'Modera.backend.tools.runtime.Section', 'tools', array(
+                        MenuItemInterface::META_NAMESPACE => 'Modera.backend.tools',
+                        MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackendtools/js',
+                    ), FontAwesome::resolve('wrench'));
+                }
             }
         }
 
