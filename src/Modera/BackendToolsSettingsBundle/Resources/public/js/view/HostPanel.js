@@ -6,7 +6,8 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
 
     requires: [
         'MFC.container.Header',
-        'MFC.panel.Message'
+        'MFC.panel.Message',
+        'Ext.util.Format'
     ],
 
     // l10n
@@ -89,7 +90,7 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
                                 renderer: function(v, md) {
                                     md.tdCls = 'right';
 
-                                    return v;
+                                    return Ext.util.Format.htmlEncode(v);
                                 }
                             }
                         ],
@@ -163,7 +164,7 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
                     });
                 }
 
-                this.down('#sectionNameBox').update(record.get('name'));
+                this.down('#sectionNameBox').update(Ext.util.Format.htmlEncode(record.get('name')));
 
                 hostPanel.fireEvent('activitychange', hostPanel, newContainer, oldContainer);
 

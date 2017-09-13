@@ -38,7 +38,7 @@ Ext.define('Modera.backend.module.toolscontribution.view.AbstractModulesList', {
                     flex: 1,
                     dataIndex: 'name',
                     renderer: function (value, p, record) {
-                        return Ext.String.format(me.tplTitle, value, record.get('description'));
+                        return Ext.String.format(me.tplTitle, Ext.util.Format.htmlEncode(value), Ext.util.Format.htmlEncode(record.get('description')));
                     }
                 },
                 {

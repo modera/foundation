@@ -2,6 +2,8 @@
 
 ## 2.56.0 (not released yet, in development)
 
+* [MPFE-1035] Fixed: If tools section has one item, it doesnt displayed.
+* [CLS-894] Protect foundation uis from xss;
 * [MPFE-1036][ModeraBackendToolsActivityLogBundle] Added permission for accessing `Backend/Tools/Activity log`
 * [MPFE-1033] 'Generate' and 'Send password to user`s e-mail' options available only when user is changing other account password
 * [CLS-915] Added permission for accessing System settings; To use the new permission, need to run the console command 'modera:security:install-permissions'
