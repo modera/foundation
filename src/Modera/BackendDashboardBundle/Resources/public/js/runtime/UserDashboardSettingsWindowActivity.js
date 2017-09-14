@@ -151,7 +151,7 @@ Ext.define('Modera.backend.dashboard.runtime.UserDashboardSettingsWindowActivity
 
             } else {
                 me.getEndpoint().update({ record: values }, function(result) {
-                    me.onLandingSectionOrDashboardSettingsUpdated(result, records);
+                    me.onLandingSectionOrDashboardSettingsUpdated(result, [values]);
                 });
             }
         });
