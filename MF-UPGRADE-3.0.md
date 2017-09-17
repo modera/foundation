@@ -91,3 +91,5 @@ names, old ones will be removed in 3.0.
  from package Modera\SecurityBundle\PasswordStrength\Mail must be used instead ; Semantic config modera_backend_security/mail_service, 
  mail_sender deprecated in favor of modera_security/password_strength/mailer ; \Modera\BackendSecurityBundle\DependencyInjection\ServiceAliasCompilerPass
  should be removed
+ * Consider making it a default behaviour and possible to delete a StoredFile even if a physical file had already been 
+ deleted. See StoredFile::setIgnoreMissingFileOnDelete() for more details.
