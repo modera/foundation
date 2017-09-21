@@ -123,10 +123,17 @@ class UserSettingsController extends AbstractCrudController
      */
     public function getOrCreateAction(array $params)
     {
+        $response = array(
+            'success' => false,
+        );
         try {
-            return $this->getAction($params);
-        } catch (\Exception $e) {
-            return $this->createAction($params);
+            $response = $this->getAction($params);
+        } catch (\Exception $e) {}
+
+        if (isset($response['success']) && $response['success']) {
+            return $response;
         }
+
+        return $this->createAction($params);
     }
 }
