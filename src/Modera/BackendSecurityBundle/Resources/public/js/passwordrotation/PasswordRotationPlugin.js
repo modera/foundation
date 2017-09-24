@@ -1,5 +1,6 @@
 /**
  * @since 2.56.0
+ * @internal
  *
  * @author Sergei Lissovski <sergei.lissovski@modera.org>
  */
