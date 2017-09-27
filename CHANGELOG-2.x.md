@@ -2,6 +2,7 @@
 
 ## 2.56.0 (not released yet, in development)
 
+* [MPFE-1042][ModeraTranslationsBundle] Optimized translation token import
 * [MPFE-1041] ModeraDirectBundle now when an exception is thrown will consider the environment and in PROD will not
 contain exception stack trace ; EnvAwareExceptionHandler class is deprecated
 * [MPFE-1027] Now it is possible to delete a StoredFile even if a physical file has already been deleted. See 
