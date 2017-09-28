@@ -308,7 +308,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
             if (count($obsolete)) {
                 $query = $this->em()->createQuery(
                     sprintf(
-                        'UPDATE %s tt SET isObsolete = true WHERE tt.id IN(:ids)',
+                        'UPDATE %s tt SET tt.isObsolete = true WHERE tt.id IN(:ids)',
                         TranslationToken::clazz()
                     )
                 );
