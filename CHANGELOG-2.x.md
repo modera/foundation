@@ -2,6 +2,7 @@
 
 ## 2.56.0 (not released yet, in development)
 
+* [MPFE-1045] Added possibility to specify the type of URL for generation urls in FileRepositoryBundle
 * [MPFE-1042][ModeraTranslationsBundle] Optimized translation token import
 * [MPFE-1041] ModeraDirectBundle now when an exception is thrown will consider the environment and in PROD will not
 contain exception stack trace ; EnvAwareExceptionHandler class is deprecated
