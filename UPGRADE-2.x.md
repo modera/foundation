@@ -1,6 +1,6 @@
 # UPGRADE GUIDE, 2.x
 
-## 2.56.0 (not released yet, in development)
+## 2.56.0 (05.10.2017)
 
 * [MPFE-1014] Semantic configuration properties `modera_backend_security/mail_service` and `modera_security/password_strength/mailer`
  are no longer used, instead use `modera_security/password_strength/mail`. If you need to use custom mailer to send
