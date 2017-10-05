@@ -1,6 +1,6 @@
 # CHANGELOG, 2.x
 
-## 2.56.0 (not released yet, in development)
+## 2.56.0 (05.10.2017)
 
 * [MPFE-1045] Added possibility to specify the type of URL for generation urls in FileRepositoryBundle
 * [MPFE-1042][ModeraTranslationsBundle] Optimized translation token import
