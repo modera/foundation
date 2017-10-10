@@ -34,14 +34,14 @@ class UserDataMapperTest extends FunctionalTestCase
     {
         $meta = array('newKey' => 'newVal');
         $params = array(
-            'lastName' => 'Last Name',
+            'lastName' => 'LastName',
             'meta' => $meta,
         );
         $user = new User();
 
         $this->mapper->mapData($params, $user);
 
-        $this->assertEquals('Last Name', $user->getLastName());
+        $this->assertEquals('LastName', $user->getLastName());
         $this->assertEquals($meta, $user->getMeta());
     }
 
@@ -49,7 +49,7 @@ class UserDataMapperTest extends FunctionalTestCase
     {
         $meta = array('newKey' => 'newVal');
         $params = array(
-            'lastName' => 'Last Name',
+            'lastName' => 'LastName',
             'meta' => $meta,
         );
         $user = new User();
@@ -57,7 +57,7 @@ class UserDataMapperTest extends FunctionalTestCase
 
         $this->mapper->mapData($params, $user);
 
-        $this->assertEquals('Last Name', $user->getLastName());
+        $this->assertEquals('LastName', $user->getLastName());
         $this->assertEquals($meta, $user->getMeta());
     }
 
@@ -65,7 +65,7 @@ class UserDataMapperTest extends FunctionalTestCase
     {
         $meta = array('WillBeErased' => true);
         $params = array(
-            'lastName' => 'Last Name',
+            'lastName' => 'LastName',
             'meta' => '',
         );
         $user = new User();
@@ -73,7 +73,7 @@ class UserDataMapperTest extends FunctionalTestCase
 
         $this->mapper->mapData($params, $user);
 
-        $this->assertEquals('Last Name', $user->getLastName());
+        $this->assertEquals('LastName', $user->getLastName());
         $this->assertEquals(array(), $user->getMeta());
     }
 
@@ -81,7 +81,7 @@ class UserDataMapperTest extends FunctionalTestCase
     {
         $meta = array('WillExistsAfterMapping' => true);
         $params = array(
-            'lastName' => 'Last Name',
+            'lastName' => 'LastName',
         );
 
         $user = new User();
@@ -89,7 +89,7 @@ class UserDataMapperTest extends FunctionalTestCase
 
         $this->mapper->mapData($params, $user);
 
-        $this->assertEquals('Last Name', $user->getLastName());
+        $this->assertEquals('LastName', $user->getLastName());
         $this->assertEquals($meta, $user->getMeta());
     }
 }

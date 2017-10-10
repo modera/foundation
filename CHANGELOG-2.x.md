@@ -1,5 +1,9 @@
 # CHANGELOG, 2.x
 
+## 2.57.0 (not released yet, in development)
+
+* [MPFE-1049][ModeraSecurityBundle] Clean non-letter characters from First & Last name
+
 ## 2.56.0 (05.10.2017)
 
 * [MPFE-1045] Added possibility to specify the type of URL for generation urls in FileRepositoryBundle

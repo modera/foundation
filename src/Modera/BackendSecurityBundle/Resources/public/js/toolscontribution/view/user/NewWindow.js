@@ -24,7 +24,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.NewWindow', {
             groupName: 'main-form',
             resizable: false,
             autoScroll: true,
-            width: 500,
+            width: 520,
             maxHeight: Ext.getBody().getViewSize().height - 60,
             items: {
                 xtype: 'form',
@@ -43,18 +43,21 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.NewWindow', {
                     },
                     {
                         name: 'firstName',
+                        msgTarget: 'under',
                         fieldLabel: me.firstNameLabelText,
                         emptyText: me.placeHolderText,
                         tid: 'firstNameField'
                     },
                     {
                         name: 'lastName',
+                        msgTarget: 'under',
                         fieldLabel: me.lastNameLabelText,
                         emptyText: me.placeHolderText,
                         tid: 'lastNameField'
                     },
                     {
                         name: 'username',
+                        msgTarget: 'under',
                         fieldLabel: me.usernameLabelText,
                         emptyText: me.placeHolderText,
                         tid: 'usernameField'
@@ -63,6 +66,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.NewWindow', {
                         itemId: 'email',
                         name: 'email',
                         vtype: 'email',
+                        msgTarget: 'under',
                         fieldLabel: me.emailLabelText,
                         emptyText: me.placeHolderText,
                         tid: 'emailField'
