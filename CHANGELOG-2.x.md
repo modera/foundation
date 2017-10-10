@@ -2,6 +2,7 @@
 
 ## 2.57.0 (not released yet, in development)
 
+* [MPFE-1050][ModeraSecurityBundle] Add validators for username and email
 * [MPFE-1049][ModeraSecurityBundle] Clean non-letter characters from First & Last name
 
 ## 2.56.0 (05.10.2017)
