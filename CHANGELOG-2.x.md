@@ -2,6 +2,7 @@
 
 ## 2.57.0 (not released yet, in development)
 
+* [MPFE-1043][ModeraBackendTranslationsToolBundle] UI shows correct number of elements on page with filtering
 * [MPFE-1050][ModeraSecurityBundle] Add validators for username and email
 * [MPFE-1049][ModeraSecurityBundle] Clean non-letter characters from First & Last name
 
