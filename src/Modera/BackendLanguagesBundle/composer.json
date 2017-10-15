@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "symfony/framework-bundle": "~2.6",
+        "symfony/framework-bundle": "~2.6 || ^3.0",
         "modera/mjr-integration-bundle": "~1.0|~2.0",
         "modera/languages-bundle": "~1.0|~2.0",
         "modera/backend-security-bundle": "~1.0|~2.0",

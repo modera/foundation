@@ -4,19 +4,18 @@
     "license": "MIT",
     "require": {
         "php": ">=5.4.0",
-        "symfony/symfony": "~2.6",
-        "sergeil/extjsintegration-bundle": "~1.0",
+        "symfony/symfony": "^3.0",
+        "sergeil/extjsintegration-bundle": "^1.0",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "~1.2",
         "sergeil/expander-bundle": "~1.0",
         "sergeil/extjslocalization-bundle": "~1.0",
-        "symfony/swiftmailer-bundle": "~2.3",
         "twig/twig": "~1.0",
-        "knplabs/knp-gaufrette-bundle": "~0.1.7",
+        "knplabs/knp-gaufrette-bundle": "^0.4",
         "imagine/imagine": "0.6.*",
-        "modera/module": "~1.0|~2.0",
-        "sensio/generator-bundle": "~2.3|~3.0",
-        "sergeil/aux-bundle": "~1.0"
+        "sensio/generator-bundle": "~2.3 || ~3.0",
+        "sergeil/aux-bundle": "~1.0",
+        "symfony/swiftmailer-bundle": "^2.3.10"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.5",
@@ -35,7 +34,6 @@
     "replace": {
         "modera/foundation-bundle": "self.version",
         "modera/upgrade-bundle": "self.version",
-        "modera/module-bundle": "self.version",
         "modera/routing-bundle": "self.version",
         "modera/security-bundle": "self.version",
         "modera/languages-bundle": "self.version",
@@ -51,7 +49,6 @@
         "modera/dynamically-configurable-mjr-bundle": "self.version",
         "modera/server-crud-bundle": "self.version",
         "modera/backend-tools-bundle": "self.version",
-        "modera/backend-module-bundle": "self.version",
         "modera/backend-security-bundle": "self.version",
         "modera/backend-languages-bundle": "self.version",
         "modera/backend-translations-tool-bundle": "self.version",

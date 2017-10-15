@@ -12,10 +12,10 @@
         "php": ">=5.3.3",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "~1.2",
-        "symfony/framework-bundle": "~2.0"
+        "symfony/framework-bundle": "~2.0 || ^3.0"
     },
     "require-dev": {
-        "modera/foundation-bundle": "~1.0|~2.0",
+        "modera/foundation-bundle": "~1.0 || ~2.0",
         "phpunit/phpunit": "^5.5"
     },
     "autoload": {
