@@ -1,4 +1,0 @@
-framework:
-    secret:          Hell yeah!
-    csrf_protection: true
-    session:         ~

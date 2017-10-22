@@ -14,18 +14,22 @@ class UserDataMapperTest extends FunctionalTestCase
     /**
      * Phake Mock of Modera\BackendSecurityBundle\DataMapper\UserDataMapper.
      */
-    private $mapper;
+    private $mapperMock;
 
     public function doSetUp()
     {
         $mapperService = static::$container->get('sli.extjsintegration.entity_data_mapper');
 
-        $this->mapper = \Phake::partialMock('Modera\BackendSecurityBundle\DataMapper\UserDataMapper', $mapperService, static::$em);
+        $this->mapperMock = \Phake::partialMock(
+            'Modera\BackendSecurityBundle\DataMapper\UserDataMapper',
+            $mapperService,
+            static::$em
+        );
     }
 
     public function testDataMapper_ExcludedFiled()
     {
-        $mappedFields = \Phake::makeVisible($this->mapper)->getAllowedFields(User::clazz());
+        $mappedFields = \Phake::makeVisible($this->mapperMock)->getAllowedFields(User::clazz());
 
         $this->assertTrue(false === array_search('meta', $mappedFields));
     }
@@ -39,7 +43,7 @@ class UserDataMapperTest extends FunctionalTestCase
         );
         $user = new User();
 
-        $this->mapper->mapData($params, $user);
+        $this->mapperMock->mapData($params, $user);
 
         $this->assertEquals('LastName', $user->getLastName());
         $this->assertEquals($meta, $user->getMeta());
@@ -55,7 +59,7 @@ class UserDataMapperTest extends FunctionalTestCase
         $user = new User();
         $user->setMeta(array('WillBeRewrited' => true));
 
-        $this->mapper->mapData($params, $user);
+        $this->mapperMock->mapData($params, $user);
 
         $this->assertEquals('LastName', $user->getLastName());
         $this->assertEquals($meta, $user->getMeta());
@@ -71,7 +75,7 @@ class UserDataMapperTest extends FunctionalTestCase
         $user = new User();
         $user->setMeta($meta);
 
-        $this->mapper->mapData($params, $user);
+        $this->mapperMock->mapData($params, $user);
 
         $this->assertEquals('LastName', $user->getLastName());
         $this->assertEquals(array(), $user->getMeta());
@@ -87,7 +91,7 @@ class UserDataMapperTest extends FunctionalTestCase
         $user = new User();
         $user->setMeta($meta);
 
-        $this->mapper->mapData($params, $user);
+        $this->mapperMock->mapData($params, $user);
 
         $this->assertEquals('LastName', $user->getLastName());
         $this->assertEquals($meta, $user->getMeta());

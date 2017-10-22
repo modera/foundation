@@ -39,7 +39,12 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
      */
     private $loader;
 
-    public function __construct(KernelInterface $kernel, TranslationLoader $loader, ExtractorInterface $extractor, $bundle)
+    public function __construct(
+        KernelInterface $kernel,
+        TranslationLoader $loader,
+        ExtractorInterface $extractor,
+        $bundle
+    )
     {
         $this->kernel = $kernel;
         $this->loader = $loader;

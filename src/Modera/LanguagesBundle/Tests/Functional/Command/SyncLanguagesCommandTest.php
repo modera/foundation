@@ -47,6 +47,7 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
         $input->setInteractive(false);
 
         $result = $app->run($input, new NullOutput());
+
         $this->assertEquals(0, $result);
     }
 
