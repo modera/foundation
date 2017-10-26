@@ -312,7 +312,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                         TranslationToken::clazz()
                     )
                 );
-                $query->setParameter('ids', implode(', ', $obsolete));
+                $query->setParameter('ids', $obsolete);
                 $query->execute();
             }
 
