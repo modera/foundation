@@ -33,7 +33,7 @@
     },
     "replace": {
         "modera/foundation-bundle": "self.version",
-        "modera/upgrade-bundle": "self.version",
+        "modera/module-bundle": "self.version",
         "modera/routing-bundle": "self.version",
         "modera/security-bundle": "self.version",
         "modera/languages-bundle": "self.version",
