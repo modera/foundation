@@ -19,12 +19,19 @@ Ext.define('Modera.backend.dashboard.runtime.SettingsWindowContributor', {
 
     // override
     constructor: function(application) {
+        var me = this;
+        var sm = application.getContainer().get('workbench').getService('security_manager');
+
         this.application = application;
 
         this.userSettingsWindowView = Ext.create('Modera.backend.dashboard.runtime.UserDashboardSettingsWindowActivity');
         this.groupSettingsWindowView = Ext.create('Modera.backend.dashboard.runtime.GroupDashboardSettingsWindowActivity');
 
-        this.contributeButton('modera-backend-security-user-list', 'userActions', this.onUserContributedButtonClicked);
+        sm.isAllowed('ROLE_MANAGE_USER_PROFILE_INFORMATION', function(isAllowed) {
+            if (isAllowed) {
+                me.contributeButton('modera-backend-security-user-list', 'userActions', me.onUserContributedButtonClicked);
+            }
+        });
         //this.contributeButton('modera-backend-security-group-overview #groups', 'groupActions', this.onGroupContributedButtonClicked);
     },
 

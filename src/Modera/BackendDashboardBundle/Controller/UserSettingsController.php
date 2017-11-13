@@ -33,7 +33,7 @@ class UserSettingsController extends AbstractSettingsController
         $config['security'] = array(
             'actions' => array(
                 'create' => function (AuthorizationCheckerInterface $ac, array $params) use ($self) {
-                    if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)) {
+                    if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)) {
                         return true;
                     } else {
                         /* @var TokenStorageInterface $ts */
@@ -47,7 +47,7 @@ class UserSettingsController extends AbstractSettingsController
                     }
                 },
                 'update' => function (AuthorizationCheckerInterface $ac, array $params) use ($self) {
-                    if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)) {
+                    if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)) {
                         return true;
                     } else if (isset($params['record']['id'])) {
                         $entities = $this->getPersistenceHandler()->query(UserSettings::clazz(), array(
@@ -98,11 +98,11 @@ class UserSettingsController extends AbstractSettingsController
                         }
                     }
 
-                    return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+                    return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION);
                 },
                 'list' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
-                'batchUpdate' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
-                'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
+                'batchUpdate' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION,
+                'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION,
             ),
         );
 

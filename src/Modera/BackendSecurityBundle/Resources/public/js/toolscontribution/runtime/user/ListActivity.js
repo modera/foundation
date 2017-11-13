@@ -22,13 +22,17 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.ListActivity'
     // override
     doCreateUi: function(params, callback) {
         var me = this;
+        var sm = me.workbench.getService('security_manager');
 
         me.workbench.getService('config_provider').getConfig(function(config) {
             var securityConfig = config['modera_backend_security'] || {};
-
-            var grid = Ext.create('Modera.backend.security.toolscontribution.view.user.List', {
+            var listConfig = {
                 hideDeleteUserFunctionality: securityConfig['hideDeleteUserFunctionality']
+            };
+            sm.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
+                    listConfig.hideDisableEnableUserFunctionality = !isAllowed;
             });
+            var grid = Ext.create('Modera.backend.security.toolscontribution.view.user.List', listConfig);
 
             callback(grid);
         });
