@@ -53,6 +53,7 @@ abstract class AbstractScriptHandler
     {
         $options = array_merge(array(
             'symfony-app-dir' => 'app',
+            'symfony-bin-dir' => 'bin',
         ), $event->getComposer()->getPackage()->getExtra());
 
         $options['process-timeout'] = $event->getComposer()->getConfig()->get('process-timeout');

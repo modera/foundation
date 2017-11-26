@@ -217,10 +217,10 @@ class ScriptHandler extends AbstractScriptHandler
     public static function registerBundles(Event $event)
     {
         $options = static::getOptions($event);
-        $appDir = $options['symfony-app-dir'];
+        $binDir = $options['symfony-bin-dir'];
 
-        if (!is_dir($appDir)) {
-            self::reportSymfonyAppDirNotFound($appDir);
+        if (!is_dir($binDir)) {
+            self::reportSymfonyAppDirNotFound($binDir);
 
             return;
         }
@@ -228,8 +228,8 @@ class ScriptHandler extends AbstractScriptHandler
         $bundlesFile = 'AppModuleBundles.php';
         $bundles = ComposerService::getRegisterBundles($event->getComposer());
 
-        static::createRegisterBundlesFile($bundles, $appDir.'/'.$bundlesFile);
-        static::executeCommand($event, $appDir, 'modera:module:register '.$bundlesFile, $options['process-timeout']);
+        static::createRegisterBundlesFile($bundles, $binDir.'/'.$bundlesFile);
+        static::executeCommand($event, $binDir, 'modera:module:register '.$bundlesFile, $options['process-timeout']);
     }
 
     /**
@@ -260,15 +260,15 @@ class ScriptHandler extends AbstractScriptHandler
     public static function clearCache(Event $event)
     {
         $options = static::getOptions($event);
-        $appDir = $options['symfony-app-dir'];
+        $binDir = $options['symfony-bin-dir'];
 
-        if (!is_dir($appDir)) {
-            self::reportSymfonyAppDirNotFound($appDir);
+        if (!is_dir($binDir)) {
+            self::reportSymfonyAppDirNotFound($binDir);
 
             return;
         }
 
-        static::executeCommand($event, $appDir, 'cache:clear --env=prod --no-warmup --quiet', $options['process-timeout']);
+        static::executeCommand($event, $binDir, 'cache:clear --env=prod --no-warmup --quiet', $options['process-timeout']);
     }
 
     /**
@@ -279,15 +279,15 @@ class ScriptHandler extends AbstractScriptHandler
     public static function doctrineSchemaUpdate(Event $event)
     {
         $options = static::getOptions($event);
-        $appDir = $options['symfony-app-dir'];
+        $binDir = $options['symfony-bin-dir'];
 
-        if (!is_dir($appDir)) {
-            self::reportSymfonyAppDirNotFound($appDir);
+        if (!is_dir($binDir)) {
+            self::reportSymfonyAppDirNotFound($binDir);
 
             return;
         }
 
-        static::executeCommand($event, $appDir, 'doctrine:schema:update --force', $options['process-timeout']);
+        static::executeCommand($event, $binDir, 'doctrine:schema:update --force', $options['process-timeout']);
     }
 
     /**
@@ -298,16 +298,16 @@ class ScriptHandler extends AbstractScriptHandler
     public static function initDatabase(Event $event)
     {
         $options = static::getOptions($event);
-        $appDir = $options['symfony-app-dir'];
+        $binDir = $options['symfony-bin-dir'];
 
-        if (!is_dir($appDir)) {
-            self::reportSymfonyAppDirNotFound($appDir);
+        if (!is_dir($binDir)) {
+            self::reportSymfonyAppDirNotFound($binDir);
 
             return;
         }
 
         try {
-            static::executeCommand($event, $appDir, 'doctrine:database:create --quiet', $options['process-timeout']);
+            static::executeCommand($event, $binDir, 'doctrine:database:create --quiet', $options['process-timeout']);
         } catch (\RuntimeException $e) {
             // The command throws an exception if database already exists, so here we are supressing it
         }
