@@ -30,11 +30,11 @@ if [ ! -d "vendor" ]; then
   echo "# No vendor dir detected, installing dependencies first then"
 
   docker run \
-  -it \
-  --rm \
-  -v `pwd`:/mnt/tmp \
-  -w /mnt/tmp \
-  modera/php:7.0 "composer install"
+      -it \
+      --rm \
+      -v `pwd`:/mnt/tmp \
+      -w /mnt/tmp \
+      modera/php:5.6 "composer install"
 fi
 
 if [ ! -d "$RUNNER_GIT_DIR" ]; then
@@ -43,11 +43,11 @@ if [ ! -d "$RUNNER_GIT_DIR" ]; then
   git clone https://github.com/modera/tests-runner.git $RUNNER_GIT_DIR
 
   docker run \
-  -it \
-  --rm \
-  -v `pwd`/$RUNNER_GIT_DIR:/mnt/tmp \
-  -w /mnt/tmp \
-  modera/php:7.0 "composer update" # TODO must be install instead
+      -it \
+      --rm \
+      -v `pwd`/$RUNNER_GIT_DIR:/mnt/tmp \
+      -w /mnt/tmp \
+      modera/php:5.6 "composer update" # TODO must be install instead
 fi
 
 # if there's no mtr_php image then create a Docker file in $RUNNER_GIT_DIR and build it
@@ -68,13 +68,13 @@ echo ""
 
 # MONOLITH_TEST_SUITE env variable is used by FunctionalTestClass
 docker run \
--it \
---rm \
--v `pwd`:/mnt/tmp \
--w /mnt/tmp \
--e MONOLITH_TEST_SUITE=1 \
---link mtr_mysql:mysql \
-modera/php:7.0 "vendor/bin/phpunit ${args}"
+    -it \
+    --rm \
+    -v `pwd`:/mnt/tmp \
+    -w /mnt/tmp \
+    -e MONOLITH_TEST_SUITE=1 \
+    --link mtr_mysql:mysql \
+    modera/php:5.6 "vendor/bin/phpunit ${args}"
 
 exit_code=$?
 
