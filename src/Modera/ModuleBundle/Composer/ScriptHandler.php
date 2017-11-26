@@ -322,7 +322,7 @@ class ScriptHandler extends AbstractScriptHandler
     private static function reportSymfonyAppDirNotFound($appDir)
     {
         echo sprintf(
-            "The symfony-app-dir (%s) specified in composer.json was not found in %s\n",
+            "The symfony-bin-dir (%s) specified in composer.json was not found in %s\n",
             $appDir, getcwd()
         );
     }

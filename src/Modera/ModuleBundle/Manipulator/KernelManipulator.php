@@ -38,7 +38,7 @@ DOC;
     // by bundles from $moduleBundlesFile file.
     protected $template =
 <<<TEMPLATE
-    public function registerModuleBundles(array \$bundles)
+    private function registerModuleBundles(array \$bundles)
     {
         \$moduleBundlesFile = __DIR__ . '/%s';
         if (file_exists(\$moduleBundlesFile)) {

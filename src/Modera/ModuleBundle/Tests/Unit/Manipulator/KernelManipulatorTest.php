@@ -92,7 +92,8 @@ CODE
 
         $patchedKernel = new PatchedDummyModulesAppKernel('test', true);
 
-        $this->assertTrue(false !== array_search('registerModuleBundles', get_class_methods($patchedKernel)));
+        $reflKernel = new \ReflectionClass($patchedKernel);
+        $this->assertTrue($reflKernel->hasMethod('registerModuleBundles'));
 
         $bundles = $patchedKernel->registerBundles();
 

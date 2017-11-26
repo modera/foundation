@@ -22,7 +22,7 @@ class ScriptHandler extends AbstractScriptHandler
         echo '>>> ModeraLanguagesBundle: Config sync'.PHP_EOL;
 
         if (!is_dir($binDir)) {
-            echo 'The symfony-app-dir ('.$binDir.') specified in composer.json was not found in '.getcwd().'.'.PHP_EOL;
+            echo 'The symfony-bin-dir ('.$binDir.') specified in composer.json was not found in '.getcwd().'.'.PHP_EOL;
 
             return;
         }
