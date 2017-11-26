@@ -15,6 +15,7 @@ Ext.define('Modera.backend.languages.runtime.UserSettingsWindowContributor', {
     // override
     constructor: function(application) {
         var me = this;
+        var sm = application.getContainer().get('workbench').getService('security_manager');
 
         me.application = application;
         me.activity = Ext.create('Modera.backend.languages.runtime.UserSettingsWindowActivity');
@@ -28,10 +29,14 @@ Ext.define('Modera.backend.languages.runtime.UserSettingsWindowContributor', {
                     'mf-theme-header component[extensionPoint=profileContextMenuActions]',
                     me.onContributedButtonClicked
                 );
-                me.contributeButton(
-                    'modera-backend-security-user-list component[extensionPoint=userActions] menu',
-                    me.onUserContributedButtonClicked
-                );
+                sm.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
+                    if (isAllowed) {
+                        me.contributeButton(
+                            'modera-backend-security-user-list component[extensionPoint=userActions] menu',
+                            me.onUserContributedButtonClicked
+                        );
+                    }
+                });
             }
         });
     },

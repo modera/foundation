@@ -49,7 +49,8 @@ class UsersController extends AbstractCrudController
                         /* @var User $user */
                         $user = $ts->getToken()->getUser();
 
-                        if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)) {
+                        if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                            || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)) {
                             return true;
                         } else {
                             // irrespectively of what privileges user has we will always allow him to edit his
@@ -83,7 +84,8 @@ class UsersController extends AbstractCrudController
                             }
                         }
 
-                        return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+                        return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                            || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION);
                     },
                     'list' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
                     'batchUpdate' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
@@ -197,13 +199,46 @@ class UsersController extends AbstractCrudController
                     $activityMgr->info($activityMsg, $activityContext);
                 }
             },
-            'updated_entity_validator' => function (array $params, User $user, EntityValidatorInterface $validator, array $config) {
+            'updated_entity_validator' => function (array $params, User $user, EntityValidatorInterface $validator, array $config, ContainerInterface $container) {
                 $isBatchUpdatedBeingPerformed = !isset($params['record']);
                 if ($isBatchUpdatedBeingPerformed) {
                     // Because of bug in AbstractCrudController (see MF-UPGRADE3.0 and search for "$recordParams" keyword)
                     // it is tricky to perform proper validation here, but anyway it not likely that at any
                     // time we are going to be setting passwords using a batch operation
                     return new ValidationResult();
+                }
+
+                /** @var UserService $userService */
+                $userService = $container->get('modera_security.service.user_service');
+                /** @var TokenStorageInterface $tokenStorage */
+                $tokenStorage = $container->get('security.token_storage');
+                /** @var AuthorizationCheckerInterface $authorizationChecker */
+                $authorizationChecker = $container->get('security.authorization_checker');
+
+                if ($tokenStorage->getToken()->getUser()->getId() != $user->getId()) {
+                    $result = new ValidationResult();
+
+                    if ($userService->isRootUser($user)) {
+                        $result->addGeneralError('Access denied. Can not update root user!!!');
+                    }
+
+                    if (!$authorizationChecker->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                        && $authorizationChecker->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)) {
+                        $allowFieldsEdit = array(
+                            'id' => '',
+                            'firstName' => '',
+                            'lastName' => '',
+                            'email' => '',
+                        );
+
+                        foreach (array_diff_key($params['record'], $allowFieldsEdit) as $key => $value) {
+                            $result->addFieldError($key, 'Access denied.');
+                        }
+                    }
+
+                    if ($result->hasErrors()) {
+                        return $result;
+                    }
                 }
 
                 $result = $validator->validate($user, $config);

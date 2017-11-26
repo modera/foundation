@@ -2,6 +2,7 @@
 
 ## 2.57.0 (not released yet, in development)
 
+* [CLS-1014] Added security for buttons for page Security and permissions: Users. Added permission for manage user profile information; To use the new permission, need to run the console command 'modera:security:install-permissions'
 * [MPFE-1043][ModeraBackendTranslationsToolBundle] UI shows correct number of elements on page with filtering
 * [MPFE-1050][ModeraSecurityBundle] Add validators for username and email
 * [MPFE-1049][ModeraSecurityBundle] Clean non-letter characters from First & Last name
