@@ -5,7 +5,7 @@
     "require": {
         "php": ">=5.4.0",
         "symfony/symfony": "^3.0",
-        "sergeil/extjsintegration-bundle": "dev-master",
+        "sergeil/extjsintegration-bundle": "^2.0",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "~1.2",
         "sergeil/expander-bundle": "~1.0",
@@ -15,7 +15,8 @@
         "imagine/imagine": "0.6.*",
         "sensio/generator-bundle": "~2.3 || ~3.0",
         "sergeil/aux-bundle": "~1.0",
-        "symfony/swiftmailer-bundle": "^2.3.10"
+        "symfony/swiftmailer-bundle": "^2.3.10",
+        "modera/module": "^1.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.5",
