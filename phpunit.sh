@@ -47,7 +47,7 @@ if [ ! -d "$RUNNER_GIT_DIR" ]; then
       --rm \
       -v `pwd`/$RUNNER_GIT_DIR:/mnt/tmp \
       -w /mnt/tmp \
-      modera/php:7.1 "composer update" # TODO must be install instead
+      modera/php:7.1 "composer install"
 fi
 
 # if there's no mtr_php image then create a Docker file in $RUNNER_GIT_DIR and build it
