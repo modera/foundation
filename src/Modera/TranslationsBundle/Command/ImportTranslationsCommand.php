@@ -114,7 +114,26 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                         $newMessages = $operation->getNewMessages($domain);
                         $obsoleteMessages = $operation->getObsoleteMessages($domain);
 
-                        if (count($newMessages) || count($obsoleteMessages)) {
+                        // if tokenName is same, but translation was changed
+                        $updatedMessages = array();
+                        $allMessages = $operation->getMessages($domain);
+                        $extractedMessages = $extractedCatalogue->all($domain);
+                        foreach ($extractedMessages as $tokenName => $translation) {
+                            if (!array_key_exists($tokenName, $newMessages) && array_key_exists($tokenName, $allMessages)) {
+                                if ($extractedMessages[$tokenName] !== $allMessages[$tokenName]) {
+                                    $token = $this->findTranslationToken($tokens, $bundleName, $source, $domain, $tokenName);
+                                    if ($token) {
+                                        $ltt = $this->findLanguageTranslationToken($token, $language->getId());
+                                        // if not translated yet
+                                        if ($ltt && $ltt['isNew']) {
+                                            $updatedMessages[$tokenName] = $translation;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (count($newMessages) || count($updatedMessages) || count($obsoleteMessages)) {
                             $imported = true;
 
                             $output->writeln(
@@ -122,7 +141,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                             );
                         }
 
-                        if (count($newMessages)) {
+                        if (count($newMessages) || count($updatedMessages)) {
                             if (!isset($new[$bundleName])) {
                                 $new[$bundleName] = array();
                             }
@@ -133,12 +152,21 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                                 $new[$bundleName][$source][$domain] = array();
                             }
 
-                            $output->writeln(sprintf('  <info>New messages: %s</>', count($newMessages)));
-                            if ($printMessageNames) {
-                                $this->printMessages($output, $newMessages);
+                            if (count($newMessages)) {
+                                $output->writeln(sprintf('  <info>New messages: %s</>', count($newMessages)));
+                                if ($printMessageNames) {
+                                    $this->printMessages($output, $newMessages);
+                                }
                             }
 
-                            foreach ($newMessages as $tokenName => $translation) {
+                            if (count($updatedMessages)) {
+                                $output->writeln(sprintf('  <info>Updated messages: %s</>', count($updatedMessages)));
+                                if ($printMessageNames) {
+                                    $this->printMessages($output, $updatedMessages);
+                                }
+                            }
+
+                            foreach (array_merge($newMessages, $updatedMessages) as $tokenName => $translation) {
                                 if (!isset($new[$bundleName][$source][$domain][$tokenName])) {
                                     $new[$bundleName][$source][$domain][$tokenName] = array();
                                 }
