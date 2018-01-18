@@ -5,6 +5,21 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service parent="modera_translations.handling.php_classes_translation_handler">
+
+            <argument>ModeraBackendLanguagesBundle</argument>
+
+            <tag name="modera_translations.translation_handler" />
+        </service>
+
+        <service parent="modera_backend_translations_tool.handling.extjs_translation_handler">
+
+            <argument>ModeraBackendLanguagesBundle</argument>
+
+            <tag name="modera_translations.translation_handler" />
+        </service>
+
+
         <service id="modera_backend_languages.contributions.class_loader_mappings_provider"
                  class="Modera\BackendLanguagesBundle\Contributions\ClassLoaderMappingsProvider">
 
