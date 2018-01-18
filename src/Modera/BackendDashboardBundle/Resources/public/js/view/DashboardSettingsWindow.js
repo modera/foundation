@@ -19,6 +19,7 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
     hasAccessColumnText: 'Has access',
     isDefaultColumnText: 'Is default',
     updateBtnText: 'Update',
+    defaultLandingViewText: 'Default landing view',
 
     // override
     constructor: function(config) {
@@ -47,7 +48,7 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
                             xtype: 'combo',
                             editable: false,
                             labelWidth: 150,
-                            fieldLabel: 'Default landing view',
+                            fieldLabel: me.defaultLandingViewText,
                             store: Ext.create('Ext.data.Store', {
                                 fields: ['id', 'label'],
                                 data: config.data.sections || []

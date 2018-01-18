@@ -5,6 +5,7 @@ namespace Modera\BackendDashboardBundle\Tests\Unit\DependencyInjection;
 use Modera\BackendDashboardBundle\DependencyInjection\ModeraBackendDashboardExtension;
 use Modera\BackendDashboardBundle\ModeraBackendDashboardBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 
 /**
  * @copyright 2013 Modera Foundation
@@ -23,6 +24,10 @@ class ModeraBackendDashboardExtensionTest extends \PHPUnit_Framework_TestCase
         $bundle = new ModeraBackendDashboardBundle();
 
         $bundle->build($builder);
+
+        $definition = new Definition(new \stdClass());
+        $builder->setDefinition('modera_backend_translations_tool.handling.extjs_translation_handler', $definition);
+        $builder->setDefinition('modera_translations.handling.php_classes_translation_handler', $definition);
 
         $ext = new ModeraBackendDashboardExtension();
         $ext->load(array(), $builder);
