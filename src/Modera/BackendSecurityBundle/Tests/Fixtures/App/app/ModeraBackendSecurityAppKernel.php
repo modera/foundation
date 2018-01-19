@@ -27,9 +27,12 @@ class ModeraBackendSecurityAppKernel extends \Modera\FoundationBundle\Testing\Ab
             new Modera\BackendToolsBundle\ModeraBackendToolsBundle(),
             new Modera\ActivityLoggerBundle\ModeraActivityLoggerBundle(),
 
+            new Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle(),
+
             new Modera\ServerCrudBundle\ModeraServerCrudBundle(),
 
             new Modera\BackendSecurityBundle\ModeraBackendSecurityBundle(),
+
         );
     }
 }
