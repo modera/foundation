@@ -8,6 +8,7 @@ use Modera\MjrIntegrationBundle\Menu\MenuItemInterface;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Modera\FoundationBundle\Translation\T;
 
 /**
  * Contributes js-runtime menu items.
@@ -51,7 +52,7 @@ class MenuItemsProvider implements ContributorInterface
 
             if ($this->authorizationChecker->isGranted(ModeraBackendToolsBundle::ROLE_ACCESS_TOOLS_SECTION)) {
                 if (count($this->sectionsProvider->getItems())) {
-                    $this->items[] = new MenuItem('Tools', 'Modera.backend.tools.runtime.Section', 'tools', array(
+                    $this->items[] = new MenuItem(T::trans('Tools'), 'Modera.backend.tools.runtime.Section', 'tools', array(
                         MenuItemInterface::META_NAMESPACE => 'Modera.backend.tools',
                         MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackendtools/js',
                     ), FontAwesome::resolve('wrench'));

@@ -18,6 +18,42 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
     constructor: function(config) {
         var me = this;
 
+        var items = [
+            {
+                xtype: 'hiddenfield',
+                name: 'id'
+            },
+            {
+                xtype: 'displayfield',
+                fieldLabel: me.userIdLabelText,
+                name: 'displayId'
+            },
+            {
+                name: 'firstName',
+                fieldLabel: me.firstNameLabelText,
+                emptyText: me.placeHolderText
+            },
+            {
+                name: 'lastName',
+                fieldLabel: me.lastNameLabelText,
+                emptyText: me.placeHolderText
+            }
+        ];
+
+        if (!config.onlyProfileInformation) {
+            items.push({
+                name: 'username',
+                fieldLabel: me.usernameLabelText,
+                emptyText: me.placeHolderText
+            });
+        }
+
+        items.push({
+            name: 'email',
+            fieldLabel: me.emailLabelText,
+            emptyText: me.placeHolderText
+        });
+
         var defaults = {
             type: 'edit',
             groupName: 'main-form',
@@ -35,37 +71,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
                 defaults: {
                     labelAlign: 'right'
                 },
-                items: [
-                    {
-                        xtype: 'hiddenfield',
-                        name: 'id'
-                    },
-                    {
-                        xtype: 'displayfield',
-                        fieldLabel: me.userIdLabelText,
-                        name: 'displayId'
-                    },
-                    {
-                        name: 'firstName',
-                        fieldLabel: me.firstNameLabelText,
-                        emptyText: me.placeHolderText
-                    },
-                    {
-                        name: 'lastName',
-                        fieldLabel: me.lastNameLabelText,
-                        emptyText: me.placeHolderText
-                    },
-                    {
-                        name: 'username',
-                        fieldLabel: me.usernameLabelText,
-                        emptyText: me.placeHolderText
-                    },
-                    {
-                        name: 'email',
-                        fieldLabel: me.emailLabelText,
-                        emptyText: me.placeHolderText
-                    }
-                ]
+                items: items
             }
         };
 

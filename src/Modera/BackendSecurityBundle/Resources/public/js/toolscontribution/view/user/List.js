@@ -94,8 +94,13 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
             ],
             dockedItems: [
                 {
+
                     security: {
-                        role: 'ROLE_MANAGE_USER_PROFILES',
+                        role: function(roles, callback) {
+                            callback(['ROLE_MANAGE_USER_PROFILES', 'ROLE_MANAGE_USER_PROFILE_INFORMATION'].filter(function(role) {
+                                    return roles.indexOf(role) > -1;
+                                }).length > 0);
+                        },
                         strategy: 'hide'
                     },
                     xtype: 'toolbar',
@@ -132,12 +137,16 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                                         itemId: 'deleteBtn',
                                         text: me.deleteBtnText,
                                         iconCls: 'mfc-icon-delete-16',
+                                        security: {
+                                            role: 'ROLE_MANAGE_USER_PROFILES',
+                                            strategy: 'hide'
+                                        },
                                         tid: 'deleteUserButton'
                                     },
                                     {
                                         hidden: true,
                                         selectionAware: function(selected) {
-                                            if (1 == selected.length && !selected[0].get('isActive')) {
+                                            if (1 == selected.length && !selected[0].get('isActive') && !config.hideDisableEnableUserFunctionality) {
                                                 return this.show();
                                             }
                                             this.hide();
@@ -145,12 +154,16 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                                         itemId: 'enableBtn',
                                         text: me.enableBtnText,
                                         iconCls: 'mfc-icon-apply-16',
+                                        security: {
+                                            role: 'ROLE_MANAGE_USER_PROFILES',
+                                            strategy: 'hide'
+                                        },
                                         tid: 'enableUserButton'
                                     },
                                     {
                                         hidden: true,
                                         selectionAware: function(selected) {
-                                            if (1 == selected.length && selected[0].get('isActive')) {
+                                            if (1 == selected.length && selected[0].get('isActive') && !config.hideDisableEnableUserFunctionality) {
                                                 return this.show();
                                             }
                                             this.hide();
@@ -158,6 +171,10 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                                         itemId: 'disableBtn',
                                         text: me.disableBtnText,
                                         iconCls: 'mfc-icon-error-16',
+                                        security: {
+                                            role: 'ROLE_MANAGE_USER_PROFILES',
+                                            strategy: 'hide'
+                                        },
                                         tid: 'disableUserButton'
                                     }
                                 ]
@@ -182,6 +199,10 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                             iconCls: 'modera-backend-security-icon-password-24',
                             text: me.changePasswordBtnText,
                             scale: 'medium',
+                            security: {
+                                role: 'ROLE_MANAGE_USER_PROFILES',
+                                strategy: 'hide'
+                            },
                             tid: 'changepasswordbtn'
                         }
                     ]

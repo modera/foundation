@@ -28,13 +28,18 @@ class PermissionsProvider implements ContributorInterface
                     'administration'
                 ),
                 new Permission(
-                    T::trans('Manage User Profiles'), // MPFE-959; before 2.54.0 it was "Manage user profiles"
+                    T::trans('Manage User Accounts'), // CLS-1014; before 2.57.0 it was "Manage User Profiles"; MPFE-959; before 2.54.0 it was "Manage user profiles"
                     ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
                     'administration'
                 ),
                 new Permission(
                     T::trans('Manage Permissions'), // MPFE-959; before 2.54.0 it was "Manage permissions"
                     ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
+                    'administration'
+                ),
+                new Permission(
+                    T::trans('Manage User Profile Information'),
+                    ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION,
                     'administration'
                 ),
             ];

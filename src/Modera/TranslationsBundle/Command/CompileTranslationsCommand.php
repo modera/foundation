@@ -4,14 +4,14 @@ namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Translation\Writer\TranslationWriter;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Modera\TranslationsBundle\Entity\TranslationToken;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
+use Modera\TranslationsBundle\Entity\TranslationToken;
 
 /**
  * Takes tokens from database and compiles them back to SF files.
@@ -82,16 +82,27 @@ class CompileTranslationsCommand extends ContainerAwareCommand
 
         if (count($bundles)) {
             $fs = new Filesystem();
-            $resourcesDir = 'app/Resources';
-            $basePath = dirname($this->getContainer()->get('kernel')->getRootdir());
+
+            $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
+            $basePath = dirname($this->normalizePath($rootDir));
+
+            $translationsDir = join(DIRECTORY_SEPARATOR, array($rootDir, 'Resources', 'translations'));
+            if ($this->getContainer()->hasParameter('modera.translations_dir')) {
+                $translationsDir = $this->getContainer()->getParameter('modera.translations_dir');
+            }
 
             foreach ($bundles as $bundleName => $catalogues) {
                 if (!count($catalogues)) {
                     continue;
                 }
 
-                $bundleTransDir = $resourcesDir.'/translations'.'/'.$bundleName;
-                $bundleTransPath = $basePath.'/'.$bundleTransDir;
+                $bundleTransPath = $translationsDir.'/'.$bundleName;
+                $parts = explode($basePath . DIRECTORY_SEPARATOR, $this->normalizePath($bundleTransPath));
+                if (count($parts) > 1) {
+                    $bundleTransDir = $parts[1];
+                } else {
+                    $bundleTransDir = $parts[0];
+                }
 
                 $output->writeln('>>> '.$bundleName.': '.$bundleTransDir);
 
@@ -124,5 +135,39 @@ class CompileTranslationsCommand extends ContainerAwareCommand
         } else {
             $output->writeln('>>> Nothing to compile');
         }
+    }
+
+    /**
+     * @param $path
+     * @return string
+     */
+    protected function normalizePath($path)
+    {
+        $path = str_replace('\\', '/', $path);
+        $path = preg_replace('/\/+/', '/', $path);
+
+        $parts = array();
+        $segments = explode('/', $path);
+
+        foreach ($segments as $segment) {
+            if ($segment != '.') {
+                $test = array_pop($parts);
+                if (is_null($test)) {
+                    $parts[] = $segment;
+                } else if($segment == '..') {
+                    if ($test == '..') {
+                        $parts[] = $test;
+                    }
+                    if ($test == '..' || $test == '') {
+                        $parts[] = $segment;
+                    }
+                } else {
+                    $parts[] = $test;
+                    $parts[] = $segment;
+                }
+            }
+        }
+
+        return implode(DIRECTORY_SEPARATOR, $parts);
     }
 }

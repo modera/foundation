@@ -17,4 +17,16 @@ class IndexController extends Controller
     {
         return 'ModeraBackendLanguagesBundle:Index:compile.html.twig';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getTranslationsDir()
+    {
+        if ($this->container->hasParameter('modera.translations_dir')) {
+            return $this->container->getParameter('modera.translations_dir');
+        }
+
+        return parent::getTranslationsDir();
+    }
 }

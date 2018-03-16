@@ -25,13 +25,20 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.EditWindowAct
                         continueCallback();
                     } else {
                         // and will be edit other people's profiles only when he has this security role
-                        sm.isAllowed('ROLE_MANAGE_USER_PROFILES', function(result) {
-                            if (result) {
-                                continueCallback();
-                            } else {
-                                showDialog();
+                        sm.isAllowed(
+                            function(roles, callback) {
+                                callback(['ROLE_MANAGE_USER_PROFILES', 'ROLE_MANAGE_USER_PROFILE_INFORMATION'].filter(function(role) {
+                                        return roles.indexOf(role) > -1;
+                                    }).length > 0);
+                            },
+                            function(result) {
+                                if (result) {
+                                    continueCallback();
+                                } else {
+                                    showDialog();
+                                }
                             }
-                        });
+                        );
                     }
                 });
             }
@@ -49,8 +56,18 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.EditWindowAct
             }
         };
 
+        var onlyProfileInformation = true;
+        var sm = this.workbench.getService('security_manager');
+        sm.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
+            if (isAllowed) {
+                onlyProfileInformation = false;
+            }
+        });
+
         Actions.ModeraBackendSecurity_Users.get(requestParams, function(response) {
-            var window = Ext.create('Modera.backend.security.toolscontribution.view.user.EditWindow');
+            var window = Ext.create('Modera.backend.security.toolscontribution.view.user.EditWindow', {
+                onlyProfileInformation: onlyProfileInformation
+            });
 
             window.loadData(response.result);
 
