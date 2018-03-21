@@ -12,7 +12,7 @@
         >
 
     <listeners>
-        <listener class="Modera\TestsRunner\PhpUnitListener" file="./mtr/src/Modera/TestsRunner/PhpUnitListener.php"></listener>
+        <listener class="Modera\TestsRunner\PhpUnitListener" file="./vendor/modera/tests-runner/src/Modera/TestsRunner/PhpUnitListener.php"></listener>
     </listeners>
 
     <testsuites>

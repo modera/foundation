@@ -19,10 +19,10 @@
         "sergeil/aux-bundle": "~1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.5",
         "phake/phake": "~2.0",
-        "sergeil/aux-bundle": "~1.0",
-        "mikey179/vfsstream": "^1.6"
+        "phpunit/phpunit": "^5.5",
+        "mikey179/vfsstream": "^1.6",
+        "modera/tests-runner": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -67,6 +67,9 @@
             "dev-master": "2.x-dev"
         },
         "modera-monorepo": {
+            "require": {
+                "modera/tests-runner": "dev-master"
+            },
             "include": [
                 "src/Modera/*/composer.json"
             ]
