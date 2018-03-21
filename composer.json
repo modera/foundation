@@ -67,7 +67,7 @@
             "dev-master": "2.x-dev"
         },
         "modera-monorepo": {
-            "require": {
+            "require-dev": {
                 "modera/tests-runner": "dev-master"
             },
             "include": [
