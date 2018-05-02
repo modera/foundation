@@ -4,6 +4,7 @@ namespace Modera\DynamicallyConfigurableAppBundle\ValueHandling;
 
 use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
 use Modera\ConfigBundle\Config\ValueUpdatedHandlerInterface;
+use Modera\DynamicallyConfigurableAppBundle\KernelConfig;
 use Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBundle as Bundle;
 
 /**
@@ -37,9 +38,7 @@ class KernelConfigWriter implements ValueUpdatedHandlerInterface
             return;
         }
 
-        $reflKernel = new \ReflectionClass($this->kernelClassName);
-
-        $path = dirname($reflKernel->getFileName()).DIRECTORY_SEPARATOR.'kernel.json';
+        $path = KernelConfig::getKernelJsonPath();
 
         $kernelJson = @file_get_contents($path);
         if (false === $kernelJson) {
@@ -51,7 +50,13 @@ class KernelConfigWriter implements ValueUpdatedHandlerInterface
             'debug' => false,
             'env' => 'prod',
         );
-        $kernelJson = array_merge($defaultValue, $kernelJson);
+
+        if (is_array($kernelJson)) {
+            $kernelJson = array_merge($defaultValue, $kernelJson);
+        } else {
+            $kernelJson = $defaultValue;
+        }
+
         $kernelJson['_comment'] = 'This file is used by web/app.php to control with what configuration AppKernel should be created with.';
 
         if ($entry->getName() == Bundle::CONFIG_KERNEL_DEBUG) {

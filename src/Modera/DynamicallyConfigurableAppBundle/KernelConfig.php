@@ -20,7 +20,7 @@ class KernelConfig
 
         $reflKernel = new \ReflectionClass('AppKernel');
 
-        $mode = file_get_contents(dirname($reflKernel->getFileName()).'/kernel.json');
+        $mode = file_get_contents(self::getKernelJsonPath());
 
         if (false == $mode) {
             return $defaultMode;
@@ -31,6 +31,22 @@ class KernelConfig
             } else {
                 return $defaultMode;
             }
+        }
+    }
+
+    public static function getKernelJsonPath()
+    {
+        $reflKernel = new \ReflectionClass('AppKernel');
+
+        $appDir = dirname($reflKernel->getFileName());
+
+        $isShared = getenv('MODERA_SD');
+        $sharedDeploymentName = getenv('MODERA_SD_NAME');
+
+        if ($isShared && $sharedDeploymentName) {
+            return $appDir.'/../deployments/'.$sharedDeploymentName.'/kernel.json';
+        } else {
+            return $appDir.'/kernel.json';
         }
     }
 }
