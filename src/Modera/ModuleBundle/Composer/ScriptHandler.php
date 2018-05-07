@@ -278,12 +278,16 @@ class ScriptHandler extends AbstractScriptHandler
      */
     public static function doctrineSchemaUpdate(Event $event)
     {
+        if ($scriptHandler = static::getScriptHandler($event, __FUNCTION__)) {
+            $scriptHandler($event);
+            return;
+        }
+
         $options = static::getOptions($event);
         $appDir = $options['symfony-app-dir'];
 
         if (!is_dir($appDir)) {
             self::reportSymfonyAppDirNotFound($appDir);
-
             return;
         }
 
@@ -319,6 +323,23 @@ class ScriptHandler extends AbstractScriptHandler
         }
     }
 
+    /**
+     * @param $handlerName
+     * @return mixed
+     */
+    private static function getScriptHandler(Event $event, $handlerName)
+    {
+        $options = static::getOptions($event);
+        if (isset($options['modera-module']) && isset($options['modera-module']['script-handler'])) {
+            if (isset($options['modera-module']['script-handler'][$handlerName])) {
+                return $options['modera-module']['script-handler'][$handlerName];
+            }
+        }
+    }
+
+    /**
+     * @param $appDir
+     */
     private static function reportSymfonyAppDirNotFound($appDir)
     {
         echo sprintf(
