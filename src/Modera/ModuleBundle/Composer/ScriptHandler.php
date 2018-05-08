@@ -310,16 +310,20 @@ class ScriptHandler extends AbstractScriptHandler
             return;
         }
 
+        $ignoreSchemaUpdate = false;
         try {
             static::executeCommand($event, $appDir, 'doctrine:database:create --quiet', $options['process-timeout']);
         } catch (\RuntimeException $e) {
             // The command throws an exception if database already exists, so here we are supressing it
+            $ignoreSchemaUpdate = true;
         }
 
-        try {
-            static::doctrineSchemaUpdate($event);
-        } catch (\Exception $e) {
-            echo "Error during database initialization: ".$e->getMessage()."\n";
+        if (!$ignoreSchemaUpdate) {
+            try {
+                static::doctrineSchemaUpdate($event);
+            } catch (\Exception $e) {
+                echo "Error during database initialization: ".$e->getMessage()."\n";
+            }
         }
     }
 
