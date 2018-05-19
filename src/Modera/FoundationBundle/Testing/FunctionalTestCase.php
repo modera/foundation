@@ -32,11 +32,6 @@ class FunctionalTestCase extends WebTestCase
     /* @var \Symfony\Component\DependencyInjection\ContainerInterface */
     protected static $container;
 
-    /**
-     * @var KernelInterface[]
-     */
-    private static $kernels = array();
-
     private static function rollbackTransaction()
     {
         $c = static::$em->getConnection();

@@ -15,6 +15,18 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 abstract class AbstractFunctionalKernel extends Kernel
 {
     /**
+     * TODO find a proper solution how to disable logging in console
+     * when running tests
+     */
+    public function __construct($environment, $debug)
+    {
+        parent::__construct($environment, $debug);
+
+        $this->debug = false;
+    }
+
+
+    /**
      * Extracts bundle name from a Kernel class name. For the method to work correctly it has to be formatted in the
      * following way: AcmeFooBundleAppKernel, in this case bundle's name is going to be AcmeFooBundle.
      *

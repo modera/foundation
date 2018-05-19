@@ -1,6 +1,6 @@
 <?php
 
-namespace Modera\BackendSecurityBundle\Tests\Unit\DataMapper;
+namespace Modera\BackendSecurityBundle\Tests\Functional\DataMapper;
 
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Modera\SecurityBundle\Entity\User;
