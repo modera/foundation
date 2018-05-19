@@ -41,6 +41,9 @@ if [ ! -d "$RUNNER_GIT_DIR" ]; then
   echo "# Cloning and installing test-runner"
 
   git clone https://github.com/modera/tests-runner.git $RUNNER_GIT_DIR
+  pushd $RUNNER_GIT_DIR
+    git checkout v0.3 # v0.3 is verified to work fine with Symfony3
+  popd
 
   docker run \
       -it \
