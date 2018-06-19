@@ -44,7 +44,7 @@ class TranslationsController extends AbstractCrudController
             ),
             'hydration' => array(
                 'groups' => array(
-                    'list' => ['id', 'source', 'bundleName', 'domain', 'tokenName', 'isObsolete', 'translations'],
+                    'list' => ['id', 'bundleName', 'domain', 'tokenName', 'isObsolete', 'translations'],
                 ),
                 'profiles' => array(
                     'list',

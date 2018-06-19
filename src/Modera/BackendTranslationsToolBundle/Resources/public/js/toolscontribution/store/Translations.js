@@ -7,7 +7,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.store.Translations
     constructor: function() {
         this.config = {
             fields: [
-                'id', 'source', 'bundleName', 'domain', 'tokenName', 'isObsolete', 'translations'
+                'id', 'bundleName', 'domain', 'tokenName', 'isObsolete', 'translations'
             ],
             remoteFilter: true,
             remoteSort: true,

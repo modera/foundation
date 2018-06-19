@@ -32,9 +32,12 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $loader->loadMessages(dirname($bundleTransPath), $catalogue);
         $messages = $catalogue->all('messages');
 
-        $this->assertEquals(1, count($messages));
+        $this->assertEquals(2, count($messages));
         $this->assertTrue(isset($messages['Test token']));
         $this->assertEquals('Test token', $messages['Test token']);
+
+        $this->assertTrue(isset($messages['Test token only in twig']));
+        $this->assertEquals('Test token only in twig', $messages['Test token only in twig']);
 
         if ($fs->exists($bundleTransPath)) {
             $fs->remove($bundleTransPath);
