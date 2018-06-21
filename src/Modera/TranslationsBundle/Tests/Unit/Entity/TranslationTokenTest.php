@@ -24,14 +24,12 @@ class TranslationTokenTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($token, $token->setDomain('foo-domain'));
         $this->assertSame($token, $token->setLanguageTranslationTokens($translationTokensMock));
         $this->assertSame($token, $token->setObsolete(true));
-        $this->assertSame($token, $token->setSource('foo-source'));
 
         $this->assertEquals('foo-bn', $token->getBundleName());
         $this->assertEquals('foo-tokenname', $token->getTokenName());
         $this->assertEquals('foo-domain', $token->getDomain());
         $this->assertSame($translationTokensMock, $token->getLanguageTranslationTokens());
         $this->assertTrue($token->isObsolete());
-        $this->assertEquals('foo-source', $token->getSource());
     }
 
     public function testCreateLanguageToken()
