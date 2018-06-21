@@ -2,7 +2,7 @@
 
 ## 2.57.0 (not released yet, in development)
 
-* [CLS-1408] Translations missing from offer template
+* [CLS-1408] Fixed bug with duplication of translation tokens, imported from different sources
 * [MPFE-1065][ModeraMjrIntegrationBundle] Update FontAwesome to v4.7.0
 * [MPFE-1064][ModeraMjrIntegrationBundle] Update Moment.js to v2.21.0
 * [CLS-1104] Localization improved, added ability to translate most of UI elements
