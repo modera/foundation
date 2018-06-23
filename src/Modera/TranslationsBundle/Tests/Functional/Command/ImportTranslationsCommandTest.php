@@ -30,7 +30,6 @@ class ImportTranslationsCommandTest extends AbstractFunctionalTestCase
         /* @var TranslationToken $token */
         $this->assertInstanceOf(TranslationToken::clazz(), $token);
         $this->assertFalse($token->isObsolete());
-        $this->assertEquals('ModeraTranslationsDummyBundle', $token->getBundleName());
         $this->assertEquals('messages', $token->getDomain());
         $this->assertEquals($tokenName, $token->getTokenName());
         $this->assertEquals(1, count($token->getTranslations()));
@@ -60,23 +59,26 @@ class ImportTranslationsCommandTest extends AbstractFunctionalTestCase
         $this->launchImportCommand();
 
         $tokens = self::$em->getRepository(TranslationToken::clazz())->findAll();
-        $this->assertEquals(2, count($tokens));
+        $this->assertEquals(3, count($tokens));
 
         $tokens = self::$em->getRepository(TranslationToken::clazz())->findBy(array(
-            'bundleName' => 'ModeraTranslationsDummyBundle',
             'tokenName' => 'Test token'
         ));
         $this->assertCount(1, $tokens);
         $this->assertToken($tokens[0]);
 
         $token = self::$em->getRepository(TranslationToken::clazz())->findOneBy(array(
-            'bundleName' => 'ModeraTranslationsDummyBundle',
             'tokenName' => 'Test token only in twig'
         ));
         $this->assertToken($token, 'Test token only in twig');
 
         $token = self::$em->getRepository(TranslationToken::clazz())->findOneBy(array(
-            'bundleName' => 'undefined',
+            'tokenName' => 'This token is only in SecondDummy bundle'
+        ));
+        $this->assertToken($token, 'This token is only in SecondDummy bundle');
+
+        $token = self::$em->getRepository(TranslationToken::clazz())->findOneBy(array(
+            'tokenName' => 'undefined',
         ));
         $this->assertFalse($token instanceof TranslationToken);
     }

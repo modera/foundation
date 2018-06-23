@@ -19,13 +19,11 @@ class TranslationTokenTest extends \PHPUnit_Framework_TestCase
 
         $translationTokensMock = \Phake::mock(ArrayCollection::class);
 
-        $this->assertSame($token, $token->setBundleName('foo-bn'));
         $this->assertSame($token, $token->setTokenName('foo-tokenname'));
         $this->assertSame($token, $token->setDomain('foo-domain'));
         $this->assertSame($token, $token->setLanguageTranslationTokens($translationTokensMock));
         $this->assertSame($token, $token->setObsolete(true));
 
-        $this->assertEquals('foo-bn', $token->getBundleName());
         $this->assertEquals('foo-tokenname', $token->getTokenName());
         $this->assertEquals('foo-domain', $token->getDomain());
         $this->assertSame($translationTokensMock, $token->getLanguageTranslationTokens());

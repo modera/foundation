@@ -44,7 +44,7 @@ class TranslationsController extends AbstractCrudController
             ),
             'hydration' => array(
                 'groups' => array(
-                    'list' => ['id', 'bundleName', 'domain', 'tokenName', 'isObsolete', 'translations'],
+                    'list' => ['id', 'domain', 'tokenName', 'isObsolete', 'translations'],
                 ),
                 'profiles' => array(
                     'list',
@@ -80,7 +80,7 @@ class TranslationsController extends AbstractCrudController
                 if ($filterValue) {
                     $params['filter'] = [
                         [
-                            array('property' => 'bundleName', 'value' => 'eq:'.$filterValue),
+                            array('property' => 'domain', 'value' => 'eq:'.$filterValue),
                             array('property' => 'tokenName', 'value' => 'like:%'.$filterValue.'%'),
                             array(
                                 'property' => 'translations',
