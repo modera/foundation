@@ -30,12 +30,6 @@ class TranslationToken
      * @var string
      * @ORM\Column(type="string", nullable=false)
      */
-    private $bundleName;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", nullable=false)
-     */
     private $domain;
 
     /**
@@ -100,26 +94,6 @@ class TranslationToken
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBundleName()
-    {
-        return $this->bundleName;
-    }
-
-    /**
-     * @param string $bundleName
-     *
-     * @return TranslationToken
-     */
-    public function setBundleName($bundleName)
-    {
-        $this->bundleName = $bundleName;
-
-        return $this;
     }
 
     /**

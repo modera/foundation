@@ -87,7 +87,6 @@ class LanguageTranslationTokenListenerTest extends FunctionalTestCase
     public function testUpdateTranslationToken()
     {
         $token = new TranslationToken();
-        $token->setBundleName('test');
         $token->setDomain('test');
         $token->setTokenName('test');
         self::$em->persist($token);

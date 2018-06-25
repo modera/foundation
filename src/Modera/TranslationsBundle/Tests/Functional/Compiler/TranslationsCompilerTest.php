@@ -46,7 +46,6 @@ class TranslationsCompilerTest extends AbstractFunctionalTestCase
             $discoveredFiles[] = $file->getFilename();
         }
 
-        $this->assertTrue(in_array('ModeraTranslationsDummyBundle', $discoveredFiles));
         $this->assertTrue(in_array('messages.en.yml', $discoveredFiles));
     }
 }

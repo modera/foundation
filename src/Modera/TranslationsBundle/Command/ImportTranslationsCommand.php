@@ -77,127 +77,119 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         foreach ($languages as $language) {
             $locale = $language->getLocale();
 
-            $extractedCatalogues = [];
+            $extractedCatalogues = new MessageCatalogue($locale);
 
             foreach ($handlers as $handler) {
                 $bundleName = $handler->getBundleName();
-
-                if (!isset($extractedCatalogues[$bundleName])) {
-                    $extractedCatalogues[$bundleName] = new MessageCatalogue($locale);
-                }
 
                 foreach ($handler->getSources() as $source) {
 
                     $extractedCatalogue = $handler->extract($source, $locale);
                     if (null !== $extractedCatalogue) {
-                        $mergeOperation = new MergeOperation($extractedCatalogues[$bundleName], $extractedCatalogue);
-                        $extractedCatalogues[$bundleName] = $mergeOperation->getResult();
+                        $mergeOperation = new MergeOperation($extractedCatalogues, $extractedCatalogue);
+                        $extractedCatalogues = $mergeOperation->getResult();
+
+                        $output->writeln(
+                            "Importing tokens for a locale <comment>$locale</> from a bundle <comment>$bundleName</> using $source"
+                        );
                     }
                 }
             }
 
-            foreach ($extractedCatalogues as $bundleName => $extractedCatalogue) {
-                $databaseCatalogue = new MessageCatalogue($locale);
-                if (isset($tokens[$bundleName]) && isset($tokens[$bundleName])) {
-                    foreach ($tokens[$bundleName] as $token) {
-                        if ($token['isObsolete']) {
-                            continue;
-                        }
+            $databaseCatalogue = new MessageCatalogue($locale);
+            foreach ($tokens as $domain => $arr) {
+                foreach ($arr as $token) {
+                    if ($token['isObsolete']) {
+                        continue;
+                    }
 
-                        if (isset($token['languageTranslationTokens'])) {
-                            foreach ($token['languageTranslationTokens'] as $ltt) {
-                                $lang = $this->findLanguage($languages, $ltt['language']);
-                                if ($lang && $lang->getLocale() == $locale) {
-                                    $databaseCatalogue->set(
-                                        $token['tokenName'], $ltt['translation'], $token['domain']
-                                    );
+                    if (isset($token['languageTranslationTokens'])) {
+                        foreach ($token['languageTranslationTokens'] as $ltt) {
+                            $lang = $this->findLanguage($languages, $ltt['language']);
+                            if ($lang && $lang->getLocale() == $locale) {
+                                $databaseCatalogue->set(
+                                    $token['tokenName'], $ltt['translation'], $token['domain']
+                                );
 
-                                    break;
-                                }
+                                break;
                             }
                         }
-
                     }
                 }
 
-                // process catalogues
-                $operation = new TargetOperation($databaseCatalogue, $extractedCatalogue);
+            }
 
-                foreach ($operation->getDomains() as $domain) {
-                    $newMessages = $operation->getNewMessages($domain);
-                    $obsoleteMessages = $operation->getObsoleteMessages($domain);
+            // process catalogues
+            $operation = new TargetOperation($databaseCatalogue, $extractedCatalogues);
 
-                    // if tokenName is same, but translation was changed
-                    $updatedMessages = array();
-                    $allMessages = $operation->getMessages($domain);
-                    $extractedMessages = $extractedCatalogue->all($domain);
-                    foreach ($extractedMessages as $tokenName => $translation) {
-                        if (!array_key_exists($tokenName, $newMessages) && array_key_exists($tokenName, $allMessages)) {
-                            if ($extractedMessages[$tokenName] !== $allMessages[$tokenName]) {
-                                $token = $this->findTranslationToken($tokens, $bundleName, $domain, $tokenName);
-                                if ($token) {
-                                    $ltt = $this->findLanguageTranslationToken($token, $language->getId());
-                                    // if not translated yet
-                                    if ($ltt && $ltt['isNew']) {
-                                        $updatedMessages[$tokenName] = $translation;
-                                    }
+            foreach ($operation->getDomains() as $domain) {
+                $newMessages = $operation->getNewMessages($domain);
+                $obsoleteMessages = $operation->getObsoleteMessages($domain);
+
+                // if tokenName is same, but translation was changed
+                $updatedMessages = array();
+                $allMessages = $operation->getMessages($domain);
+                $extractedMessages = $extractedCatalogues->all($domain);
+                foreach ($extractedMessages as $tokenName => $translation) {
+                    if (!array_key_exists($tokenName, $newMessages) && array_key_exists($tokenName, $allMessages)) {
+                        if ($extractedMessages[$tokenName] !== $allMessages[$tokenName]) {
+                            $token = $this->findTranslationToken($tokens, $domain, $tokenName);
+                            if ($token) {
+                                $ltt = $this->findLanguageTranslationToken($token, $language->getId());
+                                // if not translated yet
+                                if ($ltt && $ltt['isNew']) {
+                                    $updatedMessages[$tokenName] = $translation;
                                 }
                             }
                         }
                     }
+                }
 
-                    if (count($newMessages) || count($updatedMessages) || count($obsoleteMessages)) {
-                        $imported = true;
+                if (count($newMessages) || count($updatedMessages) || count($obsoleteMessages)) {
+                    $imported = true;
 
-                        $output->writeln(
-                            "Importing tokens for a locale <comment>$locale</> from a bundle <comment>$bundleName</> using $source and domain <comment>$domain</>"
+                }
+
+                if (count($newMessages) || count($updatedMessages)) {
+                    if (!isset($new[$domain])) {
+                        $new[$domain] = array();
+                    }
+
+                    if (count($newMessages)) {
+                        $output->writeln(sprintf('  <info>New messages: %s</>', count($newMessages)));
+                        if ($printMessageNames) {
+                            $this->printMessages($output, $newMessages);
+                        }
+                    }
+
+                    if (count($updatedMessages)) {
+                        $output->writeln(sprintf('  <info>Updated messages: %s</>', count($updatedMessages)));
+                        if ($printMessageNames) {
+                            $this->printMessages($output, $updatedMessages);
+                        }
+                    }
+
+                    foreach (array_merge($newMessages, $updatedMessages) as $tokenName => $translation) {
+                        if (!isset($new[$domain][$tokenName])) {
+                            $new[$domain][$tokenName] = array();
+                        }
+                        $new[$domain][$tokenName][] = array(
+                            'translation' => $translation,
+                            'language'    => $language->getId(),
                         );
                     }
+                }
 
-                    if (count($newMessages) || count($updatedMessages)) {
-                        if (!isset($new[$bundleName])) {
-                            $new[$bundleName] = array();
-                        }
-                        if (!isset($new[$bundleName][$domain])) {
-                            $new[$bundleName][$domain] = array();
-                        }
-
-                        if (count($newMessages)) {
-                            $output->writeln(sprintf('  <info>New messages: %s</>', count($newMessages)));
-                            if ($printMessageNames) {
-                                $this->printMessages($output, $newMessages);
-                            }
-                        }
-
-                        if (count($updatedMessages)) {
-                            $output->writeln(sprintf('  <info>Updated messages: %s</>', count($updatedMessages)));
-                            if ($printMessageNames) {
-                                $this->printMessages($output, $updatedMessages);
-                            }
-                        }
-
-                        foreach (array_merge($newMessages, $updatedMessages) as $tokenName => $translation) {
-                            if (!isset($new[$bundleName][$domain][$tokenName])) {
-                                $new[$bundleName][$domain][$tokenName] = array();
-                            }
-                            $new[$bundleName][$domain][$tokenName][] = array(
-                                'translation' => $translation,
-                                'language'    => $language->getId(),
-                            );
-                        }
+                if (count($obsoleteMessages)) {
+                    $output->writeln(sprintf('  <fg=red>Obsolete messages: %s</>', count($obsoleteMessages)));
+                    if ($printMessageNames) {
+                        $this->printMessages($output, $obsoleteMessages);
                     }
 
-                    if (count($obsoleteMessages)) {
-                        $output->writeln(sprintf('  <fg=red>Obsolete messages: %s</>', count($obsoleteMessages)));
-                        if ($printMessageNames) {
-                            $this->printMessages($output, $obsoleteMessages);
-                        }
-
-                        foreach ($obsoleteMessages as $tokenName => $translation) {
-                            $token = $this->findTranslationToken($tokens, $bundleName, $domain, $tokenName);
-                            if ($token && !$token['isObsolete']) {
-                                $obsolete[] = $token['id'];
-                            }
+                    foreach ($obsoleteMessages as $tokenName => $translation) {
+                        $token = $this->findTranslationToken($tokens, $domain, $tokenName);
+                        if ($token && !$token['isObsolete']) {
+                            $obsolete[] = $token['id'];
                         }
                     }
                 }
@@ -208,18 +200,14 @@ class ImportTranslationsCommand extends ContainerAwareCommand
             if (count($new)) {
                 // insert translation tokens
                 $insertTranslationTokens = array();
-                foreach ($new as $bundleName => $domains) {
-                    foreach ($domains as $domain => $translationTokens) {
-                        foreach ($translationTokens as $tokenName => $arr) {
-                            $token = $this->findTranslationToken($tokens, $bundleName, $domain, $tokenName);
-                            if (!$token) {
-                                $insertTranslationTokens[] = array(
-                                    'source'     => $source,
-                                    'bundleName' => $bundleName,
-                                    'domain'     => $domain,
-                                    'tokenName'  => $tokenName,
-                                );
-                            }
+                foreach ($new as $domain => $translationTokens) {
+                    foreach ($translationTokens as $tokenName => $arr) {
+                        $token = $this->findTranslationToken($tokens, $domain, $tokenName);
+                        if (!$token) {
+                            $insertTranslationTokens[] = array(
+                                'domain'     => $domain,
+                                'tokenName'  => $tokenName,
+                            );
                         }
                     }
                 }
@@ -227,7 +215,6 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                 foreach ($insertTranslationTokens as $key => $data) {
                     $token = new TranslationToken();
                     $token
-                        ->setBundleName($data['bundleName'])
                         ->setDomain($data['domain'])
                         ->setTokenName($data['tokenName']);
                     $this->em()->persist($token);
@@ -245,25 +232,23 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                 // insert/update language translation tokens
                 $insertLanguageTranslationTokens = array();
                 $updateLanguageTranslationTokens = array();
-                foreach ($new as $bundleName => $domains) {
-                    foreach ($domains as $domain => $translationTokens) {
-                        foreach ($translationTokens as $tokenName => $arr) {
-                            $token = $this->findTranslationToken($tokens, $bundleName, $domain, $tokenName);
-                            if ($token) {
-                                foreach ($arr as $data) {
-                                    $ltt = $this->findLanguageTranslationToken($token, $data['language']);
-                                    if (!$ltt) {
-                                        $insertLanguageTranslationTokens[] = array(
-                                            'language' => $data['language'],
-                                            'translationToken' => $token['id'],
-                                            'translation' => $data['translation'],
-                                        );
-                                    } else if ($ltt['isNew']) {
-                                        $updateLanguageTranslationTokens[] = array(
-                                            'id' => $ltt['id'],
-                                            'translation' => $data['translation'],
-                                        );
-                                    }
+                foreach ($new as $domain => $translationTokens) {
+                    foreach ($translationTokens as $tokenName => $arr) {
+                        $token = $this->findTranslationToken($tokens, $domain, $tokenName);
+                        if ($token) {
+                            foreach ($arr as $data) {
+                                $ltt = $this->findLanguageTranslationToken($token, $data['language']);
+                                if (!$ltt) {
+                                    $insertLanguageTranslationTokens[] = array(
+                                        'language' => $data['language'],
+                                        'translationToken' => $token['id'],
+                                        'translation' => $data['translation'],
+                                    );
+                                } else if ($ltt['isNew']) {
+                                    $updateLanguageTranslationTokens[] = array(
+                                        'id' => $ltt['id'],
+                                        'translation' => $data['translation'],
+                                    );
                                 }
                             }
                         }
@@ -302,19 +287,17 @@ class ImportTranslationsCommand extends ContainerAwareCommand
 
                 // update translation tokens
                 $updateTranslationTokens = array();
-                foreach ($new as $bundleName => $domains) {
-                    foreach ($domains as $domain => $translationTokens) {
-                        foreach ($translationTokens as $tokenName => $arr) {
-                            $token = $this->findTranslationToken($tokens, $bundleName, $domain, $tokenName);
-                            if ($token) {
-                                $translations = $this->getTokenTranslations($token, $languages, $listener);
-                                $updateTranslationTokens[] = array(
-                                    'id' => $token['id'],
-                                    'isObsolete' => false,
-                                    'translations' => $translations,
-                                );
-                                $token['translations'] = $translations;
-                            }
+                foreach ($new as $domain => $translationTokens) {
+                    foreach ($translationTokens as $tokenName => $arr) {
+                        $token = $this->findTranslationToken($tokens, $domain, $tokenName);
+                        if ($token) {
+                            $translations = $this->getTokenTranslations($token, $languages, $listener);
+                            $updateTranslationTokens[] = array(
+                                'id' => $token['id'],
+                                'isObsolete' => false,
+                                'translations' => $translations,
+                            );
+                            $token['translations'] = $translations;
                         }
                     }
                 }
@@ -353,7 +336,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
 
         // update token translations
         $tokenTranslations = array();
-        foreach ($tokens as $bundleName => $arr) {
+        foreach ($tokens as $domain => $arr) {
             foreach ($arr as $token) {
                 $translations = $this->getTokenTranslations($token, $languages, $listener);
                 if ($translations != $token['translations']) {
@@ -459,11 +442,11 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         }
 
         foreach ($translationTokens as $token) {
-            if (!isset($tokens[$token['bundleName']])) {
-                $tokens[$token['bundleName']] = array();
+            if (!isset($tokens[$token['domain']])) {
+                $tokens[$token['domain']] = array();
             }
 
-            $tokens[$token['bundleName']][] = $token;
+            $tokens[$token['domain']][] = $token;
         }
 
         return $tokens;
@@ -514,16 +497,15 @@ class ImportTranslationsCommand extends ContainerAwareCommand
 
     /**
      * @param array $tokens
-     * @param string $bundleName
      * @param string $domain
      * @param string $tokenName
      * @return array|null
      */
-    private function findTranslationToken(array $tokens, $bundleName, $domain, $tokenName)
+    private function findTranslationToken(array $tokens, $domain, $tokenName)
     {
-        if (isset($tokens[$bundleName])) {
-            foreach ($tokens[$bundleName] as $token) {
-                if ($domain == $token['domain'] && $tokenName == $token['tokenName']) {
+        if (isset($tokens[$domain])) {
+            foreach ($tokens[$domain] as $token) {
+                if ($tokenName === $token['tokenName']) {
                     return $token;
                 }
             }

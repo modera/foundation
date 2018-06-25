@@ -20,7 +20,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
     // l10n
     titleText: 'Translations',
     emptyListText: 'No items found',
-    bundleNameColumnText: 'Bundle name',
+    domainColumnText: 'Domain',
     tokenNameColumnText: 'Token name',
     importBtnText: 'Import',
     compileBtnText: 'Compile...',
@@ -113,8 +113,8 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
             columns: [
                 me.getCheckerColumnConfig(),
                 {
-                    text: me.bundleNameColumnText,
-                    dataIndex: 'bundleName',
+                    text: me.domainColumnText,
+                    dataIndex: 'domain',
                     flex: 1,
                     renderer: function(value, metaData, record, rowIndex, colIndex, store, view) {
                         var baseCSSPrefix = Ext.baseCSSPrefix;
