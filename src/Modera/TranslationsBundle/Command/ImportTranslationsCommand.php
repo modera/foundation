@@ -78,7 +78,6 @@ class ImportTranslationsCommand extends ContainerAwareCommand
             $locale = $language->getLocale();
 
             $extractedCatalogues = new MessageCatalogue($locale);
-
             foreach ($handlers as $handler) {
                 $bundleName = $handler->getBundleName();
 
@@ -147,7 +146,6 @@ class ImportTranslationsCommand extends ContainerAwareCommand
 
                 if (count($newMessages) || count($updatedMessages) || count($obsoleteMessages)) {
                     $imported = true;
-
                 }
 
                 if (count($newMessages) || count($updatedMessages)) {
@@ -156,14 +154,14 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                     }
 
                     if (count($newMessages)) {
-                        $output->writeln(sprintf('  <info>New messages: %s</>', count($newMessages)));
+                        $output->writeln(sprintf('  <info>New messages (domain: %s): %s</>', $domain, count($newMessages)));
                         if ($printMessageNames) {
                             $this->printMessages($output, $newMessages);
                         }
                     }
 
                     if (count($updatedMessages)) {
-                        $output->writeln(sprintf('  <info>Updated messages: %s</>', count($updatedMessages)));
+                        $output->writeln(sprintf('  <info>Updated messages (domain: %s): %s</>', $domain, count($updatedMessages)));
                         if ($printMessageNames) {
                             $this->printMessages($output, $updatedMessages);
                         }
@@ -181,7 +179,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                 }
 
                 if (count($obsoleteMessages)) {
-                    $output->writeln(sprintf('  <fg=red>Obsolete messages: %s</>', count($obsoleteMessages)));
+                    $output->writeln(sprintf('  <fg=red>Obsolete messages (domain: %s): %s</>', $domain, count($obsoleteMessages)));
                     if ($printMessageNames) {
                         $this->printMessages($output, $obsoleteMessages);
                     }
@@ -310,7 +308,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                         )
                     );
                     $query->setParameter('isObsolete', $token['isObsolete']);
-                    $query->setParameter('translations', json_encode($token['translations']));
+                    $query->setParameter('translations', json_encode($token['translations'], JSON_UNESCAPED_UNICODE));
                     $query->setParameter('id', $token['id']);
                     $query->execute();
                 }
@@ -356,7 +354,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                         TranslationToken::clazz()
                     )
                 );
-                $query->setParameter('translations', json_encode($token['translations']));
+                $query->setParameter('translations', json_encode($token['translations'], JSON_UNESCAPED_UNICODE));
                 $query->setParameter('id', $token['id']);
                 $query->execute();
             }

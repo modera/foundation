@@ -51,9 +51,9 @@ class TranslationToken
      * See {@class \Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener} for details.
      *
      * @var array
-     * @ORM\Column(type="json_array", nullable=false)
+     * @ORM\Column(type="text", nullable=false)
      */
-    private $translations = array();
+    private $translations;
 
     /**
      * @var ArrayCollection
@@ -63,6 +63,7 @@ class TranslationToken
 
     public function __construct()
     {
+        $this->setTranslations(array());
         $this->languageTranslationTokens = new ArrayCollection();
     }
 
@@ -171,7 +172,7 @@ class TranslationToken
      */
     public function getTranslations()
     {
-        return $this->translations;
+        return json_decode($this->translations, true);
     }
 
     /**
@@ -181,7 +182,7 @@ class TranslationToken
      */
     public function setTranslations(array $translations)
     {
-        $this->translations = $translations;
+        $this->translations = json_encode($translations, JSON_UNESCAPED_UNICODE);
 
         return $this;
     }
