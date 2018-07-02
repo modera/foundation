@@ -11,6 +11,7 @@
 * [MPFE-1050][ModeraSecurityBundle] Add validators for username and email
 * [MPFE-1049][ModeraSecurityBundle] Clean non-letter characters from First & Last name, except "space" and "-"
 * [CLS-1236][ModeraFileRepositoryBundle] Update version for gaufrette library
+* [MPFE-984][ModeraTranslationsBundle] Collation utf8_bin is now not necessary for TranslationToken's entity
 
 ## 2.56.0 (05.10.2017)
 

@@ -7,11 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Modera\LanguagesBundle\Entity\Language;
 
 /**
- * If you change a table name then don't forget to update
- * \Modera\ModuleBundle\Composer\ScriptHandler::updateTranslationsTableCollation.
- *
  * @ORM\Entity
- * @ORM\Table(name="modera_translations_translationtoken", options={"collate"="utf8_bin"})
+ * @ORM\Table(name="modera_translations_translationtoken")
  *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
