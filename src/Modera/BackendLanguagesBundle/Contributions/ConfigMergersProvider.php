@@ -34,11 +34,14 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     public function merge(array $currentConfig)
     {
         $languages = array();
+
+        /* @var Language[] $dbLanguages */
         $dbLanguages = $this->em->getRepository(Language::clazz())->findBy(array('isEnabled' => true));
         foreach ($dbLanguages as $dbLanguage) {
             $languages[] = array(
                 'id' => $dbLanguage->getId(),
                 'name' => $dbLanguage->getName(),
+                'locale' => $dbLanguage->getLocale(),
             );
         }
 

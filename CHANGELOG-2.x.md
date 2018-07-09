@@ -2,6 +2,7 @@
 
 ## 2.57.0 (not released yet, in development)
 
+* [MPFE-1069] Configure languages in the system through UI
 * [CLS-1408] Fixed bug with duplication of translation tokens, imported from different sources. BundleName field is removed from TranslationToken.
 * [MPFE-1065][ModeraMjrIntegrationBundle] Update FontAwesome to v4.7.0
 * [MPFE-1064][ModeraMjrIntegrationBundle] Update Moment.js to v2.21.0

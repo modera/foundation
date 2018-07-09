@@ -1,0 +1,32 @@
+@import 'compass';
+
+.modera-backend-languages {
+
+    .inactive {
+        opacity: 0.5;
+    }
+
+    .glyph-ico {
+        width: 20px;
+        height: 15px;
+        font-size: 25px;
+        line-height: 15px;
+        display: inline-block;
+        font-family: FontAwesome;
+        font-weight: normal;
+        margin: 0 1px;
+
+        &.green {
+            color: #00B200;
+        }
+
+        &.yellow {
+            color: #FFBF00;
+        }
+
+        &.gray {
+            color: #A5A5A5;
+        }
+    }
+
+}
