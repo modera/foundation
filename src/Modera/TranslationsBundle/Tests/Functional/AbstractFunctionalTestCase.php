@@ -41,7 +41,7 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
 
     protected function launchCompileCommand()
     {
-        $app = new Application(self::$kernel->getContainer()->get('kernel'));
+        $app = new Application(self::$container->get('kernel'));
         $app->setAutoExit(false);
 
         $input = new ArrayInput(array(

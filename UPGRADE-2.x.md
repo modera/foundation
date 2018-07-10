@@ -1,5 +1,9 @@
 # UPGRADE GUIDE, 2.x
 
+## 2.57.0 (not released yet, in development)
+
+* [MPFE-984] Collation utf8_bin is now not necessary for TranslationToken's entity, so you may set another one via running query in your MySQL database. For example: `ALTER TABLE modera_translations_translationtoken CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;`.
+
 ## 2.56.0 (05.10.2017)
 
 * [MPFE-1014] Semantic configuration properties `modera_backend_security/mail_service` and `modera_security/password_strength/mailer`

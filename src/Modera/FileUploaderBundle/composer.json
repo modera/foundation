@@ -11,15 +11,14 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
-        "symfony/symfony": "~2.0 || ^3.0",
-        "modera/file-repository-bundle": "~1.0 || ~2.0",
-        "sergeil/expander-bundle": "~1.0",
-        "modera/foundation-bundle": "~1.0 || ~2.0"
+        "php": ">=5.6",
+        "modera/file-repository-bundle": "~1.0|~2.0|~3.0",
+        "modera/foundation-bundle": "~1.0|~2.0|~3.0",
+        "sergeil/expander-bundle": "~1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.5",
         "phake/phake": "~2.0",
+        "phpunit/phpunit": "^5.5",
         "sergeil/aux-bundle": "~1.0"
     },
     "autoload": {
@@ -28,7 +27,7 @@
     "target-dir": "Modera/FileUploaderBundle",
     "extra": {
         "branch-alias": {
-            "dev-master": "2.x-dev"
+            "dev-master": "3.x-dev"
         }
     }
 }

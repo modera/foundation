@@ -4,25 +4,25 @@
     "license": "MIT",
     "require": {
         "php": ">=5.6",
-        "symfony/symfony": "^3.0",
-        "sergeil/extjsintegration-bundle": "^2.0",
+        "twig/twig": "^1.0||^2.0",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "~1.2",
-        "sergeil/expander-bundle": "~1.0",
+        "sensio/generator-bundle": "~2.3|~3.0",
+        "symfony/framework-bundle": "~2.8|^3.0",
+        "symfony/swiftmailer-bundle": "~2.3",
+        "knplabs/knp-gaufrette-bundle": "~0.1",
         "sergeil/extjslocalization-bundle": "~1.0",
-        "twig/twig": "~1.0",
-        "knplabs/knp-gaufrette-bundle": "^0.4",
-        "imagine/imagine": "0.6.*",
-        "sensio/generator-bundle": "~2.3 || ~3.0",
+        "sergeil/extjsintegration-bundle": "^2.0",
+        "sergeil/expander-bundle": "~1.0",
         "sergeil/aux-bundle": "~1.0",
-        "symfony/swiftmailer-bundle": "^2.3.10",
+        "imagine/imagine": "0.6.*",
         "modera/module": "^1.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.5",
         "phake/phake": "~2.0",
-        "sergeil/aux-bundle": "~1.0",
-        "mikey179/vfsstream": "^1.6"
+        "phpunit/phpunit": "^5.5",
+        "mikey179/vfsstream": "^1.6",
+        "modera/tests-runner": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -46,6 +46,7 @@
         "modera/file-uploader-bundle": "self.version",
         "modera/mjr-integration-bundle": "self.version",
         "modera/mjr-theme-integration-bundle": "self.version",
+        "modera/mjr-cache-aware-class-loader": "self.version",
         "modera/mjr-security-integration-bundle": "self.version",
         "modera/dynamically-configurable-mjr-bundle": "self.version",
         "modera/server-crud-bundle": "self.version",
@@ -57,14 +58,16 @@
         "modera/backend-tools-settings-bundle": "self.version",
         "modera/backend-config-utils-bundle": "self.version",
         "modera/backend-dashboard-bundle": "self.version",
-        "modera/direct-bundle": "self.version",
-        "modera/mjr-cache-aware-class-loader": "self.version"
+        "modera/direct-bundle": "self.version"
     },
     "extra": {
         "branch-alias": {
             "dev-master": "3.x-dev"
         },
         "modera-monorepo": {
+            "require-dev": {
+                "modera/tests-runner": "dev-master"
+            },
             "include": [
                 "src/Modera/*/composer.json"
             ]

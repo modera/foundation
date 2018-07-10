@@ -12,6 +12,7 @@ class ModeraTranslationsAppKernel extends \Modera\FoundationBundle\Testing\Abstr
             new Modera\LanguagesBundle\ModeraLanguagesBundle(),
             new Modera\TranslationsBundle\ModeraTranslationsBundle(),
             new Modera\TranslationsBundle\Tests\Fixtures\Bundle\ModeraTranslationsDummyBundle(),
+            new Modera\TranslationsBundle\Tests\Fixtures\SecondBundle\ModeraTranslationsSecondDummyBundle(),
         );
     }
 }

@@ -9,8 +9,6 @@
 # passed to PHPUnit as is. For example, this will run tests of src/Foo/Bar directory:
 # $ ./phpunit.sh --md src/Foo/Bar
 
-RUNNER_GIT_DIR="mtr"
-
 set -eu
 
 args=$@
@@ -36,24 +34,6 @@ if [ ! -d "vendor" ]; then
       -w /mnt/tmp \
       modera/php:7.1 "composer install"
 fi
-
-if [ ! -d "$RUNNER_GIT_DIR" ]; then
-  echo "# Cloning and installing test-runner"
-
-  git clone https://github.com/modera/tests-runner.git $RUNNER_GIT_DIR
-  pushd $RUNNER_GIT_DIR
-    git checkout v0.3 # v0.3 is verified to work fine with Symfony3
-  popd
-
-  docker run \
-      -it \
-      --rm \
-      -v `pwd`/$RUNNER_GIT_DIR:/mnt/tmp \
-      -w /mnt/tmp \
-      modera/php:7.1 "composer install"
-fi
-
-# if there's no mtr_php image then create a Docker file in $RUNNER_GIT_DIR and build it
 
 if [[ `docker ps` != *"mtr_mysql"* ]]; then
   if [ "$is_daemon" = true ] ; then

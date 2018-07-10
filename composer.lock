@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e3e280b09ec261682bf99d79fb9998dc",
+    "content-hash": "3fe3c4f9a613b13aa37e6399ab15dc32",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1532,31 +1532,34 @@
         },
         {
             "name": "knplabs/knp-gaufrette-bundle",
-            "version": "v0.4.0",
+            "version": "v0.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/KnpGaufretteBundle.git",
-                "reference": "06d91a8a575773cd0361c1246c9c499b6bdd5d68"
+                "reference": "2789249eb5ee8c226e9a0360c2e1f1e1bf05aa29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpGaufretteBundle/zipball/06d91a8a575773cd0361c1246c9c499b6bdd5d68",
-                "reference": "06d91a8a575773cd0361c1246c9c499b6bdd5d68",
+                "url": "https://api.github.com/repos/KnpLabs/KnpGaufretteBundle/zipball/2789249eb5ee8c226e9a0360c2e1f1e1bf05aa29",
+                "reference": "2789249eb5ee8c226e9a0360c2e1f1e1bf05aa29",
                 "shasum": ""
             },
             "require": {
-                "knplabs/gaufrette": "~0.1.7|~0.2|~0.3",
-                "symfony/framework-bundle": "~2.0|~3.0"
+                "knplabs/gaufrette": "~0.1.7|~0.2|~0.3|~0.4|~0.5|~0.6",
+                "symfony/config": "~2.1|~3.0|~4.0",
+                "symfony/dependency-injection": "~2.1|~3.0|~4.0",
+                "symfony/framework-bundle": "~2.0|~3.0|~4.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.2",
-                "symfony/console": "~2.0|~3.0",
-                "symfony/yaml": "~2.0|~3.0"
+                "phpunit/phpunit": "~4.8.35",
+                "symfony/console": "~2.1|~3.0|~4.0",
+                "symfony/filesystem": "~2.1|~3.0|~4.0",
+                "symfony/yaml": "~2.1|~3.0|~4.0"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.4.x-dev"
+                    "dev-master": "0.5.x-dev"
                 }
             },
             "autoload": {
@@ -1586,7 +1589,7 @@
                 "filesystem",
                 "media"
             ],
-            "time": "2017-03-16T21:01:25+00:00"
+            "time": "2018-05-04T08:37:13+00:00"
         },
         {
             "name": "knplabs/packagist-api",
@@ -1692,16 +1695,16 @@
         },
         {
             "name": "paragonie/random_compat",
-            "version": "v2.0.12",
+            "version": "v2.0.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb"
+                "reference": "29af24f25bab834fcbb38ad2a69fa93b867e070d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
-                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/29af24f25bab834fcbb38ad2a69fa93b867e070d",
+                "reference": "29af24f25bab834fcbb38ad2a69fa93b867e070d",
                 "shasum": ""
             },
             "require": {
@@ -1733,10 +1736,11 @@
             "description": "PHP 5.x polyfill for random_bytes() and random_int() from PHP 7",
             "keywords": [
                 "csprng",
+                "polyfill",
                 "pseudorandom",
                 "random"
             ],
-            "time": "2018-04-04T21:24:14+00:00"
+            "time": "2018-07-04T16:31:37+00:00"
         },
         {
             "name": "psr/cache",
@@ -2568,6 +2572,61 @@
             "time": "2018-04-26T10:06:28+00:00"
         },
         {
+            "name": "symfony/polyfill-ctype",
+            "version": "v1.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-ctype.git",
+                "reference": "7cc359f1b7b80fc25ed7796be7d96adc9b354bae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/7cc359f1b7b80fc25ed7796be7d96adc9b354bae",
+                "reference": "7cc359f1b7b80fc25ed7796be7d96adc9b354bae",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                },
+                {
+                    "name": "Gert de Pagter",
+                    "email": "BackEndTea@gmail.com"
+                }
+            ],
+            "description": "Symfony polyfill for ctype functions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "ctype",
+                "polyfill",
+                "portable"
+            ],
+            "time": "2018-04-30T19:57:29+00:00"
+        },
+        {
             "name": "symfony/polyfill-intl-icu",
             "version": "v1.8.0",
             "source": {
@@ -2912,20 +2971,20 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v3.4.9",
+            "version": "v3.4.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "4babd75194d45f7a4412560038924f3008c67ef2"
+                "reference": "c36f8cb21b5f1661a14fdb8cef9cc611d54a3494"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/4babd75194d45f7a4412560038924f3008c67ef2",
-                "reference": "4babd75194d45f7a4412560038924f3008c67ef2",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/c36f8cb21b5f1661a14fdb8cef9cc611d54a3494",
+                "reference": "c36f8cb21b5f1661a14fdb8cef9cc611d54a3494",
                 "shasum": ""
             },
             "require": {
-                "doctrine/common": "~2.4",
+                "doctrine/common": "~2.4@stable",
                 "ext-xml": "*",
                 "fig/link-util": "^1.0",
                 "php": "^5.5.9|>=7.0.8",
@@ -2935,6 +2994,7 @@
                 "psr/log": "~1.0",
                 "psr/simple-cache": "^1.0",
                 "symfony/polyfill-apcu": "~1.1",
+                "symfony/polyfill-ctype": "~1.8",
                 "symfony/polyfill-intl-icu": "~1.0",
                 "symfony/polyfill-mbstring": "~1.0",
                 "symfony/polyfill-php56": "~1.0",
@@ -3062,7 +3122,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2018-04-30T19:27:18+00:00"
+            "time": "2018-06-25T12:29:33+00:00"
         },
         {
             "name": "twig/twig",
@@ -3178,26 +3238,70 @@
             "time": "2017-08-01T08:02:14+00:00"
         },
         {
-            "name": "myclabs/deep-copy",
-            "version": "1.7.0",
+            "name": "modera/tests-runner",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e"
+                "url": "https://github.com/modera/tests-runner.git",
+                "reference": "7d92a546de39a5947650d105ae7b678eecadcff2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e",
-                "reference": "3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e",
+                "url": "https://api.github.com/repos/modera/tests-runner/zipball/7d92a546de39a5947650d105ae7b678eecadcff2",
+                "reference": "7d92a546de39a5947650d105ae7b678eecadcff2",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.6 || ^7.0"
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "^1.6",
+                "phake/phake": "^3.0",
+                "phpunit/phpunit": "^5.5",
+                "symfony/yaml": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Modera\\TestsRunner\\": "src/Modera/TestsRunner/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org"
+                }
+            ],
+            "time": "2018-05-19T15:39:49+00:00"
+        },
+        {
+            "name": "myclabs/deep-copy",
+            "version": "1.8.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/myclabs/DeepCopy.git",
+                "reference": "3e01bdad3e18354c3dce54466b7fbe33a9f9f7f8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/3e01bdad3e18354c3dce54466b7fbe33a9f9f7f8",
+                "reference": "3e01bdad3e18354c3dce54466b7fbe33a9f9f7f8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1"
+            },
+            "replace": {
+                "myclabs/deep-copy": "self.version"
             },
             "require-dev": {
                 "doctrine/collections": "^1.0",
                 "doctrine/common": "^2.6",
-                "phpunit/phpunit": "^4.1"
+                "phpunit/phpunit": "^7.1"
             },
             "type": "library",
             "autoload": {
@@ -3220,7 +3324,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2017-10-19T19:58:43+00:00"
+            "time": "2018-06-11T23:09:50+00:00"
         },
         {
             "name": "phake/phake",
@@ -4451,7 +4555,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "modera/tests-runner": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
