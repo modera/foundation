@@ -22,21 +22,4 @@ class AbstractBaseController extends Controller
     {
         return $this->get('doctrine.orm.entity_manager');
     }
-
-    /**
-     * Shortcut access to "security.context" service.
-     *
-     * @return \Symfony\Component\Security\Core\SecurityContext
-     *
-     * @deprecated Deprecated since version 1.1, to be removed in 3.0
-     */
-    protected function sc()
-    {
-        /* @var DeprecationNoticeEmitter $emitter */
-        $emitter = $this->get('modera_foundation.utils.deprecation_notice_emitter');
-
-        $emitter->emit(sprintf('Method %s is deprecated and will be removed in 3.0.', __METHOD__));
-
-        return $this->get('security.context');
-    }
 }

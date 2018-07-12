@@ -4,7 +4,7 @@ namespace Modera\FoundationBundle\Testing;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * A base test case that you may extend when writing your functional tests, it allows you
@@ -132,7 +132,7 @@ class FunctionalTestCase extends WebTestCase
             self::rollbackTransaction();
         }
 
-        if (static::$container->has('security.context')) {
+        if (static::$container->has('security.token_storage')) {
             $this->logoutUser();
         }
 
@@ -151,9 +151,9 @@ class FunctionalTestCase extends WebTestCase
      */
     public function logoutUser()
     {
-        /* @var SecurityContextInterface $securityContext */
-        $securityContext = static::$container->get('security.context');
-        $securityContext->setToken(null);
+        /* @var TokenStorageInterface $ts */
+        $ts = static::$container->get('security.token_storage');
+        $ts->setToken(null);
     }
 
     /**
