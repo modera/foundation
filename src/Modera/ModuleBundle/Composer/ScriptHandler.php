@@ -217,17 +217,13 @@ class ScriptHandler extends AbstractScriptHandler
     public static function registerBundles(Event $event)
     {
         $options = static::getOptions($event);
-        $binDir = $options['symfony-bin-dir'];
-        $appDir = $options['symfony-app-dir'];
-
-        if (!is_dir($binDir)) {
-            self::reportSymfonyBinDirNotFound($binDir);
+        $consoleDir = static::getConsoleDir($event, 'init DB');
+        if (null === $consoleDir) {
             return;
         }
 
-        if (!is_dir($appDir)) {
-            self::reportSymfonyAppDirNotFound($appDir);
-
+        $appDir = $options['symfony-app-dir'];
+        if (!static::hasDirectory($event, 'symfony-app-dir', $appDir)) {
             return;
         }
 
@@ -235,7 +231,7 @@ class ScriptHandler extends AbstractScriptHandler
         $bundles = ComposerService::getRegisterBundles($event->getComposer());
 
         static::createRegisterBundlesFile($bundles, $appDir.'/'.$bundlesFile);
-        static::executeCommand($event, $binDir, 'modera:module:register '.$bundlesFile, $options['process-timeout']);
+        static::executeCommand($event, $consoleDir, 'modera:module:register '.$bundlesFile, $options['process-timeout']);
     }
 
     /**
@@ -266,15 +262,12 @@ class ScriptHandler extends AbstractScriptHandler
     public static function clearCache(Event $event)
     {
         $options = static::getOptions($event);
-        $binDir = $options['symfony-bin-dir'];
-
-        if (!is_dir($binDir)) {
-            self::reportSymfonyBinDirNotFound($binDir);
-
+        $consoleDir = static::getConsoleDir($event, 'clear cache');
+        if (null === $consoleDir) {
             return;
         }
 
-        static::executeCommand($event, $binDir, 'cache:clear --env=prod --no-warmup --quiet', $options['process-timeout']);
+        static::executeCommand($event, $consoleDir, 'cache:clear --env=prod --no-warmup --quiet', $options['process-timeout']);
     }
 
     /**
@@ -290,14 +283,12 @@ class ScriptHandler extends AbstractScriptHandler
         }
 
         $options = static::getOptions($event);
-        $binDir = $options['symfony-bin-dir'];
-
-        if (!is_dir($binDir)) {
-            self::reportSymfonyBinDirNotFound($binDir);
+        $consoleDir = static::getConsoleDir($event, 'update doctrine schema');
+        if (null === $consoleDir) {
             return;
         }
 
-        static::executeCommand($event, $binDir, 'doctrine:schema:update --force', $options['process-timeout']);
+        static::executeCommand($event, $consoleDir, 'doctrine:schema:update --force', $options['process-timeout']);
     }
 
     /**
@@ -308,17 +299,14 @@ class ScriptHandler extends AbstractScriptHandler
     public static function initDatabase(Event $event)
     {
         $options = static::getOptions($event);
-        $binDir = $options['symfony-bin-dir'];
-
-        if (!is_dir($binDir)) {
-            self::reportSymfonyBinDirNotFound($binDir);
-
+        $consoleDir = static::getConsoleDir($event, 'init DB');
+        if (null === $consoleDir) {
             return;
         }
 
         $ignoreSchemaUpdate = false;
         try {
-            static::executeCommand($event, $binDir, 'doctrine:database:create --quiet', $options['process-timeout']);
+            static::executeCommand($event, $consoleDir, 'doctrine:database:create --quiet', $options['process-timeout']);
         } catch (\RuntimeException $e) {
             // The command throws an exception if database already exists, so here we are supressing it
             $ignoreSchemaUpdate = true;
@@ -345,27 +333,5 @@ class ScriptHandler extends AbstractScriptHandler
                 return $options['modera-module']['script-handler'][$handlerName];
             }
         }
-    }
-
-    /**
-     * @param $appDir
-     */
-    private static function reportSymfonyBinDirNotFound($appDir)
-    {
-        echo sprintf(
-            "The symfony-bin-dir (%s) specified in composer.json was not found in %s\n",
-            $appDir, getcwd()
-        );
-    }
-
-    /**
-     * @param $appDir
-     */
-    private static function reportSymfonyAppDirNotFound($appDir)
-    {
-        echo sprintf(
-            "The symfony-app-dir (%s) specified in composer.json was not found in %s\n",
-            $appDir, getcwd()
-        );
     }
 }

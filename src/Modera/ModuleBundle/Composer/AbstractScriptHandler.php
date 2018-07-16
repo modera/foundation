@@ -14,16 +14,16 @@ abstract class AbstractScriptHandler
 {
     /**
      * @param Event  $event
-     * @param string $appDir
+     * @param string $consoleDir
      * @param string $cmd
      * @param int    $timeout
      *
      * @throws \RuntimeException
      */
-    protected static function executeCommand(Event $event, $appDir, $cmd, $timeout = 300)
+    protected static function executeCommand(Event $event, $consoleDir, $cmd, $timeout = 300)
     {
         $php = escapeshellarg(static::getPhp());
-        $console = escapeshellarg($appDir.'/console');
+        $console = escapeshellarg($consoleDir.'/console');
         if ($event->getIO()->isDecorated()) {
             $console .= ' --ansi';
         }
@@ -74,5 +74,60 @@ abstract class AbstractScriptHandler
         }
 
         return $phpPath;
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return bool
+     */
+    protected static function useNewDirectoryStructure(array $options)
+    {
+        return isset($options['symfony-var-dir']) && is_dir($options['symfony-var-dir']);
+    }
+
+    /**
+     * @param Event $event
+     * @param string $configName
+     * @param string $path
+     * @param string $actionName
+     *
+     * @return bool
+     */
+    protected static function hasDirectory(Event $event, $configName, $path, $actionName = null)
+    {
+        if (!is_dir($path)) {
+            $event->getIO()->write(
+                sprintf(
+                    'The %s (%s) specified in composer.json was not found in %s.',
+                    $configName,
+                    $path,
+                    getcwd() . ($actionName ? ', can not ' . $actionName : '')
+                )
+            );
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param Event  $event
+     * @param string $actionName
+     *
+     * @return string|null
+     */
+    protected static function getConsoleDir(Event $event, $actionName = null)
+    {
+        $options = static::getOptions($event);
+        if (static::useNewDirectoryStructure($options)) {
+            if (!static::hasDirectory($event, 'symfony-bin-dir', $options['symfony-bin-dir'], $actionName)) {
+                return;
+            }
+            return $options['symfony-bin-dir'];
+        }
+        if (!static::hasDirectory($event, 'symfony-app-dir', $options['symfony-app-dir'], $actionName)) {
+            return;
+        }
+        return $options['symfony-app-dir'];
     }
 }
