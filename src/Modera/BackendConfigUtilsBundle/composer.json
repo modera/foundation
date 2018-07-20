@@ -12,8 +12,8 @@
     ],
     "require": {
         "php": ">=5.6",
-        "modera/server-crud-bundle": "~1.0|~2.0|~3.0",
-        "modera/dynamically-configurable-mjr-bundle": "~1.0|~2.0|~3.0"
+        "modera/server-crud-bundle": "~2.0|~3.0",
+        "modera/dynamically-configurable-mjr-bundle": "~2.0|~3.0"
     },
     "require-dev": {
         "phake/phake": "~2.0",

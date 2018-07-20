@@ -10,9 +10,9 @@
     ],
     "require": {
         "php": ">=5.6",
-        "modera/languages-bundle": "~1.0|~2.0|~3.0",
-        "modera/mjr-integration-bundle": "~1.0|~2.0|~3.0",
-        "modera/backend-security-bundle": "~1.0|~2.0|~3.0",
+        "modera/languages-bundle": "~2.0|~3.0",
+        "modera/mjr-integration-bundle": "~2.0|~3.0",
+        "modera/backend-security-bundle": "~2.0|~3.0",
         "sergeil/extjslocalization-bundle": "~1.0"
     },
     "require-dev": {

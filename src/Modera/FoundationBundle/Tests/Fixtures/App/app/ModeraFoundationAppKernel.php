@@ -5,9 +5,8 @@ class ModeraFoundationAppKernel extends \Modera\FoundationBundle\Testing\Abstrac
     public function registerBundles()
     {
         return array(
-            new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
-
+            new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Modera\FoundationBundle\ModeraFoundationBundle(),
         );
     }

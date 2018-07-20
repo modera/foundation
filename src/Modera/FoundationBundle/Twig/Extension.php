@@ -10,8 +10,6 @@ namespace Modera\FoundationBundle\Twig;
  */
 final class Extension extends \Twig_Extension
 {
-    const NAME = 'modera-foundation-extension';
-
     /**
      * @internal
      *
@@ -20,11 +18,11 @@ final class Extension extends \Twig_Extension
     public $kernelPath;
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getName()
+    static public function clazz()
     {
-        return self::NAME;
+        return get_called_class();
     }
 
     /**

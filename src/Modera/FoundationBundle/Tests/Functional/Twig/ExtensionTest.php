@@ -2,8 +2,8 @@
 
 namespace Modera\FoundationBundle\Tests\Functional\Twig;
 
-use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Modera\FoundationBundle\Twig\Extension;
+use Modera\FoundationBundle\Testing\FunctionalTestCase;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -16,7 +16,7 @@ class ExtensionTest extends FunctionalTestCase
         /* @var \Twig_Environment $twig */
         $twig = self::$container->get('twig');
 
-        $this->assertTrue($twig->hasExtension(Extension::NAME));
+        $this->assertTrue($twig->hasExtension(Extension::clazz()));
     }
 
     public function testHasFilters()
