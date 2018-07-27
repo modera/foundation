@@ -2,10 +2,11 @@
  * @author Sergei Vizel <sergei.vizel@modera.org>
  */
 Ext.define('Modera.backend.languages.view.List', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.tab.Panel',
     alias: 'widget.modera-backend-languages-list',
 
     requires: [
+        'MFC.panel.Message',
         'MFC.grid.TouchPanel',
         'MFC.container.Header',
         'Modera.backend.languages.store.Languages'
@@ -18,90 +19,102 @@ Ext.define('Modera.backend.languages.view.List', {
     nameHeaderText: 'Name',
     removeHeaderText: 'Remove',
     emptyListText: 'No items found',
+    languagesTabText: 'Languages',
 
     // override
     constructor: function(config) {
         var me = this;
 
         var defaults = {
+            extensionPoint: 'localisationSettings',
             cls: 'modera-backend-languages',
             basePanel: false,
-            border: true,
-            padding: 0,
             layout: 'fit',
+            frame: true,
+            padding: 0,
             items: [
                 {
-                    hideHeaders: true,
-                    xtype: 'mfc-touchgrid',
-                    monitorModel: 'modera.languages_bundle.language',
-                    plugins: [ Ext.create('MFC.HasSelectionAwareComponentsPlugin') ],
-                    store: Ext.create('Modera.backend.languages.store.Languages', { autoLoad: true }),
-                    viewConfig: {
-                        loadMask: false,
-                        preserveScrollOnRefresh: true
-                    },
-                    columns: [
+                    layout: 'fit',
+                    itemId: 'languages',
+                    title: me.languagesTabText,
+                    items: [
                         {
-                            flex: 2,
-                            dataIndex: 'name',
-                            text: me.nameHeaderText,
-                            renderer: me.defaultRenderer()
-                        },
-                        {
-                            flex: 1,
-                            align : 'right',
-                            dataIndex: 'locale',
-                            text : me.localeHeaderText,
-                            renderer: me.defaultRenderer()
-                        }//,
-                        // {
-                        //     align : 'center',
-                        //     xtype : 'actioncolumn',
-                        //     text : me.removeHeaderText,
-                        //     defaultRenderer: me.actionColumnRenderer(),
-                        //     items : [
-                        //         {
-                        //             glyph: 'trash',
-                        //             //tooltip : me.removeHeaderText,
-                        //             handler : function (grid, rowIndex, colIndex, item, e, record) {
-                        //                 me.fireEvent('deleterecord', me, { id: record.get('id') });
-                        //             }
-                        //         }
-                        //     ]
-                        // }
-                    ],
-                    emptyText: me.emptyListText,
-                    emptyCls: 'mfc-grid-empty-text',
-                    listeners: {
-                        'afterrender': function(grid) {
-                            grid.view.refresh();
-                        }
-                    },
-                    dockedItems: [
-                        {
-                            dock: 'top',
-                            xtype: 'toolbar',
-                            items: [
+                            hideHeaders: true,
+                            xtype: 'mfc-touchgrid',
+                            monitorModel: 'modera.languages_bundle.language',
+                            plugins: [ Ext.create('MFC.HasSelectionAwareComponentsPlugin') ],
+                            store: Ext.create('Modera.backend.languages.store.Languages', { autoLoad: true }),
+                            viewConfig: {
+                                loadMask: false,
+                                preserveScrollOnRefresh: true
+                            },
+                            selModel: {
+                                allowDeselect: true
+                            },
+                            columns: [
                                 {
-                                    scale: 'medium',
-                                    text: me.addBtnText,
-                                    iconCls: 'mfc-icon-add-24',
-                                    handler: function(btn) {
-                                        me.fireEvent('newrecord', me, {});
-                                    }
+                                    flex: 2,
+                                    dataIndex: 'name',
+                                    text: me.nameHeaderText,
+                                    renderer: me.defaultRenderer()
                                 },
                                 {
-                                    disabled: true,
-                                    scale: 'medium',
-                                    text: me.editBtnText,
-                                    selectionAware: true,
-                                    iconCls: 'mfc-icon-edit-24',
-                                    handler: function(btn) {
-                                        var record = me.getSelectedRecord();
-                                        me.fireEvent('editrecord', me, { id: record.get('id') });
-                                    }
-                                },
-                                '->'
+                                    flex: 1,
+                                    align : 'right',
+                                    dataIndex: 'locale',
+                                    text : me.localeHeaderText,
+                                    renderer: me.defaultRenderer()
+                                }//,
+                                // {
+                                //     align : 'center',
+                                //     xtype : 'actioncolumn',
+                                //     text : me.removeHeaderText,
+                                //     defaultRenderer: me.actionColumnRenderer(),
+                                //     items : [
+                                //         {
+                                //             glyph: 'trash',
+                                //             //tooltip : me.removeHeaderText,
+                                //             handler : function (grid, rowIndex, colIndex, item, e, record) {
+                                //                 me.fireEvent('deleterecord', me, { id: record.get('id') });
+                                //             }
+                                //         }
+                                //     ]
+                                // }
+                            ],
+                            emptyText: me.emptyListText,
+                            emptyCls: 'mfc-grid-empty-text',
+                            listeners: {
+                                'afterrender': function(grid) {
+                                    grid.view.refresh();
+                                }
+                            },
+                            dockedItems: [
+                                {
+                                    dock: 'top',
+                                    xtype: 'toolbar',
+                                    items: [
+                                        {
+                                            scale: 'medium',
+                                            text: me.addBtnText,
+                                            iconCls: 'mfc-icon-add-24',
+                                            handler: function(btn) {
+                                                me.fireEvent('newrecord', me, {});
+                                            }
+                                        },
+                                        {
+                                            disabled: true,
+                                            scale: 'medium',
+                                            text: me.editBtnText,
+                                            selectionAware: true,
+                                            iconCls: 'mfc-icon-edit-24',
+                                            handler: function(btn) {
+                                                var record = me.getSelectedRecord();
+                                                me.fireEvent('editrecord', me, { id: record.get('id') });
+                                            }
+                                        },
+                                        '->'
+                                    ]
+                                }
                             ]
                         }
                     ]
@@ -163,14 +176,14 @@ Ext.define('Modera.backend.languages.view.List', {
     getSelectedRecords: function() {
         var me = this;
 
-        return me.down('grid').getSelectionModel().getSelection();
+        return me.down('#languages grid').getSelectionModel().getSelection();
     },
 
     // private
     assignListeners: function() {
         var me = this;
 
-        me.down('grid').on('itemdblclick', function() {
+        me.down('#languages grid').on('itemdblclick', function() {
             var record = me.getSelectedRecord();
             me.fireEvent('editrecord', me, { id: record.get('id') });
         });

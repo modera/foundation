@@ -9,7 +9,7 @@ Ext.define('Modera.backend.languages.runtime.ListActivity', {
     ],
 
     // l10n
-    headerTitleText: 'Languages',
+    headerTitleText: 'Localisation',
 
     // override
     isHomeActivity: function() {

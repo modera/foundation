@@ -35,8 +35,8 @@ class SettingsSectionsProvider implements ContributorInterface
         if ($this->authorizationChecker->isGranted($roles)) {
             return array(
                 new StandardSection(
-                    'modera_backend_languages',
-                    T::trans('Languages'),
+                    'localisation',
+                    T::trans('Localisation'),
                     'Modera.backend.languages.runtime.SettingsActivity',
                     'language'
                 ),

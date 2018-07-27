@@ -41,6 +41,9 @@ class LocalesController extends AbstractBaseController
             $arr[$locale] = Language::getLocaleName($locale, $this->getDisplayLocale());
         }
 
+        $collator = new \Collator($this->getDisplayLocale());
+        $collator->asort($arr);
+
         $result = array();
         foreach ($arr as $locale => $name) {
             $result[] = array(
