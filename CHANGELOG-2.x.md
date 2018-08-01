@@ -6,6 +6,7 @@
 * [MPFE-1043][ModeraBackendTranslationsToolBundle] UI shows correct number of elements on page with filtering
 * [MPFE-1050][ModeraSecurityBundle] Add validators for username and email
 * [MPFE-1049][ModeraSecurityBundle] Clean non-letter characters from First & Last name, except "space" and "-"
+* [CLS-1475] [ModeraSecurityBundle] Improved getFullName method, will return username if First name and last name are empty
 
 ## 2.56.0 (05.10.2017)
 
