@@ -7,7 +7,9 @@ use Symfony\Component\Intl\Intl;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="modera_languages_language")
+ * @ORM\Table(name="modera_languages_language", uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="locale", columns={"locale"})
+ * })
  *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
@@ -40,6 +42,45 @@ class Language
     }
 
     /**
+     * Returns the name of a locale.
+     *
+     * @param string      $locale
+     * @param null|string $displayLocale
+     *
+     * @return string
+     */
+    public static function getLocaleName($locale, $displayLocale = null)
+    {
+        $str = Intl::getLocaleBundle()->getLocaleName($locale, $displayLocale ?: $locale);
+
+        if (!$str) {
+            $parts = explode('_', $locale);
+            if (count($parts) > 1) {
+                $code = array_pop($parts);
+                $country = Intl::getRegionBundle()->getCountryName($code, $displayLocale ?: $parts[0]) ?: $code;
+                while (count($parts) && !$str) {
+                    $value = implode('_', $parts);
+                    $str = Intl::getLocaleBundle()->getLocaleName($value, $displayLocale ?: $value);
+                    array_pop($parts);
+                }
+
+                if ($str) {
+                    if (')' === substr($str, -1)) {
+                        $str = substr($str, 0, -1) . ', ' . $country . ')';
+                    } else {
+                        $str .= ' (' . $country . ')';
+                    }
+                }
+            }
+        }
+
+        $enc = 'utf-8';
+        $name = $str ?: $locale;
+
+        return mb_strtoupper(mb_substr($name, 0, 1, $enc), $enc).mb_substr($name, 1, mb_strlen($name, $enc), $enc);
+    }
+
+    /**
      * @return int
      */
     public function getId()
@@ -48,15 +89,12 @@ class Language
     }
 
     /**
+     * @param null|string $displayLocale
      * @return string
      */
-    public function getName($locale = null)
+    public function getName($displayLocale = null)
     {
-        $enc = 'utf-8';
-        $names = Intl::getLocaleBundle()->getLocaleNames($locale ?: $this->locale);
-        $str = isset($names[$this->locale]) ? $names[$this->locale] : $this->locale;
-
-        return mb_strtoupper(mb_substr($str, 0, 1, $enc), $enc).mb_substr($str, 1, mb_strlen($str, $enc), $enc);
+        return static::getLocaleName($this->locale, $displayLocale);
     }
 
     /**

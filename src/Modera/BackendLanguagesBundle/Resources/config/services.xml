@@ -5,6 +5,20 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service parent="modera_translations.handling.php_classes_translation_handler">
+
+            <argument>ModeraBackendLanguagesBundle</argument>
+
+            <tag name="modera_translations.translation_handler" />
+        </service>
+
+        <service parent="modera_backend_translations_tool.handling.extjs_translation_handler">
+
+            <argument>ModeraBackendLanguagesBundle</argument>
+
+            <tag name="modera_translations.translation_handler" />
+        </service>
+
         <service id="modera_backend_languages.contributions.class_loader_mappings_provider"
                  class="Modera\BackendLanguagesBundle\Contributions\ClassLoaderMappingsProvider">
 
@@ -19,10 +33,26 @@
             <tag name="modera_mjr_integration.csdi.service_definitions_provider" />
         </service>
 
+        <service id="modera_backend_languages.contributions.config_mergers_provider"
+                 class="Modera\BackendLanguagesBundle\Contributions\ConfigMergersProvider">
+
+            <argument type="service" id="doctrine.orm.entity_manager" />
+
+            <tag name="modera_mjr_integration.config.config_mergers_provider" />
+        </service>
+
         <service id="modera_backend_languages.contributions.routing_resources_provider"
                  class="Modera\BackendLanguagesBundle\Contributions\RoutingResourcesProvider">
 
             <tag name="modera_routing.routing_resources_provider" />
+        </service>
+
+        <service id="modera_backend_languages.contributions.settings_sections_provider"
+                 class="Modera\BackendLanguagesBundle\Contributions\SettingsSectionsProvider">
+
+            <argument type="service" id="security.authorization_checker" />
+
+            <tag name="modera_backend_tools_settings.contributions.sections_provider" />
         </service>
 
         <service id="modera_backend_languages.event_listener.locale_listener"
@@ -35,14 +65,6 @@
                  class="Modera\BackendLanguagesBundle\EventListener\SettingsEntityManagingListener">
 
             <tag name="doctrine.event_listener" event="onFlush"  />
-        </service>
-
-        <service id="modera_backend_languages.contributions.config_mergers_provider"
-                 class="Modera\BackendLanguagesBundle\Contributions\ConfigMergersProvider">
-
-            <argument type="service" id="doctrine.orm.entity_manager" />
-
-            <tag name="modera_mjr_integration.config.config_mergers_provider" />
         </service>
     </services>
 

@@ -8,7 +8,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.EditTranslati
     // l10n
     editRecordTitleText: 'Edit translation',
     placeHolderText: 'Type here',
-    bundleNameLabelText: 'Bundle name',
+    domainLabelText: 'Domain',
     tokenNameLabelText: 'Token name',
     transtationLabelText: 'Translation',
 
@@ -40,16 +40,16 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.EditTranslati
                         name: 'id'
                     },
                     {
-                        name: 'bundleName',
-                        fieldLabel: me.bundleNameLabelText,
+                        name: 'domainName',
+                        fieldLabel: me.domainLabelText,
                         renderer: function(value, field) {
                             if (!this.rndTpl) {
                                 this.rndTpl = new Ext.XTemplate(
-                                    '<a href="#">{[values.bundleName]}</a>'
+                                    '<a href="#">{[values.domainName]}</a>'
                                 );
                             }
                             return this.rndTpl.apply({
-                                bundleName: value
+                                domainName: value
                             });
                         },
                         listeners: {

@@ -2,10 +2,18 @@
 
 ## 2.57.0 (not released yet, in development)
 
+* [MPFE-1069] Configure languages in the system through UI
+* [CLS-1408] Fixed bug with duplication of translation tokens, imported from different sources. BundleName field is removed from TranslationToken.
+* [MPFE-1065][ModeraMjrIntegrationBundle] Update FontAwesome to v4.7.0
+* [MPFE-1064][ModeraMjrIntegrationBundle] Update Moment.js to v2.21.0
+* [CLS-1104] Localization improved, added ability to translate most of UI elements
 * [CLS-1014] Added security for buttons for page Security and permissions: Users. Added permission for manage user profile information; To use the new permission, need to run the console command 'modera:security:install-permissions'
 * [MPFE-1043][ModeraBackendTranslationsToolBundle] UI shows correct number of elements on page with filtering
 * [MPFE-1050][ModeraSecurityBundle] Add validators for username and email
 * [MPFE-1049][ModeraSecurityBundle] Clean non-letter characters from First & Last name, except "space" and "-"
+* [CLS-1236][ModeraFileRepositoryBundle] Update version for gaufrette library
+* [MPFE-984][ModeraTranslationsBundle] Collation utf8_bin is now not necessary for TranslationToken's entity
+* [MPFE-1068][ModeraServerCrudBundle] Proper pagination fetch for complex queries
 * [CLS-1475] [ModeraSecurityBundle] Improved getFullName method, will return username if First name and last name are empty
 
 ## 2.56.0 (05.10.2017)

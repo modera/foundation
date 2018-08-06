@@ -7,11 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Modera\LanguagesBundle\Entity\Language;
 
 /**
- * If you change a table name then don't forget to update
- * \Modera\ModuleBundle\Composer\ScriptHandler::updateTranslationsTableCollation.
- *
  * @ORM\Entity
- * @ORM\Table(name="modera_translations_translationtoken", options={"collate"="utf8_bin"})
+ * @ORM\Table(name="modera_translations_translationtoken")
  *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
@@ -25,18 +22,6 @@ class TranslationToken
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", nullable=false)
-     */
-    private $source;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", nullable=false)
-     */
-    private $bundleName;
 
     /**
      * @var string
@@ -63,9 +48,9 @@ class TranslationToken
      * See {@class \Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener} for details.
      *
      * @var array
-     * @ORM\Column(type="json_array", nullable=false)
+     * @ORM\Column(type="text", nullable=false)
      */
-    private $translations = array();
+    private $translations;
 
     /**
      * @var ArrayCollection
@@ -75,6 +60,7 @@ class TranslationToken
 
     public function __construct()
     {
+        $this->setTranslations(array());
         $this->languageTranslationTokens = new ArrayCollection();
     }
 
@@ -106,46 +92,6 @@ class TranslationToken
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSource()
-    {
-        return $this->source;
-    }
-
-    /**
-     * @param string $source
-     *
-     * @return TranslationToken
-     */
-    public function setSource($source)
-    {
-        $this->source = $source;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBundleName()
-    {
-        return $this->bundleName;
-    }
-
-    /**
-     * @param string $bundleName
-     *
-     * @return TranslationToken
-     */
-    public function setBundleName($bundleName)
-    {
-        $this->bundleName = $bundleName;
-
-        return $this;
     }
 
     /**
@@ -223,7 +169,7 @@ class TranslationToken
      */
     public function getTranslations()
     {
-        return $this->translations;
+        return json_decode($this->translations, true);
     }
 
     /**
@@ -233,7 +179,7 @@ class TranslationToken
      */
     public function setTranslations(array $translations)
     {
-        $this->translations = $translations;
+        $this->translations = json_encode($translations, JSON_UNESCAPED_UNICODE);
 
         return $this;
     }

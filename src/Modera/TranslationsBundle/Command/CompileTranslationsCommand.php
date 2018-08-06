@@ -52,15 +52,9 @@ class CompileTranslationsCommand extends ContainerAwareCommand
             'isObsolete' => false,
         ));
 
-        $bundles = array();
+        $catalogues = array();
         /* @var TranslationToken $token */
         foreach ($tokens as $token) {
-            $bundleName = $token->getBundleName();
-
-            if (!isset($bundles[$bundleName])) {
-                $bundles[$bundleName] = array();
-            }
-
             $ltts = $token->getLanguageTranslationTokens();
 
             /* @var LanguageTranslationToken $ltt */
@@ -71,16 +65,16 @@ class CompileTranslationsCommand extends ContainerAwareCommand
 
                 $locale = $ltt->getLanguage()->getLocale();
 
-                if (!isset($bundles[$bundleName][$locale])) {
-                    $bundles[$bundleName][$locale] = new MessageCatalogue($locale);
+                if (!isset($catalogues[$locale])) {
+                    $catalogues[$locale] = new MessageCatalogue($locale);
                 }
 
-                $catalogue = $bundles[$bundleName][$locale];
+                $catalogue = $catalogues[$locale];
                 $catalogue->set($token->getTokenName(), $ltt->getTranslation(), $token->getDomain());
             }
         }
 
-        if (count($bundles)) {
+        if (count($catalogues)) {
             $fs = new Filesystem();
 
             $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
@@ -91,44 +85,40 @@ class CompileTranslationsCommand extends ContainerAwareCommand
                 $translationsDir = $this->getContainer()->getParameter('modera.translations_dir');
             }
 
-            foreach ($bundles as $bundleName => $catalogues) {
-                if (!count($catalogues)) {
+            $transPath = $translationsDir;
+            $parts = explode($basePath . DIRECTORY_SEPARATOR, $this->normalizePath($transPath));
+            if (count($parts) > 1) {
+                $transDir = $parts[1];
+            } else {
+                $transDir = $parts[0];
+            }
+
+            if ($fs->exists($transPath)) {
+                $output->writeln('    <fg=red>Removing old files</>');
+                $fs->remove($transPath);
+            }
+
+            foreach ($catalogues as $locale => $catalogue) {
+                if (!count($catalogue)) {
                     continue;
                 }
 
-                $bundleTransPath = $translationsDir.'/'.$bundleName;
-                $parts = explode($basePath . DIRECTORY_SEPARATOR, $this->normalizePath($bundleTransPath));
-                if (count($parts) > 1) {
-                    $bundleTransDir = $parts[1];
-                } else {
-                    $bundleTransDir = $parts[0];
-                }
-
-                $output->writeln('>>> '.$bundleName.': '.$bundleTransDir);
-
-                if ($fs->exists($bundleTransPath)) {
-                    $output->writeln('    <fg=red>Removing old files</>');
-                    $fs->remove($bundleTransPath);
-                }
+                $output->writeln('>>> '.$locale.': '.$transDir);
 
                 try {
-                    if (!$fs->exists(dirname($bundleTransPath))) {
-                        $fs->mkdir(dirname($bundleTransPath));
-                        $fs->chmod(dirname($bundleTransPath), 0777);
+                    if (!$fs->exists(dirname($transPath))) {
+                        $fs->mkdir(dirname($transPath));
+                        $fs->chmod(dirname($transPath), 0777);
                     }
-
-                    $fs->mkdir($bundleTransPath);
                 } catch (IOExceptionInterface $e) {
                     echo 'An error occurred while creating your directory at '.$e->getPath();
                 }
 
                 $output->writeln('    <fg=green>Creating new files</>');
 
-                foreach ($catalogues as $locale => $catalogue) {
-                    $writer->writeTranslations($catalogue, $outputFormat, array('path' => $bundleTransPath));
-                }
+                $writer->writeTranslations($catalogue, $outputFormat, array('path' => $transPath));
 
-                $fs->chmod($bundleTransPath, 0777, 0000, true);
+                $fs->chmod($transPath, 0777, 0000, true);
             }
 
             $output->writeln('>>> Translations have been successfully compiled');

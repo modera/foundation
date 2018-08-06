@@ -278,12 +278,16 @@ class ScriptHandler extends AbstractScriptHandler
      */
     public static function doctrineSchemaUpdate(Event $event)
     {
+        if ($scriptHandler = static::getScriptHandler($event, __FUNCTION__)) {
+            $scriptHandler($event);
+            return;
+        }
+
         $options = static::getOptions($event);
         $appDir = $options['symfony-app-dir'];
 
         if (!is_dir($appDir)) {
             self::reportSymfonyAppDirNotFound($appDir);
-
             return;
         }
 
@@ -306,19 +310,40 @@ class ScriptHandler extends AbstractScriptHandler
             return;
         }
 
+        $ignoreSchemaUpdate = false;
         try {
             static::executeCommand($event, $appDir, 'doctrine:database:create --quiet', $options['process-timeout']);
         } catch (\RuntimeException $e) {
             // The command throws an exception if database already exists, so here we are supressing it
+            $ignoreSchemaUpdate = true;
         }
 
-        try {
-            static::doctrineSchemaUpdate($event);
-        } catch (\Exception $e) {
-            echo "Error during database initialization: ".$e->getMessage()."\n";
+        if (!$ignoreSchemaUpdate) {
+            try {
+                static::doctrineSchemaUpdate($event);
+            } catch (\Exception $e) {
+                echo "Error during database initialization: ".$e->getMessage()."\n";
+            }
         }
     }
 
+    /**
+     * @param $handlerName
+     * @return mixed
+     */
+    private static function getScriptHandler(Event $event, $handlerName)
+    {
+        $options = static::getOptions($event);
+        if (isset($options['modera-module']) && isset($options['modera-module']['script-handler'])) {
+            if (isset($options['modera-module']['script-handler'][$handlerName])) {
+                return $options['modera-module']['script-handler'][$handlerName];
+            }
+        }
+    }
+
+    /**
+     * @param $appDir
+     */
     private static function reportSymfonyAppDirNotFound($appDir)
     {
         echo sprintf(

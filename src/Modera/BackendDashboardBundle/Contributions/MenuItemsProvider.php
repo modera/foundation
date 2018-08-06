@@ -7,6 +7,7 @@ use Modera\MjrIntegrationBundle\Menu\MenuItemInterface;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
 use Sli\ExpanderBundle\Ext\OrderedContributorInterface;
 use Modera\BackendDashboardBundle\Contributions\ConfigMergersProvider;
+use Modera\FoundationBundle\Translation\T;
 
 /**
  * Contributes js-runtime menu items.
@@ -56,7 +57,7 @@ class MenuItemsProvider implements OrderedContributorInterface
             // Hide tab, if landing section not dashboard
             if ('dashboard' === $landingSection) {
                 $this->items = array(
-                    new MenuItem('Dashboard', 'Modera.backend.dashboard.runtime.Section', 'dashboard', [
+                    new MenuItem(T::trans('Dashboard'), 'Modera.backend.dashboard.runtime.Section', 'dashboard', [
                         MenuItemInterface::META_NAMESPACE => 'Modera.backend.dashboard',
                         MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackenddashboard/js',
                     ], FontAwesome::resolve('dashboard')),

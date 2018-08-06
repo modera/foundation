@@ -31,7 +31,7 @@ class LanguageTranslationsController extends AbstractCrudController
                             'id' => $ltt->getId(),
                             'translation' => $ltt->getTranslation(),
                             'languageName' => $ltt->getLanguage()->getName(),
-                            'bundleName' => $ltt->getTranslationToken()->getBundleName(),
+                            'domainName' => $ltt->getTranslationToken()->getDomain(),
                             'tokenName' => $ltt->getTranslationToken()->getTokenName(),
                         );
                     },

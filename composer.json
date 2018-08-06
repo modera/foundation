@@ -12,17 +12,17 @@
         "sergeil/extjslocalization-bundle": "~1.0",
         "symfony/swiftmailer-bundle": "~2.3",
         "twig/twig": "~1.0",
-        "knplabs/knp-gaufrette-bundle": "~0.1.7",
+        "knplabs/knp-gaufrette-bundle": "~0.1",
         "imagine/imagine": "0.6.*",
         "modera/module": "~1.0|~2.0",
         "sensio/generator-bundle": "~2.3|~3.0",
         "sergeil/aux-bundle": "~1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.5",
         "phake/phake": "~2.0",
-        "sergeil/aux-bundle": "~1.0",
-        "mikey179/vfsstream": "^1.6"
+        "phpunit/phpunit": "^5.5",
+        "mikey179/vfsstream": "^1.6",
+        "modera/tests-runner": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -67,6 +67,9 @@
             "dev-master": "2.x-dev"
         },
         "modera-monorepo": {
+            "require-dev": {
+                "modera/tests-runner": "dev-master"
+            },
             "include": [
                 "src/Modera/*/composer.json"
             ]
