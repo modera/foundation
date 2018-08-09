@@ -14,6 +14,7 @@
 * [CLS-1236][ModeraFileRepositoryBundle] Update version for gaufrette library
 * [MPFE-984][ModeraTranslationsBundle] Collation utf8_bin is now not necessary for TranslationToken's entity
 * [MPFE-1068][ModeraServerCrudBundle] Proper pagination fetch for complex queries
+* [CLS-1475] [ModeraSecurityBundle] Improved getFullName method, will return username if First name and last name are empty
 
 ## 2.56.0 (05.10.2017)
 
