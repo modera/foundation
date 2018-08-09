@@ -15,11 +15,11 @@ Ext.define('Modera.backend.languages.store.Locales', {
                 pageParam: false,
                 startParam: false,
                 limitParam: false,
-                extraParams: {
+                extraParams: Ext.apply({
                     hydration: {
                         profile: 'list'
                     }
-                },
+                }, config.extraParams || {}),
                 reader: {
                     root: 'items'
                 }

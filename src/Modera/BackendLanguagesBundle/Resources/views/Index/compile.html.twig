@@ -18,7 +18,37 @@ if (window['Ext']) {
     });
 {% endfor %}
 
+    var utilFormat = {{ modera_backend_languages_ext_util_format(locale) }};
+
     Ext.require('MFC.Date', function() {
-        MFC.Date.moment.locale('{{ locale|replace({ '_': '-' }) }}');
+        MFC.Date.moment.defineLocale('en-us', { parentLocale: 'en' });
+        Ext.Object.each(utilFormat['_locales'], function(key, params) {
+            var locale = key.toLowerCase().split('_').join('-');
+            var locales = MFC.Date.moment.locales();
+            if (!Ext.Array.contains(locales, locale) && Ext.Array.contains(locales, locale.split('-')[0])) {
+                var values = {
+                    parentLocale: locale.split('-')[0],
+                    longDateFormat: {
+                        LT   : 'HH:mm',
+                        LTS  : 'HH:mm:ss',
+                        L    : 'DD.MM.YYYY',
+                        LL   : 'D MMMM YYYY',
+                        LLL  : 'D MMMM YYYY HH:mm',
+                        LLLL : 'dddd, D MMMM YYYY HH:mm'
+                    }
+                };
+                if (Ext.Array.contains(locales, params['_language'])) {
+                    Ext.apply(values.longDateFormat, MFC.Date.moment.localeData(params['_language'])._longDateFormat);
+                }
+                MFC.Date.moment.defineLocale(locale, values);
+            }
+        });
+        MFC.Date.moment.locale('{{ locale|replace({ '_': '-' })|lower }}');
+    });
+
+    Ext.onReady(function() {
+        if (Ext.util && Ext.util.Format) {
+            Ext.apply(Ext.util.Format, utilFormat);
+        }
     });
 }

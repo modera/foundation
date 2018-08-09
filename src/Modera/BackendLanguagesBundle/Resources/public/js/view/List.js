@@ -20,6 +20,13 @@ Ext.define('Modera.backend.languages.view.List', {
     removeHeaderText: 'Remove',
     emptyListText: 'No items found',
     languagesTabText: 'Languages',
+    selectLanguageText: 'choose a language from left to start...',
+    regionalSettingsLabelText: 'Regional settings',
+    timeLabelText: 'Time',
+    dateShortLabelText: 'Date short',
+    dateLongLabelText: 'Date long',
+    momentLabelText: 'Moment',
+    priceLabelText: 'Price',
 
     // override
     constructor: function(config) {
@@ -37,8 +44,10 @@ Ext.define('Modera.backend.languages.view.List', {
                     layout: 'fit',
                     itemId: 'languages',
                     title: me.languagesTabText,
-                    items: [
+                    dockedItems: [
                         {
+                            width: 500,
+                            dock: 'left',
                             hideHeaders: true,
                             xtype: 'mfc-touchgrid',
                             monitorModel: 'modera.languages_bundle.language',
@@ -57,14 +66,14 @@ Ext.define('Modera.backend.languages.view.List', {
                                     dataIndex: 'name',
                                     text: me.nameHeaderText,
                                     renderer: me.defaultRenderer()
-                                },
-                                {
-                                    flex: 1,
-                                    align : 'right',
-                                    dataIndex: 'locale',
-                                    text : me.localeHeaderText,
-                                    renderer: me.defaultRenderer()
                                 }//,
+                                // {
+                                //     flex: 1,
+                                //     align : 'right',
+                                //     dataIndex: 'locale',
+                                //     text : me.localeHeaderText,
+                                //     renderer: me.defaultRenderer()
+                                // },
                                 // {
                                 //     align : 'center',
                                 //     xtype : 'actioncolumn',
@@ -117,6 +126,18 @@ Ext.define('Modera.backend.languages.view.List', {
                                 }
                             ]
                         }
+                    ],
+                    items: [
+                        {
+                            itemId: 'details',
+                            layout: 'fit',
+                            border: true,
+                            bodyStyle: {
+                                borderBottomStyle: 'none',
+                                borderRightStyle: 'none'
+                            },
+                            items: me.createLanguageNotSelectedView()
+                        }
                     ]
                 }
             ]
@@ -125,6 +146,130 @@ Ext.define('Modera.backend.languages.view.List', {
         me.callParent([me.config]);
 
         me.assignListeners();
+    },
+
+    // private
+    createLanguageNotSelectedView: function() {
+        var me = this;
+
+        return {
+            xtype: 'mfc-pmsg',
+            msg: me.selectLanguageText,
+            bodyStyle: {
+                background: 'transparent'
+            }
+        };
+    },
+
+    // private
+    createLanguageDetailsView: function(locale) {
+        var me = this;
+
+        var language = locale.split('_')[0];
+        var now = MFC.Date.moment().locale(locale.split('_').join('-'));
+
+        var grid = me.getGrid();
+        var store = grid.getStore();
+        var ignore = Ext.Array.map(store.data.filterBy(function(item) {
+            return locale != item['data']['locale'];
+        }).items, function(item) {
+            return item['data']['locale'];
+        });
+
+        return {
+            xtype: 'panel',
+            autoScroll: true,
+            items: {
+                xtype: 'form',
+                layout: 'anchor',
+                margin: '20 0',
+                defaults: {
+                    anchor: '100%',
+                    labelAlign: 'left',
+                    padding: '0 30'
+                },
+                items: [
+                    {
+                        name: 'locale',
+                        xtype: 'combo',
+                        labelAlign: 'top',
+                        fieldLabel: me.regionalSettingsLabelText,
+                        value: locale,
+                        store: Ext.create('Modera.backend.languages.store.Locales', {
+                            autoLoad: true,
+                            extraParams: {
+                                language: language,
+                                ignore: ignore || []
+                            }
+                        }),
+                        listConfig: {
+                            getInnerTpl: function(displayField) {
+                                return '{[Ext.util.Format.htmlEncode(values.' + displayField + ')]}';
+                            }
+                        },
+                        queryMode: 'local',
+                        displayField: 'name',
+                        valueField: 'id',
+                        allowBlank: false,
+                        editable: false,
+                        listeners: {
+                            change: function(field, newValue, oldValue) {
+                                var record = me.getSelectedRecord();
+                                me.fireEvent('updaterecord', me, { id: record.get('id'), locale: newValue });
+                            }
+                        }
+                    },
+                    {
+                        xtype: 'box',
+                        style: {
+                            margin: '30px 0 20px',
+                            borderTop: '1px dashed #d0d0d0'
+                        }
+                    },
+                    {
+                        xtype: 'displayfield',
+                        fieldLabel: me.timeLabelText,
+                        value: now.format('LT')
+                    },
+                    {
+                        xtype: 'displayfield',
+                        fieldLabel: me.dateShortLabelText,
+                        value: now.format('L')
+                    },
+                    {
+                        xtype: 'displayfield',
+                        fieldLabel: me.dateLongLabelText,
+                        value: now.format('dddd, LL')
+                    },
+                    {
+                        xtype: 'displayfield',
+                        fieldLabel: me.momentLabelText,
+                        value: now.fromNow()
+                    },
+                    {
+                        xtype: 'displayfield',
+                        fieldLabel: me.priceLabelText,
+                        value: me.formatPrice(locale, 99999.99)
+                    }
+                ]
+            }
+        };
+    },
+
+    // private
+    formatPrice: function(locale, value) {
+        Ext.apply(Ext.util.Format, Ext.util.Format['_locales'][locale] || {});
+
+        var currencyPrecision = Ext.util.Format.currencyPrecision;
+        if (value % 1 === 0) {
+            currencyPrecision = 0;
+        }
+
+        var price = Ext.util.Format.currency(value, Ext.util.Format.currencySign, currencyPrecision);
+
+        Ext.apply(Ext.util.Format, Ext.util.Format['_default']);
+
+        return price;
     },
 
     // private
@@ -165,27 +310,53 @@ Ext.define('Modera.backend.languages.view.List', {
         };
     },
 
+    // public
+    getGrid: function() {
+        return this.down('#languages grid');
+    },
+
     // private
     getSelectedRecord: function() {
-        var me = this;
-
-        return me.getSelectedRecords()[0];
+        return this.getSelectedRecords()[0];
     },
 
     // private
     getSelectedRecords: function() {
-        var me = this;
-
-        return me.down('#languages grid').getSelectionModel().getSelection();
+        return this.getGrid().getSelectionModel().getSelection();
     },
 
     // private
     assignListeners: function() {
         var me = this;
 
-        me.down('#languages grid').on('itemdblclick', function() {
+        var grid = me.getGrid();
+        var store = grid.getStore();
+
+        grid.on('selectionchange', function(selModel, selected) {
+            var details = me.down('#details');
+            details.removeAll();
+
+            if (selected.length) {
+                var record = selected[0];
+                details.add(me.createLanguageDetailsView(record.get('locale')));
+            } else {
+                details.add(me.createLanguageNotSelectedView());
+            }
+        });
+
+        store.on('load', function() {
+            // bug fix
+            var selected = grid.getSelectionModel().selected;
+            selected.keys.forEach(function(key) {
+                selected.replace(key, store.getById(key));
+            });
+
             var record = me.getSelectedRecord();
-            me.fireEvent('editrecord', me, { id: record.get('id') });
+            if (record) {
+                var details = me.down('#details');
+                details.removeAll();
+                details.add(me.createLanguageDetailsView(record.get('locale')));
+            }
         });
     }
 });

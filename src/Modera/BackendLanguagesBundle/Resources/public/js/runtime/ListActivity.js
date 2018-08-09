@@ -63,6 +63,10 @@ Ext.define('Modera.backend.languages.runtime.ListActivity', {
             me.handleAction('editlanguage', sourceComponent, params);
         });
 
+        ui.on('updaterecord', function(sourceComponent, params) {
+            Actions.ModeraBackendLanguages_Languages.update({ record: params }, function(response) {});
+        });
+
         ui.on('deleterecord', function(sourceComponent, params) {
             me.handleAction('removelanguage', sourceComponent, params);
         });

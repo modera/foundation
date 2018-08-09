@@ -125,7 +125,7 @@ class Configuration implements ConfigurationInterface
                 // since 2.56.0
                 ->scalarNode('moment_js_version')
                     ->cannotBeEmpty()
-                    ->defaultValue('2.21.0')
+                    ->defaultValue('2.22.2')
                 ->end()
             ->end()
         ;

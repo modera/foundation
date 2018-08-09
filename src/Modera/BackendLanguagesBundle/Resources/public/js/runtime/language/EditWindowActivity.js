@@ -22,17 +22,28 @@ Ext.define('Modera.backend.languages.runtime.language.EditWindowActivity', {
     // override
     doCreateUi: function(params, callback) {
         var requestParams = {
-            filter: [
-                { property: 'id', value: 'eq:' + params.id }
-            ],
             hydration: {
                 profile: 'list'
             }
         };
+        Actions.ModeraBackendLanguages_Languages.list(requestParams, function(response) {
+            var data = { id: params.id };
+            var ignore = Ext.Array.map(Ext.Array.filter(response.items, function(item) {
+                if (params.id == item['id']) {
+                    data = item;
+                    return false;
+                }
+                return true;
+            }), function(item) {
+                return item['locale'];
+            });
 
-        Actions.ModeraBackendLanguages_Languages.get(requestParams, function(response) {
-            var window = Ext.create('Modera.backend.languages.view.language.EditWindow');
-            window.loadData(response.result);
+            var window = Ext.create('Modera.backend.languages.view.language.EditWindow', {
+                dto: {
+                    ignore: ignore
+                }
+            });
+            window.loadData(data);
             callback(window);
         });
     },

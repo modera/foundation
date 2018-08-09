@@ -31,14 +31,24 @@ class LocalesController extends AbstractBaseController
     {
         $this->checkAccess();
 
-        $arr = Intl::getLocaleBundle()->getLocaleNames();
-        foreach ($arr as $locale => $name) {
-            $arr[$locale] = Language::getLocaleName($locale, $this->getDisplayLocale());
-        }
+        $locales = array_filter($this->getLocales(), function($locale) use ($params) {
+            $parts = explode('_', $locale);
+            if (count($parts) > 1) {
+                if (isset($params['ignore']) && is_array($params['ignore']) && in_array($locale, $params['ignore'])) {
+                    return false;
+                }
+                return isset($params['language']) ? $params['language'] == $parts[0] : true;
+            }
+            return false;
+        });
 
-        // add custom locales
-        foreach ($this->get('modera_backend_languages.locales_provider')->getItems() as $locale) {
-            $arr[$locale] = Language::getLocaleName($locale, $this->getDisplayLocale());
+        $arr = array();
+        foreach ($locales as $locale) {
+            $value = Language::getLocaleName($locale, $this->getDisplayLocale());
+            if (isset($params['language'])) {
+                $value = substr(explode('(', $value, 2)[1], 0, -1);
+            }
+            $arr[$locale] = $value;
         }
 
         $collator = new \Collator($this->getDisplayLocale());
@@ -57,6 +67,18 @@ class LocalesController extends AbstractBaseController
             'items' => $result,
             'total' => count($result),
         );
+    }
+
+    /**
+     * @return array
+     */
+    private function getLocales()
+    {
+        $locales = array_keys(Intl::getLocaleBundle()->getLocaleNames());
+        foreach ($this->get('modera_backend_languages.locales_provider')->getItems() as $locale) {
+            $locales[] = $locale;
+        }
+        return $locales;
     }
 
     /**

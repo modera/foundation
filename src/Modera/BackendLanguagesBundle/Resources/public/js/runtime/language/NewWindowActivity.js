@@ -21,8 +21,24 @@ Ext.define('Modera.backend.languages.runtime.language.NewWindowActivity', {
 
     // override
     doCreateUi: function(params, callback) {
-        var window = Ext.create('Modera.backend.languages.view.language.NewWindow');
-        callback(window);
+        var requestParams = {
+            hydration: {
+                profile: 'list'
+            }
+        };
+        Actions.ModeraBackendLanguages_Languages.list(requestParams, function(response) {
+            var ignore = Ext.Array.map(response.items, function(item) {
+                return item['locale'];
+            });
+
+            var window = Ext.create('Modera.backend.languages.view.language.NewWindow', {
+                dto: {
+                    ignore: ignore
+                }
+            });
+
+            callback(window);
+        });
     },
 
     // override

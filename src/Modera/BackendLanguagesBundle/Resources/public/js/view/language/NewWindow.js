@@ -16,6 +16,8 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
         
         me.newRecordTitle = me.newRecordTitleText;
 
+        var ignore = (config['dto'] && config['dto']['ignore']) || [];
+
         var defaults = {
             type: 'new',
             groupName: 'list',
@@ -43,7 +45,10 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
                         xtype: 'combo',
                         emptyText: me.placeHolderText,
                         store: Ext.create('Modera.backend.languages.store.Locales', {
-                            autoLoad: true
+                            autoLoad: true,
+                            extraParams: {
+                                ignore: ignore
+                            }
                         }),
                         listConfig: {
                             getInnerTpl: function(displayField) {
