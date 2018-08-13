@@ -1,0 +1,100 @@
+if (window['Ext']) {
+{% if skipped_bundles|length > 0 %}
+   /**
+    * These bundles were skipped: {{ skipped_bundles|join(', ') }}
+    *
+    * Total tokens: {{ tokens_total }}
+    */
+{% endif %}
+
+{% for parent_class, tokens in token_groups %}
+    Ext.define('l10n.{{ locale }}.{{ parent_class }}', {
+        override: '{{ parent_class }}',
+
+{% for token, translation in tokens %}
+        {{ token }}Text: '{{ translation }}'{% if not loop.last %},{% endif %}
+
+{% endfor %}
+    });
+{% endfor %}
+
+    (function() {
+        var utilFormat = {{ modera_backend_languages_ext_util_format(locale) }};
+
+        var l10nMomentJs = function() {
+            Ext.require('MFC.Date', function() {
+                MFC.Date.moment.defineLocale('en-us', { parentLocale: 'en' });
+                Ext.Object.each(utilFormat['_locales'], function(key, params) {
+                    var locale = key.toLowerCase().split('_').join('-');
+                    var locales = MFC.Date.moment.locales();
+                    if (!Ext.Array.contains(locales, locale) && Ext.Array.contains(locales, locale.split('-')[0])) {
+                        var values = {
+                            parentLocale: locale.split('-')[0],
+                            longDateFormat: {
+                                LT   : 'HH:mm',
+                                LTS  : 'HH:mm:ss',
+                                L    : 'DD.MM.YYYY',
+                                LL   : 'D MMMM YYYY',
+                                LLL  : 'D MMMM YYYY HH:mm',
+                                LLLL : 'dddd, D MMMM YYYY HH:mm'
+                            }
+                        };
+                        if (Ext.Array.contains(locales, params['_language'])) {
+                            Ext.apply(values.longDateFormat, MFC.Date.moment.localeData(params['_language'])._longDateFormat);
+                        }
+                        MFC.Date.moment.defineLocale(locale, values);
+                    }
+                });
+                MFC.Date.moment.locale('{{ locale|replace({ '_': '-' })|lower }}');
+            });
+        };
+
+        var l10nExtJs = function(opts) {
+            Ext.onReady(function() {
+                if (Ext.Date) {
+                    Ext.Date.defaultFormat = opts.dateFormat;
+                }
+
+                if (Ext.util && Ext.util.Format) {
+                    Ext.apply(Ext.util.Format, utilFormat);
+                    Ext.util.Format.dateFormat = opts.dateFormat;
+
+                    if (opts.currencySign) {
+                        Ext.util.Format.currencySign = opts.currencySign;
+                        Ext.util.Format._default.currencySign = opts.currencySign;
+                    }
+                }
+            });
+
+            Ext.define('l10n.{{ locale }}.Ext.picker.Date', {
+                override: 'Ext.picker.Date',
+                format: opts.dateFormat,
+                startDay: opts.startDay
+            });
+
+            Ext.define('l10n.{{ locale }}.Ext.form.field.Date', {
+                override: 'Ext.form.field.Date',
+                format: opts.dateFormat,
+                startDay: opts.startDay
+            });
+
+            Ext.define('l10n.{{ locale }}.Ext.form.field.Time', {
+                override: 'Ext.form.field.Time',
+                format: opts.timeFormat
+            });
+
+            Ext.define('l10n.{{ locale }}.Ext.grid.column.Date', {
+                override: 'Ext.grid.column.Date',
+                format: opts.dateFormat
+            });
+
+            Ext.define('l10n.{{ locale }}.Ext.grid.property.HeaderContainer', {
+                override: 'Ext.grid.property.HeaderContainer',
+                dateFormat: opts.dateFormat
+            });
+        };
+        {% include 'ModeraBackendLanguagesBundle:Index:extension.js.twig' %}
+
+    })();
+
+}

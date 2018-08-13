@@ -263,6 +263,57 @@ class Extension extends \Twig_Extension
         'ZW' => 'en,sn,nd',
     );
 
+    const CLDR_MAPPING = array(
+        // Era is not implemented
+        'GGGGG' => '',
+        'GGGG' => '',
+        'GGG' => '',
+        'GG' => '',
+        'G' => '',
+
+        // Year
+        'yyyy' => 'Y', // 1999
+        'yy' => 'y', // 99
+        'y' => 'Y', // 1999
+
+        // Month.
+        'MMMM' => 'F',
+        'MMM' => 'M',
+        'MM' => 'm',
+        'M' => 'm',
+
+        // Day.
+        'dd' => 'd',
+        'd' => 'j',
+
+        // Day of week.
+        'EEEEEE' => '', // Tu
+        'EEEEE' => '', // T
+        'EEEE' => 'l', // Tuesday
+        'EEE' => 'D', // Tue
+        'EE' => 'D', // Tue
+        'E' => 'D', // Tue
+
+        // Am/PM
+        'a' => 'a',
+
+        // hours
+        'HH' => 'H', // 24-hour format of an hour with leading zeros
+        'H' => 'G', // 24-hour format of an hour without leading zeros
+        'h' => 'h', // 12-hour format of an hour with leading zeros
+        'K' => 'g', // 12-hour format of an hour without leading zero
+
+        // minutes
+        'mm' => 'i', // Minutes with leading zeros
+        'ss' => 's', // Seconds, with leading zeros
+
+        // timezone.
+        'z' => 'T', // Timezone abbreviation
+        'zz' => 'T', // Timezone abbreviation
+        'zzz' => 'T', // Timezone abbreviation
+        'zzzz' => 'e', // Timezone
+    );
+
     /**
      * @var ContributorInterface
      */
@@ -285,7 +336,22 @@ class Extension extends \Twig_Extension
             new \Twig_SimpleFunction(
                 'modera_backend_languages_ext_util_format',
                 array($this, 'getExtUtilFormat'),
-                array('is_safe' => array('html'))
+                array('is_safe' => array('js'))
+            ),
+            new \Twig_SimpleFunction(
+                'modera_backend_languages_ext_date_format',
+                array($this, 'getExtDateFormat'),
+                array('is_safe' => array('js'))
+            ),
+            new \Twig_SimpleFunction(
+                'modera_backend_languages_ext_time_format',
+                array($this, 'getExtTimeFormat'),
+                array('is_safe' => array('js'))
+            ),
+            new \Twig_SimpleFunction(
+                'modera_backend_languages_ext_start_day',
+                array($this, 'getExtStartDay'),
+                array('is_safe' => array('js'))
             ),
         );
     }
@@ -299,11 +365,40 @@ class Extension extends \Twig_Extension
         foreach ($this->getLocales() as $value) {
             $locales[$value] = $this->getLocaleFormat($value);
         }
+        $default = isset($locales[$locale]) ? $locales[$locale] : $this->getLocaleFormat($locale);
 
         return json_encode(array_merge(array(
-            '_default' => $locales[$locale],
+            '_default' => $default,
             '_locales' => $locales,
-        ), $locales[$locale]));
+        ), $default));
+    }
+
+    /**
+     * @param string $locale
+     * @return string
+     */
+    public function getExtDateFormat($locale)
+    {
+        return $this->getIntlDateFormatterPattern($locale, 'date');
+    }
+
+    /**
+     * @param string $locale
+     * @return string
+     */
+    public function getExtTimeFormat($locale)
+    {
+        return $this->getIntlDateFormatterPattern($locale, 'time');
+    }
+
+    /**
+     * @param string $locale
+     * @return string
+     */
+    public function getExtStartDay($locale)
+    {
+        $cal = \IntlCalendar::createInstance(NULL, $locale);
+        return $cal->getFirstDayOfWeek() - 1;
     }
 
     /**
@@ -376,5 +471,50 @@ class Extension extends \Twig_Extension
             'currencySign' => $currencySign,
             'currencyAtEnd' => $currencyAtEnd,
         );
+    }
+
+    /**
+     * @param string $locale
+     * @param string $type
+     * @return string
+     */
+    private function getIntlDateFormatterPattern($locale, $type = 'date')
+    {
+        $arr = \Locale::parseLocale($locale);
+
+        if (isset($arr['region'])) {
+            $languages = $this->getLanguagesByRegion($arr['region']);
+            if (count($languages)) {
+                $arr['language'] = $languages[0];
+            }
+        }
+
+        if ('time' == $type) {
+            $fmt = new \IntlDateFormatter(locale_compose($arr), \IntlDateFormatter::NONE, \IntlDateFormatter::SHORT);
+        } else {
+            $fmt = new \IntlDateFormatter(locale_compose($arr), \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
+        }
+
+        return $this->convertCLDRtoPHP($fmt->getPattern());
+    }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    private function convertCLDRtoPHP($value)
+    {
+        $mapping = static::CLDR_MAPPING;
+        $splitters = array(', ', ' ', ',', '-', '\/', '\\.', '\'', ':');
+        $array = preg_split('/(' . implode('|', $splitters) . ')/',  $value);
+        usort($array, function($a, $b){
+            return strlen($b) - strlen($a);
+        });
+
+        foreach ($array as $search) {
+            $replace = isset($mapping[$search]) ? $mapping[$search] : '*';
+            $value = str_replace($search, $replace, $value);
+        }
+        return str_replace(' ,', ',', $value);
     }
 }

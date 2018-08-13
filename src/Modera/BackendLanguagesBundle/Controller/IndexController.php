@@ -15,7 +15,7 @@ class IndexController extends Controller
      */
     protected function getTemplate()
     {
-        return 'ModeraBackendLanguagesBundle:Index:compile.html.twig';
+        return 'ModeraBackendLanguagesBundle:Index:compile.js.twig';
     }
 
     /**
