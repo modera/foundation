@@ -336,22 +336,22 @@ class Extension extends \Twig_Extension
             new \Twig_SimpleFunction(
                 'modera_backend_languages_ext_util_format',
                 array($this, 'getExtUtilFormat'),
-                array('is_safe' => array('js'))
+                array('is_safe' => array('html', 'js'))
             ),
             new \Twig_SimpleFunction(
                 'modera_backend_languages_ext_date_format',
                 array($this, 'getExtDateFormat'),
-                array('is_safe' => array('js'))
+                array('is_safe' => array('html', 'js'))
             ),
             new \Twig_SimpleFunction(
                 'modera_backend_languages_ext_time_format',
                 array($this, 'getExtTimeFormat'),
-                array('is_safe' => array('js'))
+                array('is_safe' => array('html', 'js'))
             ),
             new \Twig_SimpleFunction(
                 'modera_backend_languages_ext_start_day',
                 array($this, 'getExtStartDay'),
-                array('is_safe' => array('js'))
+                array('is_safe' => array('html', 'js'))
             ),
         );
     }
