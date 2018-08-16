@@ -207,6 +207,10 @@ class PhpClassTokenExtractor implements ExtractorInterface
         // by "," -- this gives us index shift of 2
         $indexShift = 'transChoice' == $invocation['method_name'] ? 2 : 0;
 
+        if (is_array($tokens[0]) && \T_STRING == $tokens[0][0] && 'implode' == $tokens[0][1]) {
+            $indexShift += array_search(')', $tokens, true) + 1;
+        }
+
         $isParamsArgSpecified = isset($tokens[$indexShift + 1]) && ',' == $tokens[$indexShift + 1]
                              && isset($tokens[$indexShift + 2]);
 
@@ -215,6 +219,7 @@ class PhpClassTokenExtractor implements ExtractorInterface
                               && isset($tokens[$indexShift + 3]) && $this->normalizeToken($tokens[$indexShift + 3]) == '(';
 
             $isNullParameter = strtolower($this->normalizeToken($tokens[$indexShift + 2])) == 'null';
+            $isVariableParameter = \T_VARIABLE == $tokens[$indexShift + 2][0];
 
             if ($isArrayParameter) {
                 $depth = 1;
@@ -248,7 +253,7 @@ class PhpClassTokenExtractor implements ExtractorInterface
                 if ($isDomainArgumentSpecified) {
                     $args['domain'] = $tokens[$indexShift + $secondArgEndIndex + 2];
                 }
-            } elseif ($isNullParameter) { // second parameter is
+            } elseif ($isNullParameter || $isVariableParameter) { // second parameter is
                 $args['params'] = $tokens[$indexShift + 2];
 
                 // if params are followed by "null," we assume that domain parameter is also provided
@@ -266,6 +271,29 @@ class PhpClassTokenExtractor implements ExtractorInterface
     }
 
     /**
+     * @param array $tokens
+     * @return string
+     */
+    private function resolveImplodeFn(array $tokens)
+    {
+        $glue = '';
+        if (\T_CONSTANT_ENCAPSED_STRING == $tokens[2][0]) {
+            $glue = substr($tokens[2][1], 1, -1);
+        } else if (\T_STRING == $tokens[2][0]) {
+            $glue = constant($tokens[2][1]);
+        }
+
+        $pieces = array();
+        foreach (array_slice($tokens, 6, -2) as $val) {
+            if (is_array($val)) {
+                $pieces[] = substr($val[1], 1, -1);
+            }
+        }
+
+        return '\'' . implode($glue, $pieces) . '\'';
+    }
+
+    /**
      * @param array $valueToken
      * @param array $invocation
      *
@@ -275,8 +303,16 @@ class PhpClassTokenExtractor implements ExtractorInterface
     {
         if (\T_CONSTANT_ENCAPSED_STRING == $valueToken[0]) {
             // just a string literal
-
             return trim($valueToken[1], $valueToken[1][0]);
+
+        } elseif (\T_STRING == $valueToken[0]) {
+            if ('implode' == $valueToken[1]) {
+                $limit = array_search(')', array_slice($invocation['tokens'], $invocation['start_index']), true) + 2;
+                $value = $this->resolveImplodeFn(array_slice($invocation['tokens'], $invocation['start_index'], $limit));
+
+                return trim($value, $value[0]);
+            }
+
         } elseif (\T_VARIABLE == $valueToken[0]) {
             // variable is used, we are going to try to resolve its value even if it is composite
             // ( made up of several assign statements )
@@ -319,6 +355,15 @@ class PhpClassTokenExtractor implements ExtractorInterface
                         // we are not going to support assign statement when one variable points to another etc
                         $isValidVarValueToken = is_array($variableValueTokenValue) && \T_CONSTANT_ENCAPSED_STRING == $variableValueTokenValue[0];
 
+                        if (!$isValidVarValueToken && \T_STRING == $variableValueTokenValue[0]) {
+                            if ('implode' == $variableValueTokenValue[1]) {
+                                $offset = $i + 2;
+                                $limit = array_search(')', array_slice($parentTokens, $offset), true) + 2;
+                                $variableValueTokenValue = $this->resolveImplodeFn(array_slice($parentTokens, $offset, $limit));
+                                $isValidVarValueToken = true;
+                            }
+                        }
+
                         if ($isValidAssignToken && $isValidVarValueToken) {
                             $value = $this->normalizeToken($variableValueTokenValue);
                             $assignStmt = $this->normalizeToken($assignValueTokenValue);
@@ -334,9 +379,9 @@ class PhpClassTokenExtractor implements ExtractorInterface
             }
 
             return $variableValue;
-        } else {
-            return 'Error! Token value can be either a literal string or variable reference.';
         }
+
+        return 'Error! Token value can be either a literal string or variable reference.';
     }
 
     /**
