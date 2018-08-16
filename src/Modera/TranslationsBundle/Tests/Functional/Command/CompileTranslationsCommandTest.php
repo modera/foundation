@@ -2,11 +2,12 @@
 
 namespace Modera\TranslationsBundle\Tests\Functional\Command;
 
-use Modera\LanguagesBundle\Entity\Language;
-use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
-use Modera\TranslationsBundle\Entity\TranslationToken;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Translation\MessageCatalogue;
+use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
+use Modera\TranslationsBundle\Entity\TranslationToken;
+use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -45,7 +46,10 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $this->assertEquals('This token is only in SecondDummy bundle', $messages['This token is only in SecondDummy bundle']);
 
         if ($fs->exists($transPath)) {
-            $fs->remove($transPath);
+            foreach (Finder::create()->files()->in($transPath) as $file) {
+                $fs->remove($file->getRealPath());
+            }
+            //$fs->remove($transPath);
         }
     }
 
@@ -66,12 +70,12 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
 
         $this->launchImportCommand();
 
-        /**@var $tt TranslationToken */
+        /* @var TranslationToken $tt */
         $tt = self::$em->getRepository(TranslationToken::clazz())->findOneBy([
             'tokenName' => 'Test token'
         ]);
         foreach ($tt->getLanguageTranslationTokens() as $languageTranslationToken) {
-            /**@var $languageTranslationToken \Modera\TranslationsBundle\Entity\LanguageTranslationToken */
+            /* @var LanguageTranslationToken $languageTranslationToken */
             if ($languageTranslationToken->getLanguage()->getLocale() == 'et') {
                 $languageTranslationToken->setTranslation('Test token translated EE');
                 self::$em->persist($languageTranslationToken);
@@ -100,7 +104,10 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $this->assertEquals('This token is only in SecondDummy bundle', $messages['This token is only in SecondDummy bundle']);
 
         if ($fs->exists($transPath)) {
-            $fs->remove($transPath);
+            foreach (Finder::create()->files()->in($transPath) as $file) {
+                $fs->remove($file->getRealPath());
+            }
+            //$fs->remove($transPath);
         }
     }
 }

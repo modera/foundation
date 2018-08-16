@@ -2,10 +2,11 @@
 
 namespace Modera\TranslationsBundle\Tests\Functional\Compiler;
 
-use Modera\TranslationsBundle\Compiler\TranslationsCompiler;
-use Modera\TranslationsBundle\Tests\Functional\AbstractFunctionalTestCase;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Modera\TranslationsBundle\Tests\Functional\AbstractFunctionalTestCase;
+use Modera\TranslationsBundle\Compiler\TranslationsCompiler;
 
 /**
  * Smoke test.
@@ -41,9 +42,11 @@ class TranslationsCompilerTest extends AbstractFunctionalTestCase
 
         $translationsDir = dirname($kernel->getRootdir()).'/app/Resources/translations';
 
+        $fs = new Filesystem();
         $discoveredFiles = array();
         foreach (Finder::create()->in($translationsDir) as $file) {
             $discoveredFiles[] = $file->getFilename();
+            $fs->remove($file->getRealPath());
         }
 
         $this->assertTrue(in_array('messages.en.yml', $discoveredFiles));
