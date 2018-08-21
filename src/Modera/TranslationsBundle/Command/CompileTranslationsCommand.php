@@ -3,6 +3,7 @@
 namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Console\Input\InputInterface;
@@ -95,7 +96,10 @@ class CompileTranslationsCommand extends ContainerAwareCommand
 
             if ($fs->exists($transPath)) {
                 $output->writeln('    <fg=red>Removing old files</>');
-                $fs->remove($transPath);
+                foreach (Finder::create()->files()->in($transPath) as $file) {
+                    $fs->remove($file->getRealPath());
+                }
+                //$fs->remove($transPath);
             }
 
             foreach ($catalogues as $locale => $catalogue) {
