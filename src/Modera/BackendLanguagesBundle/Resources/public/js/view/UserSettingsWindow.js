@@ -15,6 +15,7 @@ Ext.define('Modera.backend.languages.view.UserSettingsWindow', {
 
         var defaults = {
             type: 'edit',
+            cls: 'hide-x-window-body-overflow',
             groupName: 'main-form',
             resizable: false,
             autoScroll: true,

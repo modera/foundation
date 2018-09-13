@@ -1,5 +1,11 @@
 @import 'compass';
 
+.hide-x-window-body-overflow{
+    .x-window-body{
+        overflow: hidden!important;
+    }
+}
+
 .modera-backend-languages {
 
     .inactive {

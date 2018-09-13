@@ -15,6 +15,7 @@
 * [MPFE-984][ModeraTranslationsBundle] Collation utf8_bin is now not necessary for TranslationToken's entity
 * [MPFE-1068][ModeraServerCrudBundle] Proper pagination fetch for complex queries
 * [CLS-1475] [ModeraSecurityBundle] Improved getFullName method, will return username if First name and last name are empty
+* [CLS-1628] [BackendLanguagesBundle] Moved language urls from plugin provider to common config to get language set by user
 
 ## 2.56.0 (05.10.2017)
 
