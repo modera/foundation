@@ -6,6 +6,12 @@ use Doctrine\ORM\EntityManager;
 use Modera\LanguagesBundle\Entity\Language;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Modera\SecurityBundle\Entity\User;
+use Modera\BackendLanguagesBundle\Entity\UserSettings;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -14,16 +20,16 @@ use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterface
 {
     /**
-     * @var EntityManager
+     * @var ContainerInterface $container
      */
-    private $em;
+    private $container;
 
     /**
-     * @param EntityManager $em
+     * @param ContainerInterface $container
      */
-    public function __construct(EntityManager $em)
+    public function __construct(ContainerInterface $container)
     {
-        $this->em = $em;
+        $this->container = $container;
     }
 
     /**
@@ -34,9 +40,11 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     public function merge(array $currentConfig)
     {
         $languages = array();
+        /** @var EntityManager $em */
+        $em = $this->container->get('doctrine.orm.entity_manager');
 
         /* @var Language[] $dbLanguages */
-        $dbLanguages = $this->em->getRepository(Language::clazz())->findBy(array('isEnabled' => true));
+        $dbLanguages = $em->getRepository(Language::clazz())->findBy(array('isEnabled' => true));
         foreach ($dbLanguages as $dbLanguage) {
             $languages[] = array(
                 'id' => $dbLanguage->getId(),
@@ -45,9 +53,37 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
             );
         }
 
+        //get user localisation files
+        /* @var RequestStack */
+        $requestStack = $this->container->get('request_stack');
+        /* @var Request $request */
+        $request = $requestStack->getCurrentRequest();
+        /* @var TokenStorageInterface $tokenStorage */
+        $tokenStorage = $this->container->get('security.token_storage');
+        $token = $tokenStorage->getToken();
+        $runtimeConfig = $this->container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
+        /* @var Router $router */
+        $router = $this->container->get('router');
+
+        $pluginUrls = [];
+
+        if ($token->isAuthenticated() && $token->getUser() instanceof User) {
+            /* @var EntityManager $em */
+            $em = $this->container->get('doctrine.orm.entity_manager');
+            /* @var UserSettings $settings */
+            $settings = $em->getRepository(UserSettings::clazz())->findOneBy(array('user' => $token->getUser()->getId()));
+            if ($settings && $settings->getLanguage() && $settings->getLanguage()->getEnabled()) {
+                $userLocale = $settings->getLanguage()->getLocale();
+
+                $pluginUrls[] = $runtimeConfig['extjs_path'].'/locale/ext-lang-'.$userLocale.'.js';
+                $pluginUrls[] = $router->generate('modera_backend_languages_extjs_l10n', array('locale' => $userLocale));
+            }
+        }
+
         return array_merge($currentConfig, array(
             'modera_backend_languages' => array(
-                'languages' => $languages,
+                'languages'         => $languages,
+                'localization_urls' => $pluginUrls
             ),
         ));
     }
