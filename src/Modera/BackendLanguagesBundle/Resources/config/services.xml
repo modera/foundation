@@ -37,6 +37,8 @@
                  class="Modera\BackendLanguagesBundle\Contributions\ConfigMergersProvider">
 
             <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="security.token_storage" />
+            <argument>%locale%</argument>
 
             <tag name="modera_mjr_integration.config.config_mergers_provider" />
         </service>

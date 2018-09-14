@@ -3,9 +3,12 @@
 namespace Modera\BackendLanguagesBundle\Contributions;
 
 use Doctrine\ORM\EntityManager;
-use Modera\LanguagesBundle\Entity\Language;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
+use Modera\BackendLanguagesBundle\Entity\UserSettings;
+use Modera\LanguagesBundle\Entity\Language;
+use Modera\SecurityBundle\Entity\User;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -19,11 +22,25 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     private $em;
 
     /**
-     * @param EntityManager $em
+     * @var TokenStorageInterface
      */
-    public function __construct(EntityManager $em)
+    private $tokenStorage;
+
+    /**
+     * @var string
+     */
+    private $locale;
+
+    /**
+     * @param EntityManager         $em
+     * @param TokenStorageInterface $tokenStorage,
+     * @param string                $locale,
+     */
+    public function __construct(EntityManager $em, TokenStorageInterface $tokenStorage, $locale = 'en')
     {
         $this->em = $em;
+        $this->tokenStorage = $tokenStorage;
+        $this->locale = $locale;
     }
 
     /**
@@ -45,9 +62,20 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
             );
         }
 
+        $locale = $this->locale;
+        $token = $this->tokenStorage->getToken();
+        if ($token->isAuthenticated() && $token->getUser() instanceof User) {
+            /* @var UserSettings $settings */
+            $settings = $this->em->getRepository(UserSettings::clazz())->findOneBy(array('user' => $token->getUser()->getId()));
+            if ($settings && $settings->getLanguage() && $settings->getLanguage()->getEnabled()) {
+                $locale = $settings->getLanguage()->getLocale();
+            }
+        }
+
         return array_merge($currentConfig, array(
             'modera_backend_languages' => array(
                 'languages' => $languages,
+                'locale' => $locale,
             ),
         ));
     }

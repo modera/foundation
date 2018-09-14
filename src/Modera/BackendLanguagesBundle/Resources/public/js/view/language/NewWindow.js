@@ -25,6 +25,7 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
             autoScroll: true,
             width: 500,
             maxHeight: Ext.getBody().getViewSize().height - 60,
+            layout: 'fit',
             items: {
                 xtype: 'form',
                 defaultType: 'textfield',

@@ -17,8 +17,14 @@ Ext.define('Modera.backend.languages.runtime.ExtJsLocalizationPlugin', {
 
     // override
     bootstrap: function(cb) {
-        this.loadScripts(this.config['urls'], function() {
-            cb();
+        var me = this;
+        var workbench = me.application.getContainer().get('workbench');
+        workbench.getService('config_provider').getConfig(function(config) {
+            me.loadScripts(Ext.Array.map(me.config['urls'], function(value) {
+                return value.replace('__LOCALE__', config['modera_backend_languages']['locale']);
+            }), function() {
+                cb();
+            });
         });
     },
 

@@ -2,6 +2,7 @@
 
 namespace Modera\BackendLanguagesBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Request;
 use Sli\ExtJsLocalizationBundle\Controller\IndexController as Controller;
 
 /**
@@ -28,5 +29,14 @@ class IndexController extends Controller
         }
 
         return parent::getTranslationsDir();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function compileAction(Request $request, $locale = null)
+    {
+        $request->getSession()->set('_backend_locale', $locale ?: $request->getLocale());
+        return parent::compileAction($request, $locale);
     }
 }
