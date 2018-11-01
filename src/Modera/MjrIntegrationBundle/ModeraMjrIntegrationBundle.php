@@ -251,7 +251,7 @@ class HelpMenuItemsProvider implements ContributorInterface
     public function getItems()
     {
         return [
-            SimpleHelpMenuItem::createUrlAware('Help / Support', 'https://confluence.dev.modera.org'),
+            SimpleHelpMenuItem::createUrlAware('Help / Support', 'https://confluence.modera.org'),
             SimpleHelpMenuItem::createActivityAware('About', 'product-about-info');
         ];
     }

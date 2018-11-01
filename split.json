@@ -5,7 +5,6 @@
         "src/Modera/BackendConfigUtilsBundle": "git@github.com:modera/ModeraBackendConfigUtilsBundle.git",
         "src/Modera/BackendDashboardBundle": "git@github.com:modera/ModeraBackendDashboardBundle.git",
         "src/Modera/BackendLanguagesBundle": "git@github.com:modera/ModeraBackendLanguagesBundle.git",
-        "src/Modera/BackendModuleBundle": "git@github.com:modera/ModeraBackendModuleBundle.git",
         "src/Modera/BackendSecurityBundle": "git@github.com:modera/ModeraBackendSecurityBundle.git",
         "src/Modera/BackendToolsActivityLogBundle": "git@github.com:modera/ModeraBackendToolsActivityLogBundle.git",
         "src/Modera/BackendToolsBundle": "git@github.com:modera/ModeraBackendToolsBundle.git",
@@ -27,7 +26,6 @@
         "src/Modera/RoutingBundle": "git@github.com:modera/ModeraRoutingBundle.git",
         "src/Modera/SecurityBundle": "git@github.com:modera/ModeraSecurityBundle.git",
         "src/Modera/ServerCrudBundle": "git@github.com:modera/ModeraServerCrudBundle.git",
-        "src/Modera/TranslationsBundle": "git@github.com:modera/ModeraTranslationsBundle.git",
-        "src/Modera/UpgradeBundle": "git@github.com:modera/ModeraUpgradeBundle.git"
+        "src/Modera/TranslationsBundle": "git@github.com:modera/ModeraTranslationsBundle.git"
     }
 }

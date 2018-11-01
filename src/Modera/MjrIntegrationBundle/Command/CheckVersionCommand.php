@@ -53,7 +53,7 @@ class CheckVersionCommand extends ContainerAwareCommand
                 "<comment>You have old '$currentVersion' version of MJR, downloading a required '$requiredVersion' version.</comment>"
             );
 
-            $url = 'http://mjr.dev.modera.org/releases/mjr.tar.gz';
+            $url = 'https://mjr.modera.org/releases/mjr.tar.gz';
 
             $archive = file_get_contents($url);
             if (false === $archive) {

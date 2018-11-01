@@ -1,6 +1,6 @@
 # UPGRADE GUIDE, 2.x
 
-## 2.57.0 (not released yet, in development)
+## 2.57.0 (01.11.2018)
 
 * [MPFE-984] Collation utf8_bin is now not necessary for TranslationToken's entity, so you may set another one via running query in your MySQL database. For example: `ALTER TABLE modera_translations_translationtoken CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;`.
 
@@ -28,7 +28,7 @@ your kernel and there's at least one firewall and user provided configured (file
   names for a category a deprecation notice is created (you can see it in log files, search for php.INFO substring).
 * bugfix [MPFE-984] Run query `ALTER TABLE modera_translations_translationtoken CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;` 
   in MySQL database.
-* [MPFE-975] Install version 0.5.0 of MJR ([see this for all published versions](https://mjr-archives.dev.modera.org/)). 
+* [MPFE-975] Install version 0.5.0 of MJR ([see this for all published versions](https://mjr-archives.modera.org/)). 
   In order to do that update your composer.json's `modera/mjr` dependency so it would point to `0.5.0` and run `composer update`
   (if 0.5.0 is not released yet then use `dev-master` instead).
 

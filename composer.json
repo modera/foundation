@@ -16,7 +16,7 @@
         "sergeil/expander-bundle": "~1.0",
         "sergeil/aux-bundle": "~1.0",
         "imagine/imagine": "0.6.*",
-        "modera/module": "^1.2"
+        "modera/module": "^1.3"
     },
     "require-dev": {
         "phake/phake": "~2.0",

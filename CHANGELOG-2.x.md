@@ -1,6 +1,6 @@
 # CHANGELOG, 2.x
 
-## 2.57.0 (not released yet, in development)
+## 2.57.0 (01.11.2018)
 
 * [MPFE-1069] Configure languages in the system through UI
 * [CLS-1408] Fixed bug with duplication of translation tokens, imported from different sources. BundleName field is removed from TranslationToken.
