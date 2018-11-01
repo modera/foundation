@@ -50,7 +50,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 // web accessible path to extjs library, you shouldn't specify any specific JS file
                 ->scalarNode('extjs_path')
-                    ->defaultValue('/extjs')
+                    ->defaultValue('//cdn.sencha.com/ext/gpl/4.2.1')
                     ->cannotBeEmpty()
                 ->end()
                 // if this is set to TRUE then the most developer friendly version of extjs will be included,
@@ -60,7 +60,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->scalarNode('runtime_path')
                     ->cannotBeEmpty()
-                    ->defaultValue('/modera/mjr/src')
+                    ->defaultValue('/modera/mjr')
                 ->end()
                 ->scalarNode('viewport_class') // for example: MF.runtime.applications.authenticationaware.view.Viewport
                     ->cannotBeEmpty()

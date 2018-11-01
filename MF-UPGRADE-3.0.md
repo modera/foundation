@@ -3,8 +3,8 @@
 MF 3.0 will presumably require:
 
  * Symfony 3.x
- * ExtJs 6.x
- * PHP 5.5>=
+ * ExtJs 4.2
+ * PHP >=5.6
  * Review existing in-house code base and if something can be done with Symfony/other trusted libraries - use them. Goal:
  minimize code-base we need to maintain
 

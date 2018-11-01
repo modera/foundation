@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('theme_path')
                     ->cannotBeEmpty()
-                    ->isRequired()
+                    ->defaultValue('/modera/theme')
                 ->end()
             ->end()
         ;
