@@ -4,7 +4,7 @@ namespace Modera\MjrIntegrationBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Modera\MjrIntegrationBundle\Config\ConfigManager;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
 

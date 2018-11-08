@@ -8,7 +8,7 @@ use Modera\FoundationBundle\Translation\T;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
