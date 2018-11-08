@@ -2,11 +2,11 @@
 
 namespace Modera\MjrIntegrationBundle\Contributions;
 
-use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Kernel;
+use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
+use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * Provides JavaScript files required for MJR to work.
@@ -63,7 +63,7 @@ class JsResourcesProvider implements ContributorInterface
             $extjs,
             '//cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js',
             '//cdnjs.cloudflare.com/ajax/libs/moment.js/' . $this->bundleConfig['moment_js_version'] . '/moment-with-locales.min.js',
-            $this->router->generate('mf_font_awesome'),
+            $this->router->generate('modera_font_awesome_js'),
             '/bundles/moderamjrintegration/js/orientationchange.js',
             '/bundles/moderamjrintegration/js/stylesheetsloader.js',
         );

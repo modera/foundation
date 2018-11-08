@@ -4,6 +4,10 @@ modera_mjr_integration:
     type:     annotation
     prefix:   %modera_mjr_integration.routes_prefix%
 
-mf_font_awesome:
+modera_font_awesome_js:
     path:      /font-awesome.js
-    defaults:  { _controller: ModeraMjrIntegrationBundle:Index:fontAwesome }
+    defaults:  { _controller: ModeraMjrIntegrationBundle:Index:fontAwesomeJs }
+
+modera_font_awesome_css:
+    path:      /font-awesome.css
+    defaults:  { _controller: ModeraMjrIntegrationBundle:Index:fontAwesomeCss }

@@ -33,7 +33,7 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
                 items: [
                     {
                         xtype: 'image',
-                        glyph: FontAwesome.resolve('chevron-right'),
+                        glyph: FontAwesome.resolve('chevron-right', 'fas'),
                         margin: '0 13 0 13',
                         bodyPadding: '2 0',
                         cls: 'section-separator'

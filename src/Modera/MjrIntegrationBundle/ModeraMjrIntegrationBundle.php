@@ -84,7 +84,7 @@ class MenuItemsProvider implements ContributorInterface
             new MenuItem('Dashboard', 'Modera.backend.dashboard.runtime.Section', 'dashboard', [
                 MenuItemInterface::META_NAMESPACE => 'Modera.backend.dashboard',
                 MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackenddashboard/js'
-            ], FontAwesome::resolve('dashboard')),
+            ], FontAwesome::resolve('cog', 'fas')),
         );
     }
 }

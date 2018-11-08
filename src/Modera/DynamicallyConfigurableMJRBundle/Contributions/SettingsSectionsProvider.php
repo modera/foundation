@@ -2,10 +2,11 @@
 
 namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
-use Modera\BackendToolsSettingsBundle\Section\StandardSection;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
+use Modera\BackendToolsSettingsBundle\Section\StandardSection;
+use Modera\MjrIntegrationBundle\Model\FontAwesome;
+use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @internal Since 2.56.0
@@ -39,7 +40,7 @@ class SettingsSectionsProvider implements ContributorInterface
                     'general',
                     'General',
                     'Modera.backend.dcmjr.runtime.GeneralSiteSettingsActivity',
-                    'gear',
+                    FontAwesome::resolve('cog', 'fas'),
                     array(
                         'activationParams' => array(
                             'category' => 'general',

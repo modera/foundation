@@ -2,10 +2,10 @@
 
 namespace Modera\MjrIntegrationBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Modera\MjrIntegrationBundle\Config\ConfigManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
 
 /**
@@ -30,10 +30,24 @@ class IndexController extends Controller
         return new Response(json_encode($configManager->getConfig(), \JSON_PRETTY_PRINT));
     }
 
-    public function fontAwesomeAction()
+    /**
+     * @return Response
+     */
+    public function fontAwesomeJsAction()
     {
         $response = new Response(FontAwesome::jsCode());
         $response->headers->set('Content-Type', 'text/javascript');
+
+        return $response;
+    }
+
+    /**
+     * @return Response
+     */
+    public function fontAwesomeCssAction()
+    {
+        $response = new Response(FontAwesome::cssCode());
+        $response->headers->set('Content-Type', 'text/css');
 
         return $response;
     }

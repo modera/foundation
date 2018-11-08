@@ -2,11 +2,12 @@
 
 namespace Modera\BackendLanguagesBundle\Contributions;
 
-use Modera\FoundationBundle\Translation\T;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
-use Modera\BackendToolsSettingsBundle\Section\StandardSection;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
+use Modera\BackendToolsSettingsBundle\Section\StandardSection;
+use Modera\MjrIntegrationBundle\Model\FontAwesome;
+use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\FoundationBundle\Translation\T;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -38,7 +39,7 @@ class SettingsSectionsProvider implements ContributorInterface
                     'localisation',
                     T::trans('Localisation'),
                     'Modera.backend.languages.runtime.SettingsActivity',
-                    'language'
+                    FontAwesome::resolve('language', 'fas')
                 ),
             );
         }

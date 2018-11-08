@@ -81,7 +81,7 @@ Ext.define('Modera.backend.languages.view.List', {
                                 //     defaultRenderer: me.actionColumnRenderer(),
                                 //     items : [
                                 //         {
-                                //             glyph: 'trash',
+                                //             glyph: 'trash-alt',
                                 //             //tooltip : me.removeHeaderText,
                                 //             handler : function (grid, rowIndex, colIndex, item, e, record) {
                                 //                 me.fireEvent('deleterecord', me, { id: record.get('id') });
@@ -298,7 +298,7 @@ Ext.define('Modera.backend.languages.view.List', {
 
                 var spanCls = 'x-action-col-icon x-action-col-' + String(i) + ' glyph-ico gray';
                 var tooltip = item.tooltip ? 'data-qtip="' + item.tooltip + '"' : '';
-                var glyph = FontAwesome.resolve(item.glyph);
+                var glyph = FontAwesome.resolve(item.glyph, 'fas');
 
                 ret += [
                     '<span role="button" class="' + spanCls + '" ' + tooltip + '>',

@@ -66,7 +66,7 @@ Ext.define('Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin', {
                 xtype: 'button',
                 scale: 'medium',
                 margin: '0 10 0 5',
-                glyph: FontAwesome.resolve('question-circle'),
+                glyph: FontAwesome.resolve('question-circle', 'fas'),
                 handler: function(btn) {
                     me.showMenu(btn);
                 }

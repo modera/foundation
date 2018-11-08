@@ -50,6 +50,8 @@
         <service id="modera_mjr_integration.contributions.css_resources_provider"
                  class="Modera\MjrIntegrationBundle\Contributions\CssResourcesProvider">
 
+            <argument type="service" id="service_container" />
+
             <tag name="modera_mjr_integration.css_resources_provider" />
         </service>
 

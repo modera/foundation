@@ -55,7 +55,7 @@ class MenuItemsProvider implements ContributorInterface
                     $this->items[] = new MenuItem(T::trans('Tools'), 'Modera.backend.tools.runtime.Section', 'tools', array(
                         MenuItemInterface::META_NAMESPACE => 'Modera.backend.tools',
                         MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackendtools/js',
-                    ), FontAwesome::resolve('wrench'));
+                    ), FontAwesome::resolve('wrench', 'fas'));
                 }
             }
         }

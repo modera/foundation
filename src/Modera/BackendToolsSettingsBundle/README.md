@@ -24,6 +24,7 @@ how to contributor class could look like:
     namespace MyCompany\BlogBundle\Contributions;
 
     use Modera\BackendToolsSettingsBundle\Section\StandardSection;
+    use Modera\MjrIntegrationBundle\Model\FontAwesome;
     use Sli\ExpanderBundle\Ext\ContributorInterface;
 
     class SettingsSectionsProvider implements ContributorInterface
@@ -35,7 +36,11 @@ how to contributor class could look like:
         {
             return array(
                 new StandardSection(
-                    'blog', 'Blog', 'Modera.backend.configutils.runtime.SettingsListActivity', 'gear', array('category' => 'blog')
+                    'blog',
+                    'Blog',
+                    'Modera.backend.configutils.runtime.SettingsListActivity',
+                    FontAwesome::resolve('cog', 'fas'),
+                    array('category' => 'blog')
                 )
             );
         }
