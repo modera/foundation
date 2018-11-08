@@ -60,7 +60,7 @@ class MenuItemsProvider implements OrderedContributorInterface
                     new MenuItem(T::trans('Dashboard'), 'Modera.backend.dashboard.runtime.Section', 'dashboard', [
                         MenuItemInterface::META_NAMESPACE => 'Modera.backend.dashboard',
                         MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackenddashboard/js',
-                    ], FontAwesome::resolve('tachometer', 'fas')),
+                    ], FontAwesome::resolve('tachometer-alt', 'fas')),
                 );
             }
         }
