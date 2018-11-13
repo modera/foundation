@@ -12,8 +12,10 @@
         </service>
 
         <service id="modera_dynamically_configurable_app.value_handling.kernel_config_writer"
-                 class="Modera\DynamicallyConfigurableAppBundle\ValueHandling\KernelConfigWriter"
-        />
+                 class="Modera\DynamicallyConfigurableAppBundle\ValueHandling\KernelConfigWriter">
+
+            <argument>%modera_dynamically_configurable_app.kernel_config_fqcn%</argument>
+        </service>
 
         <service parent="modera_translations.handling.php_classes_translation_handler">
 

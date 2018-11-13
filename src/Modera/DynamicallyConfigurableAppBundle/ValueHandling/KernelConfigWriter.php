@@ -5,10 +5,12 @@ namespace Modera\DynamicallyConfigurableAppBundle\ValueHandling;
 use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
 use Modera\ConfigBundle\Config\ValueUpdatedHandlerInterface;
 use Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBundle as Bundle;
+use Modera\DynamicallyConfigurableAppBundle\KernelConfigInterface;
+use Modera\DynamicallyConfigurableAppBundle\KernelConfig;
 
 /**
- * When "kernel_env", "kernel_debug" configuration entries are updated will synchronize its values with
- * kernel.json.
+ * When "kernel_env", "kernel_debug" configuration entries are updated
+ * will synchronize its values with kernel.json.
  *
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
@@ -18,14 +20,20 @@ class KernelConfigWriter implements ValueUpdatedHandlerInterface
     /**
      * @var string
      */
-    private $kernelClassName;
+    private $kernelConfigFQCN;
 
     /**
-     * @param string $kernelClassName
+     * @param null|string $kernelConfigFQCN
      */
-    public function __construct($kernelClassName = 'AppKernel')
+    public function __construct($kernelConfigFQCN = null)
     {
-        $this->kernelClassName = $kernelClassName;
+        $this->kernelConfigFQCN = $kernelConfigFQCN ?: KernelConfig::class;
+
+        if (!is_subclass_of($this->kernelConfigFQCN, KernelConfigInterface::class)) {
+            throw new \RuntimeException(
+                '\\' . $this->kernelConfigFQCN . ' must implement \\' . KernelConfigInterface::class
+            );
+        }
     }
 
     /**
@@ -37,32 +45,20 @@ class KernelConfigWriter implements ValueUpdatedHandlerInterface
             return;
         }
 
-        $reflKernel = new \ReflectionClass($this->kernelClassName);
-
-        $path = dirname($reflKernel->getFileName()).DIRECTORY_SEPARATOR.'kernel.json';
-
-        $kernelJson = @file_get_contents($path);
-        if (false === $kernelJson) {
-            throw new \RuntimeException('Unable to find kernel.json, looked in '.$path);
-        }
-        $kernelJson = json_decode($kernelJson, true);
-
-        $defaultValue = array(
-            'debug' => false,
-            'env' => 'prod',
-        );
-        $kernelJson = array_merge($defaultValue, $kernelJson);
-        $kernelJson['_comment'] = 'This file is used by web/app.php to control with what configuration AppKernel should be created with.';
-
+        $mode = array();
         if ($entry->getName() == Bundle::CONFIG_KERNEL_DEBUG) {
-            $kernelJson['debug'] = $entry->getValue() == 'true';
+            $mode['debug'] = $entry->getValue() == 'true';
         } elseif ($entry->getName() == Bundle::CONFIG_KERNEL_ENV) {
-            $kernelJson['env'] = $entry->getValue();
+            $mode['env'] = $entry->getValue();
         }
 
-        file_put_contents($path, json_encode($kernelJson, \JSON_PRETTY_PRINT));
+        call_user_func(array($this->kernelConfigFQCN, 'write'), $mode);
     }
 
+    /**
+     * @param ConfigurationEntryInterface $entry
+     * @return bool
+     */
     private function canHandleEntry(ConfigurationEntryInterface $entry)
     {
         return in_array($entry->getName(), array(Bundle::CONFIG_KERNEL_DEBUG, Bundle::CONFIG_KERNEL_ENV));

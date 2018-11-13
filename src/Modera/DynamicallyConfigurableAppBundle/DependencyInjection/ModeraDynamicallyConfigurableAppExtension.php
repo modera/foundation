@@ -22,6 +22,8 @@ class ModeraDynamicallyConfigurableAppExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $container->setParameter('modera_dynamically_configurable_app.kernel_config_fqcn', $config['kernel_config_fqcn']);
+
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
     }
