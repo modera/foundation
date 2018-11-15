@@ -64,6 +64,12 @@ if (window['Ext']) {
                         Ext.util.Format._default.currencySign = opts.currencySign;
                     }
                 }
+
+                if (MFC.Date && MFC.Date.patterns && MFC.Date.patterns.ext) {
+                    MFC.Date.patterns.ext['date'] = opts.dateFormat;
+                    MFC.Date.patterns.ext['time'] = opts.timeFormat;
+                    MFC.Date.patterns.ext['datetime'] = opts.dateFormat + ' ' + opts.timeFormat;
+                }
             });
 
             Ext.define('l10n.{{ locale }}.Ext.picker.Date', {
