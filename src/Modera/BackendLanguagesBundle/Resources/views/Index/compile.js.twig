@@ -21,6 +21,43 @@ if (window['Ext']) {
     (function() {
         var utilFormat = {{ modera_backend_languages_ext_util_format(locale) }};
 
+        var convertMomentFormatToExtJs = function(str) {
+            var replacements = {
+                'YYYY': 'Y',
+                'YY': 'y',
+                'MMMM': 'F',
+                'MMM': 'M',
+                'MM': 'm',
+                'M': 'n',
+                'DDD': 'z',
+                'DD': 'd',
+                'D': 'j',
+                'o': 'S',
+                'X': 'U',
+                'e': 'w',
+                'dddd': 'l',
+                'ddd': 'D',
+                'W': 'W',
+                'E': 'N',
+                'HH': 'H',
+                'H': 'G',
+                'hh': 'h',
+                'h': 'g',
+                'A': 'A',
+                'a': 'a',
+                'mm': 'i',
+                'ss': 's',
+                'SSS': 'u',
+                'zz': 'e'
+            };
+
+            var arr = str.split(RegExp('(' + Object.keys(replacements).join('|') + ')'));
+
+            return arr.map(function(part) {
+                return replacements[part] || part;
+            }).join('');
+        };
+
         var l10nMomentJs = function() {
             Ext.require('MFC.Date', function() {
                 MFC.Date.moment.defineLocale('en-us', { parentLocale: 'en' });
