@@ -21,12 +21,12 @@ if (window['Ext']) {
     (function() {
         var utilFormat = {{ modera_backend_languages_ext_util_format(locale) }};
 
-        var convertMomentFormatToExtJs = function(str) {
+        var convertMomentJsFormatToExtJs = function(str) {
             // init lowercase format
-            moment().format('l');
-            moment().format('ll');
-            moment().format('lll');
-            moment().format('llll');
+            MFC.Date.moment().format('l');
+            MFC.Date.moment().format('ll');
+            MFC.Date.moment().format('lll');
+            MFC.Date.moment().format('llll');
 
             var locale = MFC.Date.moment.locale();
             var formats = MFC.Date.moment.localeData(locale)._longDateFormat;
@@ -101,6 +101,15 @@ if (window['Ext']) {
         };
 
         var l10nExtJs = function(opts) {
+            // defaults
+            opts = Ext.apply({
+                //currencySign: '\u20ac', // Euro
+                dateFormat: convertMomentJsFormatToExtJs(MFC.Date.patterns.moment['date']),
+                timeFormat: convertMomentJsFormatToExtJs(MFC.Date.patterns.moment['time']),
+                datetimeFormat: convertMomentJsFormatToExtJs(MFC.Date.patterns.moment['datetime']),
+                startDay: {{ modera_backend_languages_ext_start_day(locale) }}
+            }, opts || {});
+
             Ext.onReady(function() {
                 if (Ext.Date) {
                     Ext.Date.defaultFormat = opts.dateFormat;
@@ -113,13 +122,16 @@ if (window['Ext']) {
                     if (opts.currencySign) {
                         Ext.util.Format.currencySign = opts.currencySign;
                         Ext.util.Format._default.currencySign = opts.currencySign;
+                        Ext.Object.each(Ext.util.Format['_locales'], function(locale, values) {
+                            values.currencySign = opts.currencySign;
+                        });
                     }
                 }
 
                 if (MFC.Date && MFC.Date.patterns && MFC.Date.patterns.ext) {
                     MFC.Date.patterns.ext['date'] = opts.dateFormat;
                     MFC.Date.patterns.ext['time'] = opts.timeFormat;
-                    MFC.Date.patterns.ext['datetime'] = opts.datetimeFormat || opts.dateFormat + ' ' + opts.timeFormat;
+                    MFC.Date.patterns.ext['datetime'] = opts.datetimeFormat;
                 }
             });
 

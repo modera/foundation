@@ -1,9 +1,3 @@
 
         l10nMomentJs();
-        l10nExtJs({
-            //currencySign: '\u20ac', // Euro
-            dateFormat: convertMomentFormatToExtJs(MFC.Date.patterns.moment['date']),
-            timeFormat: convertMomentFormatToExtJs(MFC.Date.patterns.moment['time']),
-            datetimeFormat: convertMomentFormatToExtJs(MFC.Date.patterns.moment['datetime']),
-            startDay: {{ modera_backend_languages_ext_start_day(locale) }}
-        });
+        l10nExtJs();
