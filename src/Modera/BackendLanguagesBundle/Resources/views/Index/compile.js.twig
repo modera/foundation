@@ -22,6 +22,20 @@ if (window['Ext']) {
         var utilFormat = {{ modera_backend_languages_ext_util_format(locale) }};
 
         var convertMomentFormatToExtJs = function(str) {
+            // init lowercase format
+            moment().format('l');
+            moment().format('ll');
+            moment().format('lll');
+            moment().format('llll');
+
+            var locale = MFC.Date.moment.locale();
+            var formats = MFC.Date.moment.localeData(locale)._longDateFormat;
+
+            var arr = str.split(RegExp('(' + Object.keys(formats).join('|') + ')'));
+            str = arr.map(function(part) {
+                return formats[part] || part;
+            }).join('');
+
             var replacements = {
                 'YYYY': 'Y',
                 'YY': 'y',
@@ -51,7 +65,7 @@ if (window['Ext']) {
                 'zz': 'e'
             };
 
-            var arr = str.split(RegExp('(' + Object.keys(replacements).join('|') + ')'));
+            arr = str.split(RegExp('(' + Object.keys(replacements).join('|') + ')'));
 
             return arr.map(function(part) {
                 return replacements[part] || part;
@@ -105,7 +119,7 @@ if (window['Ext']) {
                 if (MFC.Date && MFC.Date.patterns && MFC.Date.patterns.ext) {
                     MFC.Date.patterns.ext['date'] = opts.dateFormat;
                     MFC.Date.patterns.ext['time'] = opts.timeFormat;
-                    MFC.Date.patterns.ext['datetime'] = opts.dateFormat + ' ' + opts.timeFormat;
+                    MFC.Date.patterns.ext['datetime'] = opts.datetimeFormat || opts.dateFormat + ' ' + opts.timeFormat;
                 }
             });
 
