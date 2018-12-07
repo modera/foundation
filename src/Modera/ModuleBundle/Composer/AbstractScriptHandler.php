@@ -130,4 +130,18 @@ abstract class AbstractScriptHandler
         }
         return $options['symfony-app-dir'];
     }
+
+    /**
+     * @param string $handlerName
+     * @return mixed
+     */
+    protected static function getScriptHandler(Event $event, $handlerName)
+    {
+        $options = static::getOptions($event);
+        if (isset($options['modera-module']) && isset($options['modera-module']['script-handler'])) {
+            if (isset($options['modera-module']['script-handler'][$handlerName])) {
+                return $options['modera-module']['script-handler'][$handlerName];
+            }
+        }
+    }
 }

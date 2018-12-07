@@ -23,21 +23,6 @@ class ScriptHandler extends AbstractScriptHandler
 {
     /**
      * @param Event $event
-     * @param $value
-     */
-    private static function setMaintenance(Event $event, $value)
-    {
-        $options = static::getOptions($event);
-        $path = $options['incenteev-parameters']['file'];
-
-        $data = Yaml::parse(file_get_contents($path));
-        $data['parameters']['maintenance'] = $value;
-
-        file_put_contents($path, Yaml::dump($data));
-    }
-
-    /**
-     * @param Event $event
      */
     public static function enableMaintenance(Event $event)
     {
@@ -83,13 +68,138 @@ class ScriptHandler extends AbstractScriptHandler
     }
 
     /**
+     * @param Event $event
+     */
+    public static function registerBundles(Event $event)
+    {
+        $options = static::getOptions($event);
+        $consoleDir = static::getConsoleDir($event, 'init DB');
+        if (null === $consoleDir) {
+            return;
+        }
+
+        $appDir = $options['symfony-app-dir'];
+        if (!static::hasDirectory($event, 'symfony-app-dir', $appDir)) {
+            return;
+        }
+
+        $bundlesFile = 'AppModuleBundles.php';
+        $bundles = ComposerService::getRegisterBundles($event->getComposer());
+
+        static::createRegisterBundlesFile($bundles, $appDir.'/'.$bundlesFile);
+        static::executeCommand($event, $consoleDir, 'modera:module:register '.$bundlesFile, $options['process-timeout']);
+    }
+
+    /**
+     * Clears the Symfony cache.
+     *
+     * @param $event Event A instance
+     */
+    public static function clearCache(Event $event)
+    {
+        $options = static::getOptions($event);
+        $consoleDir = static::getConsoleDir($event, 'clear cache');
+        if (null === $consoleDir) {
+            return;
+        }
+
+        static::executeCommand($event, $consoleDir, 'cache:clear --no-warmup --quiet', $options['process-timeout']);
+    }
+
+    /**
+     * Executes the SQL needed to update the database schema to match the current mapping metadata.
+     *
+     * @param $event Event A instance
+     */
+    public static function doctrineSchemaUpdate(Event $event)
+    {
+        if ($scriptHandler = static::getScriptHandler($event, __FUNCTION__)) {
+            $scriptHandler($event);
+            return;
+        }
+
+        $options = static::getOptions($event);
+        $consoleDir = static::getConsoleDir($event, 'update doctrine schema');
+        if (null === $consoleDir) {
+            return;
+        }
+
+        static::executeCommand($event, $consoleDir, 'doctrine:schema:update --force', $options['process-timeout']);
+    }
+
+    /**
+     * Creates the configured databases and executes the SQL needed to update the database schema, if database not created.
+     *
+     * @param Event $event
+     */
+    public static function initDatabase(Event $event)
+    {
+        $options = static::getOptions($event);
+        $consoleDir = static::getConsoleDir($event, 'init DB');
+        if (null === $consoleDir) {
+            return;
+        }
+
+        $ignoreSchemaUpdate = false;
+        try {
+            static::executeCommand($event, $consoleDir, 'doctrine:database:create --quiet', $options['process-timeout']);
+        } catch (\RuntimeException $e) {
+            // The command throws an exception if database already exists, so here we are supressing it
+            $ignoreSchemaUpdate = true;
+        }
+
+        if (!$ignoreSchemaUpdate) {
+            try {
+                static::doctrineSchemaUpdate($event);
+            } catch (\Exception $e) {
+                echo "Error during database initialization: ".$e->getMessage()."\n";
+            }
+        }
+    }
+
+    /**
+     * @param Event $event
+     * @param $value
+     */
+    protected static function setMaintenance(Event $event, $value)
+    {
+        $options = static::getOptions($event);
+        $path = $options['incenteev-parameters']['file'];
+
+        $data = Yaml::parse(file_get_contents($path));
+        $data['parameters']['maintenance'] = $value;
+
+        file_put_contents($path, Yaml::dump($data));
+    }
+
+    /**
+     * @param array $bundles
+     * @param $outputFile
+     */
+    protected static function createRegisterBundlesFile(array $bundles, $outputFile)
+    {
+        $data = array('<?php return array(');
+        foreach ($bundles as $bundleClassName) {
+            $data[] = '    new '.$bundleClassName.'(),';
+        }
+        $data[] = ');';
+
+        $fs = new Filesystem();
+        $fs->dumpFile($outputFile, implode("\n", $data)."\n");
+
+        if (!$fs->exists($outputFile)) {
+            throw new \RuntimeException(sprintf('The "%s" file must be created.', $outputFile));
+        }
+    }
+
+    /**
      * @param array  $extra
      * @param string $type
      * @param string $packageDir
      *
      * @return array
      */
-    private static function combineScripts(array $extra, $type, $packageDir)
+    protected static function combineScripts(array $extra, $type, $packageDir)
     {
         $scripts = array();
         if (isset($extra[$type])) {
@@ -149,7 +259,7 @@ class ScriptHandler extends AbstractScriptHandler
     /**
      * @param BaseEvent $event
      */
-    private static function baseEventDispatcher(BaseEvent $event)
+    protected static function baseEventDispatcher(BaseEvent $event)
     {
         static $_scripts = array();
 
@@ -207,130 +317,6 @@ class ScriptHandler extends AbstractScriptHandler
                         $className::$methodName($data['event']);
                     }
                 }
-            }
-        }
-    }
-
-    /**
-     * @param Event $event
-     */
-    public static function registerBundles(Event $event)
-    {
-        $options = static::getOptions($event);
-        $consoleDir = static::getConsoleDir($event, 'init DB');
-        if (null === $consoleDir) {
-            return;
-        }
-
-        $appDir = $options['symfony-app-dir'];
-        if (!static::hasDirectory($event, 'symfony-app-dir', $appDir)) {
-            return;
-        }
-
-        $bundlesFile = 'AppModuleBundles.php';
-        $bundles = ComposerService::getRegisterBundles($event->getComposer());
-
-        static::createRegisterBundlesFile($bundles, $appDir.'/'.$bundlesFile);
-        static::executeCommand($event, $consoleDir, 'modera:module:register '.$bundlesFile, $options['process-timeout']);
-    }
-
-    /**
-     * @param array $bundles
-     * @param $outputFile
-     */
-    private static function createRegisterBundlesFile(array $bundles, $outputFile)
-    {
-        $data = array('<?php return array(');
-        foreach ($bundles as $bundleClassName) {
-            $data[] = '    new '.$bundleClassName.'(),';
-        }
-        $data[] = ');';
-
-        $fs = new Filesystem();
-        $fs->dumpFile($outputFile, implode("\n", $data)."\n");
-
-        if (!$fs->exists($outputFile)) {
-            throw new \RuntimeException(sprintf('The "%s" file must be created.', $outputFile));
-        }
-    }
-
-    /**
-     * Clears the Symfony cache.
-     *
-     * @param $event Event A instance
-     */
-    public static function clearCache(Event $event)
-    {
-        $options = static::getOptions($event);
-        $consoleDir = static::getConsoleDir($event, 'clear cache');
-        if (null === $consoleDir) {
-            return;
-        }
-
-        static::executeCommand($event, $consoleDir, 'cache:clear --env=prod --no-warmup --quiet', $options['process-timeout']);
-    }
-
-    /**
-     * Executes the SQL needed to update the database schema to match the current mapping metadata.
-     *
-     * @param $event Event A instance
-     */
-    public static function doctrineSchemaUpdate(Event $event)
-    {
-        if ($scriptHandler = static::getScriptHandler($event, __FUNCTION__)) {
-            $scriptHandler($event);
-            return;
-        }
-
-        $options = static::getOptions($event);
-        $consoleDir = static::getConsoleDir($event, 'update doctrine schema');
-        if (null === $consoleDir) {
-            return;
-        }
-
-        static::executeCommand($event, $consoleDir, 'doctrine:schema:update --force', $options['process-timeout']);
-    }
-
-    /**
-     * Creates the configured databases and executes the SQL needed to update the database schema, if database not created.
-     *
-     * @param Event $event
-     */
-    public static function initDatabase(Event $event)
-    {
-        $options = static::getOptions($event);
-        $consoleDir = static::getConsoleDir($event, 'init DB');
-        if (null === $consoleDir) {
-            return;
-        }
-
-        $ignoreSchemaUpdate = false;
-        try {
-            static::executeCommand($event, $consoleDir, 'doctrine:database:create --quiet', $options['process-timeout']);
-        } catch (\RuntimeException $e) {
-            // The command throws an exception if database already exists, so here we are supressing it
-            $ignoreSchemaUpdate = true;
-        }
-
-        if (!$ignoreSchemaUpdate) {
-            try {
-                static::doctrineSchemaUpdate($event);
-            } catch (\Exception $e) {
-                echo "Error during database initialization: ".$e->getMessage()."\n";
-            }
-        }
-    }
-
-    /**
-     * @param $handlerName
-     * @return mixed
-     */
-    private static function getScriptHandler(Event $event, $handlerName)
-    {
-        $options = static::getOptions($event);
-        if (isset($options['modera-module']) && isset($options['modera-module']['script-handler'])) {
-            if (isset($options['modera-module']['script-handler'][$handlerName])) {
-                return $options['modera-module']['script-handler'][$handlerName];
             }
         }
     }
