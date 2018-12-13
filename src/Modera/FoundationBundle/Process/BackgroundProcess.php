@@ -30,7 +30,7 @@ class BackgroundProcess extends Process
         if (substr(strtoupper(PHP_OS), 0, 3) === 'WIN') {
             $process->setCommandLine('START /b "" ' . $commandline);
         } else {
-            $process->setCommandLine('nohup ' . $commandline);
+            $process->setCommandLine('nohup ' . $commandline . ' > /dev/null');
         }
     }
 }
