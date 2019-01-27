@@ -103,7 +103,7 @@ class CompileTranslationsCommand extends ContainerAwareCommand
             }
 
             foreach ($catalogues as $locale => $catalogue) {
-                if (!count($catalogue)) {
+                if ($catalogue instanceof \Countable) {
                     continue;
                 }
 
