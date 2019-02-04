@@ -2,9 +2,10 @@
 
 namespace Modera\TranslationsBundle\Compiler;
 
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
 /**
@@ -52,21 +53,10 @@ class TranslationsCompiler
 
         $compileTranslationsExitCode = $app->run($input, $compileOutput);
         if (0 == $compileTranslationsExitCode) {
-            $cacheClearOutput = new BufferedOutput();
-
-            $input = new ArrayInput(array(
-                'command' => 'cache:clear',
-                '--env' => $this->kernel->getEnvironment(),
-                '--no-ansi' => true,
-            ));
-            $input->setInteractive(false);
-
-            $cacheClearExitCode = $app->run($input, $cacheClearOutput);
-
-            if (0 == $cacheClearExitCode) {
-                return new CompilationResult($compileTranslationsExitCode, $compileOutput->fetch());
-            } else {
-                return new CompilationResult($cacheClearExitCode, $cacheClearOutput->fetch());
+            $fs = new Filesystem();
+            $translationsCache = $this->kernel->getCacheDir() . DIRECTORY_SEPARATOR . 'translations';
+            if ($fs->exists($translationsCache)) {
+                $fs->remove($translationsCache);
             }
         }
 
