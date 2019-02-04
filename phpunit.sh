@@ -32,7 +32,7 @@ if [ ! -d "vendor" ]; then
       --rm \
       -v `pwd`:/mnt/tmp \
       -w /mnt/tmp \
-      modera/php:7.1 "composer install"
+      modera/php:7.2 "composer install"
 fi
 
 if [[ `docker ps` != *"mtr_mysql"* ]]; then
@@ -57,7 +57,7 @@ docker run \
     -w /mnt/tmp \
     -e MONOLITH_TEST_SUITE=1 \
     --link mtr_mysql:mysql \
-    modera/php:7.1 "vendor/bin/phpunit ${args}"
+    modera/php:7.2 "vendor/bin/phpunit ${args}"
 
 exit_code=$?
 
