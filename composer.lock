@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8daec8142c859b0c3170e580581732a3",
+    "content-hash": "39c12fbac99b01e65008d7fa53bf49ad",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -218,16 +218,16 @@
         },
         {
             "name": "doctrine/common",
-            "version": "v2.9.0",
+            "version": "v2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/common.git",
-                "reference": "a210246d286c77d2b89040f8691ba7b3a713d2c1"
+                "reference": "30e33f60f64deec87df728c02b107f82cdafad9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/common/zipball/a210246d286c77d2b89040f8691ba7b3a713d2c1",
-                "reference": "a210246d286c77d2b89040f8691ba7b3a713d2c1",
+                "url": "https://api.github.com/repos/doctrine/common/zipball/30e33f60f64deec87df728c02b107f82cdafad9d",
+                "reference": "30e33f60f64deec87df728c02b107f82cdafad9d",
                 "shasum": ""
             },
             "require": {
@@ -237,7 +237,7 @@
                 "doctrine/event-manager": "^1.0",
                 "doctrine/inflector": "^1.0",
                 "doctrine/lexer": "^1.0",
-                "doctrine/persistence": "^1.0",
+                "doctrine/persistence": "^1.1",
                 "doctrine/reflection": "^1.0",
                 "php": "^7.1"
             },
@@ -250,7 +250,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.9.x-dev"
+                    "dev-master": "2.10.x-dev"
                 }
             },
             "autoload": {
@@ -288,29 +288,27 @@
                     "email": "ocramius@gmail.com"
                 }
             ],
-            "description": "Common Library for Doctrine projects",
-            "homepage": "https://www.doctrine-project.org",
+            "description": "PHP Doctrine Common project is a library that provides additional functionality that other Doctrine projects depend on such as better reflection support, persistence interfaces, proxies, event system and much more.",
+            "homepage": "https://www.doctrine-project.org/projects/common.html",
             "keywords": [
-                "annotations",
-                "collections",
-                "eventmanager",
-                "persistence",
-                "spl"
+                "common",
+                "doctrine",
+                "php"
             ],
-            "time": "2018-07-12T21:16:12+00:00"
+            "time": "2018-11-21T01:24:55+00:00"
         },
         {
             "name": "doctrine/dbal",
-            "version": "v2.8.0",
+            "version": "v2.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "5140a64c08b4b607b9bedaae0cedd26f04a0e621"
+                "reference": "22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/5140a64c08b4b607b9bedaae0cedd26f04a0e621",
-                "reference": "5140a64c08b4b607b9bedaae0cedd26f04a0e621",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9",
+                "reference": "22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9",
                 "shasum": ""
             },
             "require": {
@@ -320,11 +318,10 @@
                 "php": "^7.1"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^4.0",
+                "doctrine/coding-standard": "^5.0",
                 "jetbrains/phpstorm-stubs": "^2018.1.2",
                 "phpstan/phpstan": "^0.10.1",
-                "phpunit/phpunit": "^7.1.2",
-                "phpunit/phpunit-mock-objects": "!=3.2.4,!=3.2.5",
+                "phpunit/phpunit": "^7.4",
                 "symfony/console": "^2.0.5|^3.0|^4.0",
                 "symfony/phpunit-bridge": "^3.4.5|^4.0.5"
             },
@@ -337,13 +334,13 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8.x-dev",
+                    "dev-master": "2.9.x-dev",
                     "dev-develop": "3.0.x-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Doctrine\\DBAL\\": "lib/"
+                "psr-4": {
+                    "Doctrine\\DBAL\\": "lib/Doctrine/DBAL"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -368,28 +365,32 @@
                     "email": "jonwage@gmail.com"
                 }
             ],
-            "description": "Database Abstraction Layer",
-            "homepage": "http://www.doctrine-project.org",
+            "description": "Powerful PHP database abstraction layer (DBAL) with many features for database schema introspection and management.",
+            "homepage": "https://www.doctrine-project.org/projects/dbal.html",
             "keywords": [
+                "abstraction",
                 "database",
                 "dbal",
+                "mysql",
                 "persistence",
+                "pgsql",
+                "php",
                 "queryobject"
             ],
-            "time": "2018-07-13T03:16:35+00:00"
+            "time": "2018-12-31T03:27:51+00:00"
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "1.9.1",
+            "version": "1.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "703fad32e4c8cbe609caf45a71a1d4266c830f0f"
+                "reference": "98551d71f515692c2278073e0d483763ac70b341"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/703fad32e4c8cbe609caf45a71a1d4266c830f0f",
-                "reference": "703fad32e4c8cbe609caf45a71a1d4266c830f0f",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/98551d71f515692c2278073e0d483763ac70b341",
+                "reference": "98551d71f515692c2278073e0d483763ac70b341",
                 "shasum": ""
             },
             "require": {
@@ -407,8 +408,8 @@
             },
             "require-dev": {
                 "doctrine/orm": "~2.4",
+                "php-coveralls/php-coveralls": "^2.1",
                 "phpunit/phpunit": "^4.8.36|^5.7|^6.4",
-                "satooshi/php-coveralls": "^1.0",
                 "symfony/phpunit-bridge": "~2.7|~3.0|~4.0",
                 "symfony/property-info": "~2.8|~3.0|~4.0",
                 "symfony/validator": "~2.7|~3.0|~4.0",
@@ -423,7 +424,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.8.x-dev"
+                    "dev-master": "1.9.x-dev"
                 }
             },
             "autoload": {
@@ -461,20 +462,20 @@
                 "orm",
                 "persistence"
             ],
-            "time": "2018-04-19T14:07:39+00:00"
+            "time": "2019-01-07T15:31:08+00:00"
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
-            "version": "1.3.3",
+            "version": "1.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineCacheBundle.git",
-                "reference": "4c8e363f96427924e7e519c5b5119b4f54512697"
+                "reference": "5514c90d9fb595e1095e6d66ebb98ce9ef049927"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineCacheBundle/zipball/4c8e363f96427924e7e519c5b5119b4f54512697",
-                "reference": "4c8e363f96427924e7e519c5b5119b4f54512697",
+                "url": "https://api.github.com/repos/doctrine/DoctrineCacheBundle/zipball/5514c90d9fb595e1095e6d66ebb98ce9ef049927",
+                "reference": "5514c90d9fb595e1095e6d66ebb98ce9ef049927",
                 "shasum": ""
             },
             "require": {
@@ -487,7 +488,7 @@
                 "instaclick/coding-standard": "~1.1",
                 "instaclick/object-calisthenics-sniffs": "dev-master",
                 "instaclick/symfony2-coding-standard": "dev-remaster",
-                "phpunit/phpunit": "~4|~5",
+                "phpunit/phpunit": "~4.8.36|~5.6|~6.5|~7.0",
                 "predis/predis": "~0.8",
                 "satooshi/php-coveralls": "^1.0",
                 "squizlabs/php_codesniffer": "~1.5",
@@ -511,7 +512,10 @@
             "autoload": {
                 "psr-4": {
                     "Doctrine\\Bundle\\DoctrineCacheBundle\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -544,12 +548,12 @@
                 }
             ],
             "description": "Symfony Bundle for Doctrine Cache",
-            "homepage": "http://www.doctrine-project.org",
+            "homepage": "https://www.doctrine-project.org",
             "keywords": [
                 "cache",
                 "caching"
             ],
-            "time": "2018-03-27T09:22:12+00:00"
+            "time": "2018-11-09T06:25:35+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -802,16 +806,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "v2.6.2",
+            "version": "v2.6.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "d2b4dd71d2a276edd65d0c170375b445f8a4a4a8"
+                "url": "https://github.com/doctrine/orm.git",
+                "reference": "434820973cadf2da2d66e7184be370084cc32ca8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/d2b4dd71d2a276edd65d0c170375b445f8a4a4a8",
-                "reference": "d2b4dd71d2a276edd65d0c170375b445f8a4a4a8",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/434820973cadf2da2d66e7184be370084cc32ca8",
+                "reference": "434820973cadf2da2d66e7184be370084cc32ca8",
                 "shasum": ""
             },
             "require": {
@@ -880,20 +884,20 @@
                 "database",
                 "orm"
             ],
-            "time": "2018-07-12T20:47:13+00:00"
+            "time": "2018-11-20T23:46:46+00:00"
         },
         {
             "name": "doctrine/persistence",
-            "version": "v1.0.1",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/persistence.git",
-                "reference": "af1ec238659a83e320f03e0e454e200f689b4b97"
+                "reference": "c0f1c17602afc18b4cbd8e1c8125f264c9cf7d38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/persistence/zipball/af1ec238659a83e320f03e0e454e200f689b4b97",
-                "reference": "af1ec238659a83e320f03e0e454e200f689b4b97",
+                "url": "https://api.github.com/repos/doctrine/persistence/zipball/c0f1c17602afc18b4cbd8e1c8125f264c9cf7d38",
+                "reference": "c0f1c17602afc18b4cbd8e1c8125f264c9cf7d38",
                 "shasum": ""
             },
             "require": {
@@ -905,17 +909,17 @@
                 "php": "^7.1"
             },
             "conflict": {
-                "doctrine/common": "<2.9@dev"
+                "doctrine/common": "<2.10@dev"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^4.0",
+                "doctrine/coding-standard": "^5.0",
                 "phpstan/phpstan": "^0.8",
                 "phpunit/phpunit": "^7.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "autoload": {
@@ -953,12 +957,16 @@
                     "email": "ocramius@gmail.com"
                 }
             ],
-            "description": "Doctrine Persistence abstractions.",
+            "description": "The Doctrine Persistence project is a set of shared interfaces and functionality that the different Doctrine object mappers share.",
             "homepage": "https://doctrine-project.org/projects/persistence.html",
             "keywords": [
+                "mapper",
+                "object",
+                "odm",
+                "orm",
                 "persistence"
             ],
-            "time": "2018-07-12T12:37:50+00:00"
+            "time": "2018-11-21T00:33:13+00:00"
         },
         {
             "name": "doctrine/reflection",
@@ -1292,32 +1300,33 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.4.2",
+            "version": "1.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c"
+                "reference": "9f83dded91781a01c63574e387eaa769be769115"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
-                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/9f83dded91781a01c63574e387eaa769be769115",
+                "reference": "9f83dded91781a01c63574e387eaa769be769115",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "psr/http-message": "~1.0"
+                "psr/http-message": "~1.0",
+                "ralouphie/getallheaders": "^2.0.5"
             },
             "provide": {
                 "psr/http-message-implementation": "1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0"
+                "phpunit/phpunit": "~4.8.36 || ^5.7.27 || ^6.5.8"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4-dev"
+                    "dev-master": "1.5-dev"
                 }
             },
             "autoload": {
@@ -1347,13 +1356,14 @@
             "keywords": [
                 "http",
                 "message",
+                "psr-7",
                 "request",
                 "response",
                 "stream",
                 "uri",
                 "url"
             ],
-            "time": "2017-03-20T17:10:46+00:00"
+            "time": "2018-12-04T20:46:45+00:00"
         },
         {
             "name": "imagine/imagine",
@@ -1464,26 +1474,26 @@
         },
         {
             "name": "knplabs/gaufrette",
-            "version": "v0.7.0",
+            "version": "v0.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/Gaufrette.git",
-                "reference": "a0627e91e8753f442eea6560cb347151cd306b2c"
+                "reference": "80cc42e1c5f008a8fc9d02e856c60140c7d1ea19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/Gaufrette/zipball/a0627e91e8753f442eea6560cb347151cd306b2c",
-                "reference": "a0627e91e8753f442eea6560cb347151cd306b2c",
+                "url": "https://api.github.com/repos/KnpLabs/Gaufrette/zipball/80cc42e1c5f008a8fc9d02e856c60140c7d1ea19",
+                "reference": "80cc42e1c5f008a8fc9d02e856c60140c7d1ea19",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6"
+                "php": ">=7.1"
             },
             "conflict": {
                 "microsoft/windowsazure": "<0.4.3"
             },
             "require-dev": {
-                "akeneo/phpspec-skip-example-extension": "~1.2",
+                "akeneo/phpspec-skip-example-extension": "^4.0",
                 "amazonwebservices/aws-sdk-for-php": "1.5.*",
                 "aws/aws-sdk-php": "^2.4.12||~3",
                 "doctrine/dbal": ">=2.3",
@@ -1494,8 +1504,8 @@
                 "mikey179/vfsstream": "~1.2.0",
                 "mongodb/mongodb": "^1.1",
                 "phpseclib/phpseclib": "^2.0",
-                "phpspec/phpspec": "~2.4",
-                "phpunit/phpunit": "^5.6.8",
+                "phpspec/phpspec": "~5.1",
+                "phpunit/phpunit": "~7.5",
                 "rackspace/php-opencloud": "^1.9.2"
             },
             "suggest": {
@@ -1519,7 +1529,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.7.x-dev"
+                    "dev-master": "0.9.x-dev"
                 }
             },
             "autoload": {
@@ -1549,7 +1559,7 @@
                 "filesystem",
                 "media"
             ],
-            "time": "2018-08-30T13:26:15+00:00"
+            "time": "2019-01-11T10:04:44+00:00"
         },
         {
             "name": "knplabs/knp-gaufrette-bundle",
@@ -1954,16 +1964,16 @@
         },
         {
             "name": "psr/log",
-            "version": "1.0.2",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
                 "shasum": ""
             },
             "require": {
@@ -1997,7 +2007,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10T12:19:37+00:00"
+            "time": "2018-11-20T15:27:04+00:00"
         },
         {
             "name": "psr/simple-cache",
@@ -2046,6 +2056,46 @@
                 "simple-cache"
             ],
             "time": "2017-10-23T01:57:42+00:00"
+        },
+        {
+            "name": "ralouphie/getallheaders",
+            "version": "2.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ralouphie/getallheaders.git",
+                "reference": "5601c8a83fbba7ef674a7369456d12f1e0d0eafa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ralouphie/getallheaders/zipball/5601c8a83fbba7ef674a7369456d12f1e0d0eafa",
+                "reference": "5601c8a83fbba7ef674a7369456d12f1e0d0eafa",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7.0",
+                "satooshi/php-coveralls": ">=1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/getallheaders.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ralph Khattar",
+                    "email": "ralph.khattar@gmail.com"
+                }
+            ],
+            "description": "A polyfill for getallheaders.",
+            "time": "2016-02-11T07:05:27+00:00"
         },
         {
             "name": "react/event-loop",
@@ -2382,16 +2432,16 @@
         },
         {
             "name": "sergeil/extjsintegration-bundle",
-            "version": "v2.0.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sergeil/SliExtJsIntegrationBundle.git",
-                "reference": "4e196dedc8bd7c6086e0de9aade83ac56c5cf572"
+                "reference": "7f688b70ca8aca76ac4402c0c27b9b421e745e2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sergeil/SliExtJsIntegrationBundle/zipball/4e196dedc8bd7c6086e0de9aade83ac56c5cf572",
-                "reference": "4e196dedc8bd7c6086e0de9aade83ac56c5cf572",
+                "url": "https://api.github.com/repos/sergeil/SliExtJsIntegrationBundle/zipball/7f688b70ca8aca76ac4402c0c27b9b421e745e2f",
+                "reference": "7f688b70ca8aca76ac4402c0c27b9b421e745e2f",
                 "shasum": ""
             },
             "require": {
@@ -2430,7 +2480,7 @@
             "keywords": [
                 "extjs"
             ],
-            "time": "2018-07-20T06:07:12+00:00"
+            "time": "2019-01-30T07:54:03+00:00"
         },
         {
             "name": "sergeil/extjslocalization-bundle",
@@ -2632,7 +2682,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -2990,16 +3040,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v3.4.17",
+            "version": "v3.4.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "de239d25e0bb3be451a17b627705a5970c6c59e6"
+                "reference": "907d4d1d1a419663c3c37cfb33dd65c48fa62d1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/de239d25e0bb3be451a17b627705a5970c6c59e6",
-                "reference": "de239d25e0bb3be451a17b627705a5970c6c59e6",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/907d4d1d1a419663c3c37cfb33dd65c48fa62d1b",
+                "reference": "907d4d1d1a419663c3c37cfb33dd65c48fa62d1b",
                 "shasum": ""
             },
             "require": {
@@ -3141,36 +3191,36 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2018-10-03T12:03:55+00:00"
+            "time": "2019-02-03T12:23:08+00:00"
         },
         {
             "name": "twig/twig",
-            "version": "v2.5.0",
+            "version": "v2.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "6a5f676b77a90823c2d4eaf76137b771adf31323"
+                "reference": "7d7342c8a4059fefb9b8d07db0cc14007021f9b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/6a5f676b77a90823c2d4eaf76137b771adf31323",
-                "reference": "6a5f676b77a90823c2d4eaf76137b771adf31323",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/7d7342c8a4059fefb9b8d07db0cc14007021f9b7",
+                "reference": "7d7342c8a4059fefb9b8d07db0cc14007021f9b7",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.0",
                 "symfony/polyfill-ctype": "^1.8",
-                "symfony/polyfill-mbstring": "~1.0"
+                "symfony/polyfill-mbstring": "^1.3"
             },
             "require-dev": {
                 "psr/container": "^1.0",
                 "symfony/debug": "^2.7",
-                "symfony/phpunit-bridge": "^3.3"
+                "symfony/phpunit-bridge": "^3.4.19|^4.1.8"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev"
+                    "dev-master": "2.6-dev"
                 }
             },
             "autoload": {
@@ -3208,7 +3258,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-07-13T07:18:09+00:00"
+            "time": "2019-01-14T15:00:48+00:00"
         }
     ],
     "packages-dev": [
@@ -3257,6 +3307,1054 @@
             "description": "Virtual file system to mock the real file system in unit tests.",
             "homepage": "http://vfs.bovigo.org/",
             "time": "2017-08-01T08:02:14+00:00"
+        },
+        {
+            "name": "modera-monorepo-dev/modera-activity-logger-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/ActivityLoggerBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/ActivityLoggerBundle",
+                "reference": "7304abc72f93758cbf1d791bd7bc868152099436",
+                "shasum": null
+            },
+            "require": {
+                "modera/foundation-bundle": "~3.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "modera/foundation-bundle": "~3.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\ActivityLoggerBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-backend-config-utils-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/BackendConfigUtilsBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/BackendConfigUtilsBundle",
+                "reference": "a88567d4d2aeb351d107ee8a297bc9abf2ea694d",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\BackendConfigUtilsBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ],
+            "description": "Bundle provides tools that simplify contributing your own configuration sections to 'Backend/Tools/Settings' section."
+        },
+        {
+            "name": "modera-monorepo-dev/modera-backend-dashboard-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/BackendDashboardBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/BackendDashboardBundle",
+                "reference": "93c4b9b62c4edeaced3d685df6668213b9d16537",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\BackendDashboardBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aleksandr Rudakov",
+                    "email": "alexandr.rudakov@modera.org"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-backend-languages-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/BackendLanguagesBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/BackendLanguagesBundle",
+                "reference": "0999d4f901fe6cba452e095a869ae1685d043b12",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\BackendLanguagesBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Vizel",
+                    "email": "sergei.vizel@modera.org"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-backend-security-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/BackendSecurityBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/BackendSecurityBundle",
+                "reference": "ab28aecf9033aba9b304197cf8fe59c23992707a",
+                "shasum": null
+            },
+            "require": {
+                "modera/foundation-bundle": "~3.0",
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "modera/foundation-bundle": "~3.0",
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\BackendSecurityBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Vizel",
+                    "email": "sergei.vizel@modera.org"
+                },
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ],
+            "description": "Bundle provides UI section for MF that makes it possible to manage users/groups/permissions."
+        },
+        {
+            "name": "modera-monorepo-dev/modera-backend-tools-activity-log-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/BackendToolsActivityLogBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/BackendToolsActivityLogBundle",
+                "reference": "8c3c8d2be53e85b341f7b93429a610888cc93e37",
+                "shasum": null
+            },
+            "require": {
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\BackendToolsActivityLogBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-backend-tools-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/BackendToolsBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/BackendToolsBundle",
+                "reference": "fd7f3bb1ec34b7a7a0f406b9fa3e2080bd15ce39",
+                "shasum": null
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\BackendToolsBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-backend-tools-settings-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/BackendToolsSettingsBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/BackendToolsSettingsBundle",
+                "reference": "c3a7f8f909140867b707061ed9e56feda39701a1",
+                "shasum": null
+            },
+            "require": {
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\BackendToolsSettingsBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-backend-translations-tool-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/BackendTranslationsToolBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/BackendTranslationsToolBundle",
+                "reference": "525af346f97c00b89d692af1a574b99e949b269e",
+                "shasum": null
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\BackendTranslationsToolBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Vizel",
+                    "email": "sergei.vizel@modera.org"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-config-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/ConfigBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/ConfigBundle",
+                "reference": "92d099f177ef94ec36e475605fc43bfea9fe6ea1",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\ConfigBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ],
+            "description": "Bundles provides tools that allow to you to dynamically store and fetch your configuration properties in a flexible way."
+        },
+        {
+            "name": "modera-monorepo-dev/modera-direct-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/DirectBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/DirectBundle",
+                "reference": "5a0be5948049d054ea39d1853ade4525794fdff1",
+                "shasum": null
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "modera-module": {
+                    "register-bundle": "Modera\\DirectBundle\\ModeraDirectBundle"
+                },
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\DirectBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Vizel",
+                    "email": "sergei.vizel@modera.org"
+                }
+            ],
+            "description": "Symfony ExtDirect Bundle",
+            "homepage": "https://github.com/modera/direct-bundle",
+            "keywords": [
+                "ExtDirect",
+                "ExtJS"
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-dynamically-configurable-app-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/DynamicallyConfigurableAppBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/DynamicallyConfigurableAppBundle",
+                "reference": "0f6e0beef1fe9a25f766c4f1a8e58a90a2793fc9",
+                "shasum": null
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\DynamicallyConfigurableAppBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-dynamically-configurable-mjr-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/DynamicallyConfigurableMJRBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/DynamicallyConfigurableMJRBundle",
+                "reference": "12de73f745bcfa85ae5739a273163f96abf597c0",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\DynamicallyConfigurableMJRBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ],
+            "description": "Allows to configure some aspects of MJR integration using UIs."
+        },
+        {
+            "name": "modera-monorepo-dev/modera-file-repository-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/FileRepositoryBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/FileRepositoryBundle",
+                "reference": "b5b71f5877d61c29157558303a3cec07b31453a9",
+                "shasum": null
+            },
+            "require": {
+                "modera/foundation-bundle": "~3.0",
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5",
+                "sergeil/aux-bundle": "~1.0"
+            },
+            "require-dev": {
+                "modera/foundation-bundle": "~3.0",
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5",
+                "sergeil/aux-bundle": "~1.0"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\FileRepositoryBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-file-uploader-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/FileUploaderBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/FileUploaderBundle",
+                "reference": "1629c34e643a9aed936121783d8cb7c85e44e312",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5",
+                "sergeil/aux-bundle": "~1.0"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5",
+                "sergeil/aux-bundle": "~1.0"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\FileUploaderBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-foundation-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/FoundationBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/FoundationBundle",
+                "reference": "d52aad6e0d2113f728e8700d7b90495addbaf7f8",
+                "shasum": null
+            },
+            "require": {
+                "mikey179/vfsstream": "^1.6",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "^1.6",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\FoundationBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-languages-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/LanguagesBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/LanguagesBundle",
+                "reference": "1f7e41c9f0de1f595552c8a5440d154b6e414219",
+                "shasum": null
+            },
+            "require": {
+                "modera/foundation-bundle": "~3.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "modera/foundation-bundle": "~3.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\LanguagesBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Vizel",
+                    "email": "sergei.vizel@modera.org"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-mjr-cache-aware-class-loader",
+            "version": "1.0.0",
+            "target-dir": "Modera/MJRCacheAwareClassLoaderBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/MJRCacheAwareClassLoaderBundle",
+                "reference": "e6efd5f62fd64069c7dc07ab1ac1fad76275116a",
+                "shasum": null
+            },
+            "require": {
+                "modera/foundation-bundle": "~3.0",
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "modera/foundation-bundle": "~3.0",
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\MJRCacheAwareClassLoaderBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-mjr-integration-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/MjrIntegrationBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/MjrIntegrationBundle",
+                "reference": "ebab62e8ec5e88c94abe88e9162ad609c8b748d9",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\MjrIntegrationBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ],
+            "description": "Provides low level integration for MJR.",
+            "homepage": "http://modera.org",
+            "keywords": [
+                "mjr"
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-mjr-security-integration-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/MJRSecurityIntegrationBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/MJRSecurityIntegrationBundle",
+                "reference": "25dc2245ccbb3b20fe99424ef55aab07bee7243c",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\MJRSecurityIntegrationBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ],
+            "description": "Bundle provides integration layer which is necessary to make MJR to be security aware.",
+            "homepage": "http://modera.org",
+            "keywords": [
+                "mjr"
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-mjr-theme-integration-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/MJRThemeIntegrationBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/MJRThemeIntegrationBundle",
+                "reference": "a3d647cf96369dc938aca1017a41e9e0d410affd",
+                "shasum": null
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\MJRThemeIntegrationBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-module-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/ModuleBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/ModuleBundle",
+                "reference": "d555ba942b6435a0ade34d928fa4b4898f3b6d6c",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\ModuleBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Vizel",
+                    "email": "sergei.vizel@modera.org"
+                },
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org"
+                }
+            ],
+            "description": "Adds support for dynamical bundles installation."
+        },
+        {
+            "name": "modera-monorepo-dev/modera-routing-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/RoutingBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/RoutingBundle",
+                "reference": "a6594337e5f99824610eaf0e23a5868ad3f4640f",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\RoutingBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Vizel",
+                    "email": "sergei.vizel@modera.org"
+                },
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org"
+                }
+            ],
+            "description": "This bundle makes it possible for bundles to dynamically include routing files from within your bundles."
+        },
+        {
+            "name": "modera-monorepo-dev/modera-security-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/SecurityBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/SecurityBundle",
+                "reference": "efccb6de19cbf7a7505393d264044d9dcc3ef534",
+                "shasum": null
+            },
+            "require": {
+                "modera/foundation-bundle": "~3.0",
+                "modera/languages-bundle": "~3.0",
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "modera/foundation-bundle": "~3.0",
+                "modera/languages-bundle": "~3.0",
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\SecurityBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Vizel",
+                    "email": "sergei.vizel@modera.org"
+                },
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ],
+            "description": "Provides database aware implementation of Security model + some other perks"
+        },
+        {
+            "name": "modera-monorepo-dev/modera-server-crud-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/ServerCrudBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/ServerCrudBundle",
+                "reference": "1d99b527641fc22ac522cf19f3aad7fbbe5dc939",
+                "shasum": null
+            },
+            "require": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\ServerCrudBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org",
+                    "homepage": "http://sergei.lissovski.org/"
+                }
+            ]
+        },
+        {
+            "name": "modera-monorepo-dev/modera-translations-bundle",
+            "version": "1.0.0",
+            "target-dir": "Modera/TranslationsBundle",
+            "dist": {
+                "type": "path",
+                "url": "src/Modera/TranslationsBundle",
+                "reference": "b8858ac6668e9855bb661d3ab4cbced24714e2e9",
+                "shasum": null
+            },
+            "require": {
+                "modera/foundation-bundle": "~3.0",
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "require-dev": {
+                "modera/foundation-bundle": "~3.0",
+                "phake/phake": "~2.0",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "modera-monorepo",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Modera\\TranslationsBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergei Vizel",
+                    "email": "sergei.vizel@modera.org"
+                },
+                {
+                    "name": "Sergei Lissovski",
+                    "email": "sergei.lissovski@modera.org"
+                }
+            ]
         },
         {
             "name": "modera/tests-runner",
@@ -4525,20 +5623,21 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozart/assert.git",
-                "reference": "0df1908962e7a3071564e857d86874dad1ef204a"
+                "reference": "83e253c8e0be5b0257b881e1827274667c5c17a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/0df1908962e7a3071564e857d86874dad1ef204a",
-                "reference": "0df1908962e7a3071564e857d86874dad1ef204a",
+                "url": "https://api.github.com/repos/webmozart/assert/zipball/83e253c8e0be5b0257b881e1827274667c5c17a9",
+                "reference": "83e253c8e0be5b0257b881e1827274667c5c17a9",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.3.3 || ^7.0"
+                "php": "^5.3.3 || ^7.0",
+                "symfony/polyfill-ctype": "^1.8"
             },
             "require-dev": {
                 "phpunit/phpunit": "^4.6",
@@ -4571,7 +5670,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2018-01-29T19:49:41+00:00"
+            "time": "2018-12-25T11:19:39+00:00"
         }
     ],
     "aliases": [],
@@ -4581,8 +5680,6 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {
-        "php": ">=5.6"
-    },
+    "platform": [],
     "platform-dev": []
 }

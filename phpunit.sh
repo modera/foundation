@@ -11,13 +11,26 @@
 
 set -eu
 
-args=$@
 is_daemon=false
+php_version=7.2
 
-if [[ ${args:0:4} == "--md" ]]; then
-  args=${args:4}
-  is_daemon=true
-fi
+for i in "$@"; do
+case $i in
+    --php-version=*)
+        php_version="${i#*=}"
+        shift
+    ;;
+    --md)
+        is_daemon=true
+        shift
+    ;;
+    *)
+        # unknown option
+    ;;
+esac
+done
+
+args=$@
 
 if ! type docker > /dev/null; then
     echo "Docker is required to run tests."
@@ -32,7 +45,7 @@ if [ ! -d "vendor" ]; then
       --rm \
       -v `pwd`:/mnt/tmp \
       -w /mnt/tmp \
-      modera/php:7.2 "composer install"
+      modera/php:${php_version} "composer install"
 fi
 
 if [[ `docker ps` != *"mtr_mysql"* ]]; then
@@ -57,7 +70,7 @@ docker run \
     -w /mnt/tmp \
     -e MONOLITH_TEST_SUITE=1 \
     --link mtr_mysql:mysql \
-    modera/php:7.2 "vendor/bin/phpunit ${args}"
+    modera/php:${php_version} "vendor/bin/phpunit ${args}"
 
 exit_code=$?
 
