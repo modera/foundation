@@ -1,4 +1,6 @@
 .idea
 mtr
 vendor
+vendor.php*
 foo
+composer.lock
