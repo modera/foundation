@@ -52,10 +52,10 @@ class DummySwiftMailer extends \Swift_Mailer
 {
     public function createMessage($service = 'message')
     {
-        return \Swift_Message::newInstance();
+        return new \Swift_Message();
     }
 
-    public function send(\Swift_Mime_Message $message, &$failedRecipients = null)
+    public function send(/* \Swift_Mime_SimpleMessage */ $message, &$failedRecipients = null)
     {
         if (in_array('failure.send.password@test.mail', array_keys($message->getTo()))) {
             return 0;

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "39c12fbac99b01e65008d7fa53bf49ad",
+    "content-hash": "d92e6de2bf2f82b5341899e48b0191f7",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1042,6 +1042,63 @@
                 "reflection"
             ],
             "time": "2018-06-14T14:45:07+00:00"
+        },
+        {
+            "name": "egulias/email-validator",
+            "version": "2.1.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/egulias/EmailValidator.git",
+                "reference": "709f21f92707308cdf8f9bcfa1af4cb26586521e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/709f21f92707308cdf8f9bcfa1af4cb26586521e",
+                "reference": "709f21f92707308cdf8f9bcfa1af4cb26586521e",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/lexer": "^1.0.1",
+                "php": ">= 5.5"
+            },
+            "require-dev": {
+                "dominicsayers/isemail": "dev-master",
+                "phpunit/phpunit": "^4.8.35||^5.7||^6.0",
+                "satooshi/php-coveralls": "^1.0.1"
+            },
+            "suggest": {
+                "ext-intl": "PHP Internationalization Libraries are required to use the SpoofChecking validation"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Egulias\\EmailValidator\\": "EmailValidator"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eduardo Gulias Davis"
+                }
+            ],
+            "description": "A library for validating emails against several RFCs",
+            "homepage": "https://github.com/egulias/EmailValidator",
+            "keywords": [
+                "email",
+                "emailvalidation",
+                "emailvalidator",
+                "validation",
+                "validator"
+            ],
+            "time": "2018-12-04T22:38:24+00:00"
         },
         {
             "name": "evenement/evenement",
@@ -2529,29 +2586,34 @@
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "v5.4.12",
+            "version": "v6.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "181b89f18a90f8925ef805f950d47a7190e9b950"
+                "reference": "8ddcb66ac10c392d3beb54829eef8ac1438595f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/181b89f18a90f8925ef805f950d47a7190e9b950",
-                "reference": "181b89f18a90f8925ef805f950d47a7190e9b950",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/8ddcb66ac10c392d3beb54829eef8ac1438595f4",
+                "reference": "8ddcb66ac10c392d3beb54829eef8ac1438595f4",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "egulias/email-validator": "~2.0",
+                "php": ">=7.0.0"
             },
             "require-dev": {
                 "mockery/mockery": "~0.9.1",
-                "symfony/phpunit-bridge": "~3.2"
+                "symfony/phpunit-bridge": "~3.3@dev"
+            },
+            "suggest": {
+                "ext-intl": "Needed to support internationalized email addresses",
+                "true/punycode": "Needed to support internationalized email addresses, if ext-intl is not installed"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.4-dev"
+                    "dev-master": "6.1-dev"
                 }
             },
             "autoload": {
@@ -2579,7 +2641,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2018-07-31T09:26:32+00:00"
+            "time": "2018-09-11T07:12:52+00:00"
         },
         {
             "name": "symfony/polyfill-apcu",
@@ -2682,7 +2744,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -2981,30 +3043,30 @@
         },
         {
             "name": "symfony/swiftmailer-bundle",
-            "version": "v2.6.7",
+            "version": "v3.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/swiftmailer-bundle.git",
-                "reference": "c4808f5169efc05567be983909d00f00521c53ec"
+                "reference": "ac4f38c2ec7957f2dec8b6c2f24a060b10a254f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/swiftmailer-bundle/zipball/c4808f5169efc05567be983909d00f00521c53ec",
-                "reference": "c4808f5169efc05567be983909d00f00521c53ec",
+                "url": "https://api.github.com/repos/symfony/swiftmailer-bundle/zipball/ac4f38c2ec7957f2dec8b6c2f24a060b10a254f2",
+                "reference": "ac4f38c2ec7957f2dec8b6c2f24a060b10a254f2",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.2",
-                "swiftmailer/swiftmailer": "~4.2|~5.0",
-                "symfony/config": "~2.7|~3.0",
-                "symfony/dependency-injection": "~2.7|~3.0",
-                "symfony/http-kernel": "~2.7|~3.0"
+                "php": ">=7.0.0",
+                "swiftmailer/swiftmailer": "^6.1.3",
+                "symfony/config": "~2.8|~3.3|~4.0",
+                "symfony/dependency-injection": "~2.7|~3.3|~4.0",
+                "symfony/http-kernel": "~2.7|~3.3|~4.0"
             },
             "require-dev": {
-                "symfony/console": "~2.7|~3.0",
-                "symfony/framework-bundle": "~2.7|~3.0",
-                "symfony/phpunit-bridge": "~3.3@dev",
-                "symfony/yaml": "~2.7|~3.0"
+                "symfony/console": "~2.7|~3.3|~4.0",
+                "symfony/framework-bundle": "~2.7|~3.3|~4.0",
+                "symfony/phpunit-bridge": "~3.3|~4.0",
+                "symfony/yaml": "~2.7|~3.3|~4.0"
             },
             "suggest": {
                 "psr/log": "Allows logging"
@@ -3012,13 +3074,16 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "3.2-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
                     "Symfony\\Bundle\\SwiftmailerBundle\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -3036,7 +3101,7 @@
             ],
             "description": "Symfony SwiftmailerBundle",
             "homepage": "http://symfony.com",
-            "time": "2017-10-19T01:06:41+00:00"
+            "time": "2019-01-05T11:51:59+00:00"
         },
         {
             "name": "symfony/symfony",
@@ -3307,1054 +3372,6 @@
             "description": "Virtual file system to mock the real file system in unit tests.",
             "homepage": "http://vfs.bovigo.org/",
             "time": "2017-08-01T08:02:14+00:00"
-        },
-        {
-            "name": "modera-monorepo-dev/modera-activity-logger-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/ActivityLoggerBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/ActivityLoggerBundle",
-                "reference": "7304abc72f93758cbf1d791bd7bc868152099436",
-                "shasum": null
-            },
-            "require": {
-                "modera/foundation-bundle": "~3.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "modera/foundation-bundle": "~3.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\ActivityLoggerBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-backend-config-utils-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/BackendConfigUtilsBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/BackendConfigUtilsBundle",
-                "reference": "a88567d4d2aeb351d107ee8a297bc9abf2ea694d",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\BackendConfigUtilsBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ],
-            "description": "Bundle provides tools that simplify contributing your own configuration sections to 'Backend/Tools/Settings' section."
-        },
-        {
-            "name": "modera-monorepo-dev/modera-backend-dashboard-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/BackendDashboardBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/BackendDashboardBundle",
-                "reference": "93c4b9b62c4edeaced3d685df6668213b9d16537",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\BackendDashboardBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Aleksandr Rudakov",
-                    "email": "alexandr.rudakov@modera.org"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-backend-languages-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/BackendLanguagesBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/BackendLanguagesBundle",
-                "reference": "0999d4f901fe6cba452e095a869ae1685d043b12",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\BackendLanguagesBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Vizel",
-                    "email": "sergei.vizel@modera.org"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-backend-security-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/BackendSecurityBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/BackendSecurityBundle",
-                "reference": "ab28aecf9033aba9b304197cf8fe59c23992707a",
-                "shasum": null
-            },
-            "require": {
-                "modera/foundation-bundle": "~3.0",
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "modera/foundation-bundle": "~3.0",
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\BackendSecurityBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Vizel",
-                    "email": "sergei.vizel@modera.org"
-                },
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ],
-            "description": "Bundle provides UI section for MF that makes it possible to manage users/groups/permissions."
-        },
-        {
-            "name": "modera-monorepo-dev/modera-backend-tools-activity-log-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/BackendToolsActivityLogBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/BackendToolsActivityLogBundle",
-                "reference": "8c3c8d2be53e85b341f7b93429a610888cc93e37",
-                "shasum": null
-            },
-            "require": {
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\BackendToolsActivityLogBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-backend-tools-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/BackendToolsBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/BackendToolsBundle",
-                "reference": "fd7f3bb1ec34b7a7a0f406b9fa3e2080bd15ce39",
-                "shasum": null
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\BackendToolsBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-backend-tools-settings-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/BackendToolsSettingsBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/BackendToolsSettingsBundle",
-                "reference": "c3a7f8f909140867b707061ed9e56feda39701a1",
-                "shasum": null
-            },
-            "require": {
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\BackendToolsSettingsBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-backend-translations-tool-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/BackendTranslationsToolBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/BackendTranslationsToolBundle",
-                "reference": "525af346f97c00b89d692af1a574b99e949b269e",
-                "shasum": null
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\BackendTranslationsToolBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Vizel",
-                    "email": "sergei.vizel@modera.org"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-config-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/ConfigBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/ConfigBundle",
-                "reference": "92d099f177ef94ec36e475605fc43bfea9fe6ea1",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\ConfigBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ],
-            "description": "Bundles provides tools that allow to you to dynamically store and fetch your configuration properties in a flexible way."
-        },
-        {
-            "name": "modera-monorepo-dev/modera-direct-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/DirectBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/DirectBundle",
-                "reference": "5a0be5948049d054ea39d1853ade4525794fdff1",
-                "shasum": null
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "modera-module": {
-                    "register-bundle": "Modera\\DirectBundle\\ModeraDirectBundle"
-                },
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\DirectBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Vizel",
-                    "email": "sergei.vizel@modera.org"
-                }
-            ],
-            "description": "Symfony ExtDirect Bundle",
-            "homepage": "https://github.com/modera/direct-bundle",
-            "keywords": [
-                "ExtDirect",
-                "ExtJS"
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-dynamically-configurable-app-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/DynamicallyConfigurableAppBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/DynamicallyConfigurableAppBundle",
-                "reference": "0f6e0beef1fe9a25f766c4f1a8e58a90a2793fc9",
-                "shasum": null
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\DynamicallyConfigurableAppBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-dynamically-configurable-mjr-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/DynamicallyConfigurableMJRBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/DynamicallyConfigurableMJRBundle",
-                "reference": "12de73f745bcfa85ae5739a273163f96abf597c0",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\DynamicallyConfigurableMJRBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ],
-            "description": "Allows to configure some aspects of MJR integration using UIs."
-        },
-        {
-            "name": "modera-monorepo-dev/modera-file-repository-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/FileRepositoryBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/FileRepositoryBundle",
-                "reference": "b5b71f5877d61c29157558303a3cec07b31453a9",
-                "shasum": null
-            },
-            "require": {
-                "modera/foundation-bundle": "~3.0",
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5",
-                "sergeil/aux-bundle": "~1.0"
-            },
-            "require-dev": {
-                "modera/foundation-bundle": "~3.0",
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5",
-                "sergeil/aux-bundle": "~1.0"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\FileRepositoryBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-file-uploader-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/FileUploaderBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/FileUploaderBundle",
-                "reference": "1629c34e643a9aed936121783d8cb7c85e44e312",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5",
-                "sergeil/aux-bundle": "~1.0"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5",
-                "sergeil/aux-bundle": "~1.0"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\FileUploaderBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-foundation-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/FoundationBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/FoundationBundle",
-                "reference": "d52aad6e0d2113f728e8700d7b90495addbaf7f8",
-                "shasum": null
-            },
-            "require": {
-                "mikey179/vfsstream": "^1.6",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "mikey179/vfsstream": "^1.6",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\FoundationBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-languages-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/LanguagesBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/LanguagesBundle",
-                "reference": "1f7e41c9f0de1f595552c8a5440d154b6e414219",
-                "shasum": null
-            },
-            "require": {
-                "modera/foundation-bundle": "~3.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "modera/foundation-bundle": "~3.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\LanguagesBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Vizel",
-                    "email": "sergei.vizel@modera.org"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-mjr-cache-aware-class-loader",
-            "version": "1.0.0",
-            "target-dir": "Modera/MJRCacheAwareClassLoaderBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/MJRCacheAwareClassLoaderBundle",
-                "reference": "e6efd5f62fd64069c7dc07ab1ac1fad76275116a",
-                "shasum": null
-            },
-            "require": {
-                "modera/foundation-bundle": "~3.0",
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "modera/foundation-bundle": "~3.0",
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\MJRCacheAwareClassLoaderBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-mjr-integration-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/MjrIntegrationBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/MjrIntegrationBundle",
-                "reference": "ebab62e8ec5e88c94abe88e9162ad609c8b748d9",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\MjrIntegrationBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ],
-            "description": "Provides low level integration for MJR.",
-            "homepage": "http://modera.org",
-            "keywords": [
-                "mjr"
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-mjr-security-integration-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/MJRSecurityIntegrationBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/MJRSecurityIntegrationBundle",
-                "reference": "25dc2245ccbb3b20fe99424ef55aab07bee7243c",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\MJRSecurityIntegrationBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ],
-            "description": "Bundle provides integration layer which is necessary to make MJR to be security aware.",
-            "homepage": "http://modera.org",
-            "keywords": [
-                "mjr"
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-mjr-theme-integration-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/MJRThemeIntegrationBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/MJRThemeIntegrationBundle",
-                "reference": "a3d647cf96369dc938aca1017a41e9e0d410affd",
-                "shasum": null
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\MJRThemeIntegrationBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-module-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/ModuleBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/ModuleBundle",
-                "reference": "d555ba942b6435a0ade34d928fa4b4898f3b6d6c",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\ModuleBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Vizel",
-                    "email": "sergei.vizel@modera.org"
-                },
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org"
-                }
-            ],
-            "description": "Adds support for dynamical bundles installation."
-        },
-        {
-            "name": "modera-monorepo-dev/modera-routing-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/RoutingBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/RoutingBundle",
-                "reference": "a6594337e5f99824610eaf0e23a5868ad3f4640f",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\RoutingBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Vizel",
-                    "email": "sergei.vizel@modera.org"
-                },
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org"
-                }
-            ],
-            "description": "This bundle makes it possible for bundles to dynamically include routing files from within your bundles."
-        },
-        {
-            "name": "modera-monorepo-dev/modera-security-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/SecurityBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/SecurityBundle",
-                "reference": "efccb6de19cbf7a7505393d264044d9dcc3ef534",
-                "shasum": null
-            },
-            "require": {
-                "modera/foundation-bundle": "~3.0",
-                "modera/languages-bundle": "~3.0",
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "modera/foundation-bundle": "~3.0",
-                "modera/languages-bundle": "~3.0",
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\SecurityBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Vizel",
-                    "email": "sergei.vizel@modera.org"
-                },
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ],
-            "description": "Provides database aware implementation of Security model + some other perks"
-        },
-        {
-            "name": "modera-monorepo-dev/modera-server-crud-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/ServerCrudBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/ServerCrudBundle",
-                "reference": "1d99b527641fc22ac522cf19f3aad7fbbe5dc939",
-                "shasum": null
-            },
-            "require": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\ServerCrudBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org",
-                    "homepage": "http://sergei.lissovski.org/"
-                }
-            ]
-        },
-        {
-            "name": "modera-monorepo-dev/modera-translations-bundle",
-            "version": "1.0.0",
-            "target-dir": "Modera/TranslationsBundle",
-            "dist": {
-                "type": "path",
-                "url": "src/Modera/TranslationsBundle",
-                "reference": "b8858ac6668e9855bb661d3ab4cbced24714e2e9",
-                "shasum": null
-            },
-            "require": {
-                "modera/foundation-bundle": "~3.0",
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "require-dev": {
-                "modera/foundation-bundle": "~3.0",
-                "phake/phake": "~2.0",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "modera-monorepo",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Modera\\TranslationsBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergei Vizel",
-                    "email": "sergei.vizel@modera.org"
-                },
-                {
-                    "name": "Sergei Lissovski",
-                    "email": "sergei.lissovski@modera.org"
-                }
-            ]
         },
         {
             "name": "modera/tests-runner",
@@ -5680,6 +4697,8 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=5.6"
+    },
     "platform-dev": []
 }
