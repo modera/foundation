@@ -7,17 +7,20 @@
     <services>
 
         <service id="modera_backend_translations_tool.php_file_cache"
-                 class="Doctrine\Common\Cache\PhpFileCache">
+                 class="Doctrine\Common\Cache\PhpFileCache"
+                 public="true">
 
             <argument>%kernel.root_dir%/cache/modera_backend_translations_tool/</argument>
         </service>
 
         <service id="modera_backend_translations_tool.apc_cache"
-                 class="Doctrine\Common\Cache\ApcCache">
+                 class="Doctrine\Common\Cache\ApcCache"
+                 public="true">
         </service>
 
         <service id="modera_backend_translations_tool.apcu_cache"
-                 class="Doctrine\Common\Cache\ApcuCache">
+                 class="Doctrine\Common\Cache\ApcuCache"
+                 public="true">
         </service>
 
         <service id="modera_backend_translations_tool.contributions.permission_categories_provider"

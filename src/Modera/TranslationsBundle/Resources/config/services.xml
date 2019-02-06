@@ -14,7 +14,8 @@
         </service>
 
         <service id="modera_translations.service.translation_handlers_chain"
-                 class="Modera\TranslationsBundle\Service\TranslationHandlersChain">
+                 class="Modera\TranslationsBundle\Service\TranslationHandlersChain"
+                 public="true">
         </service>
 
         <service id="modera_translations.token_extraction.php_class_token_extraction"
@@ -42,7 +43,8 @@
         </service>
 
         <service id="modera_translations.compiler.translations_compiler"
-                 class="Modera\TranslationsBundle\Compiler\TranslationsCompiler">
+                 class="Modera\TranslationsBundle\Compiler\TranslationsCompiler"
+                 public="true">
 
             <argument type="service" id="kernel" />
         </service>

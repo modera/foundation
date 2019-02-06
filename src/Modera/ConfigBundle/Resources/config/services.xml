@@ -14,28 +14,33 @@
         </service>
 
         <service id="modera_config.config_entries_installer"
-                 class="Modera\ConfigBundle\Config\ConfigEntriesInstaller">
+                 class="Modera\ConfigBundle\Config\ConfigEntriesInstaller"
+                 public="true">
 
             <argument type="service" id="modera_config.config_entries_provider" />
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
 
         <service id="modera_config.entity_repository_handler"
-                 class="Modera\ConfigBundle\Config\EntityRepositoryHandler">
+                 class="Modera\ConfigBundle\Config\EntityRepositoryHandler"
+                 public="true">
 
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
 
         <service id="modera_config.as_is_handler"
                  class="Modera\ConfigBundle\Config\AsIsHandler"
+                 public="true"
         />
 
         <service id="modera_config.boolean_handler"
              class="Modera\ConfigBundle\Config\BooleanHandler"
+                 public="true"
         />
 
         <service id="modera_config.dictionary_handler"
                  class="Modera\ConfigBundle\Config\DictionaryHandler"
+                 public="true"
         />
 
         <service id="modera_config.manager.uniquity_validator"
@@ -47,7 +52,8 @@
         </service>
 
         <service id="modera_config.configuration_entries_manager"
-                 class="Modera\ConfigBundle\Config\ConfigurationEntriesManager">
+                 class="Modera\ConfigBundle\Config\ConfigurationEntriesManager"
+                 public="true">
 
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument>%modera_config.config%</argument>

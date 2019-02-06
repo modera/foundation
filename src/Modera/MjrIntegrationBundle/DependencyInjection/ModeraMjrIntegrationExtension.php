@@ -45,5 +45,11 @@ class ModeraMjrIntegrationExtension extends Extension
         $container->setParameter(self::CONFIG_KEY, $config);
         $container->setParameter(self::CONFIG_APP_NAME, $config['app_name']);
         $container->setParameter(self::CONFIG_ROUTES_PREFIX, $config['routes_prefix']);
+
+        if (class_exists('Symfony\Component\Console\Application')) {
+            try {
+                $loader->load('console.xml');
+            } catch (\Exception $e) {}
+        }
     }
 }

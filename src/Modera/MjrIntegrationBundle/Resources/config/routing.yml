@@ -2,7 +2,7 @@
 modera_mjr_integration:
     resource: "@ModeraMjrIntegrationBundle/Controller/"
     type:     annotation
-    prefix:   %modera_mjr_integration.routes_prefix%
+    prefix:   '%modera_mjr_integration.routes_prefix%'
 
 modera_font_awesome_js:
     path:      /font-awesome.js

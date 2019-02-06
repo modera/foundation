@@ -13,12 +13,22 @@ class ConfigProviderAliasingCompilerPassTest extends \PHPUnit_Framework_TestCase
 {
     public function testProcess()
     {
+        $alias = \Phake::mock('Symfony\Component\DependencyInjection\Alias');
+        \Phake::when($alias)
+            ->setPublic(\Phake::anyParameters())
+            ->thenReturn($alias)
+        ;
+
         $container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerBuilder');
         \Phake::when($container)
             ->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY)
             ->thenReturn(array(
                 'main_config_provider' => 'foo_service',
             ))
+        ;
+        \Phake::when($container)
+            ->setAlias(\Phake::anyParameters())
+            ->thenReturn($alias)
         ;
 
         $pass = new ConfigProviderAliasingCompilerPass();

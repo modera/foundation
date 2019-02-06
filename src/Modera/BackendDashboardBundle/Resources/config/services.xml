@@ -43,12 +43,6 @@
             <!--<tag name="modera_backend_dashboard.dashboard_provider" />-->
         <!--</service>-->
 
-        <service id="modera_backend_dashboard.dashboard_service"
-                 class="Modera\BackendDashboardBundle\Dashboard\DashboardService">
-
-            <argument type="service" id="modera_backend_dashboard.dashboard_provider" />
-        </service>
-
         <service id="modera_backend_dashboard.service.dashboard_mgr"
                  class="Modera\BackendDashboardBundle\Service\DashboardManager">
 
@@ -76,7 +70,7 @@
         <service id="modera_backend_dashboard.event_listener.user_settings_entity_managing_listener"
                  class="Modera\BackendDashboardBundle\EventListener\SettingsEntityManagingListener">
 
-            <tag name="doctrine.event_listener" event="onFlush"  />
+            <tag name="doctrine.event_listener" event="onFlush" />
         </service>
 
         <service id="modera_backend_dashboard.contributions.css_resources_provider"

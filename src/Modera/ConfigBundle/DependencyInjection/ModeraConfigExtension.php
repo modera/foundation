@@ -42,5 +42,11 @@ class ModeraConfigExtension extends Extension
         }
 
         $container->setParameter(ModeraConfigBundle::CONFIG_KEY, $config);
+
+        if (class_exists('Symfony\Component\Console\Application')) {
+            try {
+                $loader->load('console.xml');
+            } catch (\Exception $e) {}
+        }
     }
 }

@@ -12,7 +12,8 @@
         </service>
 
         <service id="modera_dynamically_configurable_app.value_handling.kernel_config_writer"
-                 class="Modera\DynamicallyConfigurableAppBundle\ValueHandling\KernelConfigWriter">
+                 class="Modera\DynamicallyConfigurableAppBundle\ValueHandling\KernelConfigWriter"
+                 public="true">
 
             <argument>%modera_dynamically_configurable_app.kernel_config_fqcn%</argument>
         </service>

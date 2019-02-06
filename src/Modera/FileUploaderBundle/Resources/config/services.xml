@@ -6,7 +6,8 @@
 
     <services>
         <service id="modera_file_uploader.uploading.web_uploader"
-                 class="Modera\FileUploaderBundle\Uploading\WebUploader">
+                 class="Modera\FileUploaderBundle\Uploading\WebUploader"
+                 public="true">
 
             <!-- defined in \Modera\FileUploaderBundle\ModeraFileUploaderBundle -->
             <argument type="service" id="modera_file_uploader.uploading.gateways_provider" />

@@ -31,6 +31,9 @@ class ModeraMJRCacheAwareClassLoaderExtension extends Extension
 
         $container->setParameter('modera_mjr_cache_aware_class_loader.route', $config['url']);
 
-        $container->setAlias('modera_mjr_cache_aware_class_loader.version_resolver', $config['version_resolver']);
+        $container
+            ->setAlias('modera_mjr_cache_aware_class_loader.version_resolver', $config['version_resolver'])
+            ->setPublic(true)
+        ;
     }
 }

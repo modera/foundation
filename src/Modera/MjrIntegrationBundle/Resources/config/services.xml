@@ -6,7 +6,8 @@
 
     <services>
         <service id="modera_mjr_integration.menu.menu_manager"
-                 class="Modera\MjrIntegrationBundle\Menu\MenuManager">
+                 class="Modera\MjrIntegrationBundle\Menu\MenuManager"
+                 public="true">
 
             <argument type="service" id="modera_mjr_integration.menu.menu_items_provider" />
         </service>
@@ -20,7 +21,8 @@
         </service>
 
         <service id="modera_mjr_integration.csdi.service_definitions_manager"
-                 class="Modera\MjrIntegrationBundle\ClientSideDependencyInjection\ServiceDefinitionsManager">
+                 class="Modera\MjrIntegrationBundle\ClientSideDependencyInjection\ServiceDefinitionsManager"
+                 public="true">
 
             <argument type="service" id="modera_mjr_integration.csdi.service_definitions_provider" />
         </service>
@@ -34,7 +36,8 @@
         </service>
 
         <service id="modera_mjr_integration.config.config_manager"
-                 class="Modera\MjrIntegrationBundle\Config\ConfigManager">
+                 class="Modera\MjrIntegrationBundle\Config\ConfigManager"
+                 public="true">
 
             <argument type="service" id="modera_mjr_integration.config.config_mergers_provider" />
         </service>
@@ -63,13 +66,15 @@
 
         <!-- better use "modera_mjr_integration.config.main_config" -->
         <service id="modera_mjr_integration.config.bundle_semantic_config"
-                 class="Modera\MjrIntegrationBundle\Config\BundleSemanticMainConfig">
+                 class="Modera\MjrIntegrationBundle\Config\BundleSemanticMainConfig"
+                 public="true">
 
             <argument type="service" id="service_container" />
         </service>
 
         <service id="modera_mjr_integration.assets_handling.assets_provider"
-                 class="Modera\MjrIntegrationBundle\AssetsHandling\AssetsProvider">
+                 class="Modera\MjrIntegrationBundle\AssetsHandling\AssetsProvider"
+                 public="true">
 
             <argument type="service" id="service_container" />
         </service>

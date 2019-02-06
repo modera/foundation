@@ -42,12 +42,6 @@ class ModeraBackendDashboardExtensionTest extends \PHPUnit_Framework_TestCase
         // service provided by Expander bundle
         $this->assertTrue($builder->has('modera_backend_dashboard.dashboard_provider'));
 
-        $this->assertTrue($builder->has('modera_backend_dashboard.dashboard_service'));
-        $arg = $builder->getDefinition('modera_backend_dashboard.dashboard_service')->getArgument(0);
-        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arg);
-        /* @var \Symfony\Component\DependencyInjection\Reference $arg */
-        $this->assertEquals('modera_backend_dashboard.dashboard_provider', $arg->__toString());
-
         $this->assertTrue($builder->has('modera_backend_dashboard.contributions.config_mergers_provider'));
         $configProvider = $builder->getDefinition('modera_backend_dashboard.contributions.config_mergers_provider');
         $this->assertTrue($configProvider->hasTag('modera_mjr_integration.config.config_mergers_provider'));

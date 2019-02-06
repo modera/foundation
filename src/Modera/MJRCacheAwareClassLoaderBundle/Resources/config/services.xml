@@ -11,7 +11,8 @@
         -->
 
         <service id="modera_mjr_cache_aware_class_loader.standard_version_resolver"
-                 class="Modera\MJRCacheAwareClassLoaderBundle\VersionResolving\StandardVersionResolver">
+                 class="Modera\MJRCacheAwareClassLoaderBundle\VersionResolving\StandardVersionResolver"
+                 public="true">
 
             <argument type="service" id="service_container" />
         </service>

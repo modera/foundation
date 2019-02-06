@@ -20,6 +20,9 @@ class ConfigProviderAliasingCompilerPass implements CompilerPassInterface
     {
         $semanticConfig = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
 
-        $container->setAlias('modera_mjr_integration.config.main_config', $semanticConfig['main_config_provider']);
+        $container
+            ->setAlias('modera_mjr_integration.config.main_config', $semanticConfig['main_config_provider'])
+            ->setPublic(true)
+        ;
     }
 }

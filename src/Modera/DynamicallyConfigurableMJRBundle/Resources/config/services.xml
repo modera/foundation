@@ -34,7 +34,8 @@
         </service>
 
         <service id="modera_dynamically_configurable_mjr.mjr.main_config"
-                 class="Modera\DynamicallyConfigurableMJRBundle\MJR\MainConfig">
+                 class="Modera\DynamicallyConfigurableMJRBundle\MJR\MainConfig"
+                 public="true">
 
             <argument type="service" id="modera_config.configuration_entries_manager" />
         </service>
