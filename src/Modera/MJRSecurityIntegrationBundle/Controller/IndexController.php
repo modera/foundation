@@ -2,6 +2,13 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Controller;
 
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Modera\SecurityBundle\Entity\User;
+use Modera\SecurityBundle\Entity\Group;
+use Modera\SecurityBundle\Entity\Permission;
+use Modera\DirectBundle\Annotation\Remote;
 use Modera\MjrIntegrationBundle\AssetsHandling\AssetsProvider;
 use Modera\SecurityBundle\Security\Authenticator;
 use Modera\MjrIntegrationBundle\Config\MainConfigInterface;
@@ -147,6 +154,49 @@ class IndexController extends Controller
     }
 
     /**
+     * @Remote
+     */
+    public function backendUsersListAction(array $params)
+    {
+        $qb = $this->em()->createQueryBuilder();
+        $qb->select('partial u.{id, firstName, lastName, username}')
+            ->from(User::clazz(), 'u')
+            ->leftJoin('u.permissions', 'up')
+            ->leftJoin('u.groups', 'g')
+            ->leftJoin('g.permissions', 'gp')
+            ->where($qb->expr()->eq('u.isActive', ':isActive'))
+                ->setParameter('isActive', true)
+            ->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->in('up.roleName', ':roleName'),
+                    $qb->expr()->in('gp.roleName', ':roleName')
+                )
+            )
+                ->setParameter('roleName', ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER)
+            ->groupBy('u.id')
+        ;
+
+        $qb->setFirstResult($params['start'])->setMaxResults($params['limit']);
+        $query = $qb->getQuery();
+        $query->setHydrationMode($query::HYDRATE_ARRAY);
+        $paginator = new Paginator($query);
+
+        $items = array();
+        $total = $paginator->count();
+        if ($total) {
+            foreach ($paginator as $item) {
+                $items[] = $item;
+            }
+        }
+
+        return array(
+            'success' => true,
+            'items' => $items,
+            'total' => $total,
+        );
+    }
+
+    /**
      * @param Request $request
      */
     private function initSession(Request $request)
@@ -155,5 +205,13 @@ class IndexController extends Controller
         if ($session instanceof Session && !$session->getId()) {
             $session->start();
         }
+    }
+
+    /**
+     * @return EntityManager
+     */
+    private function em()
+    {
+        return $this->get('doctrine')->getManager();
     }
 }

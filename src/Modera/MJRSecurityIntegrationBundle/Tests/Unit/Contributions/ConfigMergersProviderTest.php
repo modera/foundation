@@ -46,13 +46,19 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
             ->method('getItems')
             ->will($this->returnValue($serviceDefinitions));
 
+        $router = \Phake::mock('Symfony\Component\Routing\RouterInterface');
+        \Phake::when($router)
+            ->generate(\Phake::anyParameters())
+            ->thenReturn('')
+        ;
+
         $tokenStorage = \Phake::mock('Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface');
         \Phake::when($tokenStorage)
             ->getToken()
             ->thenReturn($token)
         ;
 
-        $provider = new ConfigMergersProvider($tokenStorage, $clientDiDefinitionsProvider);
+        $provider = new ConfigMergersProvider($router, $tokenStorage, $clientDiDefinitionsProvider);
         $mergers = $provider->getItems();
 
         $this->assertEquals(2, count($mergers));
@@ -88,6 +94,8 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('John Doe', $mergedConfig['userProfile']['name']);
         $this->assertEquals('john.doe@example.org', $mergedConfig['userProfile']['email']);
         $this->assertEquals('john.doe', $mergedConfig['userProfile']['username']);
+        $this->assertArrayHasKey('switchUserUrl', $mergedConfig);
+        $this->assertEquals('/?_switch_user=', $mergedConfig['switchUserUrl']);
 
         $mergedConfig = $clientDiDefinitionsProviderMerger->merge($existingConfig);
 

@@ -2,11 +2,12 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Contributions;
 
-use Modera\MJRSecurityIntegrationBundle\DependencyInjection\ModeraMJRSecurityIntegrationExtension;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
-use Modera\MjrIntegrationBundle\Help\HelpMenuItemInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Modera\MJRSecurityIntegrationBundle\DependencyInjection\ModeraMJRSecurityIntegrationExtension;
+use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
+use Modera\MjrIntegrationBundle\Help\HelpMenuItemInterface;
 
 /**
  * Provides service definitions for client-side dependency injection container.
@@ -78,6 +79,18 @@ class ServiceDefinitionsProvider implements ContributorInterface
     {
         $bundleConfig = $this->container->getParameter(ModeraMJRSecurityIntegrationExtension::CONFIG_KEY);
 
+        $logoutUrl = $this->getUrl($bundleConfig['logout_url']);
+        if ($this->container->get('security.authorization_checker')->isGranted('ROLE_PREVIOUS_ADMIN')) {
+            $parameter = '_switch_user';
+            $securityConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY);
+            if (isset($securityConfig['switch_user']) && is_array($securityConfig['switch_user'])) {
+                if (isset($securityConfig['switch_user']['parameter'])) {
+                    $parameter = $securityConfig['switch_user']['parameter'];
+                }
+            }
+            $logoutUrl = $this->getUrl($bundleConfig['is_authenticated_url']) . '?' . $parameter . '=_exit';
+        }
+
         return array(
             'security_manager' => array(
                 'className' => 'MF.security.AjaxSecurityManager',
@@ -86,7 +99,7 @@ class ServiceDefinitionsProvider implements ContributorInterface
                         'urls' => array(
                             'login' => $this->getUrl($bundleConfig['login_url']),
                             'isAuthenticated' => $this->getUrl($bundleConfig['is_authenticated_url']),
-                            'logout' => $this->getUrl($bundleConfig['logout_url']),
+                            'logout' => $logoutUrl,
                         ),
                         'authorizationMgr' => '@authorization_mgr',
                         'interceptor' => '@security_manager_interceptor', // MPFE-922
