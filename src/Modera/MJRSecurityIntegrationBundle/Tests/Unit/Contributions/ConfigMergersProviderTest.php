@@ -95,7 +95,7 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('john.doe@example.org', $mergedConfig['userProfile']['email']);
         $this->assertEquals('john.doe', $mergedConfig['userProfile']['username']);
         $this->assertArrayHasKey('switchUserUrl', $mergedConfig);
-        $this->assertEquals('/?_switch_user=', $mergedConfig['switchUserUrl']);
+        $this->assertEquals(null, $mergedConfig['switchUserUrl']);
 
         $mergedConfig = $clientDiDefinitionsProviderMerger->merge($existingConfig);
 

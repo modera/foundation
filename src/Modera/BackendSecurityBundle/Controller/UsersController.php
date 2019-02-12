@@ -321,10 +321,15 @@ class UsersController extends AbstractCrudController
      */
     public function isPasswordRotationNeededAction(array $params)
     {
+        $isRotationNeeded = false;
+        if (!$this->isGranted('ROLE_PREVIOUS_ADMIN')) {
+            $isRotationNeeded = $this->getPasswordManager()->isItTimeToRotatePassword($this->getUser());
+        }
+
         return array(
             'success' => true,
             'result' => array(
-                'isRotationNeeded' => $this->getPasswordManager()->isItTimeToRotatePassword($this->getUser()),
+                'isRotationNeeded' => $isRotationNeeded,
             ),
         );
     }

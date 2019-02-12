@@ -2,16 +2,16 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Controller;
 
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Modera\SecurityBundle\Entity\User;
-use Modera\SecurityBundle\Entity\Group;
-use Modera\SecurityBundle\Entity\Permission;
-use Modera\DirectBundle\Annotation\Remote;
-use Modera\MjrIntegrationBundle\AssetsHandling\AssetsProvider;
+use Modera\SecurityBundle\Service\UserService;
+use Modera\SecurityBundle\ModeraSecurityBundle;
 use Modera\SecurityBundle\Security\Authenticator;
+use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
+use Modera\DirectBundle\Annotation\Remote;
 use Modera\MjrIntegrationBundle\Config\MainConfigInterface;
+use Modera\MjrIntegrationBundle\AssetsHandling\AssetsProvider;
 use Modera\MjrIntegrationBundle\ClientSideDependencyInjection\ServiceDefinitionsManager;
 use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
 use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
@@ -158,6 +158,18 @@ class IndexController extends Controller
      */
     public function backendUsersListAction(array $params)
     {
+        $role = ModeraSecurityBundle::ROLE_ROOT_USER;
+        if ($switchUserConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY . '.switch_user')) {
+            $role = $switchUserConfig['role'];
+        }
+        $this->denyAccessUnlessGranted($role);
+
+        /* @var UserService $userService */
+        $userService = $this->get('modera_security.service.user_service');
+
+        $user = $this->getUser();
+        $rootUser = $userService->getRootUser();
+
         $qb = $this->em()->createQueryBuilder();
         $qb->select('partial u.{id, firstName, lastName, username}')
             ->from(User::clazz(), 'u')
@@ -166,6 +178,7 @@ class IndexController extends Controller
             ->leftJoin('g.permissions', 'gp')
             ->where($qb->expr()->eq('u.isActive', ':isActive'))
                 ->setParameter('isActive', true)
+            ->andWhere($qb->expr()->notIn('u.id', [ $user->getId(), $rootUser->getId() ]))
             ->andWhere(
                 $qb->expr()->orX(
                     $qb->expr()->in('up.roleName', ':roleName'),
@@ -176,7 +189,30 @@ class IndexController extends Controller
             ->groupBy('u.id')
         ;
 
-        $qb->setFirstResult($params['start'])->setMaxResults($params['limit']);
+        if (isset($params['sort'])) {
+            foreach ($params['sort'] as $sort) {
+                $qb->orderBy('u.' . $sort['property'], $sort['direction']);
+            }
+        }
+
+        if (isset($params['filter'])) {
+            foreach ($params['filter'] as $filter) {
+                if ('name' === $filter['property']) {
+                    $qb->andWhere(
+                        $qb->expr()->orX(
+                            $qb->expr()->like('u.username', ':name'),
+                            $qb->expr()->like('u.firstName', ':name'),
+                            $qb->expr()->like('u.lastName', ':name')
+                        )
+                    )->setParameter('name', '%' . $filter['value'] . '%');
+                }
+            }
+        }
+
+        $start = isset($params['start']) ? $params['start'] : 0;
+        $limit = isset($params['limit']) ? $params['limit'] : 25;
+        $qb->setFirstResult($start)->setMaxResults($limit);
+
         $query = $qb->getQuery();
         $query->setHydrationMode($query::HYDRATE_ARRAY);
         $paginator = new Paginator($query);

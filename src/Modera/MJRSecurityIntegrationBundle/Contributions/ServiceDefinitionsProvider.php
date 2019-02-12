@@ -5,6 +5,7 @@ namespace Modera\MJRSecurityIntegrationBundle\Contributions;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Firewall\SwitchUserListener;
 use Modera\MJRSecurityIntegrationBundle\DependencyInjection\ModeraMJRSecurityIntegrationExtension;
 use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
 use Modera\MjrIntegrationBundle\Help\HelpMenuItemInterface;
@@ -81,14 +82,13 @@ class ServiceDefinitionsProvider implements ContributorInterface
 
         $logoutUrl = $this->getUrl($bundleConfig['logout_url']);
         if ($this->container->get('security.authorization_checker')->isGranted('ROLE_PREVIOUS_ADMIN')) {
-            $parameter = '_switch_user';
-            $securityConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY);
-            if (isset($securityConfig['switch_user']) && is_array($securityConfig['switch_user'])) {
-                if (isset($securityConfig['switch_user']['parameter'])) {
-                    $parameter = $securityConfig['switch_user']['parameter'];
-                }
+            $switchUserConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY . '.switch_user');
+            if ($switchUserConfig) {
+                $logoutUrl = implode('', [
+                    $this->getUrl($bundleConfig['is_authenticated_url']),
+                    '?' . $switchUserConfig['parameter'] . '=' . SwitchUserListener::EXIT_VALUE
+                ]);
             }
-            $logoutUrl = $this->getUrl($bundleConfig['is_authenticated_url']) . '?' . $parameter . '=_exit';
         }
 
         return array(

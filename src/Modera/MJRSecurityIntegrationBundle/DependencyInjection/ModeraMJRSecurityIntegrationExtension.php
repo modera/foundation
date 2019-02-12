@@ -33,6 +33,10 @@ class ModeraMJRSecurityIntegrationExtension extends Extension implements Prepend
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+
+        if (class_exists('Modera\BackendTranslationsToolBundle\Handling\ExtjsTranslationHandler')) {
+            $loader->load('extjs_translations.xml');
+        }
     }
 
     /**

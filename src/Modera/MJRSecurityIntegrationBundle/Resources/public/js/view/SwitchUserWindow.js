@@ -5,11 +5,16 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
     extend: 'MFC.window.ModalWindow',
     alias: 'widget.modera-mjrsecurityintegration-switchuserwindow',
 
+    requires: [
+        'MFC.form.field.plugin.FieldInputFinishedPlugin'
+    ],
+
     // l10n
     titleText: 'Switch user to',
     firstNameColumnHeaderText: 'First name',
     lastNameColumnHeaderText: 'Last name',
     usernameColumnHeaderText: 'Principal',
+    typeToFilterText: 'type here to filter...',
 
     // override
     constructor: function(config) {
@@ -19,6 +24,9 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
             fields: [
                 'id', 'firstName', 'lastName', 'username'
             ],
+            pageSize: 10,
+            remoteSort: true,
+            remoteFilter: true,
             proxy: {
                 type: 'direct',
                 directFn: Actions.ModeraMJRSecurityIntegration_Index.backendUsersList,
@@ -31,18 +39,47 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
 
         var defaults = {
             title: me.titleText,
-            width: 500,
-            height: 400,
-            bodyPadding: '0 0 10 0',
+            width: 550,
+            height: 450,
+            maxHeight: Ext.getBody().getViewSize().height - 60,
+            closeOnOuterClick: true,
+            hideCloseButton: true,
+            bodyPadding: '0 0 0 0',
             layout: {
                 type: 'vbox',
                 pack: 'center',
                 align:'stretch'
             },
+            dockedItems: [
+                {
+                    dock: 'top',
+                    xtype: 'form',
+                    defaults: {
+                        fieldStyle: {
+                            margin: '0 0 5 0'
+                        }
+                    },
+                    items: [
+                        {
+                            width: '100%',
+                            itemId: 'filter',
+                            xtype: 'textfield',
+                            plugins: [
+                                Ext.create('MFC.form.field.plugin.FieldInputFinishedPlugin', {
+                                    timeout: 800
+                                })
+                            ],
+                            emptyText: me.typeToFilterText,
+                            enableKeyEvents: true,
+                            value: ''
+                        }
+                    ]
+                }
+            ],
             items: [
                 {
-                    xtype: 'grid',
                     flex:1,
+                    xtype: 'grid',
                     border: true,
                     viewConfig: {
                         markDirty: false
@@ -77,24 +114,60 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
                     ],
                     store: store
                 }
-            ],
-            actions: [
-                '->'
             ]
         };
 
-        this.callParent([Ext.apply(defaults, config || {})]);
+        me.callParent([Ext.apply(defaults, config || {})]);
 
-        this.assignListeners();
+        me.assignListeners();
     },
 
     // private
     assignListeners: function() {
         var me = this;
 
-        me.down('grid').on('select', function(selModel, record) {
+        me.getGrid().on('select', function(selModel, record) {
             me.fireEvent('switchuser', me, record.get('username'));
         });
+
+        var field = me.getFilterField();
+
+        field.on('focus', function(field) { field.selectText(); });
+        field.on('inputfinished', me.onFilterChanged, me);
+    },
+
+    // private
+    getGrid: function() {
+        return this.down('grid')
+    },
+
+    // private
+    getStore: function() {
+        return this.getGrid().getStore();
+    },
+
+    // private
+    getFilterField: function() {
+        return this.down('#filter');
+    },
+
+    // private
+    onFilterChanged: function() {
+        var me = this;
+
+        var store = me.getStore();
+
+        var field = me.getFilterField();
+        if (field.getValue()) {
+            store.filter([
+                {
+                    property: 'name',
+                    value: field.getValue()
+                }
+            ]);
+        } else {
+            store.clearFilter();
+        }
     },
 
     // private

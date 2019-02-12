@@ -30,19 +30,18 @@ class ClientDiServiceDefinitionsProvider implements ContributorInterface
      */
     public function getItems()
     {
-        $role = 'ROLE_ALLOWED_TO_SWITCH';
-        if (isset($this->securityConfig['switch_user']) && is_array($this->securityConfig['switch_user'])) {
-            if (isset($this->securityConfig['switch_user']['role'])) {
-                $role = $this->securityConfig['switch_user']['role'];
-            }
+        if (isset($this->securityConfig['switch_user']) && $this->securityConfig['switch_user']) {
+            $role = $this->securityConfig['switch_user']['role'];
+
+            return array(
+                'modera_mjr_security_integration.user_settings_contributor' => array(
+                    'className' => 'Modera.mjrsecurityintegration.runtime.UserSettingsContributor',
+                    'args' => ['@application', $role],
+                    'tags' => ['shared_activities_provider'],
+                ),
+            );
         }
 
-        return array(
-            'modera_mjr_security_integration.user_settings_contributor' => array(
-                'className' => 'Modera.mjrsecurityintegration.runtime.UserSettingsContributor',
-                'args' => ['@application', $role],
-                'tags' => ['shared_activities_provider'],
-            ),
-        );
+        return array();
     }
 }

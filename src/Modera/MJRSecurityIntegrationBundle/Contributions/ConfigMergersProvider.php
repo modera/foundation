@@ -45,15 +45,13 @@ class ConfigMergersProvider implements ContributorInterface
     ) {
         $this->router = $router;
 
-        $parameter = '_switch_user';
-        if (isset($securityConfig['switch_user']) && is_array($securityConfig['switch_user'])) {
-            if (isset($securityConfig['switch_user']['parameter'])) {
-                $parameter = $securityConfig['switch_user']['parameter'];
-            }
+        $switchUserUrl = null;
+        if (isset($securityConfig['switch_user']) && $securityConfig['switch_user']) {
+            $switchUserUrl = implode('', [
+                $this->getUrl($bundleConfig['is_authenticated_url']),
+                '?' . $securityConfig['switch_user']['parameter'] . '='
+            ]);
         }
-        $switchUserUrl = $this->getUrl(
-            isset($bundleConfig['is_authenticated_url']) ? $bundleConfig['is_authenticated_url'] : '/'
-        ) . '?' . $parameter . '=';
 
         $this->items = array(
             new CallbackConfigMerger(function (array $currentConfig) use ($tokenStorage, $roleHierarchy, $switchUserUrl) {
