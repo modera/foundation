@@ -23,8 +23,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
@@ -151,6 +152,25 @@ class IndexController extends Controller
         }
 
         return new JsonResponse($response);
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $username
+     * @return RedirectResponse
+     */
+    public function switchUserToAction(Request $request, $username)
+    {
+        $url = '/';
+
+        $switchUserConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY . '.switch_user');
+        if ($switchUserConfig) {
+            $parameters = array();
+            $parameters[$switchUserConfig['parameter']] = $username;
+            $url = $this->generateUrl('modera_mjr_security_integration.index.is_authenticated', $parameters);
+        }
+
+        return $this->redirect($url);
     }
 
     /**

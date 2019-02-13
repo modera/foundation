@@ -43,7 +43,7 @@ Ext.define('Modera.mjrsecurityintegration.runtime.SwitchUserWindowActivity', {
             me.workbench.getService('config_provider').getConfig(function(config) {
                 window.close();
                 Ext.Ajax.request({
-                    url: config['switchUserUrl'] + username,
+                    url: config['switchUserUrl'].replace('__username__', username),
                     success: function(response) {
                         var resp = decode(response.responseText);
                         if (resp['success'] && resp['profile']['username'] !== config['userProfile']['username']) {

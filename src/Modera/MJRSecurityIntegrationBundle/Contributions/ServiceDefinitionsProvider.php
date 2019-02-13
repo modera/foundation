@@ -33,13 +33,14 @@ class ServiceDefinitionsProvider implements ContributorInterface
 
     /**
      * @param string $route
+     * @param array  $parameters
      *
      * @return string
      */
-    private function getUrl($route)
+    private function getUrl($route, $parameters = [])
     {
         if ('/' !== $route[0]) {
-            return $this->container->get('router')->generate($route, array(), UrlGeneratorInterface::ABSOLUTE_PATH);
+            return $this->container->get('router')->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
         }
 
         return $route;
@@ -84,10 +85,9 @@ class ServiceDefinitionsProvider implements ContributorInterface
         if ($this->container->get('security.authorization_checker')->isGranted('ROLE_PREVIOUS_ADMIN')) {
             $switchUserConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY . '.switch_user');
             if ($switchUserConfig) {
-                $logoutUrl = implode('', [
-                    $this->getUrl($bundleConfig['is_authenticated_url']),
-                    '?' . $switchUserConfig['parameter'] . '=' . SwitchUserListener::EXIT_VALUE
-                ]);
+                $logoutUrl = $this->getUrl('modera_mjr_security_integration.index.switch_user_to', array(
+                    'username' => SwitchUserListener::EXIT_VALUE,
+                ));
             }
         }
 

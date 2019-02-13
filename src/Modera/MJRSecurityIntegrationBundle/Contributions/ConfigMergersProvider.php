@@ -47,10 +47,9 @@ class ConfigMergersProvider implements ContributorInterface
 
         $switchUserUrl = null;
         if (isset($securityConfig['switch_user']) && $securityConfig['switch_user']) {
-            $switchUserUrl = implode('', [
-                $this->getUrl($bundleConfig['is_authenticated_url']),
-                '?' . $securityConfig['switch_user']['parameter'] . '='
-            ]);
+            $switchUserUrl = $this->getUrl('modera_mjr_security_integration.index.switch_user_to', array(
+                'username' => '__username__',
+            ));
         }
 
         $this->items = array(
@@ -111,13 +110,14 @@ class ConfigMergersProvider implements ContributorInterface
 
     /**
      * @param string $route
+     * @param array $parameters
      *
      * @return string
      */
-    private function getUrl($route)
+    private function getUrl($route, $parameters = [])
     {
         if ('/' !== $route[0]) {
-            return $this->router->generate($route, array(), UrlGeneratorInterface::ABSOLUTE_PATH);
+            return $this->router->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
         }
 
         return $route;
