@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d92e6de2bf2f82b5341899e48b0191f7",
+    "content-hash": "e321e45306ddecf46426242576bb6363",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -357,16 +357,16 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "1.10.1",
+            "version": "1.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "98551d71f515692c2278073e0d483763ac70b341"
+                "reference": "1f99e6645030542079c57d4680601a4a8778a1bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/98551d71f515692c2278073e0d483763ac70b341",
-                "reference": "98551d71f515692c2278073e0d483763ac70b341",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/1f99e6645030542079c57d4680601a4a8778a1bd",
+                "reference": "1f99e6645030542079c57d4680601a4a8778a1bd",
                 "shasum": ""
             },
             "require": {
@@ -438,7 +438,7 @@
                 "orm",
                 "persistence"
             ],
-            "time": "2019-01-07T15:31:08+00:00"
+            "time": "2019-02-06T13:18:04+00:00"
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
@@ -2174,25 +2174,27 @@
         },
         {
             "name": "sergeil/expander-bundle",
-            "version": "v1.0.2",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sergeil/ExpanderBundle.git",
-                "reference": "cea063a87c7663f70e2829fcf695595196a1c1b0"
+                "reference": "fb311dc407123789c2c84370086a274fec63aff8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sergeil/ExpanderBundle/zipball/cea063a87c7663f70e2829fcf695595196a1c1b0",
-                "reference": "cea063a87c7663f70e2829fcf695595196a1c1b0",
+                "url": "https://api.github.com/repos/sergeil/ExpanderBundle/zipball/fb311dc407123789c2c84370086a274fec63aff8",
+                "reference": "fb311dc407123789c2c84370086a274fec63aff8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0",
-                "symfony/symfony": "~2.0|~3.0"
+                "symfony/framework-bundle": "~2.0|~3.0|~4.0"
             },
             "require-dev": {
+                "doctrine/common": "~2.4",
                 "phake/phake": "~2.0",
-                "phpunit/phpunit": "3.7.*"
+                "phpunit/phpunit": "^5.5",
+                "symfony/console": "~2.0|~3.0|~4.0"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -2203,10 +2205,7 @@
             "autoload": {
                 "psr-4": {
                     "Sli\\ExpanderBundle\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -2224,7 +2223,7 @@
             "keywords": [
                 "extensibility"
             ],
-            "time": "2016-12-31T15:50:54+00:00"
+            "time": "2019-02-07T18:24:51+00:00"
         },
         {
             "name": "sergeil/extjsintegration-bundle",
@@ -3118,12 +3117,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/modera/tests-runner.git",
-                "reference": "7d92a546de39a5947650d105ae7b678eecadcff2"
+                "reference": "7d1e7b55aa4cc0ce98d7e2e7853ed70b232e8167"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/modera/tests-runner/zipball/7d92a546de39a5947650d105ae7b678eecadcff2",
-                "reference": "7d92a546de39a5947650d105ae7b678eecadcff2",
+                "url": "https://api.github.com/repos/modera/tests-runner/zipball/7d1e7b55aa4cc0ce98d7e2e7853ed70b232e8167",
+                "reference": "7d1e7b55aa4cc0ce98d7e2e7853ed70b232e8167",
                 "shasum": ""
             },
             "require": {
@@ -3131,11 +3130,16 @@
             },
             "require-dev": {
                 "mikey179/vfsstream": "^1.6",
-                "phake/phake": "^3.0",
-                "phpunit/phpunit": "^5.5",
+                "phake/phake": "^2.0|^3.0",
+                "phpunit/phpunit": ">=5.5",
                 "symfony/yaml": "^3.0"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Modera\\TestsRunner\\": "src/Modera/TestsRunner/"
@@ -3151,7 +3155,7 @@
                     "email": "sergei.lissovski@modera.org"
                 }
             ],
-            "time": "2018-05-19T15:39:49+00:00"
+            "time": "2019-02-20T08:16:52+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -3859,6 +3863,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2017-06-30T09:13:00+00:00"
         },
         {

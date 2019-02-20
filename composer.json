@@ -23,7 +23,7 @@
         "phake/phake": "~2.0",
         "phpunit/phpunit": "^5.5",
         "mikey179/vfsstream": "^1.6",
-        "modera/tests-runner": "dev-master",
+        "modera/tests-runner": "0.x-dev",
         "sergeil/aux-bundle": "~1.0"
     },
     "autoload": {
@@ -68,7 +68,7 @@
         },
         "modera-monorepo": {
             "require-dev": {
-                "modera/tests-runner": "dev-master"
+                "modera/tests-runner": "0.x-dev"
             },
             "include": [
                 "src/Modera/*/composer.json"
