@@ -66,6 +66,7 @@ class JsResourcesProvider implements ContributorInterface
             $this->router->generate('modera_font_awesome_js'),
             '/bundles/moderamjrintegration/js/orientationchange.js',
             '/bundles/moderamjrintegration/js/stylesheetsloader.js',
+            '/bundles/moderamjrintegration/js/promisify.js',
         );
     }
 }
