@@ -73,6 +73,7 @@
                         }
                         action.apply(this, args);
                     }, {
+                        promisified: true,
                         directCfg: action.directCfg
                     });
                 } else {
