@@ -32,12 +32,13 @@ class LocaleListener implements EventSubscriberInterface
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
-        $firewall = $this->firewallMap->getFirewallConfig($request);
-
-        if (!$request->attributes->get('_locale') && $firewall->isSecurityEnabled()) {
-            $session = $request->getSession();
-            if ($session && $locale = $session->get('_backend_locale')) {
-                $request->attributes->set('_locale', $locale);
+        if ($event->isMasterRequest() && !$request->attributes->get('_locale')) {
+            $firewall = $this->firewallMap->getFirewallConfig($request);
+            if ($firewall && $firewall->isSecurityEnabled() && !$firewall->isStateless()) {
+                $session = $request->getSession();
+                if ($session && $locale = $session->get('_backend_locale')) {
+                    $request->attributes->set('_locale', $locale);
+                }
             }
         }
     }
