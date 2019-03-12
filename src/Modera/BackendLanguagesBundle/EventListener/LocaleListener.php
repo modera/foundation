@@ -3,6 +3,7 @@
 namespace Modera\BackendLanguagesBundle\EventListener;
 
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Bundle\SecurityBundle\Security\FirewallMap;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -13,13 +14,27 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class LocaleListener implements EventSubscriberInterface
 {
     /**
+     * @var FirewallMap
+     */
+    private $firewallMap;
+
+    /**
+     * @param FirewallMap $firewallMap
+     */
+    public function __construct(FirewallMap $firewallMap)
+    {
+        $this->firewallMap = $firewallMap;
+    }
+
+    /**
      * @param GetResponseEvent $event
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
+        $firewall = $this->firewallMap->getFirewallConfig($request);
 
-        if (!$request->attributes->get('_locale')) {
+        if (!$request->attributes->get('_locale') && $firewall->isSecurityEnabled()) {
             $session = $request->getSession();
             if ($session && $locale = $session->get('_backend_locale')) {
                 $request->attributes->set('_locale', $locale);

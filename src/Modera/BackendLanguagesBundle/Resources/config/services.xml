@@ -52,13 +52,15 @@
         <service id="modera_backend_languages.contributions.settings_sections_provider"
                  class="Modera\BackendLanguagesBundle\Contributions\SettingsSectionsProvider">
 
-            <argument type="service" id="security.authorization_checker" />
+
 
             <tag name="modera_backend_tools_settings.contributions.sections_provider" />
         </service>
 
         <service id="modera_backend_languages.event_listener.locale_listener"
                  class="Modera\BackendLanguagesBundle\EventListener\LocaleListener">
+
+            <argument type="service" id="security.firewall.map" />
 
             <tag name="kernel.event_subscriber" />
         </service>
