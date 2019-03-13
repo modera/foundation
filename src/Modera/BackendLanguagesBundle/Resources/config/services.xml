@@ -60,7 +60,7 @@
         <service id="modera_backend_languages.event_listener.locale_listener"
                  class="Modera\BackendLanguagesBundle\EventListener\LocaleListener">
 
-            <argument type="service" id="security.firewall.map" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
 
             <tag name="kernel.event_subscriber" />
         </service>
