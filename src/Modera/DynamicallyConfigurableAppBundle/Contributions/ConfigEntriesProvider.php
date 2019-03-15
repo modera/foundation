@@ -51,7 +51,7 @@ class ConfigEntriesProvider implements ContributorInterface
 
         return array(
             new CED(Bundle::CONFIG_KERNEL_ENV, T::trans('Production mode'), 'prod', 'general', $kernelEnvServer, $kernelEnvClient),
-            new CED(Bundle::CONFIG_KERNEL_DEBUG, T::trans('Maintenance mode'), false, 'general', $kernelDebugServer, $kernelDebugClient),
+            new CED(Bundle::CONFIG_KERNEL_DEBUG, T::trans('Debug mode'), false, 'general', $kernelDebugServer, $kernelDebugClient),
         );
     }
 }

@@ -14,7 +14,7 @@ Ext.define('Modera.backend.dcmjr.view.GeneralSettingsPanel', {
     primaryAddressLabelText: 'Primary address',
     defaultSectionLabelText: 'Default section',
     developmentModeLabelText: 'Development mode',
-    maintenanceModeLabelText: 'Maintenance mode',
+    debugModeLabelText: 'Debug mode',
 
     /**
      * @param {Object} config
@@ -58,7 +58,7 @@ Ext.define('Modera.backend.dcmjr.view.GeneralSettingsPanel', {
                     },
                     {
                         xtype: 'mfc-onofffield',
-                        fieldLabel: this.maintenanceModeLabelText,
+                        fieldLabel: this.debugModeLabelText,
                         name: 'kernel_debug',
                         onValue: 'true',
                         offValue: 'false'
