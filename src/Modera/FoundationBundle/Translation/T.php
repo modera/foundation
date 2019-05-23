@@ -3,8 +3,8 @@
 namespace Modera\FoundationBundle\Translation;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Translation\Translator;
 
 /**
  * You can use this helper to translate messages right from you PHP classes. When this helper is used

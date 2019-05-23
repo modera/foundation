@@ -2,5 +2,6 @@
 mtr
 vendor
 vendor.php*
+composer.php*
 foo
 composer.lock

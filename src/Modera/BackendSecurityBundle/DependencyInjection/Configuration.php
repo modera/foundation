@@ -29,8 +29,8 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('modera_backend_security.service.default_mail_service')
                 ->end()
                 ->scalarNode('mail_sender') // deprecated since 2.56.0, use the same config under "modera_security/password_strength/mail"
-                    ->defaultValue('no-reply@no-reply')
                     ->cannotBeEmpty()
+                    ->defaultValue('no-reply@no-reply')
                 ->end()
                 ->booleanNode('hide_delete_user_functionality')
                     ->defaultFalse()

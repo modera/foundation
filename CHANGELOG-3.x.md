@@ -2,7 +2,9 @@
 
 ## 3.1.0 (not released yet, in development)
 
-* FontAwesome v5.5.0
+* Moment.js v2.24.0
+* FontAwesome v5.8.2
+* Symfony 4 compatibility
 
 ## 3.0.0 (01.11.2018)
 

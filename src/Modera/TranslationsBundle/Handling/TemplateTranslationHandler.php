@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
-use Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader;
+use Symfony\Component\Translation\Reader\TranslationReader;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -35,13 +35,13 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     private $extractor;
 
     /**
-     * @var TranslationLoader
+     * @var TranslationReader
      */
     private $loader;
 
     public function __construct(
         KernelInterface $kernel,
-        TranslationLoader $loader,
+        TranslationReader $loader,
         ExtractorInterface $extractor,
         $bundle
     )
@@ -96,7 +96,7 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
         $translationsDir = $foundBundle->getPath().'/Resources/translations';
         if ($fs->exists($translationsDir)) {
             $currentCatalogue = new MessageCatalogue($locale);
-            $this->loader->loadMessages($translationsDir, $currentCatalogue);
+            $this->loader->read($translationsDir, $currentCatalogue);
 
             foreach ($extractedCatalogue->getDomains() as $domain) {
                 $messages = $currentCatalogue->all($domain);

@@ -5,14 +5,16 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service parent="modera_translations.handling.php_classes_translation_handler">
+        <service id="modera_backend_dashboard.handling.php_classes_translation_handler"
+                 parent="modera_translations.handling.php_classes_translation_handler">
 
             <argument>ModeraBackendDashboardBundle</argument>
 
             <tag name="modera_translations.translation_handler" />
         </service>
 
-        <service parent="modera_backend_translations_tool.handling.extjs_translation_handler">
+        <service id="modera_backend_dashboard.handling.extjs_translation_handler"
+                 parent="modera_backend_translations_tool.handling.extjs_translation_handler">
 
             <argument>ModeraBackendDashboardBundle</argument>
 
@@ -28,7 +30,8 @@
         </service>
 
         <service id="modera_backend_dashboard.contributions.menu_items_provider"
-                 class="Modera\BackendDashboardBundle\Contributions\MenuItemsProvider">
+                 class="Modera\BackendDashboardBundle\Contributions\MenuItemsProvider"
+                 public="true">
 
             <argument type="service" id="modera_backend_dashboard.contributions.config_mergers_provider" />
             <argument>%modera_backend_dashboard.tab_order%</argument>
@@ -51,7 +54,8 @@
         </service>
 
         <service id="modera_backend_dashboard.contributions.config_mergers_provider"
-                 class="Modera\BackendDashboardBundle\Contributions\ConfigMergersProvider">
+                 class="Modera\BackendDashboardBundle\Contributions\ConfigMergersProvider"
+                 public="true">
 
             <argument type="service" id="service_container" />
             <argument type="service" id="modera_backend_dashboard.dashboard_provider" />

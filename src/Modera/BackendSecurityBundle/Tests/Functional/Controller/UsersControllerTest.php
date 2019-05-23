@@ -39,7 +39,7 @@ class UsersControllerTest extends FunctionalTestCase
         static::$schemaTool->dropSchema(static::getTablesMetadata());
         static::$schemaTool->createSchema(static::getTablesMetadata());
 
-        static::$encoder = static::$container->get('security.encoder_factory');
+        static::$encoder = static::$container->get('modera_backend_security.test.encoder_factory');
 
         static::$user = new User();
         static::$user->setEmail('test@test.com');

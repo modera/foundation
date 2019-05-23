@@ -31,8 +31,8 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $this->assertTrue($fs->exists($transPath.'/messages.en.yml'));
 
         $catalogue = new MessageCatalogue('en');
-        $loader = self::$kernel->getContainer()->get('translation.loader');
-        $loader->loadMessages(dirname($transPath), $catalogue);
+        $loader = self::$kernel->getContainer()->get('modera_translations.translation.reader');
+        $loader->read(dirname($transPath), $catalogue);
         $messages = $catalogue->all('messages');
 
         $this->assertEquals(3, count($messages));
@@ -89,8 +89,8 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $this->assertTrue($fs->exists($transPath.'/messages.et.yml'));
 
         $catalogue = new MessageCatalogue('et');
-        $loader = self::$kernel->getContainer()->get('translation.loader');
-        $loader->loadMessages(dirname($transPath), $catalogue);
+        $loader = self::$kernel->getContainer()->get('modera_translations.translation.reader');
+        $loader->read(dirname($transPath), $catalogue);
         $messages = $catalogue->all('messages');
 
         $this->assertEquals(3, count($messages));

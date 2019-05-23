@@ -5,26 +5,30 @@
     "require": {
         "php": ">=5.6",
         "twig/twig": "~1.34|~2.4",
-        "doctrine/orm": "^2.4.8",
-        "doctrine/doctrine-bundle": "~1.4",
-        "sensio/generator-bundle": "~3.0",
-        "symfony/swiftmailer-bundle": "~2.3|^3.0",
-        "symfony/property-access": "~2.8|^3.0",
-        "symfony/framework-bundle": "~2.8|^3.0",
-        "knplabs/knp-gaufrette-bundle": "~0.1",
-        "sergeil/extjslocalization-bundle": "~1.0",
+        "doctrine/orm": "^2.5",
+        "doctrine/doctrine-bundle": "^1.6",
+        "symfony/swiftmailer-bundle": "^2.6.4|^3.0",
+        "symfony/intl": "~3.4|~4.0",
+        "symfony/validator": "^3.4|^4.0",
+        "symfony/security-bundle": "^3.4|^4.0",
+        "symfony/framework-bundle": "^3.4|^4.0",
+        "knplabs/knp-gaufrette-bundle": "^0.5",
+        "sergeil/extjslocalization-bundle": "^1.0",
         "sergeil/extjsintegration-bundle": "^2.0",
-        "sergeil/expander-bundle": "~1.0",
-        "sergeil/aux-bundle": "~1.0",
-        "imagine/imagine": "0.6.*",
-        "modera/module": "^1.3"
+        "sergeil/expander-bundle": "^1.0",
+        "imagine/imagine": "^1.0"
     },
     "require-dev": {
-        "phake/phake": "~2.0",
+        "phake/phake": "^2.0",
         "phpunit/phpunit": "^5.5",
+        "sergeil/aux-bundle": "^1.0",
         "mikey179/vfsstream": "^1.6",
         "modera/tests-runner": "0.x-dev",
-        "sergeil/aux-bundle": "~1.0"
+        "symfony/twig-bundle": "^3.4|^4.0",
+        "symfony/templating": "~3.4|~4.0",
+        "symfony/expression-language": "~3.4|~4.0",
+        "fig/link-util": "^1.0",
+        "symfony/symfony": "~3.4"
     },
     "autoload": {
         "psr-4": {

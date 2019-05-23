@@ -6,14 +6,16 @@
 
     <services>
 
-        <service parent="modera_translations.handling.template_translation_handler">
+        <service id="modera_translations_dummy.handling.template_translation_handler"
+                 parent="modera_translations.handling.template_translation_handler">
 
             <argument>ModeraTranslationsDummyBundle</argument>
 
             <tag name="modera_translations.translation_handler" />
         </service>
 
-        <service parent="modera_translations.handling.php_classes_translation_handler">
+        <service id="modera_translations_dummy.handling.php_classes_translation_handler"
+                 parent="modera_translations.handling.php_classes_translation_handler">
 
             <argument>ModeraTranslationsDummyBundle</argument>
 

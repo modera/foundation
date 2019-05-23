@@ -1,4 +1,8 @@
 parameters:
+    db_host: '%env(SYMFONY__DB_HOST)%'
+    db_port: '%env(SYMFONY__DB_PORT)%'
+    db_user: '%env(SYMFONY__DB_USER)%'
+    db_password: '%env(SYMFONY__DB_PASSWORD)%'
     locale: en
 
 framework:
@@ -7,7 +11,7 @@ framework:
     session:         ~
     router:          { resource: "%kernel.root_dir%/config/routing.yml" }
     default_locale:  "%locale%"
-    translator:      { fallback: %locale% }
+    translator:      { fallback: '%locale%' }
     templating:
         engines: ['twig']
 
@@ -16,10 +20,10 @@ doctrine:
     dbal:
         # http://symfony.com/doc/current/configuration/external_parameters.html
         driver:   pdo_mysql
-        host:     %db_host%
-        port:     %db_port%
-        user:     %db_user%
-        password: %db_password%
+        host:     '%db_host%'
+        port:     '%db_port%'
+        user:     '%db_user%'
+        password: '%db_password%'
         dbname:   modera_translations_bundle
         charset:  UTF8
 

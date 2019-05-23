@@ -15,8 +15,4 @@
             <directory>./Tests/</directory>
         </testsuite>
     </testsuites>
-
-    <!--<php>-->
-        <!--<server name="KERNEL_DIR" value="./Tests/Fixtures/App/app" />-->
-    <!--</php>-->
 </phpunit>

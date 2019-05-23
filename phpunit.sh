@@ -43,8 +43,9 @@ if [ ! -d "vendor" ]; then
   docker run \
       -it \
       --rm \
-      -v `pwd`:/mnt/tmp \
       -w /mnt/tmp \
+      -v `pwd`:/mnt/tmp \
+      -e COMPOSER_MEMORY_LIMIT=-1 \
       modera/php:${php_version} "composer install"
 fi
 

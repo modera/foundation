@@ -12,14 +12,16 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
 
-        <service parent="modera_translations.handling.php_classes_translation_handler">
+        <service id="modera_backend_tools_activity_log.handling.php_classes_translation_handler"
+                 parent="modera_translations.handling.php_classes_translation_handler">
 
             <argument>ModeraBackendToolsActivityLogBundle</argument>
 
             <tag name="modera_translations.translation_handler" />
         </service>
 
-        <service parent="modera_backend_translations_tool.handling.extjs_translation_handler">
+        <service id="modera_backend_tools_activity_log.handling.extjs_translation_handler"
+                 parent="modera_backend_translations_tool.handling.extjs_translation_handler">
 
             <argument>ModeraBackendToolsActivityLogBundle</argument>
 

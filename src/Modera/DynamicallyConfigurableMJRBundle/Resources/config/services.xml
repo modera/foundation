@@ -5,14 +5,16 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service parent="modera_translations.handling.php_classes_translation_handler">
+        <service id="modera_dynamically_configurable_mjr.handling.php_classes_translation_handler"
+                 parent="modera_translations.handling.php_classes_translation_handler">
 
             <argument>ModeraDynamicallyConfigurableMJRBundle</argument>
 
             <tag name="modera_translations.translation_handler" />
         </service>
 
-        <service parent="modera_backend_translations_tool.handling.extjs_translation_handler">
+        <service id="modera_dynamically_configurable_mjr.handling.extjs_translation_handler"
+                 parent="modera_backend_translations_tool.handling.extjs_translation_handler">
 
             <argument>ModeraDynamicallyConfigurableMJRBundle</argument>
 

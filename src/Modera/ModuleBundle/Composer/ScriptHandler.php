@@ -10,7 +10,6 @@ use Composer\EventDispatcher\Event as BaseEvent;
 use Composer\DependencyResolver\Operation\UpdateOperation;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Filesystem\Filesystem;
-use Modera\Module\Service\ComposerService;
 use Modera\ModuleBundle\Composer\Script\AliasPackageEvent;
 
 /**
@@ -84,7 +83,7 @@ class ScriptHandler extends AbstractScriptHandler
         }
 
         $bundlesFile = 'AppModuleBundles.php';
-        $bundles = ComposerService::getRegisterBundles($event->getComposer());
+        $bundles = Helper::getRegisterBundles($event->getComposer());
 
         static::createRegisterBundlesFile($bundles, $appDir.'/'.$bundlesFile);
         static::executeCommand($event, $consoleDir, 'modera:module:register '.$bundlesFile, $options['process-timeout']);
@@ -275,7 +274,7 @@ class ScriptHandler extends AbstractScriptHandler
                 $package = $operation->getPackage();
             }
 
-            $options = ComposerService::getOptions($event->getComposer());
+            $options = Helper::getOptions($event->getComposer());
             if ($package->getType() != $options['type']) {
                 //return;
             }

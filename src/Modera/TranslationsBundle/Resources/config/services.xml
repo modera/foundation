@@ -6,8 +6,13 @@
 
     <services>
 
+        <service id="modera_translations.translation.reader" alias="translation.reader" public="true" />
+        <service id="modera_translations.translation.writer" alias="translation.writer" public="true" />
+        <service id="modera_translations.translation.extractor" alias="translation.extractor" public="true" />
+
         <service id="modera_translations.event_listener.language_translation_token_listener"
-                 class="Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener">
+                 class="Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener"
+                 public="true">
 
             <tag name="doctrine.event_listener" event="postPersist" />
             <tag name="doctrine.event_listener" event="postUpdate" />
@@ -28,7 +33,7 @@
                  public="false">
 
             <argument type="service" id="kernel" />
-            <argument type="service" id="translation.loader" />
+            <argument type="service" id="modera_translations.translation.reader" />
             <argument type="service" id="modera_translations.token_extraction.php_class_token_extraction" />
         </service>
 
@@ -38,8 +43,8 @@
                  public="false">
 
             <argument type="service" id="kernel" />
-            <argument type="service" id="translation.loader" />
-            <argument type="service" id="translation.extractor" />
+            <argument type="service" id="modera_translations.translation.reader" />
+            <argument type="service" id="modera_translations.translation.extractor" />
         </service>
 
         <service id="modera_translations.compiler.translations_compiler"
@@ -50,14 +55,14 @@
         </service>
 
         <!--
-        <service parent="modera_translations.handling.template_translation_handler">
+        <service id="..." parent="modera_translations.handling.template_translation_handler">
 
             <argument>ModeraTranslationsBundle</argument>
 
             <tag name="modera_translations.translation_handler" />
         </service>
 
-        <service parent="modera_translations.handling.php_classes_translation_handler">
+        <service id="..." parent="modera_translations.handling.php_classes_translation_handler">
 
             <argument>ModeraTranslationsBundle</argument>
 

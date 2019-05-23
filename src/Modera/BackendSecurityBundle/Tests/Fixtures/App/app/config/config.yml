@@ -2,16 +2,19 @@ imports:
     - { resource: parameters.yml }
     - { resource: "@ModeraSecurityBundle/Resources/config/security.yml" }
 
+services:
+    modera_backend_security.test.encoder_factory:
+        alias: security.encoder_factory
+        public: true
+
 framework:
     secret:          Hell yeah!
-    csrf_protection: true
     session:        ~
     validation: {enable_annotations: true}
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: ~
-    form:            ~
-    translator:      { fallback: %locale% }
+    translator:      { fallback: '%locale%' }
     csrf_protection: ~
     templating:
         engines: ['twig']
@@ -22,10 +25,10 @@ doctrine:
     dbal:
         # http://symfony.com/doc/current/configuration/external_parameters.html
         driver:   pdo_mysql
-        host:     %db_host%
-        port:     %db_port%
-        user:     %db_user%
-        password: %db_password%
+        host:     '%db_host%'
+        port:     '%db_port%'
+        user:     '%db_user%'
+        password: '%db_password%'
         dbname:   modera_backend_security_bundle
         charset:  UTF8
 

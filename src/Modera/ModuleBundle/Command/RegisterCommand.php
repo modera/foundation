@@ -10,6 +10,8 @@ use Modera\ModuleBundle\Manipulator\KernelManipulator;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
+ * @deprecated The RegisterCommand is deprecated and will be removed in version 4.0
+ *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */

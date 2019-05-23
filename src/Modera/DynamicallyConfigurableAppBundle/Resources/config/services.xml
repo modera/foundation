@@ -18,7 +18,8 @@
             <argument>%modera_dynamically_configurable_app.kernel_config_fqcn%</argument>
         </service>
 
-        <service parent="modera_translations.handling.php_classes_translation_handler">
+        <service id="modera_dynamically_configurable_app.handling.php_classes_translation_handler"
+                 parent="modera_translations.handling.php_classes_translation_handler">
 
             <argument>ModeraDynamicallyConfigurableAppBundle</argument>
 

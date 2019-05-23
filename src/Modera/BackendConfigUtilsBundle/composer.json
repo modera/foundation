@@ -12,11 +12,11 @@
     ],
     "require": {
         "php": ">=5.6",
-        "modera/server-crud-bundle": "~2.0|~3.0",
-        "modera/dynamically-configurable-mjr-bundle": "~2.0|~3.0"
+        "modera/server-crud-bundle": "~3.1|~4.0",
+        "modera/dynamically-configurable-mjr-bundle": "~3.1|~4.0"
     },
     "require-dev": {
-        "phake/phake": "~2.0",
+        "phake/phake": "^2.0",
         "phpunit/phpunit": "^5.5"
     },
     "autoload": {

@@ -13,7 +13,7 @@ class FontAwesome
     /**
      * @var string
      */
-    public static $version = '5.5.0';
+    public static $version = '5.8.2';
 
     /**
      * @var string
@@ -28,12 +28,12 @@ class FontAwesome
     /**
      * @var string
      */
-    public static $iconsYml = '/advanced-options/metadata/icons.yml';
+    public static $iconsYml = '/metadata/icons.yml';
 
     /**
      * @var string
      */
-    public static $shimsYml = '/advanced-options/metadata/shims.yml';
+    public static $shimsYml = '/metadata/shims.yml';
 
     /**
      * @var bool

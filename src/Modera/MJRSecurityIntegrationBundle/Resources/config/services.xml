@@ -58,8 +58,8 @@
             <tag name="modera_security.permissions_provider" />
         </service>
 
-        <service class="Modera\MJRSecurityIntegrationBundle\EventListener\AjaxAuthenticationValidatingListener"
-                 id="modera_mjr_security_integration.event_listener.ajax_auth_validating_listener">
+        <service id="modera_mjr_security_integration.event_listener.ajax_auth_validating_listener"
+                 class="Modera\MJRSecurityIntegrationBundle\EventListener\AjaxAuthenticationValidatingListener">
 
             <argument type="string">%modera_mjr_integration.routes_prefix%</argument>
 

@@ -38,7 +38,7 @@ class CompileTranslationsCommand extends ContainerAwareCommand
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
 
         /* @var TranslationWriter $writer */
-        $writer = $this->getContainer()->get('translation.writer');
+        $writer = $this->getContainer()->get('modera_translations.translation.writer');
 
         // check format
         $supportedFormats = $writer->getFormats();
@@ -120,7 +120,7 @@ class CompileTranslationsCommand extends ContainerAwareCommand
 
                 $output->writeln('    <fg=green>Creating new files</>');
 
-                $writer->writeTranslations($catalogue, $outputFormat, array('path' => $transPath));
+                $writer->write($catalogue, $outputFormat, array('path' => $transPath));
 
                 $fs->chmod($transPath, 0777, 0000, true);
             }

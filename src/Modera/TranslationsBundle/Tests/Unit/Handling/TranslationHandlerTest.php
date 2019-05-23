@@ -3,7 +3,9 @@
 namespace Modera\TranslationsBundle\Tests\Unit\Handling;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Translation\Reader\TranslationReader;
+use Symfony\Component\Translation\Extractor\ExtractorInterface;
 use Modera\TranslationsBundle\Handling\TemplateTranslationHandler;
 use Modera\TranslationsBundle\Handling\PhpClassesTranslationHandler;
 
@@ -19,17 +21,17 @@ class TranslationHandlerTest extends \PHPUnit_Framework_TestCase
     private $bundle;
 
     /**
-     * @var \Symfony\Component\HttpKernel\KernelInterface;
+     * @var KernelInterface
      */
     private $kernel;
 
     /**
-     * @var \Symfony\Component\Translation\Extractor\ExtractorInterface
+     * @var ExtractorInterface
      */
     private $extractor;
 
     /**
-     * @var \Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader
+     * @var TranslationReader
      */
     private $loader;
 
@@ -41,7 +43,7 @@ class TranslationHandlerTest extends \PHPUnit_Framework_TestCase
         $this->kernel = \Phake::mock('Symfony\Component\HttpKernel\KernelInterface');
         \Phake::when($this->kernel)->getBundle($this->bundle)->thenReturn(new DummyBundle());
         $this->extractor = \Phake::mock('Symfony\Component\Translation\Extractor\ExtractorInterface');
-        $this->loader = new TranslationLoader();
+        $this->loader = new TranslationReader();
     }
 
     public function testTemplateTranslationHandler()

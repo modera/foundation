@@ -3,7 +3,6 @@
 namespace Modera\BackendToolsActivityLogBundle\AutoSuggest;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Query;
 use Modera\ActivityLoggerBundle\Manager\ActivityManagerInterface;
 use Modera\ActivityLoggerBundle\Model\ActivityInterface;
 use Modera\SecurityBundle\Entity\User;

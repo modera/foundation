@@ -1,6 +1,5 @@
 framework:
     secret:          Hell yeah!
-    router:          { resource: "%kernel.root_dir%/config/routing.yml" }
     csrf_protection: true
     session:         ~
     templating:
@@ -8,5 +7,5 @@ framework:
 
 # Twig Configuration
 twig:
-    debug:            %kernel.debug%
-    strict_variables: %kernel.debug%
+    debug:            '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
