@@ -72,7 +72,7 @@ class AssetsProvider
      *
      * @return string[]
      */
-    protected function filterRawAssetsByType($type, array $rawAssets)
+    private function filterRawAssetsByType($type, array $rawAssets)
     {
         $this->validateType($type);
 
@@ -85,19 +85,33 @@ class AssetsProvider
         // non-blocking and to mark your resource as blocking you will have to use ! suffix, for example:
         // !my-blocking-script.js
         foreach ($rawAssets as $resource) {
+            $order = 0;
+            if (is_array($resource)) {
+                if (isset($resource['order'])) {
+                    $order = $resource['order'];
+                }
+                $resource = $resource['resource'];
+            }
+
             // if resource filename begins with ! considering it as a signal that given asset can be loaded asynchronously
             if (substr($resource, 0, 1) == '*') {
-                $result[self::TYPE_NON_BLOCKING][] = substr($resource, 1);
+                $result[self::TYPE_NON_BLOCKING][$order][] = substr($resource, 1);
             } else {
                 if (substr($resource, 0, 1) == '!') {
-                    $result[self::TYPE_BLOCKING][] = substr($resource, 1);
+                    $result[self::TYPE_BLOCKING][$order][] = substr($resource, 1);
                 } else {
-                    $result[self::TYPE_BLOCKING][] = $resource;
+                    $result[self::TYPE_BLOCKING][$order][] = $resource;
                 }
             }
         }
 
-        return $result[$type];
+        $assets = array();
+        ksort($result[$type]);
+        foreach ($result[$type] as $order => $arr) {
+            $assets = array_merge($assets, $arr);
+        }
+
+        return $assets;
     }
 
     /**
