@@ -23,6 +23,7 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
             basePanel: true,
             padding: 10,
             layout: 'fit',
+            tid: 'settingManagerPanel',
             cls: 'modera-backend-tools-settings',
             tbar: {
                 xtype: 'mfc-header',
@@ -56,6 +57,7 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
                 split: true,
                 items: [
                     {
+                        tid: 'settingMenu',
                         itemId: 'sectionsGrid',
                         width: 200,
                         xtype: 'grid',
