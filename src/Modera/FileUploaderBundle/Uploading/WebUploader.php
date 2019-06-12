@@ -23,6 +23,7 @@ class WebUploader
 
     /**
      * @param Request $request
+     * @return mixed
      */
     public function upload(Request $request)
     {

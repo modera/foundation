@@ -3,8 +3,9 @@
 namespace Modera\MjrIntegrationBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Modera\MjrIntegrationBundle\Config\ConfigManager;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
 
@@ -20,14 +21,14 @@ class IndexController extends Controller
     /**
      * @Route("/get-config", name="mf_get_config")
      *
-     * @return array
+     * @return JsonResponse
      */
     public function getConfigAction()
     {
         /* @var ConfigManager $configManager */
         $configManager = $this->get('modera_mjr_integration.config.config_manager');
 
-        return new Response(json_encode($configManager->getConfig(), \JSON_PRETTY_PRINT));
+        return new JsonResponse(json_encode($configManager->getConfig(), \JSON_PRETTY_PRINT), Response::HTTP_OK, [], true);
     }
 
     /**
