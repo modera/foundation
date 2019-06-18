@@ -13,4 +13,5 @@ class ModeraDynamicallyConfigurableMJRBundle extends Bundle
     const CONFIG_TITLE = 'site_name';
     const CONFIG_URL = 'url';
     const CONFIG_HOME_SECTION = 'home_section';
+    const CONFIG_SKIN_CSS = 'skin_css';
 }

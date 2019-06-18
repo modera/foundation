@@ -13,6 +13,7 @@ Ext.define('Modera.backend.dcmjr.view.GeneralSettingsPanel', {
     siteTitleLabelText: 'Site title',
     primaryAddressLabelText: 'Primary address',
     defaultSectionLabelText: 'Default section',
+    skinCssLabelText: 'Skin CSS URL',
     developmentModeLabelText: 'Development mode',
     debugModeLabelText: 'Debug mode',
 
@@ -49,6 +50,12 @@ Ext.define('Modera.backend.dcmjr.view.GeneralSettingsPanel', {
                     //     xtype: 'mfc-inplacefield',
                     //     htmlEncode: true
                     // },
+                    {
+                        name: 'skin_css',
+                        fieldLabel: this.skinCssLabelText,
+                        xtype: 'mfc-inplacefield',
+                        htmlEncode: true
+                    },
                     {
                         xtype: 'mfc-onofffield',
                         fieldLabel: this.developmentModeLabelText,

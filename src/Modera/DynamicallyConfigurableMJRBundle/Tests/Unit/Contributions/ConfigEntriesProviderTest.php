@@ -19,7 +19,7 @@ class ConfigEntriesProviderTest extends \PHPUnit_Framework_TestCase
         /* @var ConfigurationEntryDefinition[] $items */
         $items = $provider->getItems();
 
-        $this->assertEquals(3, count($items));
+        $this->assertEquals(4, count($items));
 
         $foundProperties = [];
         foreach ($items as $item) {
@@ -32,6 +32,6 @@ class ConfigEntriesProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(in_array(Bundle::CONFIG_TITLE, $foundProperties));
         $this->assertTrue(in_array(Bundle::CONFIG_URL, $foundProperties));
         $this->assertTrue(in_array(Bundle::CONFIG_HOME_SECTION, $foundProperties));
-        $this->assertTrue(in_array(Bundle::CONFIG_HOME_SECTION, $foundProperties));
+        $this->assertTrue(in_array(Bundle::CONFIG_SKIN_CSS, $foundProperties));
     }
 }
