@@ -22,6 +22,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('html_doctype_tag')
+                    ->defaultValue('<!doctype html>')
+                ->end()
                 ->scalarNode('login_url')
                     ->cannotBeEmpty()
                     ->defaultValue('_security_check')

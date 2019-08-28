@@ -1,3 +1,4 @@
+{{ config.html_doctype_tag|raw }}
 <html>
 
 <head>
@@ -9,7 +10,7 @@
     <link href="{{ asset(resource)|mf_modification_time }}" rel="stylesheet" />
 {% endfor %}
 
-    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 </head>
 
 <body style="margin:0; padding:0; height:100%;">
