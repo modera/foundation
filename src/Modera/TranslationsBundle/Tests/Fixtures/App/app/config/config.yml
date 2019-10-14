@@ -11,7 +11,9 @@ framework:
     session:         ~
     router:          { resource: "%kernel.root_dir%/config/routing.yml" }
     default_locale:  "%locale%"
-    translator:      { fallback: '%locale%' }
+    translator:
+        fallback: "%locale%"
+        default_path: "%kernel.root_dir%/Resources/translations"
     templating:
         engines: ['twig']
 

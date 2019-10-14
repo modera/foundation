@@ -84,6 +84,8 @@ class CompileTranslationsCommand extends ContainerAwareCommand
             $translationsDir = join(DIRECTORY_SEPARATOR, array($rootDir, 'Resources', 'translations'));
             if ($this->getContainer()->hasParameter('modera.translations_dir')) {
                 $translationsDir = $this->getContainer()->getParameter('modera.translations_dir');
+            } else if ($this->getContainer()->hasParameter('translator.default_path')) {
+                $translationsDir = $this->getContainer()->getParameter('translator.default_path');
             }
 
             $transPath = $translationsDir;

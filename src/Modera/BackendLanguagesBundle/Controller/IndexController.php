@@ -28,6 +28,10 @@ class IndexController extends Controller
             return $this->container->getParameter('modera.translations_dir');
         }
 
+        if ($this->container->hasParameter('translator.default_path')) {
+            return $this->container->getParameter('translator.default_path');
+        }
+
         return parent::getTranslationsDir();
     }
 }
