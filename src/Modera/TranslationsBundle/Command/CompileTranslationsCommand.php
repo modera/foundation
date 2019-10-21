@@ -2,17 +2,16 @@
 
 namespace Modera\TranslationsBundle\Command;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Translation\Writer\TranslationWriter;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Modera\TranslationsBundle\Compiler\Adapter\AdapterInterface;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
-use Modera\TranslationsBundle\Entity\TranslationToken;
+use Modera\TranslationsBundle\Service\Translator;
+use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * Takes tokens from database and compiles them back to SF files.
@@ -26,106 +25,35 @@ class CompileTranslationsCommand extends ContainerAwareCommand
     {
         $this
             ->setName('modera:translations:compile')
-            ->setDescription('Compile language files from database.')
+            ->setDescription('Compile translations from database.')
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $outputFormat = 'yml';
-
-        /* @var EntityManager $em */
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-
-        /* @var TranslationWriter $writer */
-        $writer = $this->getContainer()->get('modera_translations.translation.writer');
-
-        // check format
-        $supportedFormats = $writer->getFormats();
-        if (!in_array($outputFormat, $supportedFormats)) {
-            $output->writeln('<error>Wrong output format</error>');
-            $output->writeln('>>> Supported formats are '.implode(', ', $supportedFormats).'.');
-
-            return 1;
-        }
-
-        $tokens = $em->getRepository(TranslationToken::clazz())->findBy(array(
-            'isObsolete' => false,
-        ));
-
-        $catalogues = array();
-        /* @var TranslationToken $token */
-        foreach ($tokens as $token) {
-            $ltts = $token->getLanguageTranslationTokens();
-
-            /* @var LanguageTranslationToken $ltt */
-            foreach ($ltts as $ltt) {
-                if (!$ltt->getLanguage()->getEnabled()) {
-                    continue;
-                }
-
-                $locale = $ltt->getLanguage()->getLocale();
-
-                if (!isset($catalogues[$locale])) {
-                    $catalogues[$locale] = new MessageCatalogue($locale);
-                }
-
-                $catalogue = $catalogues[$locale];
-                $catalogue->set($token->getTokenName(), $ltt->getTranslation(), $token->getDomain());
-            }
-        }
-
+        $catalogues = $this->extractCatalogues();
         if (count($catalogues)) {
-            $fs = new Filesystem();
+            $adapter = $this->getAdapter();
 
-            $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
-            $basePath = dirname($this->normalizePath($rootDir));
+            $output->writeln('<fg=red>Clearing old translations</>');
+            $adapter->clear();
 
-            $translationsDir = join(DIRECTORY_SEPARATOR, array($rootDir, 'Resources', 'translations'));
-            if ($this->getContainer()->hasParameter('modera.translations_dir')) {
-                $translationsDir = $this->getContainer()->getParameter('modera.translations_dir');
-            } else if ($this->getContainer()->hasParameter('translator.default_path')) {
-                $translationsDir = $this->getContainer()->getParameter('translator.default_path');
-            }
-
-            $transPath = $translationsDir;
-            $parts = explode($basePath . DIRECTORY_SEPARATOR, $this->normalizePath($transPath));
-            if (count($parts) > 1) {
-                $transDir = $parts[1];
-            } else {
-                $transDir = $parts[0];
-            }
-
-            if ($fs->exists($transPath)) {
-                $output->writeln('    <fg=red>Removing old files</>');
-                foreach (Finder::create()->files()->in($transPath) as $file) {
-                    $fs->remove($file->getRealPath());
-                }
-                //$fs->remove($transPath);
-            }
-
+            $output->writeln('');
+            $output->writeln('Dumping translations:');
             foreach ($catalogues as $locale => $catalogue) {
                 if (!count($catalogue->all())) {
                     continue;
                 }
 
-                $output->writeln('>>> '.$locale.': '.$transDir);
-
-                try {
-                    if (!$fs->exists(dirname($transPath))) {
-                        $fs->mkdir(dirname($transPath));
-                        $fs->chmod(dirname($transPath), 0777);
-                    }
-                } catch (IOExceptionInterface $e) {
-                    echo 'An error occurred while creating your directory at '.$e->getPath();
-                }
-
-                $output->writeln('    <fg=green>Creating new files</>');
-
-                $writer->write($catalogue, $outputFormat, array('path' => $transPath));
-
-                $fs->chmod($transPath, 0777, 0000, true);
+                $output->writeln('    <fg=green>' . $locale . '</>');
+                $adapter->dump($catalogue);
             }
+            $output->writeln('');
+
+            $this->clearTranslationsCache();
 
             $output->writeln('>>> Translations have been successfully compiled');
         } else {
@@ -134,36 +62,69 @@ class CompileTranslationsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param $path
-     * @return string
+     * @return MessageCatalogue[]
      */
-    protected function normalizePath($path)
+    protected function extractCatalogues()
     {
-        $path = str_replace('\\', '/', $path);
-        $path = preg_replace('/\/+/', '/', $path);
+        /* @var EntityManager $em */
+        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
 
-        $parts = array();
-        $segments = explode('/', $path);
+        $qb = $em->createQueryBuilder();
+        $qb->select('l')
+            ->from(Language::clazz(), 'l')
+            ->where($qb->expr()->eq('l.isEnabled', ':isEnabled'))
+            ->setParameter('isEnabled', true);
 
-        foreach ($segments as $segment) {
-            if ($segment != '.') {
-                $test = array_pop($parts);
-                if (is_null($test)) {
-                    $parts[] = $segment;
-                } else if($segment == '..') {
-                    if ($test == '..') {
-                        $parts[] = $test;
-                    }
-                    if ($test == '..' || $test == '') {
-                        $parts[] = $segment;
-                    }
-                } else {
-                    $parts[] = $test;
-                    $parts[] = $segment;
-                }
-            }
+        $languages = [];
+        foreach ($qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY) as $row) {
+            $languages[$row['id']] = $row['locale'];
         }
 
-        return implode(DIRECTORY_SEPARATOR, $parts);
+        $qb = $em->createQueryBuilder();
+        $qb->select('ltt.id, ltt.translation, IDENTITY(ltt.language) AS language, tt.domain, tt.tokenName')
+            ->from(LanguageTranslationToken::clazz(), 'ltt')
+            ->leftJoin('ltt.translationToken', 'tt')
+            ->where($qb->expr()->in('ltt.language', array_keys($languages)))
+            ->andWhere($qb->expr()->in('tt.isObsolete', ':isObsolete'))
+            ->setParameter('isObsolete', false);
+
+        $catalogues = array();
+        foreach ($qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY) as $row) {
+            $locale = $languages[$row['language']];
+
+            if (!isset($catalogues[$locale])) {
+                $catalogues[$locale] = new MessageCatalogue($locale);
+            }
+
+            /* @var MessageCatalogue $catalogue */
+            $catalogue = $catalogues[$locale];
+            $catalogue->set($row['tokenName'], $row['translation'], $row['domain']);
+        }
+
+        return $catalogues;
+    }
+
+    /**
+     * Clear translations cache dir
+     */
+    protected function clearTranslationsCache()
+    {
+        $this->getTranslator()->warmUp($this->getContainer()->getParameter('kernel.cache_dir'));
+    }
+
+    /**
+     * @return AdapterInterface
+     */
+    protected function getAdapter()
+    {
+        return $this->getContainer()->get('modera_translations.compiler.adapter');
+    }
+
+    /**
+     * @return Translator
+     */
+    protected function getTranslator()
+    {
+        return $this->getContainer()->get('modera_translations.service.translator');
     }
 }

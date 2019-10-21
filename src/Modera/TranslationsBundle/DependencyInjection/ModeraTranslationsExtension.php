@@ -33,6 +33,18 @@ class ModeraTranslationsExtension extends Extension implements PrependExtensionI
                 $loader->load('console.xml');
             } catch (\Exception $e) {}
         }
+
+        $rootDir = $container->getParameter('kernel.root_dir');
+
+        $translationsDir = join(DIRECTORY_SEPARATOR, [ $rootDir, 'Resources', 'translations' ]);
+        if ($container->hasParameter('modera.translations_dir')) {
+            $translationsDir = $container->getParameter('modera.translations_dir');
+        } else if ($container->hasParameter('translator.default_path')) {
+            $translationsDir = $container->getParameter('translator.default_path');
+        }
+
+        $translationWriterAdapter = $container->findDefinition('modera_translations.compiler.adapter.translation_writer_adapter');
+        $translationWriterAdapter->replaceArgument(1, $container->getParameterBag()->resolveValue($translationsDir));
     }
 
     /**
@@ -51,9 +63,10 @@ class ModeraTranslationsExtension extends Extension implements PrependExtensionI
                     $fs->chmod($dir, 0777);
                 }
             } catch (IOExceptionInterface $e) {
-                throw new \RuntimeException(
-                    'An error occurred while creating translations directory at '.$e->getPath()
-                );
+                throw new \RuntimeException(sprintf(
+                    'An error occurred while creating translations directory at %s',
+                    $e->getPath()
+                ));
             }
 
             $container->prependExtensionConfig('framework', array(

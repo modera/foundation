@@ -2,21 +2,22 @@
 
 namespace Modera\BackendTranslationsToolBundle\Controller;
 
-use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
-use Modera\ServerCrudBundle\ExceptionHandling\ExceptionHandlerInterface;
-use Modera\ServerCrudBundle\Exceptions\BadRequestException;
-use Modera\DirectBundle\Annotation\Remote;
-use Modera\TranslationsBundle\Compiler\TranslationsCompiler;
-use Modera\TranslationsBundle\Entity\TranslationToken;
-use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Modera\BackendTranslationsToolBundle\Contributions\FiltersProvider;
-use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Modera\DirectBundle\Annotation\Remote;
+use Modera\ServerCrudBundle\Exceptions\BadRequestException;
+use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Modera\ServerCrudBundle\ExceptionHandling\ExceptionHandlerInterface;
+use Modera\TranslationsBundle\Compiler\TranslationsCompiler;
+use Modera\TranslationsBundle\Entity\TranslationToken;
+use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
+use Modera\BackendTranslationsToolBundle\Contributions\FiltersProvider;
+use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
+use Modera\BackendTranslationsToolBundle\Cache\CompileNeeded;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -174,15 +175,10 @@ class TranslationsController extends AbstractCrudController
         $result = $compiler->compile();
 
         if ($result->isSuccessful()) {
-            $key = 'modera_backend_translations_tool';
-            /* @var \Doctrine\Common\Cache\Cache $cache */
-            $cache = $this->get($key.'.cache');
+            /* @var CompileNeeded $compileNeeded */
+            $compileNeeded = $this->get('modera_backend_translations_tool.cache.compile_needed');
+            $compileNeeded->set(false);
 
-            $data = array('isCompileNeeded' => false);
-            if ($string = $cache->fetch($key)) {
-                $data = array_merge(unserialize($string), $data);
-            }
-            $cache->save($key, serialize($data));
         } else {
             /* @var KernelInterface $kernel */
             $kernel = $this->get('kernel');
@@ -228,17 +224,9 @@ class TranslationsController extends AbstractCrudController
     {
         $this->checkAccess();
 
-        $key = 'modera_backend_translations_tool';
-        /* @var \Doctrine\Common\Cache\Cache $cache */
-        $cache = $this->get($key.'.cache');
-
-        $isCompileNeeded = false;
-        if ($string = $cache->fetch($key)) {
-            $data = unserialize($string);
-            if (isset($data['isCompileNeeded'])) {
-                $isCompileNeeded = $data['isCompileNeeded'];
-            }
-        }
+        /* @var CompileNeeded $compileNeeded */
+        $compileNeeded = $this->get('modera_backend_translations_tool.cache.compile_needed');
+        $isCompileNeeded = $compileNeeded->get();
 
         return array(
             'success' => true,

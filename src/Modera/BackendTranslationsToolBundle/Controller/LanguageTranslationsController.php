@@ -2,11 +2,12 @@
 
 namespace Modera\BackendTranslationsToolBundle\Controller;
 
-use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
+use Modera\BackendTranslationsToolBundle\Cache\CompileNeeded;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -43,15 +44,9 @@ class LanguageTranslationsController extends AbstractCrudController
             'map_data_on_update' => function (array $params, LanguageTranslationToken $entity, DataMapperInterface $defaultMapper, ContainerInterface $container) {
                 $defaultMapper->mapData($params, $entity);
 
-                $key = 'modera_backend_translations_tool';
-                /* @var \Doctrine\Common\Cache\Cache $cache */
-                $cache = $container->get($key.'.cache');
-
-                $data = array('isCompileNeeded' => true);
-                if ($string = $cache->fetch($key)) {
-                    $data = array_merge(unserialize($string), $data);
-                }
-                $cache->save($key, serialize($data));
+                /* @var CompileNeeded $compileNeeded */
+                $compileNeeded = $container->get('modera_backend_translations_tool.cache.compile_needed');
+                $compileNeeded->set(true);
             },
         );
     }

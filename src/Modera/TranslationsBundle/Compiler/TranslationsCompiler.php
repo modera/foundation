@@ -52,13 +52,6 @@ class TranslationsCompiler
         $compileOutput = new BufferedOutput();
 
         $compileTranslationsExitCode = $app->run($input, $compileOutput);
-        if (0 == $compileTranslationsExitCode) {
-            $fs = new Filesystem();
-            $translationsCache = $this->kernel->getCacheDir() . DIRECTORY_SEPARATOR . 'translations';
-            if ($fs->exists($translationsCache)) {
-                $fs->remove($translationsCache);
-            }
-        }
 
         return new CompilationResult($compileTranslationsExitCode, $compileOutput->fetch());
     }

@@ -6,9 +6,19 @@
 
     <services>
 
+        <service id="modera_translations.compiler.adapter" alias="modera_translations.compiler.adapter.translation_writer_adapter" public="true" />
         <service id="modera_translations.translation.reader" alias="translation.reader" public="true" />
         <service id="modera_translations.translation.writer" alias="translation.writer" public="true" />
         <service id="modera_translations.translation.extractor" alias="translation.extractor" public="true" />
+
+        <service id="modera_translations.compiler.adapter.translation_writer_adapter"
+                 class="Modera\TranslationsBundle\Compiler\Adapter\TranslationWriterAdapter"
+                 public="true">
+
+            <argument type="service" id="modera_translations.translation.writer" />
+            <argument />
+            <argument>%kernel.cache_dir%/translations</argument>
+        </service>
 
         <service id="modera_translations.event_listener.language_translation_token_listener"
                  class="Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener"
@@ -21,6 +31,16 @@
         <service id="modera_translations.service.translation_handlers_chain"
                  class="Modera\TranslationsBundle\Service\TranslationHandlersChain"
                  public="true">
+        </service>
+
+        <service id="modera_translations.service.translator"
+                 class="Modera\TranslationsBundle\Service\Translator"
+                 public="true">
+
+            <argument type="service" id="modera_translations.compiler.adapter" />
+            <argument type="service" id="translator.formatter" />
+            <argument type="service" id="translator.default" />
+            <argument>%kernel.debug%</argument>
         </service>
 
         <service id="modera_translations.token_extraction.php_class_token_extraction"
