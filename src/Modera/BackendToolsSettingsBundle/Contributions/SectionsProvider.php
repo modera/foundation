@@ -11,23 +11,25 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class SectionsProvider implements ContributorInterface
 {
+    /**
+     * @var array
+     */
     private $items;
-
-    public function __construct()
-    {
-        $this->items = array(
-            new Section('tools.settings', 'Modera.backend.tools.settings.runtime.Section', array(
-                Section::META_NAMESPACE => 'Modera.backend.tools.settings',
-                Section::META_NAMESPACE_PATH => '/bundles/moderabackendtoolssettings/js',
-            )),
-        );
-    }
 
     /**
      * {@inheritdoc}
      */
     public function getItems()
     {
+        if (!$this->items) {
+            $this->items = array(
+                new Section('tools.settings', 'Modera.backend.tools.settings.runtime.Section', array(
+                    Section::META_NAMESPACE => 'Modera.backend.tools.settings',
+                    Section::META_NAMESPACE_PATH => '/bundles/moderabackendtoolssettings/js',
+                )),
+            );
+        }
+
         return $this->items;
     }
 }

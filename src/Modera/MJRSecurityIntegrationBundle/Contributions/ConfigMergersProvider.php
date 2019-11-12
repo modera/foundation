@@ -28,6 +28,31 @@ class ConfigMergersProvider implements ContributorInterface
     private $router;
 
     /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
+
+    /**
+     * @var ContributorInterface
+     */
+    private $clientDiDefinitionsProvider;
+
+    /**
+     * @var array
+     */
+    private $bundleConfig;
+
+    /**
+     * @var array
+     */
+    private $securityConfig;
+
+    /**
+     * @var array
+     */
+    private $roleHierarchy;
+
+    /**
      * @param RouterInterface       $router
      * @param TokenStorageInterface $tokenStorage
      * @param ContributorInterface  $clientDiDefinitionsProvider
@@ -44,24 +69,37 @@ class ConfigMergersProvider implements ContributorInterface
         array $roleHierarchy = array()
     ) {
         $this->router = $router;
+        $this->tokenStorage = $tokenStorage;
+        $this->clientDiDefinitionsProvider = $clientDiDefinitionsProvider;
+        $this->bundleConfig = $bundleConfig;
+        $this->securityConfig = $securityConfig;
+        $this->roleHierarchy = $roleHierarchy;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getItems()
+    {
+        $self = $this;
 
         $switchUserUrl = null;
-        if (isset($securityConfig['switch_user']) && $securityConfig['switch_user']) {
+        if (isset($this->securityConfig['switch_user']) && $this->securityConfig['switch_user']) {
             $switchUserUrl = $this->getUrl('modera_mjr_security_integration.index.switch_user_to', array(
                 'username' => '__username__',
             ));
         }
 
         $this->items = array(
-            new CallbackConfigMerger(function (array $currentConfig) use ($tokenStorage, $roleHierarchy, $switchUserUrl) {
+            new CallbackConfigMerger(function (array $currentConfig) use ($self, $switchUserUrl) {
                 // we are not making sure that user is authenticated here because we expect that this
                 // callback is invoked only when user is already authenticated (invoked from behind a firewall)
-                if ($token = $tokenStorage->getToken()) {
+                if ($token = $self->tokenStorage->getToken()) {
                     $roles = array();
 
                     foreach ($token->getRoles() as $role) {
                         $roles[] = $role->getRole();
-                        $roles = array_merge($roles, $this->findHierarchicalRoles($role->getRole(), $roleHierarchy));
+                        $roles = array_merge($roles, $this->findHierarchicalRoles($role->getRole(), $self->roleHierarchy));
                     }
 
                     return array_merge($currentConfig, array(
@@ -73,19 +111,13 @@ class ConfigMergersProvider implements ContributorInterface
                     return $currentConfig;
                 }
             }),
-            new CallbackConfigMerger(function (array $currentConfig) use ($clientDiDefinitionsProvider) {
+            new CallbackConfigMerger(function (array $currentConfig) use ($self) {
                 return array_merge($currentConfig, array(
-                    'serviceDefinitions' => $clientDiDefinitionsProvider->getItems(),
+                    'serviceDefinitions' => $self->clientDiDefinitionsProvider->getItems(),
                 ));
             }),
         );
-    }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
-    {
         return $this->items;
     }
 

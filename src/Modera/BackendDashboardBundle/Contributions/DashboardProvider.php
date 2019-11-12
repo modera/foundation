@@ -16,23 +16,22 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class DashboardProvider implements ContributorInterface
 {
-    private $items;
-
     /**
-     * Adds couple example dashboard by default.
+     * @var array
      */
-    public function __construct()
-    {
-        $this->items = array(
-            new SimpleDashboard('default', 'Default dashboard', 'Modera.backend.dashboard.runtime.SampleDashboardActivity'),
-        );
-    }
+    private $items;
 
     /**
      * @return DashboardInterface[]
      */
     public function getItems()
     {
+        if (!$this->items) {
+            $this->items = array(
+                new SimpleDashboard('default', 'Default dashboard', 'Modera.backend.dashboard.runtime.SampleDashboardActivity'),
+            );
+        }
+
         return $this->items;
     }
 }

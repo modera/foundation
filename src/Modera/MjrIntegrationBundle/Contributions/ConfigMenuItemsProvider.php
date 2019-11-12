@@ -16,7 +16,15 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class ConfigMenuItemsProvider implements ContributorInterface
 {
-    private $items = array();
+    /**
+     * @var array
+     */
+    private $items;
+
+    /**
+     * @var array
+     */
+    private $config;
 
     /**
      * @param array $config
@@ -26,15 +34,7 @@ class ConfigMenuItemsProvider implements ContributorInterface
         if (!isset($config['menu_items']) || !is_array($config['menu_items'])) {
             throw new \InvalidArgumentException('Given "$config" doesn\'t have key "menu_items" or it is not array!.');
         }
-
-        foreach ($config['menu_items'] as $menuItem) {
-            $controller = str_replace('$ns', $menuItem['namespace'], $menuItem['controller']);
-
-            $this->items[] = new MenuItem($menuItem['name'], $controller, $menuItem['id'], array(
-                MenuItemInterface::META_NAMESPACE => $menuItem['namespace'],
-                MenuItemInterface::META_NAMESPACE_PATH => $menuItem['path'],
-            ));
-        }
+        $this->config = $config;
     }
 
     /**
@@ -42,6 +42,18 @@ class ConfigMenuItemsProvider implements ContributorInterface
      */
     public function getItems()
     {
+        if (!$this->items) {
+            $this->items = array();
+            foreach ($this->config['menu_items'] as $menuItem) {
+                $controller = str_replace('$ns', $menuItem['namespace'], $menuItem['controller']);
+
+                $this->items[] = new MenuItem($menuItem['name'], $controller, $menuItem['id'], array(
+                    MenuItemInterface::META_NAMESPACE => $menuItem['namespace'],
+                    MenuItemInterface::META_NAMESPACE_PATH => $menuItem['path'],
+                ));
+            }
+        }
+
         return $this->items;
     }
 

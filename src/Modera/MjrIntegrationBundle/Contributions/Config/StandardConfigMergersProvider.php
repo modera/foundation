@@ -16,29 +16,22 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class StandardConfigMergersProvider implements ContributorInterface
 {
+    /**
+     * @var array
+     */
     private $items;
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
 
     /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
-        /* @var MenuManager $menuMgr */
-        $menuMgr = $container->get('modera_mjr_integration.menu.menu_manager');
-        /* @var ContributorInterface $sectionsProvider */
-        $sectionsProvider = $container->get('modera_mjr_integration.sections_provider');
-        /* @var ContributorInterface $loaderMappingsProvider */
-        $loaderMappingsProvider = $container->get('modera_mjr_integration.class_loader_mappings_provider');
-
-        $bundleConfig = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
-        /* @var MainConfigInterface $mainConfig */
-        $mainConfig = $container->get(
-            $bundleConfig['main_config_provider']
-        );
-
-        $this->items = array(
-            new ConfigMerger($mainConfig, $menuMgr, $sectionsProvider, $loaderMappingsProvider),
-        );
+        $this->container = $container;
     }
 
     /**
@@ -46,6 +39,26 @@ class StandardConfigMergersProvider implements ContributorInterface
      */
     public function getItems()
     {
+        if (!$this->items) {
+            /* @var MenuManager $menuMgr */
+            $menuMgr = $this->container->get('modera_mjr_integration.menu.menu_manager');
+
+            /* @var ContributorInterface $sectionsProvider */
+            $sectionsProvider = $this->container->get('modera_mjr_integration.sections_provider');
+
+            /* @var ContributorInterface $loaderMappingsProvider */
+            $loaderMappingsProvider = $this->container->get('modera_mjr_integration.class_loader_mappings_provider');
+
+            $bundleConfig = $this->container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
+
+            /* @var MainConfigInterface $mainConfig */
+            $mainConfig = $this->container->get($bundleConfig['main_config_provider']);
+
+            $this->items = array(
+                new ConfigMerger($mainConfig, $menuMgr, $sectionsProvider, $loaderMappingsProvider),
+            );
+        }
+
         return $this->items;
     }
 }

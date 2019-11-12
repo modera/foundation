@@ -15,20 +15,19 @@ class FiltersProvider implements ContributorInterface
     /**
      * @var array
      */
-    private $items = array();
+    private $items;
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
 
     /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
-        $this->items = array(
-            'translation_token' => array(
-                new Filter\AllTranslationTokensFilter($container),
-                new Filter\NewTranslationTokensFilter($container),
-                new Filter\ObsoleteTranslationTokensFilter($container),
-            ),
-        );
+        $this->container = $container;
     }
 
     /**
@@ -36,6 +35,16 @@ class FiltersProvider implements ContributorInterface
      */
     public function getItems()
     {
+        if (!$this->items) {
+            $this->items = array(
+                'translation_token' => array(
+                    new Filter\AllTranslationTokensFilter($this->container),
+                    new Filter\NewTranslationTokensFilter($this->container),
+                    new Filter\ObsoleteTranslationTokensFilter($this->container),
+                ),
+            );
+        }
+
         return $this->items;
     }
 }
