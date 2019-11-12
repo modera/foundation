@@ -72,7 +72,7 @@ class ScriptHandler extends AbstractScriptHandler
     public static function registerBundles(Event $event)
     {
         $options = static::getOptions($event);
-        $consoleDir = static::getConsoleDir($event, 'init DB');
+        $consoleDir = static::getConsoleDir($event, 'register bundles');
         if (null === $consoleDir) {
             return;
         }
