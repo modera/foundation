@@ -28,8 +28,9 @@ class ScriptHandler extends AbstractScriptHandler
         echo '*** Enable maintenance'.PHP_EOL;
 
         try {
-            static::setMaintenance($event, true);
-            static::clearCache($event);
+            if (static::setMaintenance($event, true)) {
+                static::clearCache($event);
+            }
         } catch (\RuntimeException $e) {
             echo $e->getMessage().PHP_EOL;
         }
@@ -43,8 +44,9 @@ class ScriptHandler extends AbstractScriptHandler
         echo '*** Disable maintenance'.PHP_EOL;
 
         try {
-            static::setMaintenance($event, false);
-            static::clearCache($event);
+            if (static::setMaintenance($event, false)) {
+                static::clearCache($event);
+            }
         } catch (\RuntimeException $e) {
             echo $e->getMessage().PHP_EOL;
         }
@@ -151,7 +153,7 @@ class ScriptHandler extends AbstractScriptHandler
             try {
                 static::doctrineSchemaUpdate($event);
             } catch (\Exception $e) {
-                echo "Error during database initialization: ".$e->getMessage()."\n";
+                echo "Error during database initialization: ".$e->getMessage().PHP_EOL;
             }
         }
     }
@@ -159,16 +161,36 @@ class ScriptHandler extends AbstractScriptHandler
     /**
      * @param Event $event
      * @param $value
+     * @return bool
      */
     protected static function setMaintenance(Event $event, $value)
     {
+        $path = null;
         $options = static::getOptions($event);
-        $path = $options['incenteev-parameters']['file'];
 
-        $data = Yaml::parse(file_get_contents($path));
-        $data['parameters']['maintenance'] = $value;
+        if (isset($options['modera-module']) && isset($options['modera-module']['maintenance-file'])) {
+            $path = $options['modera-module']['maintenance-file'];
+        } else if (isset($options['incenteev-parameters']) && isset($options['incenteev-parameters']['file'])) {
+            $path = $options['incenteev-parameters']['file'];
+        }
 
-        file_put_contents($path, Yaml::dump($data));
+        if ($path) {
+            if (file_exists($path)) {
+                $data = Yaml::parse(file_get_contents($path));
+            } else {
+                $data = array(
+                    'parameters' => array(),
+                );
+            }
+
+            $data['parameters']['maintenance'] = $value;
+
+            file_put_contents($path, Yaml::dump($data));
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -184,7 +206,7 @@ class ScriptHandler extends AbstractScriptHandler
         $data[] = ');';
 
         $fs = new Filesystem();
-        $fs->dumpFile($outputFile, implode("\n", $data)."\n");
+        $fs->dumpFile($outputFile, implode(PHP_EOL, $data).PHP_EOL);
 
         if (!$fs->exists($outputFile)) {
             throw new \RuntimeException(sprintf('The "%s" file must be created.', $outputFile));
