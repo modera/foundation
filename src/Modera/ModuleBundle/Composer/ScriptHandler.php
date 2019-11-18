@@ -21,6 +21,14 @@ use Modera\ModuleBundle\Composer\Script\AliasPackageEvent;
 class ScriptHandler extends AbstractScriptHandler
 {
     /**
+     * @param $event
+     */
+    public static function blank(Event $event)
+    {
+        // do nothing
+    }
+
+    /**
      * @param Event $event
      */
     public static function enableMaintenance(Event $event)
