@@ -28,7 +28,7 @@ class PermissionsProvider implements ContributorInterface
         if (!$this->items) {
             $this->items = [
                 new Permission(
-                    T::trans('Access system settings'),
+                    T::trans('Access System Settings'),
                     ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS,
                     'administration'
                 ),
