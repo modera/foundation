@@ -1,7 +1,8 @@
 if (window['Ext']) {
 {% if skipped_bundles|length > 0 %}
    /**
-    * These bundles were skipped: {{ skipped_bundles|join(', ') }}
+    * These bundles were skipped:
+    *    {{ skipped_bundles|join('\n    *    ')|raw }}
     *
     * Total tokens: {{ tokens_total }}
     */
