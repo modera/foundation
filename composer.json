@@ -28,7 +28,9 @@
         "symfony/templating": "~3.4|~4.0",
         "symfony/expression-language": "~3.4|~4.0",
         "fig/link-util": "^1.0",
-        "symfony/symfony": "~3.4"
+        "symfony/symfony": "~3.4",
+
+        "doctrine/orm": "2.6.6"
     },
     "autoload": {
         "psr-4": {
