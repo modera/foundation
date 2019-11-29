@@ -2,14 +2,15 @@
 
 namespace Modera\TranslationsBundle\Handling;
 
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Component\Translation\Reader\TranslationReader;
+use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
-use Symfony\Component\Translation\Reader\TranslationReader;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -39,6 +40,12 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
      */
     private $loader;
 
+    /**
+     * @param KernelInterface $kernel
+     * @param TranslationReader $loader
+     * @param ExtractorInterface $extractor
+     * @param string $bundle
+     */
     public function __construct(
         KernelInterface $kernel,
         TranslationReader $loader,
@@ -97,6 +104,19 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
         if ($fs->exists($translationsDir)) {
             $currentCatalogue = new MessageCatalogue($locale);
             $this->loader->read($translationsDir, $currentCatalogue);
+
+            // load fallback translations
+            $parts = explode('_', $locale);
+            if (count($parts) > 1) {
+                $fallbackCatalogue = new MessageCatalogue($parts[0]);
+                $this->loader->read($translationsDir, $fallbackCatalogue);
+
+                $mergeOperation = new MergeOperation(
+                    $currentCatalogue,
+                    new MessageCatalogue($locale, $fallbackCatalogue->all())
+                );
+                $currentCatalogue = $mergeOperation->getResult();
+            }
 
             foreach ($extractedCatalogue->getDomains() as $domain) {
                 $messages = $currentCatalogue->all($domain);

@@ -3,19 +3,18 @@
 namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\Catalogue\TargetOperation;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputInterface;
-use Modera\LanguagesBundle\Entity\Language;
-use Modera\TranslationsBundle\Entity\TranslationToken;
-use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
-use Modera\TranslationsBundle\Service\TranslationHandlersChain;
-use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
 use Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener;
+use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
+use Modera\TranslationsBundle\Service\TranslationHandlersChain;
+use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
+use Modera\TranslationsBundle\Entity\TranslationToken;
+use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * From files to database.
