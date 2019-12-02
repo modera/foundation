@@ -41,6 +41,7 @@ class ModeraConfigExtension extends Extension
             ));
         }
 
+        $container->setParameter('modera_config.cache_adapter', $config['cache_adapter']);
         $container->setParameter(ModeraConfigBundle::CONFIG_KEY, $config);
 
         if (class_exists('Symfony\Component\Console\Application')) {

@@ -60,6 +60,14 @@
             <argument type="service" id="modera_config.manager.uniquity_validator" />
         </service>
 
+        <service id="modera_config.manager.cached_configuration_entries_manager"
+                 class="Modera\ConfigBundle\Manager\CachedConfigurationEntriesManager"
+                 public="true">
+
+            <argument type="service" id="modera_config.configuration_entries_manager" />
+            <argument>%modera_config.cache_adapter%</argument>
+        </service>
+
         <service id="modera_config.namespace_mappings_provider"
                  class="Modera\ConfigBundle\Contributions\NamespaceMappingsProvider">
 

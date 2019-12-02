@@ -23,8 +23,13 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('owner_entity')
-                ->info('A class name of entity that can own configuration properties (a User entity, for instance).')
-                ->defaultNull()
+                    ->info('A class name of entity that can own configuration properties (a User entity, for instance).')
+                    ->defaultNull()
+                ->end()
+                ->scalarNode('cache_adapter')
+                    ->info('A class name of cache adapter')
+                    ->defaultValue("Gaufrette\Adapter\InMemory")
+                ->end()
             ->end()
         ;
 
