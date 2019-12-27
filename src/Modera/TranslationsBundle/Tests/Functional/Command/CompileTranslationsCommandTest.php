@@ -35,7 +35,7 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $loader->read(dirname($transPath), $catalogue);
         $messages = $catalogue->all('messages');
 
-        $this->assertEquals(3, count($messages));
+        $this->assertEquals(4, count($messages));
         $this->assertTrue(isset($messages['Test token']));
         $this->assertEquals('Test token', $messages['Test token']);
 
@@ -44,6 +44,9 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
 
         $this->assertTrue(isset($messages['This token is only in SecondDummy bundle']));
         $this->assertEquals('This token is only in SecondDummy bundle', $messages['This token is only in SecondDummy bundle']);
+
+        $this->assertTrue(isset($messages['This token in yml file']));
+        $this->assertEquals('This token in yml file', $messages['This token in yml file']);
 
         if ($fs->exists($transPath)) {
             foreach (Finder::create()->files()->in($transPath) as $file) {

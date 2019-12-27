@@ -67,6 +67,16 @@
             <argument type="service" id="modera_translations.translation.extractor" />
         </service>
 
+        <service id="modera_translations.handling.resources_file_translation_handler"
+                 class="Modera\TranslationsBundle\Handling\ResourcesFileTranslationHandler"
+                 abstract="true"
+                 public="false">
+
+            <argument type="service" id="kernel" />
+            <argument type="service" id="modera_translations.translation.reader" />
+            <argument type="service" id="modera_translations.translation.extractor" />
+        </service>
+
         <service id="modera_translations.compiler.translations_compiler"
                  class="Modera\TranslationsBundle\Compiler\TranslationsCompiler"
                  public="true">

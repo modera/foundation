@@ -59,7 +59,7 @@ class ImportTranslationsCommandTest extends AbstractFunctionalTestCase
         $this->launchImportCommand();
 
         $tokens = self::$em->getRepository(TranslationToken::clazz())->findAll();
-        $this->assertEquals(3, count($tokens));
+        $this->assertEquals(4, count($tokens));
 
         $tokens = self::$em->getRepository(TranslationToken::clazz())->findBy(array(
             'tokenName' => 'Test token'
@@ -76,6 +76,11 @@ class ImportTranslationsCommandTest extends AbstractFunctionalTestCase
             'tokenName' => 'This token is only in SecondDummy bundle'
         ));
         $this->assertToken($token, 'This token is only in SecondDummy bundle');
+
+        $token = self::$em->getRepository(TranslationToken::clazz())->findOneBy(array(
+            'tokenName' => 'This token in yml file'
+        ));
+        $this->assertToken($token, 'This token in yml file');
 
         $token = self::$em->getRepository(TranslationToken::clazz())->findOneBy(array(
             'tokenName' => 'undefined',

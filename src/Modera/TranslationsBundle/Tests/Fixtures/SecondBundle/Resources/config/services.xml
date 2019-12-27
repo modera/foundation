@@ -22,5 +22,13 @@
             <tag name="modera_translations.translation_handler" />
         </service>
 
+        <service id="modera_translations_second_dummy.handling.resources_file_translation_handler"
+                 parent="modera_translations.handling.resources_file_translation_handler">
+
+            <argument>ModeraTranslationsSecondDummyBundle</argument>
+
+            <tag name="modera_translations.translation_handler" />
+        </service>
+
     </services>
 </container>

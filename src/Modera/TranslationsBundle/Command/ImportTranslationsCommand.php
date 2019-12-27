@@ -3,11 +3,11 @@
 namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Translation\MessageCatalogue;
+use Modera\TranslationsBundle\Catalogue\FasterMessageCatalogue;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Translation\Catalogue\MergeOperation;
-use Symfony\Component\Translation\Catalogue\TargetOperation;
+use Modera\TranslationsBundle\Catalogue\MergeOperation;
+use Modera\TranslationsBundle\Catalogue\TargetOperation;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener;
 use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
@@ -76,7 +76,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         foreach ($languages as $language) {
             $locale = $language->getLocale();
 
-            $extractedCatalogues = new MessageCatalogue($locale);
+            $extractedCatalogues = new FasterMessageCatalogue($locale);
             foreach ($handlers as $handler) {
                 $bundleName = $handler->getBundleName();
 
@@ -94,7 +94,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                 }
             }
 
-            $databaseCatalogue = new MessageCatalogue($locale);
+            $databaseCatalogue = new FasterMessageCatalogue($locale);
             foreach ($tokens as $domain => $arr) {
                 foreach ($arr as $token) {
                     if ($token['isObsolete']) {
@@ -336,7 +336,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         foreach ($tokens as $domain => $arr) {
             foreach ($arr as $token) {
                 $translations = $this->getTokenTranslations($token, $languages, $listener);
-                if ($translations != $token['translations']) {
+                if (json_encode($translations, JSON_UNESCAPED_UNICODE) != $token['translations']) {
                     $tokenTranslations[] = array(
                         'id' => $token['id'],
                         'translations' => $translations,
