@@ -9,7 +9,6 @@ use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Translation\Reader\TranslationReader;
 use Symfony\Component\Translation\Catalogue\MergeOperation;
-use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
 
 /**
@@ -23,22 +22,22 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     /**
      * @var string
      */
-    private $bundle;
+    protected $bundle;
 
     /**
      * @var KernelInterface
      */
-    private $kernel;
+    protected $kernel;
 
     /**
      * @var ExtractorInterface
      */
-    private $extractor;
+    protected $extractor;
 
     /**
      * @var TranslationReader
      */
-    private $loader;
+    protected $loader;
 
     /**
      * @param KernelInterface $kernel
@@ -60,7 +59,7 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getBundleName()
     {
@@ -68,7 +67,7 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getSources()
     {
@@ -76,10 +75,7 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     }
 
     /**
-     * @param string $source
-     * @param string $locale
-     *
-     * @return MessageCatalogueInterface | null
+     * {@inheritdoc}
      */
     public function extract($source, $locale)
     {
@@ -130,7 +126,7 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     }
 
     /**
-     * @param $source
+     * @param string $source
      *
      * @return bool
      */
@@ -140,7 +136,7 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     }
 
     /**
-     * @param Bundle $bundle
+     * @param BundleInterface $bundle
      *
      * @return string
      */

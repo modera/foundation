@@ -3,9 +3,12 @@
 namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Translation\Reader\TranslationReader;
 use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\Catalogue\TargetOperation;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -32,6 +35,10 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         $this
             ->setName('modera:translations:import')
             ->setDescription('Finds and imports translations from files to database.')
+            ->addOption('strategy', null, InputOption::VALUE_REQUIRED, 'Import strategy')
+            ->addOption('ignore-obsolete', null, InputOption::VALUE_NONE, 'Ignore marking messages as obsolete')
+            ->addOption('mark-as-translated', null, InputOption::VALUE_NONE, 'Mark all imported translations as translated')
+            ->addOption('from-scratch', null, InputOption::VALUE_NONE, 'Clean DB before start')
         ;
     }
 
@@ -42,14 +49,19 @@ class ImportTranslationsCommand extends ContainerAwareCommand
     {
         $batchSize = 20;
 
+        $strategy = $input->getOption('strategy');
+        if (!$strategy) {
+            $strategy = $this->getImportStrategy();
+        }
+        $ignoreObsolete = $input->getOption('ignore-obsolete');
+        $markAsTranslated = $input->getOption('mark-as-translated');
+        $fromScratch = $input->getOption('from-scratch');
+
         /* @var LanguageTranslationTokenListener $listener */
         $listener = $this->getContainer()->get('modera_translations.event_listener.language_translation_token_listener');
         $listener->setActive(false);
 
         $printMessageNames = $output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE;
-
-        /* @var TranslationHandlersChain $translationHandlersChain */
-        $translationHandlersChain = $this->getContainer()->get('modera_translations.service.translation_handlers_chain');
 
         /* @var Language[] $languages */
         $languages = $this->em()->getRepository(Language::clazz())->findBy(array(
@@ -61,12 +73,8 @@ class ImportTranslationsCommand extends ContainerAwareCommand
 
         $imported = false;
 
-        /* @var TranslationHandlerInterface[] $handlers */
-        $handlers = $translationHandlersChain->getHandlers();
-        if (count($handlers) == 0) {
-            $output->writeln('No translation handler are found, aborting ...');
-
-            return;
+        if ($fromScratch) {
+            $this->cleanDatabaseTables();
         }
 
         $tokens = $this->getTokens();
@@ -76,22 +84,11 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         foreach ($languages as $language) {
             $locale = $language->getLocale();
 
-            $extractedCatalogues = new MessageCatalogue($locale);
-            foreach ($handlers as $handler) {
-                $bundleName = $handler->getBundleName();
-
-                foreach ($handler->getSources() as $source) {
-
-                    $extractedCatalogue = $handler->extract($source, $locale);
-                    if (null !== $extractedCatalogue) {
-                        $mergeOperation = new MergeOperation($extractedCatalogues, $extractedCatalogue);
-                        $extractedCatalogues = $mergeOperation->getResult();
-
-                        $output->writeln(
-                            "Importing tokens for a locale <comment>$locale</> from a bundle <comment>$bundleName</> using $source"
-                        );
-                    }
-                }
+            try {
+                $extractedCatalogue = $this->getExtractedCatalogue($strategy, $locale, $output);
+            } catch (\RuntimeException $e) {
+                $output->writeln($e->getMessage());
+                return;
             }
 
             $databaseCatalogue = new MessageCatalogue($locale);
@@ -114,20 +111,20 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                         }
                     }
                 }
-
             }
 
             // process catalogues
-            $operation = new TargetOperation($databaseCatalogue, $extractedCatalogues);
+            $operation = new TargetOperation($databaseCatalogue, $extractedCatalogue);
 
             foreach ($operation->getDomains() as $domain) {
                 $newMessages = $operation->getNewMessages($domain);
-                $obsoleteMessages = $operation->getObsoleteMessages($domain);
+                $obsoleteMessages = !$ignoreObsolete ? $operation->getObsoleteMessages($domain) : [];
 
                 // if tokenName is same, but translation was changed
                 $updatedMessages = array();
                 $allMessages = $operation->getMessages($domain);
-                $extractedMessages = $extractedCatalogues->all($domain);
+                $extractedMessages = $extractedCatalogue->all($domain);
+
                 foreach ($extractedMessages as $tokenName => $translation) {
                     if (!array_key_exists($tokenName, $newMessages) && array_key_exists($tokenName, $allMessages)) {
                         if ($extractedMessages[$tokenName] !== $allMessages[$tokenName]) {
@@ -257,6 +254,11 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                     $languageToken->setLanguage($this->em()->getReference(Language::clazz(), $data['language']));
                     $languageToken->setTranslationToken($this->em()->getReference(TranslationToken::clazz(), $data['translationToken']));
                     $languageToken->setTranslation($data['translation']);
+
+                    if ($markAsTranslated) {
+                        $languageToken->setNew(false);
+                    }
+
                     $this->em()->persist($languageToken);
                     if (($key % $batchSize) === 0) {
                         $this->em()->flush();
@@ -270,12 +272,18 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                 foreach ($updateLanguageTranslationTokens as $key => $data) {
                     $query = $this->em()->createQuery(
                         sprintf(
-                            'UPDATE %s ltt SET ltt.translation = :translation WHERE ltt.id = :id',
-                            LanguageTranslationToken::clazz()
+                            'UPDATE %s ltt SET ltt.translation = :translation %s WHERE ltt.id = :id',
+                            LanguageTranslationToken::clazz(),
+                            $markAsTranslated ? ', ltt.isNew = :isNew' : ''
                         )
                     );
                     $query->setParameter('translation', $data['translation']);
                     $query->setParameter('id', $data['id']);
+
+                    if ($markAsTranslated) {
+                        $query->setParameter('isNew', false);
+                    }
+
                     $query->execute();
                 }
                 unset($updateLanguageTranslationTokens);
@@ -336,7 +344,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         foreach ($tokens as $domain => $arr) {
             foreach ($arr as $token) {
                 $translations = $this->getTokenTranslations($token, $languages, $listener);
-                if ($translations != $token['translations']) {
+                if (json_encode($translations, JSON_UNESCAPED_UNICODE) != $token['translations']) {
                     $tokenTranslations[] = array(
                         'id' => $token['id'],
                         'translations' => $translations,
@@ -361,6 +369,133 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         }
 
         $listener->setActive(true);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImportStrategy()
+    {
+        $strategy = 'source_tree';
+
+        if ($this->getContainer()->hasParameter('modera.translations_import_strategy')) {
+            $strategy = $this->getContainer()->getParameter('modera.translations_import_strategy');
+        }
+
+        return $strategy;
+    }
+
+    /**
+     * @param string          $strategy
+     * @param string          $locale
+     * @param OutputInterface $output
+     * @return MessageCatalogue
+     */
+    protected function getExtractedCatalogue($strategy, $locale, OutputInterface $output)
+    {
+        if ('resource_files' == $strategy) {
+            return $this->getExtractedCatalogueByResourceFiles($locale, $output);
+        }
+
+        return $this->getExtractedCatalogueBySourceTree($locale, $output);
+    }
+
+    /**
+     * @param string          $locale
+     * @param OutputInterface $output
+     * @return MessageCatalogue
+     */
+    protected function getExtractedCatalogueBySourceTree($locale, OutputInterface $output)
+    {
+        $catalogue = new MessageCatalogue($locale);
+
+        /* @var TranslationHandlersChain $translationHandlersChain */
+        $translationHandlersChain = $this->getContainer()->get('modera_translations.service.translation_handlers_chain');
+
+        /* @var TranslationHandlerInterface[] $handlers */
+        $handlers = $translationHandlersChain->getHandlers();
+        if (count($handlers) == 0) {
+            throw new \RuntimeException('No translation handler are found, aborting ...');
+        }
+
+        foreach ($handlers as $handler) {
+            $bundleName = $handler->getBundleName();
+
+            foreach ($handler->getSources() as $source) {
+                $extractedCatalogue = $handler->extract($source, $locale);
+
+                if (null !== $extractedCatalogue) {
+                    $mergeOperation = new MergeOperation($catalogue, $extractedCatalogue);
+                    $catalogue = $mergeOperation->getResult();
+
+                    $output->writeln(
+                        "Importing tokens for a locale <comment>$locale</> from a bundle <comment>$bundleName</> using $source"
+                    );
+                }
+            }
+        }
+
+        return $catalogue;
+    }
+
+    /**
+     * @param string          $locale
+     * @param OutputInterface $output
+     * @return MessageCatalogue
+     */
+    protected function getExtractedCatalogueByResourceFiles($locale, OutputInterface $output)
+    {
+        $extractedCatalogue = new MessageCatalogue($locale);
+        $translationsDir = $this->getTranslationsDir();
+
+        $fs = new Filesystem();
+        if ($fs->exists($translationsDir)) {
+            $this->getTranslationReader()->read($translationsDir, $extractedCatalogue);
+
+            // load fallback translations
+            $parts = explode('_', $locale);
+            if (count($parts) > 1) {
+                $fallbackCatalogue = new MessageCatalogue($parts[0]);
+                $this->getTranslationReader()->read($translationsDir, $fallbackCatalogue);
+
+                $mergeOperation = new MergeOperation(
+                    $extractedCatalogue,
+                    new MessageCatalogue($locale, $fallbackCatalogue->all())
+                );
+                $extractedCatalogue = $mergeOperation->getResult();
+            }
+        }
+
+        $output->writeln(
+            "Importing tokens for a locale <comment>$locale</> from <comment>$translationsDir</>"
+        );
+
+        return $extractedCatalogue;
+    }
+
+    /**
+     * @return string
+     */
+    private function getTranslationsDir()
+    {
+        $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
+        $translationsDir = join(DIRECTORY_SEPARATOR, [ $rootDir, 'Resources', 'translations' ]);
+
+        if ($this->getContainer()->hasParameter('modera.translations_dir')) {
+            $translationsDir = $this->getContainer()->getParameter('modera.translations_dir');
+        } else if ($this->getContainer()->hasParameter('translator.default_path')) {
+            $translationsDir = $this->getContainer()->getParameter('translator.default_path');
+        }
+
+        return $translationsDir;
+    }
+
+    /**
+     * @return TranslationReader
+     */
+    private function getTranslationReader()
+    {
+        return $this->getContainer()->get('modera_translations.translation.reader');
     }
 
     /**
@@ -397,6 +532,15 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         $this->em()->flush();
 
         return $language;
+    }
+
+    private function cleanDatabaseTables()
+    {
+        $query = $this->em()->createQuery(sprintf('DELETE %s ltt', LanguageTranslationToken::clazz()));
+        $query->execute();
+
+        $query = $this->em()->createQuery(sprintf('DELETE %s tt', TranslationToken::clazz()));
+        $query->execute();
     }
 
     /**

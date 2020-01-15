@@ -4,6 +4,7 @@ namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,7 +26,9 @@ class CompileTranslationsCommand extends ContainerAwareCommand
     {
         $this
             ->setName('modera:translations:compile')
-            ->setDescription('Compile translations from database.')
+            ->setDescription('Compile translated entries from database to resource files.')
+            ->addOption('adapter', null, InputOption::VALUE_REQUIRED, 'Compiler adapter')
+            ->addOption('no-warmup', null, InputOption::VALUE_NONE, 'Do not warm up translations cache')
         ;
     }
 
@@ -36,7 +39,7 @@ class CompileTranslationsCommand extends ContainerAwareCommand
     {
         $catalogues = $this->extractCatalogues();
         if (count($catalogues)) {
-            $adapter = $this->getAdapter();
+            $adapter = $this->getAdapter($input->getOption('adapter'));
 
             $output->writeln('<fg=red>Clearing old translations</>');
             $adapter->clear();
@@ -53,7 +56,9 @@ class CompileTranslationsCommand extends ContainerAwareCommand
             }
             $output->writeln('');
 
-            $this->clearTranslationsCache();
+            if (!$input->getOption('no-warmup')) {
+                $this->translationsCacheWarmUp();
+            }
 
             $output->writeln('>>> Translations have been successfully compiled');
         } else {
@@ -86,7 +91,9 @@ class CompileTranslationsCommand extends ContainerAwareCommand
             ->leftJoin('ltt.translationToken', 'tt')
             ->where($qb->expr()->in('ltt.language', array_keys($languages)))
             ->andWhere($qb->expr()->in('tt.isObsolete', ':isObsolete'))
-            ->setParameter('isObsolete', false);
+            ->andWhere($qb->expr()->in('ltt.isNew', ':isNew'))
+            ->setParameter('isObsolete', false)
+            ->setParameter('isNew', false);
 
         $catalogues = array();
         foreach ($qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY) as $row) {
@@ -107,17 +114,18 @@ class CompileTranslationsCommand extends ContainerAwareCommand
     /**
      * Clear translations cache dir
      */
-    protected function clearTranslationsCache()
+    protected function translationsCacheWarmUp()
     {
         $this->getTranslator()->warmUp($this->getContainer()->getParameter('kernel.cache_dir'));
     }
 
     /**
+     * @param null|string $id
      * @return AdapterInterface
      */
-    protected function getAdapter()
+    protected function getAdapter($id = null)
     {
-        return $this->getContainer()->get('modera_translations.compiler.adapter');
+        return $this->getContainer()->get($id ?: 'modera_translations.compiler.adapter');
     }
 
     /**
