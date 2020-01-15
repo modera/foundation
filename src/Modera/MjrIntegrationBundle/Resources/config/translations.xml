@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="modera_mjr_integration.handling.mjr_translation_handler"
+                 parent="modera_backend_translations_tool.handling.extjs_translation_handler">
+
+            <argument>ModeraMjrIntegrationBundle</argument>
+
+            <call method="setResourcesDirectory">
+                <argument>%kernel.root_dir%/../web%modera_mjr_integration.config.runtime_path%/</argument>
+            </call>
+
+            <tag name="modera_translations.translation_handler" />
+        </service>
+    </services>
+</container>

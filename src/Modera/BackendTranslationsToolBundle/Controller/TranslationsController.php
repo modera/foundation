@@ -14,6 +14,7 @@ use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\ExceptionHandling\ExceptionHandlerInterface;
 use Modera\TranslationsBundle\Compiler\TranslationsCompiler;
 use Modera\TranslationsBundle\Entity\TranslationToken;
+use Modera\BackendTranslationsToolBundle\DependencyInjection\ModeraBackendTranslationsToolExtension;
 use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 use Modera\BackendTranslationsToolBundle\Contributions\FiltersProvider;
 use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
@@ -148,7 +149,7 @@ class TranslationsController extends AbstractCrudController
         $app->setAutoExit(false);
 
         $input = new ArrayInput(array(
-            'command' => 'modera:translations:import',
+            'command' => $this->getParameter(ModeraBackendTranslationsToolExtension::CONFIG_KEY . '.import_cmd'),
         ));
         $input->setInteractive(false);
 

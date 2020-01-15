@@ -19,7 +19,11 @@ if (window['Ext']) {
     });
 {% endfor %}
 
-    (function() {
+    (function(MFC) {
+        if (!MFC) {
+            return;
+        }
+
         var utilFormat = {{ modera_backend_languages_ext_util_format(locale) }};
 
         var convertMomentJsFormatToExtJs = function(str) {
@@ -166,6 +170,6 @@ if (window['Ext']) {
             {% include 'ModeraBackendLanguagesBundle:Index:extension.js.twig' %}
         });
 
-    })();
+    })(window['MFC']);
 
 }

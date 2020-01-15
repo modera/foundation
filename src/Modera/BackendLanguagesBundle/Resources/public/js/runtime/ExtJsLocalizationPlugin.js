@@ -23,6 +23,17 @@ Ext.define('Modera.backend.languages.runtime.ExtJsLocalizationPlugin', {
             me.loadScripts(Ext.Array.map(me.config['urls'], function(value) {
                 return value.replace('__LOCALE__', config['modera_backend_languages']['locale']);
             }), function() {
+                var workbenchPanel = Ext.ComponentQuery.query('component[runtimerole=workbench]')[0];
+                if (workbenchPanel) {
+                    var header = workbenchPanel.down('#header');
+                    if (header) {
+                        var logoutBtn = header.down('button[tid=logoutBtn]');
+                        if (logoutBtn) {
+                            logoutBtn.setText(header.logoutText);
+                        }
+                    }
+                }
+
                 cb();
             });
         });
