@@ -23,6 +23,8 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
     eventLabelText: 'Event description',
     detailsLabelText: 'Details...',
     userLabelText: 'User',
+    eventTypeText: 'Event type',
+    typeHereToFilterText: 'Type here to filter',
 
     constructor: function() {
         var store = Ext.create('Modera.backend.tools.activitylog.store.Activities');
@@ -77,7 +79,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                                         width: 300,
                                         itemId: 'authorFilter',
                                         xtype: 'combo',
-                                        emptyText: 'User',
+                                        emptyText: this.userLabelText,
                                         hideTrigger: true,
                                         displayField: 'value',
                                         valueField: 'id',
@@ -100,7 +102,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                                         width: 220,
                                         itemId: 'typeFilter',
                                         xtype: 'combo',
-                                        emptyText: 'Event type',
+                                        emptyText: this.eventTypeText,
                                         hideTrigger: true,
                                         displayField: 'value',
                                         valueField: 'id',
@@ -123,7 +125,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                                         flex: 1,
                                         itemId: 'messageFilter',
                                         xtype: 'textfield',
-                                        emptyText: 'Type here to filter...',
+                                        emptyText: Ext.String.format('{0}...', this.typeHereToFilterText),
                                         plugins: [Ext.create('MFC.form.field.plugin.FieldInputFinishedPlugin', {
                                             timeout: 800
                                         })],
