@@ -24,7 +24,7 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $transDir = $resourcesDir.'/translations';
         $transPath = $basePath.'/'.$transDir;
 
-        $this->launchImportCommand(array('--mark-as-translated' => true));
+        $this->launchImportCommand();
         $this->launchCompileCommand();
 
         $this->assertTrue($fs->exists($transPath));
@@ -68,7 +68,7 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         self::$em->persist($language);
         self::$em->flush();
 
-        $this->launchImportCommand(array('--mark-as-translated' => true));
+        $this->launchImportCommand();
 
         /* @var TranslationToken $tt */
         $tt = self::$em->getRepository(TranslationToken::clazz())->findOneBy([

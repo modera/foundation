@@ -42,7 +42,7 @@ class TranslationsCompilerTest extends AbstractFunctionalTestCase
         /* @var TranslationsCompiler $compiler */
         $compiler = self::$container->get('modera_translations.compiler.translations_compiler');
 
-        $this->launchImportCommand(array('--mark-as-translated' => true));
+        $this->launchImportCommand();
 
         $compiler->compile();
 

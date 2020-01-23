@@ -26,9 +26,10 @@ class CompileTranslationsCommand extends ContainerAwareCommand
     {
         $this
             ->setName('modera:translations:compile')
-            ->setDescription('Compile translated entries from database to resource files.')
+            ->setDescription('Compile entries from database to resources.')
             ->addOption('adapter', null, InputOption::VALUE_REQUIRED, 'Compiler adapter')
             ->addOption('no-warmup', null, InputOption::VALUE_NONE, 'Do not warm up translations cache')
+            ->addOption('only-translated', null, InputOption::VALUE_NONE, 'Compile only translated entries')
         ;
     }
 
@@ -37,7 +38,7 @@ class CompileTranslationsCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $catalogues = $this->extractCatalogues();
+        $catalogues = $this->extractCatalogues(!!$input->getOption('only-translated'));
         if (count($catalogues)) {
             $adapter = $this->getAdapter($input->getOption('adapter'));
 
@@ -67,9 +68,10 @@ class CompileTranslationsCommand extends ContainerAwareCommand
     }
 
     /**
+     * @param bool $onlyTranslated
      * @return MessageCatalogue[]
      */
-    protected function extractCatalogues()
+    protected function extractCatalogues($onlyTranslated = false)
     {
         /* @var EntityManager $em */
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
@@ -91,9 +93,13 @@ class CompileTranslationsCommand extends ContainerAwareCommand
             ->leftJoin('ltt.translationToken', 'tt')
             ->where($qb->expr()->in('ltt.language', array_keys($languages)))
             ->andWhere($qb->expr()->in('tt.isObsolete', ':isObsolete'))
-            ->andWhere($qb->expr()->in('ltt.isNew', ':isNew'))
             ->setParameter('isObsolete', false)
-            ->setParameter('isNew', false);
+        ;
+
+        if ($onlyTranslated) {
+            $qb->andWhere($qb->expr()->in('ltt.isNew', ':isNew'))
+                ->setParameter('isNew', false);
+        }
 
         $catalogues = array();
         foreach ($qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY) as $row) {
