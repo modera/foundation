@@ -75,8 +75,8 @@ Ext.define('Modera.backend.languages.runtime.UserSettingsWindowActivity', {
     attachListeners: function(ui) {
         var me = this;
 
-        ui.on('saveandclose', function(window) {
-            var values = window.down('form').getForm().getValues();
+        ui.on('saveandclose', function(win) {
+            var values = win.down('form').getForm().getValues();
 
             var records = [];
             Ext.each(values['id'].split(','), function(id) {
@@ -88,17 +88,19 @@ Ext.define('Modera.backend.languages.runtime.UserSettingsWindowActivity', {
             if (1 == records.length) {
                 Actions.ModeraBackendLanguages_UserSettings.update({ record: records[0] }, function(response) {
                     if (response.success) {
-                        window.close();
+                        win.close();
+                        window.location.reload();
                     } else {
-                        window.showErrors(response);
+                        win.showErrors(response);
                     }
                 });
             } else {
                 Actions.ModeraBackendLanguages_UserSettings.batchUpdate({ records: records }, function(response) {
                     if (response.success) {
-                        window.close();
+                        win.close();
+                        window.location.reload();
                     } else {
-                        window.showErrors(response);
+                        win.showErrors(response);
                     }
                 });
             }
