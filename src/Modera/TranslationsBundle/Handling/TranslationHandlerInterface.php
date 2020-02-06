@@ -10,10 +10,18 @@ use Symfony\Component\Translation\MessageCatalogueInterface;
  */
 interface TranslationHandlerInterface
 {
+    const STRATEGY_SOURCE_TREE = 'source_tree';
+    const STRATEGY_RESOURCE_FILES = 'resource_files';
+
     /**
      * @return string
      */
     public function getBundleName();
+
+    /**
+     * @return array
+     */
+    public function getStrategies();
 
     /**
      * @return array

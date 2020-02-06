@@ -69,6 +69,14 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     /**
      * {@inheritdoc}
      */
+    public function getStrategies()
+    {
+        return array(static::STRATEGY_SOURCE_TREE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getSources()
     {
         return array(static::SOURCE_NAME);

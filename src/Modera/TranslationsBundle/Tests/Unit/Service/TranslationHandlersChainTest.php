@@ -41,6 +41,11 @@ class DummyHandler implements TranslationHandlerInterface
         return $this->bundle;
     }
 
+    public function getStrategies()
+    {
+        return array(static::STRATEGY_SOURCE_TREE);
+    }
+
     public function getSources()
     {
         return array('test');

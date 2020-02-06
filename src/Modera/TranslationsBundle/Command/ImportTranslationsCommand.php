@@ -49,10 +49,6 @@ class ImportTranslationsCommand extends ContainerAwareCommand
     {
         $batchSize = 20;
 
-        $strategy = $input->getOption('strategy');
-        if (!$strategy) {
-            $strategy = $this->getImportStrategy();
-        }
         $ignoreObsolete = $input->getOption('ignore-obsolete');
         $markAsTranslated = $input->getOption('mark-as-translated');
         $fromScratch = $input->getOption('from-scratch');
@@ -85,7 +81,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
             $locale = $language->getLocale();
 
             try {
-                $extractedCatalogue = $this->getExtractedCatalogue($strategy, $locale, $output);
+                $extractedCatalogue = $this->getExtractedCatalogue($input, $output, $locale);
             } catch (\RuntimeException $e) {
                 $output->writeln($e->getMessage());
                 return;
@@ -376,7 +372,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
      */
     protected function getImportStrategy()
     {
-        $strategy = 'source_tree';
+        $strategy = TranslationHandlerInterface::STRATEGY_SOURCE_TREE;
 
         if ($this->getContainer()->hasParameter('modera.translations_import_strategy')) {
             $strategy = $this->getContainer()->getParameter('modera.translations_import_strategy');
@@ -386,51 +382,56 @@ class ImportTranslationsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param string          $strategy
-     * @param string          $locale
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     * @param string          $locale
      * @return MessageCatalogue
      */
-    protected function getExtractedCatalogue($strategy, $locale, OutputInterface $output)
+    protected function getExtractedCatalogue(InputInterface $input, OutputInterface $output, $locale)
     {
-        if ('resource_files' == $strategy) {
-            return $this->getExtractedCatalogueByResourceFiles($locale, $output);
+        $strategy = $input->getOption('strategy');
+        if (!$strategy) {
+            $strategy = $this->getImportStrategy();
         }
 
-        return $this->getExtractedCatalogueBySourceTree($locale, $output);
+        if (TranslationHandlerInterface::STRATEGY_RESOURCE_FILES == $strategy) {
+            return $this->getExtractedCatalogueByResourceFiles($input, $output, $locale);
+        }
+
+        return $this->getExtractedCatalogueBySourceTree($input, $output, $locale);
     }
 
     /**
-     * @param string          $locale
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     * @param string          $locale
      * @return MessageCatalogue
      */
-    protected function getExtractedCatalogueBySourceTree($locale, OutputInterface $output)
+    protected function getExtractedCatalogueBySourceTree(InputInterface $input, OutputInterface $output, $locale)
     {
         $catalogue = new MessageCatalogue($locale);
 
-        /* @var TranslationHandlersChain $translationHandlersChain */
-        $translationHandlersChain = $this->getContainer()->get('modera_translations.service.translation_handlers_chain');
-
         /* @var TranslationHandlerInterface[] $handlers */
-        $handlers = $translationHandlersChain->getHandlers();
+        $handlers = $this->getTranslationHandlersChain()->getHandlers();
         if (count($handlers) == 0) {
             throw new \RuntimeException('No translation handler are found, aborting ...');
         }
 
         foreach ($handlers as $handler) {
-            $bundleName = $handler->getBundleName();
+            if (in_array(TranslationHandlerInterface::STRATEGY_SOURCE_TREE, $handler->getStrategies())) {
+                $bundleName = $handler->getBundleName();
 
-            foreach ($handler->getSources() as $source) {
-                $extractedCatalogue = $handler->extract($source, $locale);
+                foreach ($handler->getSources() as $source) {
+                    $extractedCatalogue = $handler->extract($source, $locale);
 
-                if (null !== $extractedCatalogue) {
-                    $mergeOperation = new MergeOperation($catalogue, $extractedCatalogue);
-                    $catalogue = $mergeOperation->getResult();
+                    if (null !== $extractedCatalogue) {
+                        $mergeOperation = new MergeOperation($catalogue, $extractedCatalogue);
+                        $catalogue = $mergeOperation->getResult();
 
-                    $output->writeln(
-                        "Importing tokens for a locale <comment>$locale</> from a bundle <comment>$bundleName</> using $source"
-                    );
+                        $output->writeln(
+                            "Importing tokens for a locale <comment>$locale</> from a bundle <comment>$bundleName</> using $source"
+                        );
+                    }
                 }
             }
         }
@@ -439,12 +440,14 @@ class ImportTranslationsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param string          $locale
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     * @param string          $locale
      * @return MessageCatalogue
      */
-    protected function getExtractedCatalogueByResourceFiles($locale, OutputInterface $output)
+    protected function getExtractedCatalogueByResourceFiles(InputInterface $input, OutputInterface $output, $locale)
     {
+        $markAsTranslated = $input->getOption('mark-as-translated');
         $extractedCatalogue = new MessageCatalogue($locale);
         $translationsDir = $this->getTranslationsDir();
 
@@ -464,11 +467,51 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                 );
                 $extractedCatalogue = $mergeOperation->getResult();
             }
+
+            // if empty, load default translations
+            if (count($extractedCatalogue->all()) == 0 && !$markAsTranslated) {
+                if ($this->getContainer()->hasParameter('kernel.default_locale')) {
+                    $defaultLocale = $this->getContainer()->getParameter('kernel.default_locale');
+                    $defaultCatalogue = new MessageCatalogue($defaultLocale);
+                    $this->getTranslationReader()->read($translationsDir, $defaultCatalogue);
+
+                    $mergeOperation = new MergeOperation(
+                        $extractedCatalogue,
+                        new MessageCatalogue($locale, $defaultCatalogue->all())
+                    );
+                    $extractedCatalogue = $mergeOperation->getResult();
+                }
+            }
+
+            $output->writeln(
+                "Importing tokens for a locale <comment>$locale</> from <comment>$translationsDir</>"
+            );
         }
 
-        $output->writeln(
-            "Importing tokens for a locale <comment>$locale</> from <comment>$translationsDir</>"
-        );
+        if (!$markAsTranslated) {
+            /* @var TranslationHandlerInterface[] $handlers */
+            $handlers = $this->getTranslationHandlersChain()->getHandlers();
+            if (count($handlers)) {
+                foreach ($handlers as $handler) {
+                    if (in_array(TranslationHandlerInterface::STRATEGY_RESOURCE_FILES, $handler->getStrategies())) {
+                        $bundleName = $handler->getBundleName();
+
+                        foreach ($handler->getSources() as $source) {
+                            $catalogue = $handler->extract($source, $locale);
+
+                            if (null !== $catalogue) {
+                                $mergeOperation = new MergeOperation($extractedCatalogue, $catalogue);
+                                $extractedCatalogue = $mergeOperation->getResult();
+
+                                $output->writeln(
+                                    "Importing tokens for a locale <comment>$locale</> from a bundle <comment>$bundleName</> using $source"
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         return $extractedCatalogue;
     }
@@ -496,6 +539,14 @@ class ImportTranslationsCommand extends ContainerAwareCommand
     private function getTranslationReader()
     {
         return $this->getContainer()->get('modera_translations.translation.reader');
+    }
+
+    /**
+     * @return TranslationHandlersChain
+     */
+    private function getTranslationHandlersChain()
+    {
+        return $this->getContainer()->get('modera_translations.service.translation_handlers_chain');
     }
 
     /**
