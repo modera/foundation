@@ -89,6 +89,7 @@ Ext.define('Modera.backend.languages.runtime.UserSettingsWindowActivity', {
                 Actions.ModeraBackendLanguages_UserSettings.update({ record: records[0] }, function(response) {
                     if (response.success) {
                         window.close();
+                        history.go(0);
                     } else {
                         window.showErrors(response);
                     }
@@ -97,6 +98,7 @@ Ext.define('Modera.backend.languages.runtime.UserSettingsWindowActivity', {
                 Actions.ModeraBackendLanguages_UserSettings.batchUpdate({ records: records }, function(response) {
                     if (response.success) {
                         window.close();
+                        history.go(0);
                     } else {
                         window.showErrors(response);
                     }
