@@ -17,6 +17,7 @@ Ext.define('Modera.backend.languages.view.List', {
     editBtnText: 'Edit',
     localeHeaderText: 'Locale',
     nameHeaderText: 'Name',
+    defaultHeaderText: 'Default',
     removeHeaderText: 'Remove',
     emptyListText: 'No items found',
     languagesTabText: 'Languages',
@@ -66,7 +67,7 @@ Ext.define('Modera.backend.languages.view.List', {
                                     dataIndex: 'name',
                                     text: me.nameHeaderText,
                                     renderer: me.defaultRenderer()
-                                }//,
+                                },
                                 // {
                                 //     flex: 1,
                                 //     align : 'right',
@@ -88,7 +89,39 @@ Ext.define('Modera.backend.languages.view.List', {
                                 //             }
                                 //         }
                                 //     ]
-                                // }
+                                // },
+                                {
+                                    width: 60,
+                                    dataIndex: 'isDefault',
+                                    text: me.defaultHeaderText,
+                                    xtype: 'templatecolumn',
+                                    tpl: new Ext.XTemplate(
+                                        [
+                                            '<span style="{[ this.glyphStyle(values) ]}">',
+                                                '{[ this.glyph(values) ]}',
+                                            '</span>'
+                                        ].join(''),
+                                        {
+                                            glyph: function(values) {
+                                                if (values.isDefault) {
+                                                    var glyph = FontAwesome.resolve('asterisk', 'fas');
+                                                    var glyphParts = glyph.split('@');
+                                                    return '&#' + glyphParts[0] + ';';
+                                                }
+                                                return '';
+                                            },
+                                            glyphStyle: function(values) {
+                                                if (values.isDefault) {
+                                                    var glyph = FontAwesome.resolve('asterisk', 'fas');
+                                                    var glyphParts = glyph.split('@');
+
+                                                    return 'font-family: ' + glyphParts[1] + ';';
+                                                }
+                                                return '';
+                                            }
+                                        }
+                                    )
+                                }
                             ],
                             emptyText: me.emptyListText,
                             emptyCls: 'mfc-grid-empty-text',

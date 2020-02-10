@@ -36,6 +36,12 @@ class Language
      */
     private $isEnabled = false;
 
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean", nullable=false)
+     */
+    private $isDefault = false;
+
     public static function clazz()
     {
         return get_called_class();
@@ -120,10 +126,19 @@ class Language
      */
     public function getIsEnabled()
     {
+        return $this->isEnabled();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled()
+    {
         return $this->isEnabled;
     }
 
     /**
+     * @deprecated  Since v3.1.0, use Language::isEnabled() method.
      * @return bool
      */
     public function getEnabled()
@@ -132,10 +147,36 @@ class Language
     }
 
     /**
-     * @param bool $isEnabled
+     * @param bool $status
      */
-    public function setEnabled($isEnabled)
+    public function setEnabled($status)
     {
-        $this->isEnabled = $isEnabled;
+        $this->isEnabled = $status;
+    }
+
+    /**
+     * For ModeraServerCrudBundle.
+     *
+     * @return bool
+     */
+    public function getIsDefault()
+    {
+        return $this->isDefault();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDefault()
+    {
+        return $this->isDefault;
+    }
+
+    /**
+     * @param bool $status
+     */
+    public function setDefault($status)
+    {
+        $this->isDefault = $status;
     }
 }

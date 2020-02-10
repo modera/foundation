@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Modera\BackendLanguagesBundle\Entity\UserSettings;
+use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -24,11 +25,18 @@ class LocaleListener implements EventSubscriberInterface
     private $em;
 
     /**
-     * @param EntityManager $em
+     * @var string
      */
-    public function __construct(EntityManager $em)
+    private $defaultLocale;
+
+    /**
+     * @param EntityManager $em
+     * @param string defaultLocale
+     */
+    public function __construct(EntityManager $em, $defaultLocale = 'en')
     {
         $this->em = $em;
+        $this->defaultLocale = $defaultLocale;
     }
 
     /**
@@ -60,14 +68,27 @@ class LocaleListener implements EventSubscriberInterface
             if ($response instanceof JsonResponse) {
                 $content = json_decode($response->getContent(), true);
                 if ($content['success']) {
-                    $locale = null; //
+                    $locale = null;
+
                     /* @var UserSettings $settings */
-                    $settings = $this->em->getRepository(UserSettings::clazz())
-                        ->findOneBy(array('user' => $content['profile']['id']));
-                    if ($settings && $settings->getLanguage() && $settings->getLanguage()->getEnabled()) {
+                    $settings = $this->em->getRepository(UserSettings::clazz())->findOneBy(array(
+                        'user' => $content['profile']['id'],
+                    ));
+                    if ($settings && $settings->getLanguage() && $settings->getLanguage()->isEnabled()) {
                         $locale = $settings->getLanguage()->getLocale();
                     }
-                    $response->headers->set('set-cookie', self::LOCALE . '=' . $locale);
+
+                    if (!$locale) {
+                        /* @var Language $defaultLanguage */
+                        $defaultLanguage = $this->em->getRepository(Language::clazz())->findOneBy(array(
+                            'isDefault' => true,
+                        ));
+                        if ($defaultLanguage) {
+                            $locale = $defaultLanguage->getLocale();
+                        }
+                    }
+
+                    $response->headers->set('set-cookie', self::LOCALE . '=' . ($locale ?: $this->defaultLocale));
                 }
             }
         }
