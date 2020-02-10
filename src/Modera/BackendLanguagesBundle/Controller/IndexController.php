@@ -2,15 +2,25 @@
 
 namespace Modera\BackendLanguagesBundle\Controller;
 
+use Symfony\Component\Translation\Translator;
 use Symfony\Component\HttpFoundation\Request;
-use Sli\ExtJsLocalizationBundle\Controller\IndexController as Controller;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2014 Modera Foundation
+ * @copyright 2020 Modera Foundation
  */
 class IndexController extends Controller
 {
+    /**
+     * @return string
+     */
+    protected function getDomain()
+    {
+        return 'extjs';
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -20,18 +30,37 @@ class IndexController extends Controller
     }
 
     /**
-     * {@inheritdoc}
+     * @param Request $request
+     * @param string $locale
+     * @return Response
      */
-    protected function getTranslationsDir()
+    public function compileAction(Request $request, $locale = null)
     {
-        if ($this->container->hasParameter('modera.translations_dir')) {
-            return $this->container->getParameter('modera.translations_dir');
+        if (!$locale) {
+            $locale = $request->getLocale();
         }
 
-        if ($this->container->hasParameter('translator.default_path')) {
-            return $this->container->getParameter('translator.default_path');
+        /* @var Translator $translator */
+        $translator = $this->get('translator');
+
+        $tokenGroups = array();
+        foreach ($translator->getCatalogue($locale)->all($this->getDomain()) as $fullToken => $translation) {
+            $className = explode('.', $fullToken);
+            $token = array_pop($className);
+            $className = implode('.', $className);
+
+            if (!isset($tokenGroups[$className])) {
+                $tokenGroups[$className] = array();
+            }
+
+            $tokenGroups[$className][$token] = $translator->trans($fullToken, array(), $this->getDomain(), $locale);
         }
 
-        return parent::getTranslationsDir();
+        $body = $this->renderView($this->getTemplate(), array(
+            'locale' => $locale,
+            'token_groups' => $tokenGroups,
+        ));
+
+        return new Response($body, 200, array('Content-Type' => 'application/javascript; charset=UTF-8'));
     }
 }
