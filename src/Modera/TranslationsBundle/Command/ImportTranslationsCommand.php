@@ -470,8 +470,8 @@ class ImportTranslationsCommand extends ContainerAwareCommand
 
             // if empty, load default translations
             if (count($extractedCatalogue->all()) == 0 && !$markAsTranslated) {
-                if ($this->getContainer()->hasParameter('kernel.default_locale')) {
-                    $defaultLocale = $this->getContainer()->getParameter('kernel.default_locale');
+                $defaultLocale = $this->getTranslationsDefaultLocale();
+                if ($defaultLocale) {
                     $defaultCatalogue = new MessageCatalogue($defaultLocale);
                     $this->getTranslationReader()->read($translationsDir, $defaultCatalogue);
 
@@ -514,6 +514,24 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         }
 
         return $extractedCatalogue;
+    }
+
+    /**
+     * @return null|string
+     */
+    private function getTranslationsDefaultLocale()
+    {
+        $defaultLocale = null;
+
+        if ($this->getContainer()->hasParameter('kernel.default_locale')) {
+            $defaultLocale = $this->getContainer()->getParameter('kernel.default_locale');
+        }
+
+        if ($this->getContainer()->hasParameter('modera.translations_default_locale')) {
+            $defaultLocale = $this->getContainer()->getParameter('modera.translations_default_locale');
+        }
+
+        return $defaultLocale;
     }
 
     /**
