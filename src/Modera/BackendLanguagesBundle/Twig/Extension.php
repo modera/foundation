@@ -4,6 +4,7 @@ namespace Modera\BackendLanguagesBundle\Twig;
 
 use Symfony\Component\Intl\Intl;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\BackendLanguagesBundle\Service\SanitizeInterface;
 
 /**
  * @author Sergei Vizel <sergei.vizel@gmail.com>
@@ -320,11 +321,31 @@ class Extension extends \Twig_Extension
     private $customLocalesProvider;
 
     /**
+     * @var SanitizeInterface
+     */
+    private $sanitizationService;
+
+    /**
      * @param ContributorInterface $customLocalesProvider
      */
-    public function __construct(ContributorInterface $customLocalesProvider)
+    public function __construct(ContributorInterface $customLocalesProvider, SanitizeInterface $sanitizationService)
     {
         $this->customLocalesProvider = $customLocalesProvider;
+        $this->sanitizationService = $sanitizationService;
+    }
+
+    public function getFilters()
+    {
+        return array(
+            new \Twig_Filter(
+                'modera_backend_languages_escape',
+                array($this, 'escapeJsString'),
+                array(
+                    'needs_environment' => true,
+                    'is_safe_callback' => 'twig_escape_filter_is_safe'
+                )
+            ),
+        );
     }
 
     /**
@@ -354,6 +375,16 @@ class Extension extends \Twig_Extension
                 array('is_safe' => array('html', 'js'))
             ),
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function escapeJsString(\Twig_Environment $env, $string)
+    {
+        $string = $this->sanitizationService->sanitizeHtml($string);
+
+        return \twig_escape_filter($env, $string, 'js');
     }
 
     /**

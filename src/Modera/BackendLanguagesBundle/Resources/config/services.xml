@@ -84,10 +84,15 @@
             <tag name="doctrine.event_listener" event="onFlush" />
         </service>
 
+        <service id="modera_backend_languages.service.sanitization_service"
+                 class="Modera\BackendLanguagesBundle\Service\SanitizationService">
+        </service>
+
         <service id="modera_backend_languages.twig.extension"
                  class="Modera\BackendLanguagesBundle\Twig\Extension">
 
             <argument type="service" id="modera_backend_languages.locales_provider" />
+            <argument type="service" id="modera_backend_languages.service.sanitization_service" />
 
             <tag name="twig.extension" />
         </service>

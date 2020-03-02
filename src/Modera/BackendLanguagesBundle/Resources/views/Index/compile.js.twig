@@ -5,7 +5,7 @@ if (window['Ext']) {
         override: '{{ parent_class }}',
 
 {% for token, translation in tokens %}
-        {{ token }}Text: '{{ translation }}'{% if not loop.last %},{% endif %}
+        {{ token }}Text: '{{- translation|modera_backend_languages_escape -}}'{% if not loop.last %},{% endif %}
 
 {% endfor %}
     });

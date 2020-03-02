@@ -46,7 +46,9 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                             metaData.tdCls += 'new';
                         }
 
-                        return values[language.get('id')]['translation'];
+                        var value = values[language.get('id')]['translation'];
+
+                        return Ext.util.Format.htmlEncode(value);
                     } else {
                         return '';
                     }
