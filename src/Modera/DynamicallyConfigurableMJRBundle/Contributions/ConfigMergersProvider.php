@@ -3,14 +3,15 @@
 namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
 use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 use Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2019 Modera Foundation
+ * @copyright 2020 Modera Foundation
  */
-class CssResourcesProvider implements ContributorInterface
+class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterface
 {
     /**
      * @var ConfigurationEntriesManagerInterface
@@ -26,23 +27,28 @@ class CssResourcesProvider implements ContributorInterface
     }
 
     /**
+     * @param array $currentConfig
+     *
+     * @return array
+     */
+    public function merge(array $currentConfig)
+    {
+        $logoUrl = $this->mgr->findOneByNameOrDie(Bundle::CONFIG_LOGO_URL)->getValue();
+
+        return array_merge($currentConfig, array(
+            'modera_dynamically_configurable_mjr' => array(
+                'logo_url' => $logoUrl,
+            ),
+        ));
+    }
+
+    /**
      * {@inheritdoc}
+     *
+     * @return array
      */
     public function getItems()
     {
-        $items = array();
-
-        $logoUrl = $this->mgr->findOneByNameOrDie(Bundle::CONFIG_LOGO_URL)->getValue();
-        if ($logoUrl) {
-            $items[] = array('order' => PHP_INT_MAX, 'resource' => '/bundles/moderadynamicallyconfigurablemjr/css/logo.css');
-            $items[] = array('order' => PHP_INT_MAX, 'resource' => '/logo.css');
-        }
-
-        $skinCssUrl = $this->mgr->findOneByNameOrDie(Bundle::CONFIG_SKIN_CSS)->getValue();
-        if ($skinCssUrl) {
-            $items[] = array('order' => PHP_INT_MAX, 'resource' => $skinCssUrl);
-        }
-
-        return $items;
+        return array($this);
     }
 }
