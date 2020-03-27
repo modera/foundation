@@ -60,9 +60,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         $printMessageNames = $output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE;
 
         /* @var Language[] $languages */
-        $languages = $this->em()->getRepository(Language::clazz())->findBy(array(
-            'isEnabled' => true,
-        ));
+        $languages = $this->em()->getRepository(Language::clazz())->findAll();
         if (!count($languages)) {
             $languages = array($this->createAndReturnDefaultLanguage());
         }
@@ -78,6 +76,10 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         $new = array();
         $obsolete = array();
         foreach ($languages as $language) {
+            if (!$language->isEnabled()) {
+                continue;
+            }
+
             $locale = $language->getLocale();
 
             try {
