@@ -194,21 +194,26 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                 $insertTranslationTokens = array();
                 foreach ($new as $domain => $translationTokens) {
                     foreach ($translationTokens as $tokenName => $arr) {
-                        $token = $this->findTranslationToken($tokens, $domain, $tokenName);
-                        if (!$token) {
-                            $insertTranslationTokens[] = array(
-                                'domain'     => $domain,
-                                'tokenName'  => $tokenName,
-                            );
+                        $key = $domain . $tokenName;
+                        if (!isset($insertTranslationTokens[$key])) {
+                            $token = $this->findTranslationToken($tokens, $domain, $tokenName);
+                            if (!$token) {
+                                $insertTranslationTokens[$key] = array(
+                                    'domain'     => $domain,
+                                    'tokenName'  => $tokenName,
+                                );
+                            }
                         }
+
                     }
                 }
 
-                foreach ($insertTranslationTokens as $key => $data) {
+                foreach (array_values($insertTranslationTokens) as $key => $data) {
                     $token = new TranslationToken();
                     $token
                         ->setDomain($data['domain'])
-                        ->setTokenName($data['tokenName']);
+                        ->setTokenName($data['tokenName'])
+                    ;
                     $this->em()->persist($token);
                     if (($key % $batchSize) === 0) {
                         $this->em()->flush();
