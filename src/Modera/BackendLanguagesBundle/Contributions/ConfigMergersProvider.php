@@ -7,6 +7,7 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 use Modera\BackendLanguagesBundle\Entity\UserSettings;
+use Modera\LanguagesBundle\Helper\LocaleHelper;
 use Modera\LanguagesBundle\Entity\Language;
 use Modera\SecurityBundle\Entity\User;
 
@@ -59,6 +60,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
                 'id' => $dbLanguage->getId(),
                 'name' => $dbLanguage->getName(),
                 'locale' => $dbLanguage->getLocale(),
+                'direction' => LocaleHelper::getDirection($dbLanguage->getLocale()),
             );
         }
 
@@ -86,6 +88,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
             'modera_backend_languages' => array(
                 'languages' => $languages,
                 'locale' => $locale ?: $this->locale,
+                'direction' => LocaleHelper::getDirection($locale ?: $this->locale),
             ),
         ));
     }

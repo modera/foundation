@@ -4,6 +4,10 @@
 Ext.define('Modera.backend.languages.runtime.ExtJsLocalizationPlugin', {
     extend: 'MF.runtime.extensibility.AbstractPlugin',
 
+    requires: [
+        'MF.theme.Header'
+    ],
+
     // override
     constructor: function(config) {
         this.callParent(arguments);
@@ -27,10 +31,25 @@ Ext.define('Modera.backend.languages.runtime.ExtJsLocalizationPlugin', {
                 if (workbenchPanel) {
                     var header = workbenchPanel.down('#header');
                     if (header) {
-                        var logoutBtn = header.down('button[tid=logoutBtn]');
-                        if (logoutBtn) {
-                            logoutBtn.setText(header.logoutText);
+                        workbenchPanel.__configureUi = workbenchPanel.configureUi;
+                        workbenchPanel.configureUi = function(authenticationResult, runtimeConfig, callback) {
+                            workbenchPanel.remove(header);
+                            header = workbenchPanel.add({
+                                itemId: header.getItemId(),
+                                rtl: 'rtl' === config['modera_backend_languages']['direction'],
+                                xtype: 'mf-theme-header',
+                                region: header.region
+                            });
+                            workbenchPanel.__configureUi(authenticationResult, runtimeConfig, callback);
+                        };
+                        workbenchPanel.sectionChanged = function(owningSectionName, params, sectionName) {
+                            header.highlightMenuItem(owningSectionName);
                         }
+
+                        // var logoutBtn = header.down('button[tid=logoutBtn]');
+                        // if (logoutBtn) {
+                        //     logoutBtn.setText(header.logoutText);
+                        // }
                     }
                 }
 

@@ -6,6 +6,7 @@ use Symfony\Component\Translation\Translator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Modera\LanguagesBundle\Helper\LocaleHelper;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -58,6 +59,7 @@ class IndexController extends Controller
 
         $body = $this->renderView($this->getTemplate(), array(
             'locale' => $locale,
+            'direction' => LocaleHelper::getDirection($locale),
             'token_groups' => $tokenGroups,
         ));
 
