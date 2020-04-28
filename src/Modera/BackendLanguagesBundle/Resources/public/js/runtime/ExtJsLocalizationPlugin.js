@@ -35,10 +35,13 @@ Ext.define('Modera.backend.languages.runtime.ExtJsLocalizationPlugin', {
                         workbenchPanel.configureUi = function(authenticationResult, runtimeConfig, callback) {
                             workbenchPanel.remove(header);
                             header = workbenchPanel.add({
-                                itemId: header.getItemId(),
+                                itemId: header.itemId,
                                 rtl: 'rtl' === config['modera_backend_languages']['direction'],
                                 xtype: 'mf-theme-header',
                                 region: header.region
+                            });
+                            header.on('logout', function() {
+                                workbenchPanel.fireEvent('logout', header);
                             });
                             workbenchPanel.__configureUi(authenticationResult, runtimeConfig, callback);
                         };
