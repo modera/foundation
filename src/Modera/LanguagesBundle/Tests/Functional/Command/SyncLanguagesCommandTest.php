@@ -62,7 +62,7 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
         $actual = 0;
         $dbLanguages = self::$em->getRepository(Language::clazz())->findAll();
         foreach ($dbLanguages as $dbLanguage) {
-            if ($dbLanguage->getEnabled()) {
+            if ($dbLanguage->isEnabled()) {
                 ++$actual;
             }
         }

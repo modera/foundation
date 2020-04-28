@@ -2,25 +2,25 @@
 
 namespace Modera\BackendSecurityBundle\Controller;
 
-use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
-use Modera\SecurityBundle\Entity\User;
-use Modera\SecurityBundle\PasswordStrength\BadPasswordException;
-use Modera\SecurityBundle\PasswordStrength\PasswordManager;
-use Modera\SecurityBundle\Service\UserService;
-use Modera\ServerCrudBundle\Controller\AbstractCrudController;
-use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
-use Modera\ServerCrudBundle\Hydration\HydrationProfile;
-use Modera\ServerCrudBundle\Persistence\OperationResult;
-use Modera\FoundationBundle\Translation\T;
-use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
-use Modera\ServerCrudBundle\Validation\ValidationResult;
 use Psr\Log\LoggerInterface;
-use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filter;
-use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filters;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Modera\BackendSecurityBundle\Service\MailService;
+use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filter;
+use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filters;
+use Modera\FoundationBundle\Translation\T;
+use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
+use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
+use Modera\ServerCrudBundle\Validation\ValidationResult;
+use Modera\ServerCrudBundle\Persistence\OperationResult;
+use Modera\ServerCrudBundle\Hydration\HydrationProfile;
+use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
+use Modera\SecurityBundle\PasswordStrength\BadPasswordException;
+use Modera\SecurityBundle\PasswordStrength\PasswordManager;
+use Modera\SecurityBundle\ModeraSecurityBundle;
+use Modera\SecurityBundle\Service\UserService;
+use Modera\SecurityBundle\Entity\User;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -322,7 +322,7 @@ class UsersController extends AbstractCrudController
     public function isPasswordRotationNeededAction(array $params)
     {
         $isRotationNeeded = false;
-        if (!$this->isGranted('ROLE_PREVIOUS_ADMIN')) {
+        if (!$this->isGranted('ROLE_PREVIOUS_ADMIN') && !$this->isGranted(ModeraSecurityBundle::ROLE_ROOT_USER)) {
             $isRotationNeeded = $this->getPasswordManager()->isItTimeToRotatePassword($this->getUser());
         }
 

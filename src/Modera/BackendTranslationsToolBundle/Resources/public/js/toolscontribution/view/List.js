@@ -46,7 +46,9 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                             metaData.tdCls += 'new';
                         }
 
-                        return values[language.get('id')]['translation'];
+                        var value = values[language.get('id')]['translation'];
+
+                        return Ext.util.Format.htmlEncode(value);
                     } else {
                         return '';
                     }
@@ -182,11 +184,22 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                     //padding: 2,
                     items: [
                         {
+                            xtype: 'splitbutton',
                             tid: 'importBtn',
                             itemId: 'import',
                             iconCls: 'icon-import-24',
                             text: me.importBtnText,
-                            scale: 'medium'
+                            scale: 'medium',
+                            menu: Ext.create('Ext.menu.Menu', {
+                                items: [
+                                    {
+                                        itemId: 'menuCompile',
+                                        text: me.compileBtnText,
+                                        tid: 'menuCompileBtn',
+                                        scale: 'medium'
+                                    }
+                                ]
+                            })
                         },
                         {
                             itemId: 'delete',
@@ -377,6 +390,10 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
 
         me.down('#import').on('click', function(btn) {
             me.fireEvent('import', me);
+        });
+
+        me.down('#menuCompile').on('click', function(btn) {
+            me.fireEvent('compile', me);
         });
 
         me.down('#compile').on('click', function(btn) {

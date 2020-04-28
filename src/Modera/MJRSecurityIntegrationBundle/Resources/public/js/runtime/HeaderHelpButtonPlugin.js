@@ -32,11 +32,13 @@ Ext.define('Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin', {
      * @param {Object} config
      */
     constructor: function (config) {
-        MF.Util.validateRequiredConfigParams(this, config, ['helpMenuItems', 'workbench']);
+        var me = this;
 
-        Ext.apply(this, config);
+        MF.Util.validateRequiredConfigParams(me, config, ['helpMenuItems', 'workbench']);
 
-        this.callParent(arguments);
+        Ext.apply(me, config);
+
+        me.callParent(arguments);
     },
 
     // override
@@ -48,30 +50,38 @@ Ext.define('Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin', {
     bootstrap: function(callback) {
         var me = this;
 
-        var targetContainer = Ext.ComponentQuery.query('component[extensionPoint=additionalHeaderActions]')[0];
-        if (targetContainer && this.helpMenuItems.length > 0 && !this.isButtonAlreadyContributed()) {
-            var usernameButtonIndex = 0;
-            Ext.each(targetContainer.down('component'), function(cmp, i) {
-                if (cmp.hasOwnProperty('itemId') && 'showProfileBtn' == cmp.itemId) {
-                    usernameButtonIndex = i;
+        var query = 'component[extensionPoint=additionalHeaderActions]';
 
-                    return false;
+        var lookup = {};
+        lookup[query] =  {
+            afterrender: function(targetContainer) {
+                if (targetContainer && me.helpMenuItems.length > 0 && !me.isButtonAlreadyContributed()) {
+                    var usernameButtonIndex = 0;
+                    Ext.each(targetContainer.down('component'), function(cmp, i) {
+                        if (cmp.hasOwnProperty('itemId') && 'showProfileBtn' == cmp.itemId) {
+                            usernameButtonIndex = i;
+
+                            return false;
+                        }
+                    });
+
+                    var afterUsernamePosition = usernameButtonIndex + 1;
+
+                    targetContainer.insert(afterUsernamePosition, {
+                        itemId: 'helpMenuButton',
+                        xtype: 'button',
+                        scale: 'medium',
+                        margin: '0 10 0 5',
+                        glyph: FontAwesome.resolve('question-circle', 'fas'),
+                        handler: function(btn) {
+                            me.showMenu(btn);
+                        }
+                    });
                 }
-            });
+            }
+        };
 
-            var afterUsernamePosition = usernameButtonIndex + 1;
-
-            targetContainer.insert(afterUsernamePosition, {
-                itemId: 'helpMenuButton',
-                xtype: 'button',
-                scale: 'medium',
-                margin: '0 10 0 5',
-                glyph: FontAwesome.resolve('question-circle', 'fas'),
-                handler: function(btn) {
-                    me.showMenu(btn);
-                }
-            });
-        }
+        MF.Util.control(lookup);
 
         callback();
     },
@@ -89,7 +99,7 @@ Ext.define('Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin', {
         var me = this;
 
         var buttons = [];
-        Ext.each(this.helpMenuItems, function(item) {
+        Ext.each(me.helpMenuItems, function(item) {
             var btn = Ext.clone(item);
             btn.text = item.label;
             btn.handler = function() {

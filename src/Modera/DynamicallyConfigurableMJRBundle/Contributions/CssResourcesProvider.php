@@ -30,12 +30,19 @@ class CssResourcesProvider implements ContributorInterface
      */
     public function getItems()
     {
+        $items = array();
+
+        $logoUrl = $this->mgr->findOneByNameOrDie(Bundle::CONFIG_LOGO_URL)->getValue();
+        if ($logoUrl) {
+            $items[] = array('order' => PHP_INT_MAX, 'resource' => '/bundles/moderadynamicallyconfigurablemjr/css/logo.css');
+            $items[] = array('order' => PHP_INT_MAX, 'resource' => '/logo.css');
+        }
+
         $skinCssUrl = $this->mgr->findOneByNameOrDie(Bundle::CONFIG_SKIN_CSS)->getValue();
         if ($skinCssUrl) {
-            return array(
-                array('order' => PHP_INT_MAX, 'resource' => $skinCssUrl),
-            );
+            $items[] = array('order' => PHP_INT_MAX, 'resource' => $skinCssUrl);
         }
-        return array();
+
+        return $items;
     }
 }

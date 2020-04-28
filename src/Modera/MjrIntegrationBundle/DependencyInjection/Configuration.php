@@ -53,6 +53,10 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('//cdn.sencha.com/ext/gpl/4.2.1')
                     ->cannotBeEmpty()
                 ->end()
+                // include RTL support
+                ->booleanNode('extjs_include_rtl')
+                    ->defaultValue(false)
+                ->end()
                 // if this is set to TRUE then the most developer friendly version of extjs will be included,
                 // most verbose debug will be provided regarding errors
                 ->scalarNode('extjs_console_warnings')

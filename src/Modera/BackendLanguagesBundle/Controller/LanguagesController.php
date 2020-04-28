@@ -36,7 +36,8 @@ class LanguagesController extends AbstractCrudController
                             'id' => $entity->getId(),
                             'name' => $entity->getName($this->getDisplayLocale()),
                             'locale' => $entity->getLocale(),
-                            'isEnabled' => $entity->getEnabled(),
+                            'isEnabled' => $entity->isEnabled(),
+                            'isDefault' => $entity->isDefault(),
                         );
                     },
                     'remove' => function (Language $entity) {

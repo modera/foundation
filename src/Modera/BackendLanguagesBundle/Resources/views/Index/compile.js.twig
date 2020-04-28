@@ -1,25 +1,21 @@
 if (window['Ext']) {
-{% if skipped_bundles|length > 0 %}
-   /**
-    * These bundles were skipped:
-    *    {{ skipped_bundles|join('\n    *    ')|raw }}
-    *
-    * Total tokens: {{ tokens_total }}
-    */
-{% endif %}
 
 {% for parent_class, tokens in token_groups %}
     Ext.define('l10n.{{ locale }}.{{ parent_class }}', {
         override: '{{ parent_class }}',
 
 {% for token, translation in tokens %}
-        {{ token }}Text: '{{ translation }}'{% if not loop.last %},{% endif %}
+        {{ token }}Text: '{{- translation|modera_backend_languages_escape -}}'{% if not loop.last %},{% endif %}
 
 {% endfor %}
     });
 {% endfor %}
 
-    (function() {
+    (function(MFC) {
+        if (!MFC) {
+            return;
+        }
+
         var utilFormat = {{ modera_backend_languages_ext_util_format(locale) }};
 
         var convertMomentJsFormatToExtJs = function(str) {
@@ -166,6 +162,6 @@ if (window['Ext']) {
             {% include 'ModeraBackendLanguagesBundle:Index:extension.js.twig' %}
         });
 
-    })();
+    })(window['MFC']);
 
 }

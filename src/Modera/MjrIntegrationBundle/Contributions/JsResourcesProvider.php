@@ -54,6 +54,9 @@ class JsResourcesProvider implements ContributorInterface
         // ext-all-debug: non-minified, with JSDoc, no console warnings
         // ext-all-dev: non-minified, with JSDoc, with console warnings
         $extjs = $this->bundleConfig['extjs_path'].'/ext-all';
+        if ($this->bundleConfig['extjs_include_rtl']) {
+            $extjs .= '-rtl';
+        }
         if ($this->isDevEnv) {
             $extjs .= $this->bundleConfig['extjs_console_warnings'] ? '-dev' : '-debug-w-comments';
         }

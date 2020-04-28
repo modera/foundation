@@ -39,14 +39,14 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
         self::$st->dropSchema([self::$em->getClassMetadata(LanguageTranslationToken::clazz())]);
     }
 
-    protected function launchCompileCommand()
+    protected function launchCompileCommand(array $parameters = array())
     {
         $app = new Application(self::$container->get('kernel'));
         $app->setAutoExit(false);
 
-        $input = new ArrayInput(array(
+        $input = new ArrayInput(array_merge(array(
             'command' => 'modera:translations:compile',
-        ));
+        ), $parameters));
         $input->setInteractive(false);
 
         $exitCode = $app->run($input, new NullOutput());
@@ -54,14 +54,14 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
         $this->assertEquals(0, $exitCode);
     }
 
-    protected function launchImportCommand()
+    protected function launchImportCommand(array $parameters = array())
     {
         $app = new Application(self::$container->get('kernel'));
         $app->setAutoExit(false);
 
-        $input = new ArrayInput(array(
+        $input = new ArrayInput(array_merge(array(
             'command' => 'modera:translations:import',
-        ));
+        ), $parameters));
         $input->setInteractive(false);
 
         $exitCode = $app->run($input, new NullOutput());

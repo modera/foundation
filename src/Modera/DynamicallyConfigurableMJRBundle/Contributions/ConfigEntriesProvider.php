@@ -22,6 +22,7 @@ class ConfigEntriesProvider implements ContributorInterface
             new CED(Bundle::CONFIG_URL, 'Default URL', '', 'general'),
             new CED(Bundle::CONFIG_HOME_SECTION, 'Default section to open when user logs in to backend', '', 'general'),
             new CED(Bundle::CONFIG_SKIN_CSS, 'Skin CSS URL', '', 'general'),
+            new CED(Bundle::CONFIG_LOGO_URL, 'Logo URL', '', 'general'),
         ];
     }
 

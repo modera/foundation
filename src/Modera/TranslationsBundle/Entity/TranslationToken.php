@@ -3,12 +3,15 @@
 namespace Modera\TranslationsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use Doctrine\Common\Collections\ArrayCollection;
 use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="modera_translations_translationtoken")
+ * @ORM\Table(name="modera_translations_translationtoken", uniqueConstraints={
+ *     @UniqueConstraint(name="domain_token_name", columns={"domain", "tokenName"}, options={"lengths": {255, 767}})
+ * })
  *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
@@ -31,7 +34,7 @@ class TranslationToken
 
     /**
      * @var string
-     * @ORM\Column(type="text", nullable=false)
+     * @ORM\Column(type="text", nullable=false, options={"collation":"utf8_bin"})
      */
     private $tokenName;
 

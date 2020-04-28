@@ -9,6 +9,7 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
     newRecordTitleText: 'Add new language',
     placeHolderText: 'Select language',
     activeLabelText: 'This language is active',
+    defaultLabelText: 'This language is default',
 
     // override
     constructor: function(config) {
@@ -63,12 +64,29 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
                         editable: false
                     },
                     {
-                        name: 'isEnabled',
-                        xtype: 'checkboxfield',
-                        boxLabel: me.activeLabelText,
-                        labelSeparator: '',
-                        inputValue: true,
-                        uncheckedValue: false
+                        xtype: 'fieldcontainer',
+                        layout: 'hbox',
+                        defaultType: 'checkboxfield',
+                        items: [
+                            {
+                                flex: 1,
+                                name: 'isEnabled',
+                                xtype: 'checkboxfield',
+                                boxLabel: me.activeLabelText,
+                                labelSeparator: '',
+                                inputValue: true,
+                                uncheckedValue: false
+                            },
+                            {
+                                flex: 1,
+                                name: 'isDefault',
+                                xtype: 'checkboxfield',
+                                boxLabel: me.defaultLabelText,
+                                labelSeparator: '',
+                                inputValue: true,
+                                uncheckedValue: false
+                            }
+                        ]
                     }
                 ]
             }
@@ -83,6 +101,16 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
     // private
     assignListeners: function() {
         var me = this;
+
+        var form = me.down('form').getForm();
+        var isEnabled = form.findField('isEnabled');
+
+        form.findField('isDefault').on('change', function(field, newValue) {
+            if (newValue) {
+                isEnabled.setValue(true);
+            }
+            isEnabled.setDisabled(!!newValue);
+        });
     },
 
     loadData: function(data) {

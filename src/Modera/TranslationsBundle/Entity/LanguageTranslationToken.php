@@ -3,11 +3,14 @@
 namespace Modera\TranslationsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="modera_translations_languagetranslationtoken")
+ * @ORM\Table(name="modera_translations_languagetranslationtoken", uniqueConstraints={
+ *     @UniqueConstraint(name="language_translation_token", columns={"language_id", "translation_token_id"})
+ * })
  *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
@@ -32,7 +35,7 @@ class LanguageTranslationToken
     /**
      * @var TranslationToken
      * @ORM\ManyToOne(targetEntity="TranslationToken", inversedBy="languageTranslationTokens")
-     * @ORM\JoinColumn(name="translation_token_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="translation_token_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $translationToken;
 

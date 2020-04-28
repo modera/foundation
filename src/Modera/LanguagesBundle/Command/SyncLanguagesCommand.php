@@ -94,7 +94,7 @@ class SyncLanguagesCommand extends ContainerAwareCommand
         return array(
             $dbLanguage->getLocale(),
             $dbLanguage->getName(),
-            $dbLanguage->getEnabled(),
+            $dbLanguage->isEnabled(),
         );
     }
 }
