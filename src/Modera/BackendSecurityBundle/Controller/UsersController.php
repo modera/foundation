@@ -9,6 +9,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filter;
 use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filters;
 use Modera\FoundationBundle\Translation\T;
+use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
 use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
@@ -156,11 +157,11 @@ class UsersController extends AbstractCrudController
                     throw new BadPasswordException($e->getErrors()[0], null, $e);
                 }
             },
-            'map_data_on_update' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) use ($self) {
-                $defaultMapper->mapData($params, $user);
-
+            'update_entity_handler' => function (User $user, array $params, PersistenceHandlerInterface $defaultHandler, ContainerInterface $container) use ($self) {
                 /* @var LoggerInterface $activityMgr */
                 $activityMgr = $container->get('modera_activity_logger.manager.activity_manager');
+
+                $params = $params['record'];
 
                 if (isset($params['active'])) {
                     /* @var UserService $userService */
@@ -198,6 +199,8 @@ class UsersController extends AbstractCrudController
                     );
                     $activityMgr->info($activityMsg, $activityContext);
                 }
+
+                return $defaultHandler->update($user);
             },
             'updated_entity_validator' => function (array $params, User $user, EntityValidatorInterface $validator, array $config, ContainerInterface $container) {
                 $isBatchUpdatedBeingPerformed = !isset($params['record']);
