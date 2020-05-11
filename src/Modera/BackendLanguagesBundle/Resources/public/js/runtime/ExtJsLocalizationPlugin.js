@@ -33,6 +33,7 @@ Ext.define('Modera.backend.languages.runtime.ExtJsLocalizationPlugin', {
                     if (header) {
                         workbenchPanel.__configureUi = workbenchPanel.configureUi;
                         workbenchPanel.configureUi = function(authenticationResult, runtimeConfig, callback) {
+                            console.log(me.$className + ': header re-render');
                             workbenchPanel.remove(header);
                             header = workbenchPanel.add({
                                 itemId: header.itemId,
