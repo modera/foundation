@@ -57,9 +57,15 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PasswordWindo
 
         var workbench = me.application.getContainer().get('workbench');
         workbench.getService('config_provider').getConfig(function(config) {
-            workbench.launchActivity('edit-password', {
-                id: config['userProfile']['id']
-            });
+            // workbench.launchActivity('edit-password', {
+            //     id: config['userProfile']['id']
+            // });
+
+            var intentMgr = workbench.getService('intent_manager');
+            intentMgr.dispatch({
+                name: 'edit-password',
+                params: { id: config['userProfile']['id'], meta: config['userProfile']['meta'] }
+            }, Ext.emptyFn, ['use_first_handler']);
         });
     }
 });
