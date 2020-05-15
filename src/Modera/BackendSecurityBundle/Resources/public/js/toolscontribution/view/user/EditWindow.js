@@ -84,5 +84,17 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
         data['displayId'] = data['id'];
         var me = this;
         me.down('form').getForm().setValues(data);
+
+        var meta = data['meta'];
+        if (meta['modera_security'] || false) {
+            if (meta['modera_security']['read_only_fields'] || false) {
+                Ext.Array.each(meta['modera_security']['read_only_fields'], function(fieldName) {
+                    var field = me.down('form').getForm().findField(fieldName);
+                    if (field) {
+                        field.setDisabled(true);
+                    }
+                });
+            }
+        }
     }
 });
