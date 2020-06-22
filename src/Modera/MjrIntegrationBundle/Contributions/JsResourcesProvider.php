@@ -66,7 +66,6 @@ class JsResourcesProvider implements ContributorInterface
             $extjs,
             '//cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js',
             '//cdnjs.cloudflare.com/ajax/libs/moment.js/' . $this->bundleConfig['moment_js_version'] . '/moment-with-locales.min.js',
-            '//cdnjs.cloudflare.com/ajax/libs/js-polyfills/0.1.42/polyfill.min.js',
             $this->router->generate('modera_font_awesome_js'),
             '/bundles/moderamjrintegration/js/orientationchange.js',
             '/bundles/moderamjrintegration/js/stylesheetsloader.js',
