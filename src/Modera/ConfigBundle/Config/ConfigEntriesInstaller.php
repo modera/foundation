@@ -33,9 +33,13 @@ class ConfigEntriesInstaller
         $this->em = $em;
     }
 
-    private function entryExists(ConfigurationEntryDefinition $entry)
+    /**
+     * @param ConfigurationEntryDefinition $entryDef
+     * @return ConfigurationEntry|null
+     */
+    private function findEntry(ConfigurationEntryDefinition $entryDef)
     {
-        return (bool) $this->em->getRepository(ConfigurationEntry::clazz())->findOneBy(array('name' => $entry->getName()));
+        return $this->em->getRepository(ConfigurationEntry::clazz())->findOneBy(array('name' => $entryDef->getName()));
     }
 
     /**
@@ -48,13 +52,14 @@ class ConfigEntriesInstaller
         foreach ($this->provider->getItems() as $entryDef) {
             /* @var ConfigurationEntryInterface $entryDef */
 
-            if (!$this->entryExists($entryDef)) {
-                $entry = ConfigurationEntry::createFromDefinition($entryDef);
-
-                $this->em->persist($entry);
-
+            $entry = $this->findEntry($entryDef);
+            if (!$entry) {
                 $installedEntries[] = $entryDef;
+                $entry = ConfigurationEntry::createFromDefinition($entryDef);
+            } else {
+                $entry->applyDefinition($entryDef);
             }
+            $this->em->persist($entry);
         }
         $this->em->flush();
 
