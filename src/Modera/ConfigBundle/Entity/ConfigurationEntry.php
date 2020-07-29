@@ -171,14 +171,23 @@ class ConfigurationEntry implements ConfigurationEntryInterface
     public static function createFromDefinition(ConfigurationEntryDefinition $def)
     {
         $me = new self($def->getName());
-        $me->setReadableName($def->getReadableName());
         $me->setValue($def->getValue());
-        $me->setServerHandlerConfig($def->getServerHandlerConfig());
-        $me->setClientHandlerConfig($def->getClientHandlerConfig());
-        $me->setExposed($def->isExposed());
-        $me->setCategory($def->getCategory());
+
+        $me->applyDefinition($def);
 
         return $me;
+    }
+
+    /**
+     * @param ConfigurationEntryDefinition $def
+     */
+    public function applyDefinition(ConfigurationEntryDefinition $def)
+    {
+        $this->setReadableName($def->getReadableName());
+        $this->setServerHandlerConfig($def->getServerHandlerConfig());
+        $this->setClientHandlerConfig($def->getClientHandlerConfig());
+        $this->setExposed($def->isExposed());
+        $this->setCategory($def->getCategory());
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace Modera\BackendConfigUtilsBundle\Tests\Unit\Controller;
 
+use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Modera\BackendConfigUtilsBundle\Controller\DefaultController;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 
@@ -19,6 +21,20 @@ class DefaultControllerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->c = new DefaultController();
+
+        $provider = \Phake::mock(ContributorInterface::class);
+        \Phake::when($provider)
+            ->getItems()
+            ->thenReturn(array())
+        ;
+
+        $container = \Phake::mock(ContainerInterface::class);
+        \Phake::when($container)
+            ->get('modera_config.config_entries_provider')
+            ->thenReturn($provider)
+        ;
+
+        $this->c->setContainer($container);
     }
 
     public function testGetConfigHydration()

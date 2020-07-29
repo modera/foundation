@@ -2,7 +2,10 @@
 
 namespace Modera\BackendConfigUtilsBundle\Controller;
 
+use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
+use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
+use Modera\ConfigBundle\Config\ConfigurationEntryDefinition;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
 
@@ -25,10 +28,15 @@ class DefaultController extends AbstractCrudController
             'hydration' => array(
                 'groups' => array(
                     'list' => function (ConfigurationEntry $entry) {
+                        $readableName = $entry->getReadableName();
+                        if ($entryDef = $this->getEntryDef($entry)) {
+                            $readableName = $entryDef->getReadableName();
+                        }
+
                         return array(
                             'id' => $entry->getId(),
                             'name' => $entry->getName(),
-                            'readableName' => $entry->getReadableName(),
+                            'readableName' => $readableName,
                             'readableValue' => $entry->getReadableValue(),
                             'value' => $entry->getValue(),
                             'isReadOnly' => $entry->isReadOnly(),
@@ -48,5 +56,22 @@ class DefaultController extends AbstractCrudController
                 }
             },
         );
+    }
+
+    /**
+     * @param ConfigurationEntry $entity
+     * @return null|ConfigurationEntryDefinition
+     */
+    private function getEntryDef(ConfigurationEntry $entity)
+    {
+        /* @var ContributorInterface $provider */
+        $provider = $this->get('modera_config.config_entries_provider');
+        foreach ($provider->getItems() as $entryDef) {
+            /* @var ConfigurationEntryInterface $entryDef */
+            if ($entity->getName() == $entryDef->getName()) {
+                return $entryDef;
+            }
+        }
+        return null;
     }
 }
