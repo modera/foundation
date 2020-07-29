@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2017 Modera Foundation
  */
-class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
+class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testMerge()
     {

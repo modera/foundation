@@ -9,7 +9,7 @@ use Modera\MJRCacheAwareClassLoaderBundle\VersionResolving\StandardVersionResolv
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class StandardVersionResolverTest extends \PHPUnit_Framework_TestCase
+class StandardVersionResolverTest extends \PHPUnit\Framework\TestCase
 {
     private $container;
 

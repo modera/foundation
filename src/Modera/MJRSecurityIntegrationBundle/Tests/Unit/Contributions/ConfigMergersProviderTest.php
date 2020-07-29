@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\Role\Role;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
+class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testSecurityRolesMerger()
     {

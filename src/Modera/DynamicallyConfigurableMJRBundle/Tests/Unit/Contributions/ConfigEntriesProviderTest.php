@@ -10,7 +10,7 @@ use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBund
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class ConfigEntriesProviderTest extends \PHPUnit_Framework_TestCase
+class ConfigEntriesProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetItems()
     {

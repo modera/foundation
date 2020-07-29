@@ -8,7 +8,7 @@ use Symfony\Component\Config\Definition\Processor;
 /**
  * @author Sergei Lissovski <sergei.lissovski@gmail.org>
  */
-class ConfigurationTest extends \PHPUnit_Framework_TestCase
+class ConfigurationTest extends \PHPUnit\Framework\TestCase
 {
     public function testNoExplicitConfigProvided()
     {

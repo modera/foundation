@@ -9,7 +9,7 @@ use Modera\SecurityBundle\Service\UserService;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class UserServiceTest extends \PHPUnit_Framework_TestCase
+class UserServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @expectedException RuntimeException

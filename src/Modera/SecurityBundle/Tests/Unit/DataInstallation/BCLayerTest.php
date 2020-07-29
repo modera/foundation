@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2017 Modera Foundation
  */
-class BCLayerTest extends \PHPUnit_Framework_TestCase
+class BCLayerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var BCLayer

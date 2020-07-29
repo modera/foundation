@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
-class UniversalUploaderControllerTest extends \PHPUnit_Framework_TestCase
+class UniversalUploaderControllerTest extends \PHPUnit\Framework\TestCase
 {
     private $container;
 

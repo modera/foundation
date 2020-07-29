@@ -9,7 +9,7 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
-class AssetsProviderTest extends \PHPUnit_Framework_TestCase
+class AssetsProviderTest extends \PHPUnit\Framework\TestCase
 {
     private function createMockProvider($assets)
     {

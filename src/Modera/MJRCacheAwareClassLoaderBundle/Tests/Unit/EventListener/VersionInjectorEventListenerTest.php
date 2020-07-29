@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class VersionInjectorEventListenerTest extends \PHPUnit_Framework_TestCase
+class VersionInjectorEventListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var VersionResolverInterface

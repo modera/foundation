@@ -9,7 +9,7 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class DictionaryHandlerTest extends \PHPUnit_Framework_TestCase
+class DictionaryHandlerTest extends \PHPUnit\Framework\TestCase
 {
     private $entry;
     /* @var DictionaryHandler */

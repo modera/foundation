@@ -26,7 +26,7 @@ class DummyEntity
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class DashboardSettingsTraitTest extends \PHPUnit_Framework_TestCase
+class DashboardSettingsTraitTest extends \PHPUnit\Framework\TestCase
 {
     public function testHasAccessToDashboard()
     {

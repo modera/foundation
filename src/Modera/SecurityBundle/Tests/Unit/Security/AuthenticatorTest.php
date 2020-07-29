@@ -9,7 +9,7 @@ use Modera\SecurityBundle\Security\Authenticator;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class AuthenticatorTest extends \PHPUnit_Framework_TestCase
+class AuthenticatorTest extends \PHPUnit\Framework\TestCase
 {
     private function createAuthenticator()
     {

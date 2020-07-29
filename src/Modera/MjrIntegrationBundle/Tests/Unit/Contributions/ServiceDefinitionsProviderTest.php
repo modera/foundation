@@ -10,7 +10,7 @@ use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtensio
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
-class ServiceDefinitionsProviderTest extends \PHPUnit_Framework_TestCase
+class ServiceDefinitionsProviderTest extends \PHPUnit\Framework\TestCase
 {
     private function createMockContainer(array $jsAssets, array $cssAssets, array $bundleConfig = array())
     {

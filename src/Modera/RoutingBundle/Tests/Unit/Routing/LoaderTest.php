@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Route;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class LoaderTest extends \PHPUnit_Framework_TestCase
+class LoaderTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Loader */
     private $loader;
@@ -61,7 +61,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->loader->isLoaded());
 
-        $this->setExpectedException('RuntimeException');
+        $this->expectException('RuntimeException');
 
         $this->loader->load('blah');
     }

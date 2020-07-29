@@ -8,7 +8,7 @@ use Modera\RoutingBundle\DependencyInjection\DelegatingLoaderCloningCompilerPass
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
-class DelegatingLoaderCloningCompilerPassTest extends \PHPUnit_Framework_TestCase
+class DelegatingLoaderCloningCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     public function testProcess()
     {

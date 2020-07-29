@@ -13,7 +13,7 @@ use Modera\SecurityBundle\Entity\User;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class SemanticConfigRootUserHandlerTest extends \PHPUnit_Framework_TestCase
+class SemanticConfigRootUserHandlerTest extends \PHPUnit\Framework\TestCase
 {
     public function testIsRootUser()
     {

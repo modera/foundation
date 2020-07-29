@@ -9,7 +9,7 @@ use Symfony\Component\Yaml\Yaml;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class FontAwesomeTest extends \PHPUnit_Framework_TestCase
+class FontAwesomeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @param string $unicode

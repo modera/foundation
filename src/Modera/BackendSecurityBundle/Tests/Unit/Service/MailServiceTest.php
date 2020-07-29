@@ -10,7 +10,7 @@ use Modera\BackendLanguagesBundle\Entity\UserSettings;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class MailServiceTest extends \PHPUnit_Framework_TestCase
+class MailServiceTest extends \PHPUnit\Framework\TestCase
 {
     private $em;
     private $mailer;

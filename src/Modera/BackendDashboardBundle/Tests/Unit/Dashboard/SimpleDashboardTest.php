@@ -8,7 +8,7 @@ use Modera\BackendDashboardBundle\Dashboard\SimpleDashboard;
  * @copyright 2013 Modera Foundation
  * @author Alex Rudakov <alexandr.rudakov@modera.net>
  */
-class SimpleDashboardTest extends \PHPUnit_Framework_TestCase
+class SimpleDashboardTest extends \PHPUnit\Framework\TestCase
 {
     public function testConstructor()
     {

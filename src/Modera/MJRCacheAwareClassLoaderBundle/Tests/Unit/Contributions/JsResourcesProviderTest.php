@@ -8,7 +8,7 @@ use Modera\MJRCacheAwareClassLoaderBundle\Contributions\JsResourcesProvider;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class JsResourcesProviderTest extends \PHPUnit_Framework_TestCase
+class JsResourcesProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetItems()
     {

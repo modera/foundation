@@ -7,7 +7,7 @@ use Modera\FileRepositoryBundle\Repository\UniqidKeyGenerator;
 /**
  * @author Sergei Lissovski <sergei.lissovski@gmail.com>
  */
-class UniqidKeyGeneratorTest extends \PHPUnit_Framework_TestCase
+class UniqidKeyGeneratorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \SplFileInfo

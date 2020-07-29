@@ -10,7 +10,7 @@ require_once __DIR__.'/../../Fixtures/App/app/ModeraFoundationAppKernel.php';
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class AbstractFunctionalKernelTest extends \PHPUnit_Framework_TestCase
+class AbstractFunctionalKernelTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \ModeraFoundationAppKernel

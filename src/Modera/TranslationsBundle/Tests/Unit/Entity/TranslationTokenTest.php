@@ -11,7 +11,7 @@ use Modera\TranslationsBundle\Entity\TranslationToken;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2017 Modera Foundation
  */
-class TranslationTokenTest extends \PHPUnit_Framework_TestCase
+class TranslationTokenTest extends \PHPUnit\Framework\TestCase
 {
     public function testSettersChaining()
     {

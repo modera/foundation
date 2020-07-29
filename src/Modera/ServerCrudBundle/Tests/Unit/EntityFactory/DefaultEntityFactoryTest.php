@@ -38,7 +38,7 @@ class DummyClassWithMandatoryConstructorArgs
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
-class DefaultEntityFactoryTest extends \PHPUnit_Framework_TestCase
+class DefaultEntityFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /* @var DefaultEntityFactory */
     private $factory;

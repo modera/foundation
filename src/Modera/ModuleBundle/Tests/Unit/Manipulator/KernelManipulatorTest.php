@@ -21,7 +21,7 @@ class AnotherDummyBundle extends DummyBundle
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
-class KernelManipulatorTest extends \PHPUnit_Framework_TestCase
+class KernelManipulatorTest extends \PHPUnit\Framework\TestCase
 {
     private $kernelFilename;
     private $appBundlesFilename;

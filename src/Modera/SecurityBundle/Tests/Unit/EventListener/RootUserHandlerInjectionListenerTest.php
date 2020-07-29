@@ -9,7 +9,7 @@ use Modera\SecurityBundle\EventListener\RootUserHandlerInjectionListener;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class RootUserHandlerInjectionListenerTest extends \PHPUnit_Framework_TestCase
+class RootUserHandlerInjectionListenerTest extends \PHPUnit\Framework\TestCase
 {
     private $container;
 

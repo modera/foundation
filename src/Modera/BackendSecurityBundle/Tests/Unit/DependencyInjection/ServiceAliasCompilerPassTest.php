@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @author    Stas Chychkan <stas.chichkan@modera.net>
  * @copyright 2015 Modera Foundation
  */
-class ServiceAliasCompilerPassTest extends \PHPUnit_Framework_TestCase
+class ServiceAliasCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     public function testProcess()
     {

@@ -8,7 +8,7 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  */
-class BooleanHandlerTest extends \PHPUnit_Framework_TestCase
+class BooleanHandlerTest extends \PHPUnit\Framework\TestCase
 {
     private $entry;
     /* @var BooleanHandler */

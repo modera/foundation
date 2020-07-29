@@ -9,7 +9,7 @@ use org\bovigo\vfs\vfsStream;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
-class ExtensionTest extends \PHPUnit_Framework_TestCase
+class ExtensionTest extends \PHPUnit\Framework\TestCase
 {
     /* @var Extension $ext */
     private $ext;

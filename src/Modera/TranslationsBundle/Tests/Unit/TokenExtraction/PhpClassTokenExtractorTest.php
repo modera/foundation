@@ -9,7 +9,7 @@ use Symfony\Component\Translation\MessageCatalogue;
  * @author Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class PhpClassTokenExtractorTest extends \PHPUnit_Framework_TestCase
+class PhpClassTokenExtractorTest extends \PHPUnit\Framework\TestCase
 {
     public function testExtract()
     {

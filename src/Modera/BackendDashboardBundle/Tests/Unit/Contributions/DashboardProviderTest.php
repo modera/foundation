@@ -9,7 +9,7 @@ use Modera\BackendDashboardBundle\Dashboard\DashboardInterface;
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class DashboardProviderTest extends \PHPUnit_Framework_TestCase
+class DashboardProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testItems()
     {

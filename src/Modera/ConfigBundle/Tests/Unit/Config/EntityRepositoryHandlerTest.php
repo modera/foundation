@@ -30,7 +30,7 @@ class DummyEntity
 /**
  * @author Sergei Lissovski <sergei.lissovski@modera.org>
  */
-class EntityRepositoryHandlerTest extends \PHPUnit_Framework_TestCase
+class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
 {
     private $ce;
     private $em;

@@ -72,7 +72,7 @@ class MockModuleBundle implements BundleInterface, ModuleBundleInterface
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
-class BundlesResolverTest extends \PHPUnit_Framework_TestCase
+class BundlesResolverTest extends \PHPUnit\Framework\TestCase
 {
     private function createMockBundle($name)
     {

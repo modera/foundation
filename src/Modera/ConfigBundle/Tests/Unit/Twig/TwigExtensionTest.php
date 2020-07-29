@@ -9,7 +9,7 @@ use SensioLabs\Security\Exception\RuntimeException;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class TwigExtensionTest extends \PHPUnit_Framework_TestCase
+class TwigExtensionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var TwigExtension

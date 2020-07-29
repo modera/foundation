@@ -13,7 +13,7 @@ use Modera\TranslationsBundle\Handling\PhpClassesTranslationHandler;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class TranslationHandlerTest extends \PHPUnit_Framework_TestCase
+class TranslationHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var string

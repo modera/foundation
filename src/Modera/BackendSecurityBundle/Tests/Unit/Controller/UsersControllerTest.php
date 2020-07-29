@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class UsersControllerTest extends \PHPUnit_Framework_TestCase
+class UsersControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var UsersController

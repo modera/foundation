@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Definition;
  * @copyright 2013 Modera Foundation
  * @author Alex Rudakov <alexandr.rudakov@modera.net>
  */
-class ModeraBackendDashboardExtensionTest extends \PHPUnit_Framework_TestCase
+class ModeraBackendDashboardExtensionTest extends \PHPUnit\Framework\TestCase
 {
     public function testConfigLoad()
     {

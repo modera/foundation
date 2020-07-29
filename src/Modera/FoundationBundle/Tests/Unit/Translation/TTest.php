@@ -30,7 +30,7 @@ class MockTranslator implements TranslatorInterface
  * @author Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class TTest extends \PHPUnit_Framework_TestCase
+class TTest extends \PHPUnit\Framework\TestCase
 {
     private $t;
     private $c;

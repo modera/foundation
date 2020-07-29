@@ -8,7 +8,7 @@ use Modera\LanguagesBundle\Entity\Language;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class LanguageTest extends \PHPUnit_Framework_TestCase
+class LanguageTest extends \PHPUnit\Framework\TestCase
 {
     public function testName()
     {

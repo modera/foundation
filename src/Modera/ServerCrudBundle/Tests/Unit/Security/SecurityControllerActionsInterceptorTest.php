@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class SecurityControllerActionsInterceptorTest extends \PHPUnit_Framework_TestCase
+class SecurityControllerActionsInterceptorTest extends \PHPUnit\Framework\TestCase
 {
     private $controller;
     private $authorizationChecker;
