@@ -23,7 +23,7 @@ class BackgroundProcess extends Process
      */
     public function start(callable $callback = null)
     {
-        $env = 1 < \func_num_args() ? \func_get_arg(1) : null;
+        $env = 1 < \func_num_args() ? \func_get_arg(1) : array();
 
         static::prepare($this);
 
