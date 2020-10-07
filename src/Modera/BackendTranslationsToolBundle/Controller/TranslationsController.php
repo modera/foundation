@@ -191,7 +191,7 @@ class TranslationsController extends AbstractCrudController
                 $user = $this->getUser();
 
                 /* @var LoggerInterface $logger */
-                $logger = $this->get('modera_activity_logger.manager.doctrine_orm_activity_manager');
+                $logger = $this->get('modera_activity_logger.manager.activity_manager');
 
                 $logger->error(
                     // 'message' field for Activity entity is mapped as "string", so we can't put there a whole message

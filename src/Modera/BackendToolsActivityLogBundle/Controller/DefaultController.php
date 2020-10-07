@@ -41,7 +41,7 @@ class DefaultController extends Controller
      */
     private function getActivityManager()
     {
-        return $this->container->get('modera_activity_logger.manager.doctrine_orm_activity_manager');
+        return $this->container->get('modera_activity_logger.manager.activity_manager');
     }
 
     /**
