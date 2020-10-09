@@ -52,7 +52,7 @@
         </service>
 
         <service id="modera_config.default_configuration_entries_manager"
-                 class="Modera\ConfigBundle\Config\ConfigurationEntriesManager"
+                 class="Modera\ConfigBundle\Manager\ConfigurationEntriesManager"
                  public="true">
 
             <argument type="service" id="doctrine.orm.entity_manager" />
