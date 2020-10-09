@@ -92,6 +92,7 @@
                  class="Modera\BackendLanguagesBundle\Twig\Extension">
 
             <argument type="service" id="modera_backend_languages.locales_provider" />
+            <argument type="service" id="modera_backend_languages.ext_util_format_resolver_provider" />
             <argument type="service" id="modera_backend_languages.service.sanitization_service" />
 
             <tag name="twig.extension" />

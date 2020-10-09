@@ -4,6 +4,7 @@ namespace Modera\BackendLanguagesBundle\Twig;
 
 use Symfony\Component\Intl\Intl;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\BackendLanguagesBundle\ExtUtilFormatResolving\ExtUtilFormatResolverInterface;
 use Modera\BackendLanguagesBundle\Service\SanitizeInterface;
 
 /**
@@ -321,16 +322,28 @@ class Extension extends \Twig_Extension
     private $customLocalesProvider;
 
     /**
+     * @var ContributorInterface
+     */
+    private $extUtilFormatResolverProvider;
+
+    /**
      * @var SanitizeInterface
      */
     private $sanitizationService;
 
     /**
      * @param ContributorInterface $customLocalesProvider
+     * @param ContributorInterface $extUtilFormatResolverProvider
+     * @param SanitizeInterface    $sanitizationService
      */
-    public function __construct(ContributorInterface $customLocalesProvider, SanitizeInterface $sanitizationService)
+    public function __construct(
+        ContributorInterface $customLocalesProvider,
+        ContributorInterface $extUtilFormatResolverProvider,
+        SanitizeInterface $sanitizationService
+    )
     {
         $this->customLocalesProvider = $customLocalesProvider;
+        $this->extUtilFormatResolverProvider = $extUtilFormatResolverProvider;
         $this->sanitizationService = $sanitizationService;
     }
 
@@ -495,13 +508,22 @@ class Extension extends \Twig_Extension
         $thousandSeparator = $fmt2->getSymbol(\NumberFormatter::GROUPING_SEPARATOR_SYMBOL);
         $currencyAtEnd = explode('€', str_replace('EUR', '€', $fmt2->formatCurrency(0, 'EUR')))[1] == '';
 
-        return array(
+        $config = array(
             '_language' => $arr['language'],
             'thousandSeparator' => $thousandSeparator,
             'decimalSeparator' => $decimalSeparator,
             'currencySign' => $currencySign,
             'currencyAtEnd' => $currencyAtEnd,
         );
+
+        $items = $this->extUtilFormatResolverProvider->getItems();
+        foreach ($items as $index => $resolver) {
+            if ($resolver instanceof ExtUtilFormatResolverInterface) {
+                $config = $resolver->resolveExtUtilFormat($locale, $config);
+            }
+        }
+
+        return $config;
     }
 
     /**

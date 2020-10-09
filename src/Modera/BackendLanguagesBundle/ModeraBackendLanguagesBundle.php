@@ -18,11 +18,17 @@ class ModeraBackendLanguagesBundle extends Bundle implements ExtensionPointsAwar
      */
     public function build(ContainerBuilder $container)
     {
-        $eventsExtensionPoint = new ExtensionPoint('modera_backend_languages.locales');
-        $eventsExtensionPoint->setDescription(
+        $localesExtensionPoint = new ExtensionPoint('modera_backend_languages.locales');
+        $localesExtensionPoint->setDescription(
             'Allows to contribute custom locales.'
         );
-        $container->addCompilerPass($eventsExtensionPoint->createCompilerPass());
+        $container->addCompilerPass($localesExtensionPoint->createCompilerPass());
+
+        $extUtilFormatResolverExtensionPoint = new ExtensionPoint('modera_backend_languages.ext_util_format_resolver');
+        $extUtilFormatResolverExtensionPoint->setDescription(
+            'Allows to override default ExtUtilFormat.'
+        );
+        $container->addCompilerPass($extUtilFormatResolverExtensionPoint->createCompilerPass());
     }
 
     /**
