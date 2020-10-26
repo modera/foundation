@@ -4,6 +4,7 @@
 Ext.define('Modera.backend.languages.view.language.NewWindow', {
     extend: 'MFC.window.NewAndEditRecordWindow',
     alias: 'widget.modera-backend-languages-language-newwindow',
+    tid: 'addLanguageWindow',
 
     // l10n
     newRecordTitleText: 'Add new language',
@@ -14,7 +15,7 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
     // override
     constructor: function(config) {
         var me = this;
-        
+
         me.newRecordTitle = me.newRecordTitleText;
 
         var ignore = (config['dto'] && config['dto']['ignore']) || [];
@@ -45,6 +46,7 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
                     {
                         name: 'locale',
                         xtype: 'combo',
+                        tid: 'languageCombo',
                         emptyText: me.placeHolderText,
                         store: Ext.create('Modera.backend.languages.store.Locales', {
                             autoLoad: true,
@@ -73,6 +75,7 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
                                 name: 'isEnabled',
                                 xtype: 'checkboxfield',
                                 boxLabel: me.activeLabelText,
+                                tid: 'isActive',
                                 labelSeparator: '',
                                 inputValue: true,
                                 uncheckedValue: false
@@ -81,6 +84,7 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
                                 flex: 1,
                                 name: 'isDefault',
                                 xtype: 'checkboxfield',
+                                tid: 'isDefault',
                                 boxLabel: me.defaultLabelText,
                                 labelSeparator: '',
                                 inputValue: true,
