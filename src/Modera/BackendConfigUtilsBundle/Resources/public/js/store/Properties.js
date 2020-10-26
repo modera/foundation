@@ -17,6 +17,9 @@ Ext.define('Modera.backend.configutils.store.Properties', {
             proxy: {
                 type: 'direct',
                 directFn: Actions.ModeraBackendConfigUtils_Default.list,
+                pageParam: false,
+                startParam: false,
+                limitParam: false,
                 reader: {
                     type: 'json',
                     root: 'items'
