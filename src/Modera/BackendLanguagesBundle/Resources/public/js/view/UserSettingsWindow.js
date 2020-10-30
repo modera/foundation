@@ -3,6 +3,7 @@
  */
 Ext.define('Modera.backend.languages.view.UserSettingsWindow', {
     extend: 'MFC.window.NewAndEditRecordWindow',
+    tid: 'languagePreferenceWindow',
     alias: 'widget.modera-backend-languages-usersettingswindow',
 
     // l10n
@@ -39,6 +40,7 @@ Ext.define('Modera.backend.languages.view.UserSettingsWindow', {
                     {
                         itemId: 'languages',
                         xtype: 'combo',
+                        tid: 'languageCombo',
                         name: 'language',
                         editable: false,
                         store: Ext.create('Ext.data.Store', {

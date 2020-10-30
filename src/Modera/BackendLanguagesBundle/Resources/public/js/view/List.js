@@ -51,6 +51,7 @@ Ext.define('Modera.backend.languages.view.List', {
                             dock: 'left',
                             hideHeaders: true,
                             xtype: 'mfc-touchgrid',
+                            tid: 'languageGrid',
                             monitorModel: 'modera.languages_bundle.language',
                             plugins: [ Ext.create('MFC.HasSelectionAwareComponentsPlugin') ],
                             store: Ext.create('Modera.backend.languages.store.Languages', { autoLoad: true }),
@@ -138,6 +139,7 @@ Ext.define('Modera.backend.languages.view.List', {
                                         {
                                             scale: 'medium',
                                             text: me.addBtnText,
+                                            tid: 'addBtn',
                                             iconCls: 'mfc-icon-add-24',
                                             handler: function(btn) {
                                                 me.fireEvent('newrecord', me, {});
@@ -147,6 +149,7 @@ Ext.define('Modera.backend.languages.view.List', {
                                             disabled: true,
                                             scale: 'medium',
                                             text: me.editBtnText,
+                                            tid: 'editBtn',
                                             selectionAware: true,
                                             iconCls: 'mfc-icon-edit-24',
                                             handler: function(btn) {
@@ -225,6 +228,7 @@ Ext.define('Modera.backend.languages.view.List', {
                     {
                         name: 'locale',
                         xtype: 'combo',
+                        tid: 'regionCombo',
                         labelAlign: 'top',
                         fieldLabel: me.regionalSettingsLabelText,
                         value: locale,
@@ -277,11 +281,13 @@ Ext.define('Modera.backend.languages.view.List', {
                     {
                         xtype: 'displayfield',
                         fieldLabel: me.momentLabelText,
+                        tid: 'momentField',
                         value: now.fromNow()
                     },
                     {
                         xtype: 'displayfield',
                         fieldLabel: me.priceLabelText,
+                        tid: 'priceField',
                         value: me.formatPrice(locale, 99999.99)
                     }
                 ]
