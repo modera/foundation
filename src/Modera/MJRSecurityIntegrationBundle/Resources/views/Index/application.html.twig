@@ -44,10 +44,25 @@ Ext.define('{{ config.app_name }}.Application', {
 
     // override
     modifyContainerServiceDefinitions: function(services) {
-{% autoescape false %}
-        var newServices = {{ container_services|json_encode(constant('JSON_PRETTY_PRINT'))|mf_prepend_every_line(8, ' ', true) }};
-{% endautoescape %}
+        var newServices = {{ container_services|json_encode(constant('JSON_PRETTY_PRINT'))|mf_prepend_every_line(8, ' ', true)|raw }};
 
         return Ext.Object.merge(services, newServices);
+    },
+
+    // override
+    createViewport: function(config) {
+        var viewport = this.callParent(arguments);
+        if (!viewport) {
+            var defaultViewportFQCN = '{{ config.viewport_class }}';
+            if (defaultViewportFQCN) {
+                return Ext.create(defaultViewportFQCN, config);
+            }
+        }
+        return viewport;
+    },
+
+    // override
+    getViewportFactoryConfig: function() {
+        return {{ config.viewport_factory_config|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_FORCE_OBJECT'))|mf_prepend_every_line(8, ' ', true)|raw }};
     }
 });

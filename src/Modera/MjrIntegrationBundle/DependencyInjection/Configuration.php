@@ -53,6 +53,10 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('//cdn.sencha.com/ext/gpl/4.2.1')
                     ->cannotBeEmpty()
                 ->end()
+                ->scalarNode('extjs_ajax_timeout')
+                    ->cannotBeEmpty()
+                    ->defaultValue(60000)
+                ->end()
                 // include RTL support
                 ->booleanNode('extjs_include_rtl')
                     ->defaultValue(false)
@@ -67,7 +71,17 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('/modera/mjr')
                 ->end()
                 ->scalarNode('viewport_class') // for example: MF.runtime.applications.authenticationaware.view.Viewport
-                    ->cannotBeEmpty()
+                    ->defaultValue(null)
+                ->end()
+                ->arrayNode('viewport_factory_config')
+                    ->defaultValue(array(
+                        // 'interactionDelays' => array(
+                        //     'default' => 500,
+                        //     'login' => 1500,
+                        //     'logout' => 2000,
+                        // ),
+                    ))
+                    ->prototype('variable')->end()
                 ->end()
                 ->scalarNode('server_config_provider_service')
                     ->cannotBeEmpty()
