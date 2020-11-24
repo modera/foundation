@@ -119,7 +119,7 @@ if (window['Ext']) {
                         Ext.util.Format.currencySpacer = '';
 
                         // save default implementation
-                        Ext.util.Format.__currency = Ext.util.Format.currency;
+                        var UtilFormatCurrency = Ext.util.Format.__currency = Ext.util.Format.currency;
 
                         /**
                          * Format a number as a currency.
@@ -141,7 +141,7 @@ if (window['Ext']) {
                                 currencySign = Ext.String.format("{0}{1}", currencySign || UtilFormat.currencySign, currencySpacer || UtilFormat.currencySpacer);
                             }
 
-                            return Ext.util.Format.__currency(value, currencySign, decimals, end);
+                            return UtilFormatCurrency(value, currencySign, decimals, end);
                         };
                     }
 
