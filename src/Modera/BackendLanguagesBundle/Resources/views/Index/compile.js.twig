@@ -111,6 +111,40 @@ if (window['Ext']) {
                 }
 
                 if (Ext.util && Ext.util.Format) {
+                    if (!Ext.util.Format.hasOwnProperty('currencySpacer')) {
+                        /**
+                         * @property {String} currencySpacer
+                         * The space between the currency and value
+                         */
+                        Ext.util.Format.currencySpacer = '';
+
+                        // save default implementation
+                        Ext.util.Format.__currency = Ext.util.Format.currency;
+
+                        /**
+                         * Format a number as a currency.
+                         * @param {Number/String} value The numeric value to format
+                         * @param {String} [sign] The currency sign to use (defaults to {@link #currencySign})
+                         * @param {Number} [decimals] The number of decimals to use for the currency
+                         * (defaults to {@link #currencyPrecision})
+                         * @param {Boolean} [end] True if the currency sign should be at the end of the string
+                         * (defaults to {@link #currencyAtEnd})
+                         * @param {String} [currencySpacer] The space between the currency and value
+                         * @return {String} The formatted currency string
+                         */
+                        Ext.util.Format.currency = function(value, currencySign, decimals, end, currencySpacer) {
+                            var UtilFormat = Ext.util.Format;
+
+                            if ((end || UtilFormat.currencyAtEnd) === true) {
+                                currencySign = Ext.String.format("{0}{1}", currencySpacer || UtilFormat.currencySpacer, currencySign || UtilFormat.currencySign);
+                            } else {
+                                currencySign = Ext.String.format("{0}{1}", currencySign || UtilFormat.currencySign, currencySpacer || UtilFormat.currencySpacer);
+                            }
+
+                            return Ext.util.Format.__currency(value, currencySign, decimals, end);
+                        };
+                    }
+
                     Ext.apply(Ext.util.Format, utilFormat);
                     Ext.util.Format.dateFormat = opts.dateFormat;
 
