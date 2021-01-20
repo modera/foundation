@@ -3,10 +3,7 @@
 namespace Modera\BackendSecurityBundle\Tests\Unit\Contributions;
 
 use Modera\BackendSecurityBundle\Contributions\ConfigMergersProvider;
-use Modera\SecurityBundle\Entity\User;
-use Modera\SecurityBundle\PasswordStrength\PasswordManager;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Modera\BackendSecurityBundle\Tests\Fixtures\App\Contributions\ClientDIContributor;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -17,6 +14,7 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
     public function testMerge()
     {
         $provider = new ConfigMergersProvider(
+            new ClientDIContributor(),
             array(
                 'hide_delete_user_functionality' => 'yoyo',
             )
@@ -29,6 +27,20 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
             'existing_key' => 'foobar',
             'modera_backend_security' => array(
                 'hideDeleteUserFunctionality' => 'yoyo',
+                'sections' => array(
+                    array(
+                        'sectionConfig' => array(
+                            'name' => 'section1',
+                            'uiClass' => 'Some.ui.class',
+                        ),
+                        'menuConfig' => array(
+                            'itemId' => 'section1',
+                            'text' => 'Section 1',
+                            'iconCls' => 'icon-1',
+                            'tid' => 'section1SectionButton',
+                        )
+                    )
+                )
             ),
         );
         $this->assertSame($expectedResult, $actualResult);

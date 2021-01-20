@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 
 <container xmlns="http://symfony.com/schema/dic/services"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
         <service id="modera_backend_security.handling.php_classes_translation_handler"
@@ -88,6 +88,7 @@
         <service id="modera_backend_security.contributions.config_mergers_provider"
                  class="Modera\BackendSecurityBundle\Contributions\ConfigMergersProvider">
 
+            <argument type="service" id="modera_backend_security.sections_provider"/>
             <argument>%modera_backend_security.config%</argument>
 
             <tag name="modera_mjr_integration.config.config_mergers_provider" />

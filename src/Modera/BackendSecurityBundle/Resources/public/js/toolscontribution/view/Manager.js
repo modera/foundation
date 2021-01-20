@@ -143,5 +143,20 @@ Ext.define('Modera.backend.security.toolscontribution.view.Manager', {
                 reconfigureOnActivate: sectionConfig.reconfigureOnActivate || false
             })
         });
+    },
+
+    addButtons: function(buttons) {
+        var me = this;
+
+        Ext.each(buttons, function(buttonConfig) {
+            me.down('#permissions').ownerCt.add({
+                itemId: buttonConfig['itemId'],
+                pressed: me.config.sectionName == buttonConfig['itemId'],
+                text: buttonConfig['text'],
+                iconCls: buttonConfig['iconCls'],
+                tid: buttonConfig['tid']
+            });
+        });
+
     }
 });
