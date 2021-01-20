@@ -12,14 +12,17 @@ class Section implements SectionInterface
      * @var string
      */
     private $id;
+
     /**
      * @var string
      */
     private $title;
+
     /**
      * @var string
      */
     private $iconCls;
+
     /**
      * @var string
      */
