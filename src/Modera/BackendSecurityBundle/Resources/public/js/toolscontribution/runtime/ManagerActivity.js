@@ -44,6 +44,16 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.ManagerActivity', 
                     uiClass: 'Modera.backend.security.toolscontribution.runtime.permission.ListActivity'
                 }
             ];
+
+            me.buttons = [];
+            if (config.modera_backend_security && config.modera_backend_security.sections) {
+                for (var i in config.modera_backend_security.sections) {
+                    var section = config.modera_backend_security.sections[i];
+
+                    me.sections.push(section['sectionConfig']);
+                    me.buttons.push(section['menuConfig']);
+                }
+            }
             callback(me);
         });
     },
@@ -85,6 +95,7 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.ManagerActivity', 
             sectionName: params.section
         });
         panel.addSections(me.sections);
+        panel.addButtons(me.buttons);
         me.setUpZones(panel);
 
         onReadyCallback(panel);
