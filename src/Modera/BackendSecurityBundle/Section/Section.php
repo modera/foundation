@@ -21,7 +21,7 @@ class Section implements SectionInterface
     /**
      * @var string
      */
-    private $iconCls;
+    private $glyphIcon;
 
     /**
      * @var string
@@ -31,14 +31,14 @@ class Section implements SectionInterface
     /**
      * @param string $id
      * @param string $title
-     * @param string $iconCls
+     * @param string $glyphIcon
      * @param string $uiClass
      */
-    public function __construct($id, $title, $iconCls, $uiClass)
+    public function __construct($id, $title, $glyphIcon, $uiClass)
     {
         $this->id = $id;
         $this->title = $title;
-        $this->iconCls = $iconCls;
+        $this->glyphIcon = $glyphIcon;
         $this->uiClass = $uiClass;
     }
 
@@ -61,9 +61,9 @@ class Section implements SectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getIconCls()
+    public function getGlyphIcon()
     {
-        return $this->iconCls;
+        return $this->glyphIcon;
     }
 
     /**

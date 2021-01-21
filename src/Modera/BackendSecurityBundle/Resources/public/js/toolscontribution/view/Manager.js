@@ -60,21 +60,21 @@ Ext.define('Modera.backend.security.toolscontribution.view.Manager', {
                                 itemId: 'users',
                                 pressed: config.sectionName == 'users',
                                 text: me.btnUsersText,
-                                iconCls: 'modera-backend-security-icon-user-32',
+                                glyph: FontAwesome.resolve('user', 'fas'),
                                 tid: 'usersSectionButton'
                             },
                             {
                                 itemId: 'groups',
                                 pressed: config.sectionName == 'groups',
                                 text: me.btnGroupsText,
-                                iconCls: 'modera-backend-security-icon-group-32',
+                                glyph: FontAwesome.resolve('user-friends', 'fas'),
                                 tid: 'groupsSectionButton'
                             },
                             {
                                 itemId: 'permissions',
                                 pressed: config.sectionName == 'permissions',
                                 text: me.btnPermissionsText,
-                                iconCls: 'modera-backend-security-icon-permission-32',
+                                glyph: FontAwesome.resolve('shield-alt', 'fas'),
                                 tid: 'permissionsSectionButton'
                             }
                         ]
@@ -153,8 +153,8 @@ Ext.define('Modera.backend.security.toolscontribution.view.Manager', {
                 itemId: buttonConfig['itemId'],
                 pressed: me.config.sectionName == buttonConfig['itemId'],
                 text: buttonConfig['text'],
-                iconCls: buttonConfig['iconCls'],
-                tid: buttonConfig['tid']
+                glyph: buttonConfig['glyph'],
+                tid: buttonConfig['itemId'] + 'SectionButton'
             });
         });
 

@@ -21,7 +21,7 @@ interface SectionInterface
     /**
      * @return string
      */
-    public function getIconCls();
+    public function getGlyphIcon();
 
     /**
      * @return string
