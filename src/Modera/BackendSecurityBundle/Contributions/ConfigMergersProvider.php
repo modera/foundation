@@ -58,8 +58,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
                     'menuConfig' => array(
                         'itemId' => $section->getId(),
                         'text' => $section->getTitle(),
-                        'iconCls' => $section->getIconCls(),
-                        'tid' => $section->getId() . 'SectionButton'
+                        'glyph' => $section->getGlyphIcon(),
                     )
                 );
             }
