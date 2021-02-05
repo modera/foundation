@@ -74,6 +74,7 @@
 
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument>%locale%</argument>
+            <argument>%modera_mjr_security_integration.config.is_authenticated_url%</argument>
 
             <tag name="kernel.event_subscriber" />
         </service>

@@ -30,6 +30,9 @@ class ModeraMJRSecurityIntegrationExtension extends Extension implements Prepend
         }
 
         $container->setParameter(self::CONFIG_KEY, $config);
+        foreach ($config as $key => $value) {
+            $container->setParameter(self::CONFIG_KEY.'.'.$key, $value);
+        }
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');

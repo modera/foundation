@@ -172,7 +172,10 @@ class IndexController extends Controller
         if ($switchUserConfig) {
             $parameters = array();
             $parameters[$switchUserConfig['parameter']] = $username;
-            $url = $this->generateUrl('modera_mjr_security_integration.index.is_authenticated', $parameters);
+            $isAuthenticatedRoute = $this->container->getParameter(
+                ModeraMJRSecurityIntegrationExtension::CONFIG_KEY . '.is_authenticated_url'
+            );
+            $url = $this->generateUrl($isAuthenticatedRoute, $parameters);
         }
 
         return $this->redirect($url);

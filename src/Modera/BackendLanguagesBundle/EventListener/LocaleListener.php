@@ -30,13 +30,24 @@ class LocaleListener implements EventSubscriberInterface
     private $defaultLocale;
 
     /**
+     * @var string
+     */
+    private $isAuthenticatedRoute;
+
+    /**
      * @param EntityManager $em
      * @param string defaultLocale
+     * @param string $isAuthenticatedRoute
      */
-    public function __construct(EntityManager $em, $defaultLocale = 'en')
+    public function __construct(
+        EntityManager $em,
+        $defaultLocale = 'en',
+        $isAuthenticatedRoute = 'modera_mjr_security_integration.index.is_authenticated'
+    )
     {
         $this->em = $em;
         $this->defaultLocale = $defaultLocale;
+        $this->isAuthenticatedRoute = $isAuthenticatedRoute;
     }
 
     /**
@@ -64,7 +75,7 @@ class LocaleListener implements EventSubscriberInterface
             $response->headers->set('set-cookie', self::LOCALE);
         }
 
-        if ('modera_mjr_security_integration.index.is_authenticated' === $request->attributes->get('_route')) {
+        if ($this->isAuthenticatedRoute === $request->attributes->get('_route')) {
             if ($response instanceof JsonResponse) {
                 $content = json_decode($response->getContent(), true);
                 if ($content['success']) {
