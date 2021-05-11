@@ -12,7 +12,7 @@
 set -eu
 
 is_daemon=false
-php_version=7.2
+php_version=7.4
 
 for i in "$@"; do
 case $i in
