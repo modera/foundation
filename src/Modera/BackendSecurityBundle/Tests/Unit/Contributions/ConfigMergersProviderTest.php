@@ -36,8 +36,7 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
                         'menuConfig' => array(
                             'itemId' => 'section1',
                             'text' => 'Section 1',
-                            'iconCls' => 'icon-1',
-                            'tid' => 'section1SectionButton',
+                            'glyph' => 'icon-1',
                         )
                     )
                 )
