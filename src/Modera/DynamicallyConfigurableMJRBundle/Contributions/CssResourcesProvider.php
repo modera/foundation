@@ -4,6 +4,7 @@ namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface;
+use Modera\DynamicallyConfigurableMJRBundle\Resolver\ValueResolverInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
 
 /**
@@ -18,11 +19,18 @@ class CssResourcesProvider implements ContributorInterface
     private $mgr;
 
     /**
-     * @param ConfigurationEntriesManagerInterface $mgr
+     * @var ValueResolverInterface|null
      */
-    public function __construct(ConfigurationEntriesManagerInterface $mgr)
+    private $resolver;
+
+    /**
+     * @param ConfigurationEntriesManagerInterface $mgr
+     * @param ValueResolverInterface|null $resolver
+     */
+    public function __construct(ConfigurationEntriesManagerInterface $mgr, ValueResolverInterface $resolver = null)
     {
         $this->mgr = $mgr;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -32,17 +40,30 @@ class CssResourcesProvider implements ContributorInterface
     {
         $items = array();
 
-        $logoUrl = $this->mgr->findOneByNameOrDie(Bundle::CONFIG_LOGO_URL)->getValue();
+        $logoUrl = $this->findAndResolve(Bundle::CONFIG_LOGO_URL);
         if ($logoUrl) {
             $items[] = array('order' => PHP_INT_MAX, 'resource' => '/bundles/moderadynamicallyconfigurablemjr/css/logo.css');
             $items[] = array('order' => PHP_INT_MAX, 'resource' => '/logo.css');
         }
 
-        $skinCssUrl = $this->mgr->findOneByNameOrDie(Bundle::CONFIG_SKIN_CSS)->getValue();
+        $skinCssUrl = $this->findAndResolve(Bundle::CONFIG_SKIN_CSS);
         if ($skinCssUrl) {
             $items[] = array('order' => PHP_INT_MAX, 'resource' => $skinCssUrl);
         }
 
         return $items;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    private function findAndResolve($name)
+    {
+        $value = $this->mgr->findOneByNameOrDie($name)->getValue();
+        if ($this->resolver) {
+            $value = $this->resolver->resolve($name, $value);
+        }
+        return $value;
     }
 }

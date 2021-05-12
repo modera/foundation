@@ -5,6 +5,7 @@ namespace Modera\DynamicallyConfigurableMJRBundle\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
+use Modera\DynamicallyConfigurableMJRBundle\Resolver\ValueResolverInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
 
 /**
@@ -21,10 +22,13 @@ class IndexController extends Controller
         /* @var ConfigurationEntriesManagerInterface $mgr */
         $mgr = $this->get('modera_config.configuration_entries_manager');
 
+        /* @var ValueResolverInterface $resolver */
+        $resolver = $this->get('modera_dynamically_configurable_mjr.resolver.value_resolver');
+
         $logoUrl = $mgr->findOneByNameOrDie(Bundle::CONFIG_LOGO_URL)->getValue();
 
         $content = $this->renderView('ModeraDynamicallyConfigurableMJRBundle::logo.css.twig', array(
-            'logo_url' => $logoUrl,
+            'logo_url' => $resolver->resolve(Bundle::CONFIG_LOGO_URL, $logoUrl),
         ));
 
         $response = new Response($content);

@@ -14,6 +14,7 @@ Ext.define('Modera.backend.dcmjr.view.GeneralSettingsPanel', {
     primaryAddressLabelText: 'Primary address',
     defaultSectionLabelText: 'Default section',
     skinCssLabelText: 'Skin CSS URL',
+    mjrExtJsLabelText: 'JS runtime extension URL',
     logoUrlLabelText: 'Logo URL',
     developmentModeLabelText: 'Development mode',
     debugModeLabelText: 'Debug mode',
@@ -29,7 +30,7 @@ Ext.define('Modera.backend.dcmjr.view.GeneralSettingsPanel', {
                 xtype: 'form',
                 defaults: {
                     labelAlign: 'right',
-                    labelWidth: 150,
+                    labelWidth: 170,
                     anchor: '100%'
                 },
                 items: [
@@ -54,6 +55,12 @@ Ext.define('Modera.backend.dcmjr.view.GeneralSettingsPanel', {
                     {
                         name: 'skin_css',
                         fieldLabel: this.skinCssLabelText,
+                        xtype: 'mfc-inplacefield',
+                        htmlEncode: true
+                    },
+                    {
+                        name: 'mjr_ext_js',
+                        fieldLabel: this.mjrExtJsLabelText,
                         xtype: 'mfc-inplacefield',
                         htmlEncode: true
                     },

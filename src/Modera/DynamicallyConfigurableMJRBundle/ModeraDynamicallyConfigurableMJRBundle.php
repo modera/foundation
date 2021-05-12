@@ -15,6 +15,7 @@ class ModeraDynamicallyConfigurableMJRBundle extends Bundle implements Extension
     const CONFIG_URL = 'url';
     const CONFIG_HOME_SECTION = 'home_section';
     const CONFIG_SKIN_CSS = 'skin_css';
+    const CONFIG_MJR_EXT_JS = 'mjr_ext_js';
     const CONFIG_LOGO_URL = 'logo_url';
 
     /**

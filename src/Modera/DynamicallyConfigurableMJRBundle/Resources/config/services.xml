@@ -40,7 +40,18 @@
                  public="true">
 
             <argument type="service" id="modera_config.configuration_entries_manager" />
+            <argument type="service" id="modera_dynamically_configurable_mjr.config_value_resolver" />
         </service>
+
+        <service id="modera_dynamically_configurable_mjr.resolver.value_resolver"
+                 class="Modera\DynamicallyConfigurableMJRBundle\Resolver\ValueResolver"
+                 public="true">
+        </service>
+
+        <service id="modera_dynamically_configurable_mjr.config_value_resolver"
+                 alias="modera_dynamically_configurable_mjr.resolver.value_resolver"
+                 public="true"
+        />
 
         <service id="modera_dynamically_configurable_mjr.contributions.class_loader_mappings_provider"
                  class="Modera\DynamicallyConfigurableMJRBundle\Contributions\ClassLoaderMappingsProvider">
@@ -60,8 +71,18 @@
                  class="Modera\DynamicallyConfigurableMJRBundle\Contributions\CssResourcesProvider">
 
             <argument type="service" id="modera_config.configuration_entries_manager" />
+            <argument type="service" id="modera_dynamically_configurable_mjr.config_value_resolver" />
 
             <tag name="modera_mjr_integration.css_resources_provider" />
+        </service>
+
+        <service id="modera_dynamically_configurable_mjr.contributions.js_resources_provider"
+                 class="Modera\DynamicallyConfigurableMJRBundle\Contributions\JsResourcesProvider">
+
+            <argument type="service" id="modera_config.configuration_entries_manager" />
+            <argument type="service" id="modera_dynamically_configurable_mjr.config_value_resolver" />
+
+            <tag name="modera_mjr_integration.js_resources_provider" />
         </service>
     </services>
 </container>

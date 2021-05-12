@@ -1,20 +1,17 @@
 <?php
 
-namespace Modera\DynamicallyConfigurableMJRBundle\MJR;
+namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
-use Modera\MjrIntegrationBundle\Config\MainConfigInterface;
+use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface;
 use Modera\DynamicallyConfigurableMJRBundle\Resolver\ValueResolverInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
 
 /**
- * This implementation read configuration properties stored in central settings storage provided by
- * {@class \Modera\ConfigBundle\ModeraConfigBundle}.
- *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
+ * @author    Sergei Vizel <sergei.vizel@modera.org>
+ * @copyright 2021 Modera Foundation
  */
-class MainConfig implements MainConfigInterface
+class JsResourcesProvider implements ContributorInterface
 {
     /**
      * @var ConfigurationEntriesManagerInterface
@@ -37,35 +34,18 @@ class MainConfig implements MainConfigInterface
     }
 
     /**
-     * @return string
-     */
-    public static function clazz()
-    {
-        return get_called_class();
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function getTitle()
+    public function getItems()
     {
-        return $this->findAndResolve(Bundle::CONFIG_TITLE);
-    }
+        $items = array();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUrl()
-    {
-        return $this->findAndResolve(Bundle::CONFIG_URL);
-    }
+        $mjrExtJsUrl = $this->findAndResolve(Bundle::CONFIG_MJR_EXT_JS);
+        if ($mjrExtJsUrl) {
+            $items[] = array('order' => PHP_INT_MAX, 'resource' => $mjrExtJsUrl);
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getHomeSection()
-    {
-        return $this->findAndResolve(Bundle::CONFIG_HOME_SECTION);
+        return $items;
     }
 
     /**

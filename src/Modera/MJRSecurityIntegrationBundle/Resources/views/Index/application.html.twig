@@ -46,7 +46,12 @@ Ext.define('{{ config.app_name }}.Application', {
     modifyContainerServiceDefinitions: function(services) {
         var newServices = {{ container_services|json_encode(constant('JSON_PRETTY_PRINT'))|mf_prepend_every_line(8, ' ', true)|raw }};
 
-        return Ext.Object.merge(services, newServices);
+        var mfeServices = {};
+        if (window['MFE'] && MFE.hasOwnProperty('getContainerServiceDefinitions')) {
+            mfeServices = MFE.getContainerServiceDefinitions();
+        }
+
+        return Ext.Object.merge(services, newServices, mfeServices);
     },
 
     // override
