@@ -90,8 +90,13 @@ class ConfigMergersProvider implements ContributorInterface
             ));
         }
 
+        $switchUserListAction = null;
+        if (isset($this->bundleConfig['switch_user_list_action']) && $this->bundleConfig['switch_user_list_action']) {
+            $switchUserListAction = $this->bundleConfig['switch_user_list_action'];
+        }
+
         $this->items = array(
-            new CallbackConfigMerger(function (array $currentConfig) use ($self, $switchUserUrl) {
+            new CallbackConfigMerger(function (array $currentConfig) use ($self, $switchUserUrl, $switchUserListAction) {
                 // we are not making sure that user is authenticated here because we expect that this
                 // callback is invoked only when user is already authenticated (invoked from behind a firewall)
                 if ($token = $self->tokenStorage->getToken()) {
@@ -106,6 +111,7 @@ class ConfigMergersProvider implements ContributorInterface
                         'roles' => array_values(array_unique($roles)),
                         'userProfile' => Authenticator::userToArray($token->getUser()),
                         'switchUserUrl' => $switchUserUrl,
+                        'switchUserListAction' => $switchUserListAction,
                     ));
                 } else {
                     return $currentConfig;

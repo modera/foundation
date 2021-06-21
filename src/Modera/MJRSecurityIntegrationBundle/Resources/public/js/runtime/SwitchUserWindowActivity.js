@@ -17,9 +17,13 @@ Ext.define('Modera.mjrsecurityintegration.runtime.SwitchUserWindowActivity', {
     doCreateUi: function(params, callback) {
         var me = this;
 
-        var window = Ext.create('Modera.mjrsecurityintegration.view.SwitchUserWindow', {});
+        me.workbench.getService('config_provider').getConfig(function(config) {
+            var window = Ext.create('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
+                switchUserListAction: config['switchUserListAction']
+            });
 
-        callback(window);
+            callback(window);
+        });
     },
 
     // protected

@@ -9,7 +9,6 @@ use Modera\SecurityBundle\Service\UserService;
 use Modera\SecurityBundle\ModeraSecurityBundle;
 use Modera\SecurityBundle\Security\Authenticator;
 use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
-use Modera\DirectBundle\Annotation\Remote;
 use Modera\MjrIntegrationBundle\Config\MainConfigInterface;
 use Modera\MjrIntegrationBundle\AssetsHandling\AssetsProvider;
 use Modera\MjrIntegrationBundle\ClientSideDependencyInjection\ServiceDefinitionsManager;
@@ -179,85 +178,6 @@ class IndexController extends Controller
         }
 
         return $this->redirect($url);
-    }
-
-    /**
-     * @Remote
-     */
-    public function backendUsersListAction(array $params)
-    {
-        $role = ModeraSecurityBundle::ROLE_ROOT_USER;
-        if ($switchUserConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY . '.switch_user')) {
-            $role = $switchUserConfig['role'];
-        }
-        $this->denyAccessUnlessGranted($role);
-
-        /* @var UserService $userService */
-        $userService = $this->get('modera_security.service.user_service');
-
-        $user = $this->getUser();
-        $rootUser = $userService->getRootUser();
-
-        $qb = $this->em()->createQueryBuilder();
-        $qb->select('partial u.{id, firstName, lastName, username}')
-            ->from(User::clazz(), 'u')
-            ->leftJoin('u.permissions', 'up')
-            ->leftJoin('u.groups', 'g')
-            ->leftJoin('g.permissions', 'gp')
-            ->where($qb->expr()->eq('u.isActive', ':isActive'))
-                ->setParameter('isActive', true)
-            ->andWhere($qb->expr()->notIn('u.id', [ $user->getId(), $rootUser->getId() ]))
-            ->andWhere(
-                $qb->expr()->orX(
-                    $qb->expr()->in('up.roleName', ':roleName'),
-                    $qb->expr()->in('gp.roleName', ':roleName')
-                )
-            )
-                ->setParameter('roleName', ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER)
-            ->groupBy('u.id')
-        ;
-
-        if (isset($params['sort'])) {
-            foreach ($params['sort'] as $sort) {
-                $qb->orderBy('u.' . $sort['property'], $sort['direction']);
-            }
-        }
-
-        if (isset($params['filter'])) {
-            foreach ($params['filter'] as $filter) {
-                if ('name' === $filter['property']) {
-                    $qb->andWhere(
-                        $qb->expr()->orX(
-                            $qb->expr()->like('u.username', ':name'),
-                            $qb->expr()->like('u.firstName', ':name'),
-                            $qb->expr()->like('u.lastName', ':name')
-                        )
-                    )->setParameter('name', '%' . $filter['value'] . '%');
-                }
-            }
-        }
-
-        $start = isset($params['start']) ? $params['start'] : 0;
-        $limit = isset($params['limit']) ? $params['limit'] : 25;
-        $qb->setFirstResult($start)->setMaxResults($limit);
-
-        $query = $qb->getQuery();
-        $query->setHydrationMode($query::HYDRATE_ARRAY);
-        $paginator = new Paginator($query);
-
-        $items = array();
-        $total = $paginator->count();
-        if ($total) {
-            foreach ($paginator as $item) {
-                $items[] = $item;
-            }
-        }
-
-        return array(
-            'success' => true,
-            'items' => $items,
-            'total' => $total,
-        );
     }
 
     /**

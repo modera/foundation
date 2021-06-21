@@ -29,7 +29,7 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
             remoteFilter: true,
             proxy: {
                 type: 'direct',
-                directFn: Actions.ModeraMJRSecurityIntegration_Index.backendUsersList,
+                directFn: config['switchUserListAction'],
                 reader: {
                     root: 'items'
                 }

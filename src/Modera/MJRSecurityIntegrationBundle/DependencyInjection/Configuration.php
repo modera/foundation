@@ -37,6 +37,10 @@ class Configuration implements ConfigurationInterface
                     ->cannotBeEmpty()
                     ->defaultValue('modera_mjr_security_integration.index.is_authenticated')
                 ->end()
+                ->scalarNode('switch_user_list_action')
+                    ->cannotBeEmpty()
+                    ->defaultValue('Actions.ModeraMJRSecurityIntegration_SwitchUser.list')
+                ->end()
                 ->scalarNode('extjs_ajax_timeout') // deprecated, will be removed in v4
                     ->defaultValue(null)
                 ->end()
