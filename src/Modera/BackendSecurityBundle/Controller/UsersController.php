@@ -50,6 +50,12 @@ class UsersController extends AbstractCrudController
                         /* @var User $user */
                         $user = $ts->getToken()->getUser();
 
+                        if (isset($params['record']['permissions'])) {
+                            if (!$ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS)) {
+                                return false;
+                            }
+                        }
+
                         if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
                             || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)) {
                             return true;
@@ -89,7 +95,25 @@ class UsersController extends AbstractCrudController
                             || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION);
                     },
                     'list' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
-                    'batchUpdate' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
+                    'batchUpdate' => function (AuthorizationCheckerInterface $ac, array $params) use ($self) {
+                        if (isset($params['record']) && isset($params['record']['permissions'])) {
+                            if (!$ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS)) {
+                                return false;
+                            }
+                        }
+
+                        if (isset($params['records'])) {
+                            foreach ($params['records'] as $record) {
+                                if (isset($record['permissions'])) {
+                                    if (!$ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS)) {
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+
+                        return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+                    },
                 ),
             ),
             'hydration' => array(
@@ -99,6 +123,11 @@ class UsersController extends AbstractCrudController
                         $groups = array();
                         foreach ($user->getGroups() as $group) {
                             $groups[] = $group->getName();
+                        }
+
+                        $permissions = array();
+                        foreach ($user->getPermissions() as $permission) {
+                            $permissions[] = $permission->getName();
                         }
 
                         return array(
@@ -111,13 +140,19 @@ class UsersController extends AbstractCrudController
                             'isActive' => $user->isActive(),
                             'state' => $user->getState(),
                             'groups' => $groups,
+                            'permissions' => $permissions,
                             'meta' => $user->getMeta(),
                         );
                     },
                     'compact-list' => function (User $user) {
                         $groups = array();
                         foreach ($user->getGroups() as $group) {
-                            $groups[] = $group->getName();
+                            $groups[] = $group->getId();
+                        }
+
+                        $permissions = array();
+                        foreach ($user->getPermissions() as $permission) {
+                            $permissions[] = $permission->getId();
                         }
 
                         return array(
@@ -126,6 +161,8 @@ class UsersController extends AbstractCrudController
                             'fullname' => $user->getFullName(),
                             'isActive' => $user->isActive(),
                             'state' => $user->getState(),
+                            'groups' => $groups,
+                            'permissions' => $permissions,
                         );
                     },
                     'delete-user' => ['username'],

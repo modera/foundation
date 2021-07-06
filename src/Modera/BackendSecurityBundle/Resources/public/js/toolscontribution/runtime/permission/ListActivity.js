@@ -6,6 +6,7 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.permission.ListAct
 
     requires: [
         'Modera.backend.security.toolscontribution.store.Groups',
+        'Modera.backend.security.toolscontribution.store.Permissions',
         'Modera.backend.security.toolscontribution.view.permission.List'
     ],
 
@@ -31,8 +32,10 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.permission.ListAct
             callback: function() {
                 sm.isAllowed('ROLE_MANAGE_PERMISSIONS', function(isAllowed) {
                     var grid = Ext.create('Modera.backend.security.toolscontribution.view.permission.List', {
+                        hasAccess: isAllowed,
+                        groupsType: 'groups',
                         groupsStore: groupsStore,
-                        hasAccess: isAllowed
+                        store: Ext.create('Modera.backend.security.toolscontribution.store.Permissions')
                     });
 
                     callback(grid);

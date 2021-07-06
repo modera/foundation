@@ -84,5 +84,8 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.group.ListActivity
         ui.on('editgroups', function(sourceComponent, params) {
             me.fireEvent('handleaction', 'edit-groups', sourceComponent, params);
         });
+        ui.on('editpermissions', function(sourceComponent, params) {
+            me.fireEvent('handleaction', 'edit-permissions', sourceComponent, params);
+        });
     }
 });

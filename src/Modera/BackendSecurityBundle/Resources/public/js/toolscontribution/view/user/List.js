@@ -20,16 +20,18 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
     emailColumnHeaderText: 'Email',
     stateColumnHeaderText: 'State',
     groupsColumnHeaderText: 'Membership',
-    addBtnText: 'New user',
+    addBtnText: 'User',
     editBtnText: 'Edit selected',
-    groupsBtnText: 'Group membership...',
-    changePasswordBtnText: 'Change password',
+    groupsBtnText: 'Groups',
+    permissionsBtnText: 'Permissions',
+    changePasswordBtnText: 'Password',
     deleteBtnText: 'Delete',
     enableBtnText: 'Enable user',
     disableBtnText: 'Disable user',
     stateNewText: 'New',
     stateActiveText: 'Active',
     stateInactiveText: 'Inactive',
+    directPermissionsText: 'Direct permissions: {0}',
 
     // override
     constructor: function(config) {
@@ -89,12 +91,39 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                     sortable: false,
                     text: me.groupsColumnHeaderText,
                     dataIndex: 'groups',
-                    renderer: me.defaultRenderer()
+                    renderer: (function() {
+                        var defaultRenderer = me.defaultRenderer(null, function(value) {
+                            return value;
+                        });
+                        return function(v, m, r) {
+                            var value = Ext.util.Format.htmlEncode(v.join(', '));
+
+                            var permissionsCount = r.get('permissions').length;
+                            if (permissionsCount > 0) {
+                                var glyph = FontAwesome.resolve('shield-alt', 'fas');
+                                var tooltip = Ext.String.format(me.directPermissionsText, permissionsCount);
+
+                                var stl = [
+                                    'font-size: 14px;',
+                                    'font-family: ' + glyph.split('@')[1] + ';',
+                                ].join(' ');
+
+                                var icon = [
+                                    '<span style="' + stl + '" data-qtip="' + tooltip + '">',
+                                        '&#' + glyph.split('@')[0] + ';',
+                                    '</span>'
+                                ].join('');
+
+                                value = [ icon, value ].join(' ').trim();
+                            }
+
+                            return defaultRenderer(value, m, r);
+                        };
+                    })()
                 }
             ],
             dockedItems: [
                 {
-
                     security: {
                         role: function(roles, callback) {
                             callback(['ROLE_MANAGE_USER_PROFILES', 'ROLE_MANAGE_USER_PROFILE_INFORMATION'].filter(function(role) {
@@ -195,6 +224,16 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                             hidden: config.hideViewAwareComponents || false,
                             disabled: true,
                             selectionAware: true,
+                            itemId: 'editPermissionsBtn',
+                            iconCls: 'modera-backend-security-icon-permission-24',
+                            text: me.permissionsBtnText,
+                            scale: 'medium',
+                            tid: 'editPermissionsButton'
+                        },
+                        {
+                            hidden: config.hideViewAwareComponents || false,
+                            disabled: true,
+                            selectionAware: true,
                             itemId: 'editPasswordBtn',
                             iconCls: 'modera-backend-security-icon-password-24',
                             text: me.changePasswordBtnText,
@@ -232,6 +271,12 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
              */
             'editrecord',
             /**
+             * @event editpermissions
+             * @param {Modera.backend.security.toolscontribution.view.user.List} me
+             * @param {Object} params
+             */
+            'editpermissions',
+            /**
              * @event editpassword
              * @param {Modera.backend.security.toolscontribution.view.user.List} me
              * @param {Object} params
@@ -249,15 +294,19 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
     },
 
     // private
-    defaultRenderer: function(msg) {
+    defaultRenderer: function(msg, valueFormatter) {
+        if (!valueFormatter) {
+            valueFormatter = Ext.util.Format.htmlEncode;
+        }
         return function(value, m, r) {
             if (Ext.isEmpty(value)) {
                 return '<span class="mfc-empty-text">' + (msg || '-') + '</span>';
-            } else if (!r.get('isActive')) {
-                return '<span class="modera-backend-security-user-disabled">' + Ext.util.Format.htmlEncode(value) + '</span>';
             }
-
-            return Ext.util.Format.htmlEncode(value);
+            value = valueFormatter(value);
+            if (!r.get('isActive')) {
+                return '<span class="modera-backend-security-user-disabled">' + value + '</span>';
+            }
+            return value;
         };
     },
 
@@ -340,6 +389,11 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
         me.down('#disableBtn').on('click', function() {
             var record = me.getSelectedRecord();
             me.fireEvent('disableprofile', me, { id: record.get('id') });
+        });
+
+        me.down('#editPermissionsBtn').on('click', function() {
+            var record = me.getSelectedRecord();
+            me.fireEvent('editpermissions', me, { id: record.get('id') });
         });
 
         me.down('#editPasswordBtn').on('click', function() {

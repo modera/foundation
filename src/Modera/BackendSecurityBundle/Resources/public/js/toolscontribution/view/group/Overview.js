@@ -172,7 +172,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.Overview', {
         });
 
         this.relayEvents(me.down('#groupUsers'), [
-            'editrecord', 'deleterecord', 'editgroups', 'enableprofile', 'disableprofile'
+            'editrecord', 'deleterecord', 'editgroups', 'editpermissions', 'enableprofile', 'disableprofile'
         ]);
     },
 

@@ -9,11 +9,13 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
         'Modera.backend.security.toolscontribution.store.Permissions'
     ],
 
+    // l10n
+    titleText: 'Permissions',
+    inheritedGroupText: 'Inherited',
+
     // override
     constructor: function(config) {
         var me = this;
-
-        var store = Ext.create('Modera.backend.security.toolscontribution.store.Permissions');
 
         var defaults = {
             tid: 'permissionsOverviewView',
@@ -21,7 +23,6 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
             rounded: true,
             columnLines: true,
             emptyCls: 'mfc-grid-empty-text',
-            store: store,
             features: [{
                 ftype:'grouping',
                 groupHeaderTpl: '{name:htmlEncode}'
@@ -34,11 +35,15 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
                 name: 'modera.security_bundle.group',
                 handler: function() {
                     config['groupsStore'].load(function() {
-                        me.reconfigure(store, me.generateColumns(config['groupsStore']));
+                        me.reconfigure(config['store'], me.generateColumns(
+                            config['groupsStore'], config['groupsType'], config['firstColumnFlex']
+                        ));
                     });
                 }
             },
-            columns: me.generateColumns(config['groupsStore'])
+            columns: me.generateColumns(
+                config['groupsStore'], config['groupsType'], config['firstColumnFlex']
+            )
         };
 
         me.config = Ext.apply(defaults, config || {});
@@ -50,19 +55,26 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
              * @param {Modera.backend.security.toolscontribution.view.permission.List} me
              * @param {Object} params
              */
-            'permissionchange'
+            'permissionchange',
+
+            /**
+             * @event groupchange
+             * @param {Modera.backend.security.toolscontribution.view.permission.List} me
+             * @param {Object} params
+             */
+            'groupchange'
         );
 
         me.assignListeners();
     },
 
     // private
-    generateColumns: function(groupsStore) {
+    generateColumns: function(groupsStore, groupsType, firstColumnFlex) {
         var me = this;
         var columns = [
             {
                 dataIndex: 'name',
-                flex: 4,
+                flex: firstColumnFlex || 4,
                 sortable: false,
                 hideable: false,
                 closable: false,
@@ -70,9 +82,16 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
             }
         ];
         groupsStore.each(function(group) {
+            var id = group.get('id');
+            var name = Ext.util.Format.htmlEncode(group.get('name'));
+            if (!id) {
+                name = me.inheritedGroupText;
+            }
+
             columns.push(me.getCheckerColumnConfig({
-                groupId: group.get('id'),
-                text: Ext.util.Format.htmlEncode(group.get('name'))
+                groupId: id,
+                text: name,
+                dataIndex: groupsType
             }));
         });
 
@@ -107,7 +126,6 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
 
         return Ext.apply({
             flex: 1,
-            dataIndex: 'groups',
             clickTargetName: 'el',
             sortable: false,
             draggable: false,
@@ -117,13 +135,13 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
             align: 'center',
             tdCls: Ext.baseCSSPrefix + 'grid-cell-checkcolumn',
             innerCls: Ext.baseCSSPrefix + 'grid-cell-inner-checkcolumn',
-            renderer : function(values, meta) {
+            renderer : function(values, meta, record) {
                 var cssPrefix = Ext.baseCSSPrefix;
                 var cls = [cssPrefix + 'grid-checkcolumn', 'group-' + config['groupId']];
 
                 meta.style = 'cursor:pointer;';
 
-                if (this.disabled || !me.config.hasAccess) {
+                if (this.disabled || !me.config.hasAccess || !config['groupId']) {
                     meta.tdCls += ' ' + this.disabledCls;
                 }
 
@@ -150,21 +168,33 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
             checkbox.addCls(cssPrefix + 'grid-checkcolumn-checked');
         }
 
-        var groups = [];
+        var groupIds = [];
         var checkboxes = Ext.fly(node).query('.' + cssPrefix + 'grid-checkcolumn.' + cssPrefix + 'grid-checkcolumn-checked');
         Ext.each(checkboxes, function(checkbox) {
             Ext.each(checkbox.className.split(' '), function(cls) {
                 if (cls.indexOf('group-') !== -1) {
-                    groups.push(parseInt(cls.replace('group-', '')));
+                    groupIds.push(parseInt(cls.replace('group-', '')));
                 }
             });
         });
 
-        record.set('groups', groups);
+        record.set(me.config['groupsType'], groupIds);
 
-        me.fireEvent('permissionchange', me, {
-            id: record.get('id'),
-            groups: groups
+        var params = { id: record.get('id') };
+        params[me.config['groupsType']] = groupIds;
+        me.fireEvent('permissionchange', me, params);
+
+        var permissions = [];
+        me.getStore().each(function(permission) {
+            var values = permission.get(me.config['groupsType']);
+            if (values.indexOf(column['groupId']) !== -1) {
+                permissions.push(permission.get('id'));
+            }
+        });
+
+        me.fireEvent('groupchange', me, {
+            id: column['groupId'],
+            permissions: permissions
         });
     }
 });

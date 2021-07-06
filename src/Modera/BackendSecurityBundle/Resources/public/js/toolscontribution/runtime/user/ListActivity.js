@@ -74,6 +74,9 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.ListActivity'
         ui.on('deleterecord', function(sourceComponent, params) {
             me.fireEvent('handleaction', 'delete-user', sourceComponent, params);
         });
+        ui.on('editpermissions', function(sourceComponent, params) {
+            me.fireEvent('handleaction', 'edit-permissions', sourceComponent, params);
+        });
         ui.on('editgroups', function(sourceComponent, params) {
             me.fireEvent('handleaction', 'edit-groups', sourceComponent, params);
         });

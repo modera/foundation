@@ -7,7 +7,7 @@ Ext.define('Modera.backend.security.toolscontribution.store.Permissions', {
     constructor: function() {
         this.config = {
             fields: [
-                'id', 'name' , 'category', 'groups'
+                'id', 'name' , 'category', 'users', 'groups'
             ],
             groupField: 'category',
             proxy: {
@@ -27,5 +27,15 @@ Ext.define('Modera.backend.security.toolscontribution.store.Permissions', {
             autoLoad: true
         };
         this.callParent([this.config]);
+    },
+
+    filterByUser: function(userId, exp) {
+        this.filters.clear();
+        this.filter({ property: 'users', value: (exp || 'in') + ':' + userId });
+    },
+
+    filterByGroup: function(groupId, exp) {
+        this.filters.clear();
+        this.filter({ property: 'groups', value: (exp || 'in') + ':' + groupId });
     }
 });

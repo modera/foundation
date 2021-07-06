@@ -12,6 +12,7 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.Section', {
             newuser: Ext.create('Modera.backend.security.toolscontribution.runtime.user.NewWindowActivity'),
             edituser: Ext.create('Modera.backend.security.toolscontribution.runtime.user.EditWindowActivity'),
             editpassword: Ext.create('Modera.backend.security.toolscontribution.runtime.user.PasswordWindowActivity'),
+            editpermissions: Ext.create('Modera.backend.security.toolscontribution.runtime.user.PermissionsWindowActivity'),
             deleteuser: Ext.create('Modera.backend.security.toolscontribution.runtime.user.DeleteWindowActivity'),
             editgroups: Ext.create('Modera.backend.security.toolscontribution.runtime.user.EditGroupsWindowActivity'),
 

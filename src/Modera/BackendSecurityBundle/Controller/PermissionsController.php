@@ -31,6 +31,11 @@ class PermissionsController extends AbstractCrudController
             'hydration' => array(
                 'groups' => array(
                     'list' => function (Permission $permission) {
+                        $users = array();
+                        foreach ($permission->getUsers() as $user) {
+                            $users[] = $user->getId();
+                        }
+
                         $groups = array();
                         foreach ($permission->getGroups() as $group) {
                             $groups[] = $group->getId();
@@ -40,6 +45,7 @@ class PermissionsController extends AbstractCrudController
                             'id' => $permission->getId(),
                             'name' => $permission->getName(),
                             'category' => $permission->getCategory()->getName(),
+                            'users' => $users,
                             'groups' => $groups,
                         );
                     },

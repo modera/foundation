@@ -98,7 +98,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.GroupUsers', {
     // private
     assignListeners: function() {
         this.relayEvents(this.down('modera-backend-security-user-list'), [
-            'editrecord', 'deleterecord', 'editgroups', 'enableprofile', 'disableprofile'
+            'editrecord', 'deleterecord', 'editgroups', 'editpermissions', 'enableprofile', 'disableprofile'
         ]);
     }
 });
