@@ -6,8 +6,9 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
     alias: 'widget.modera-backend-security-user-list',
 
     requires: [
-        'Modera.backend.security.toolscontribution.store.Users',
+        'MFC.Date',
         'MFC.HasSelectionAwareComponentsPlugin',
+        'Modera.backend.security.toolscontribution.store.Users',
         'Ext.menu.Menu'
     ],
 
@@ -19,6 +20,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
     usernameColumnHeaderText: 'Principal',
     emailColumnHeaderText: 'Email',
     stateColumnHeaderText: 'State',
+    lastLoginColumnHeaderText: 'Last login',
     groupsColumnHeaderText: 'Membership',
     addBtnText: 'User',
     editBtnText: 'Edit selected',
@@ -85,6 +87,15 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                         }
                         return me['state' + state + 'Text'];
                     }
+                },
+                {
+                    width: 160,
+                    hidden: true,
+                    text: me.lastLoginColumnHeaderText,
+                    dataIndex: 'lastLogin',
+                    renderer: me.defaultRenderer(null, function(value) {
+                        return MFC.Date.format(value, 'datetime');
+                    })
                 },
                 {
                     flex: 1,
@@ -217,7 +228,10 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                             itemId: 'editGroupsBtn',
                             iconCls: 'modera-backend-security-icon-group-24',
                             text: me.groupsBtnText,
-                            scale: 'medium',
+                            scale: 'medium',security: {
+                                role: 'ROLE_MANAGE_USER_PROFILES',
+                                strategy: 'hide'
+                            },
                             tid: 'modifygroupsbtn'
                         },
                         {

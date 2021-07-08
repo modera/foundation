@@ -144,6 +144,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                                         tid: 'passwordagainfield',
                                         msgTarget: 'under',
                                         validateOnBlur: false,
+                                        submitValue: false,
                                         listeners: {
                                             blur: function (field) {
                                                 setTimeout(function () {

@@ -139,6 +139,7 @@ class UsersController extends AbstractCrudController
                             'middleName' => $user->getMiddleName(),
                             'isActive' => $user->isActive(),
                             'state' => $user->getState(),
+                            'lastLogin' => $user->getLastLogin() ? $user->getLastLogin()->format(\DateTime::W3C) : null,
                             'groups' => $groups,
                             'permissions' => $permissions,
                             'meta' => $user->getMeta(),
@@ -248,32 +249,31 @@ class UsersController extends AbstractCrudController
                     return new ValidationResult();
                 }
 
-                /** @var UserService $userService */
+                /* @var UserService $userService */
                 $userService = $container->get('modera_security.service.user_service');
-                /** @var TokenStorageInterface $tokenStorage */
+                /* @var TokenStorageInterface $tokenStorage */
                 $tokenStorage = $container->get('security.token_storage');
-                /** @var AuthorizationCheckerInterface $authorizationChecker */
+                /* @var AuthorizationCheckerInterface $authorizationChecker */
                 $authorizationChecker = $container->get('security.authorization_checker');
 
-                if ($tokenStorage->getToken()->getUser()->getId() != $user->getId()) {
+                if (!$authorizationChecker->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)) {
                     $result = new ValidationResult();
 
-                    if ($userService->isRootUser($user)) {
-                        $result->addGeneralError('Access denied. Can not update root user!!!');
+                    $allowFieldsEdit = array(
+                        'id' => '',
+                        'firstName' => '',
+                        'lastName' => '',
+                        'email' => '',
+                    );
+
+                    if ($tokenStorage->getToken()->getUser()->getId() === $user->getId()) {
+                        $allowFieldsEdit = array_merge($allowFieldsEdit, array(
+                            'plainPassword' => '',
+                        ));
                     }
 
-                    if (!$authorizationChecker->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
-                        && $authorizationChecker->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)) {
-                        $allowFieldsEdit = array(
-                            'id' => '',
-                            'firstName' => '',
-                            'lastName' => '',
-                            'email' => '',
-                        );
-
-                        foreach (array_diff_key($params['record'], $allowFieldsEdit) as $key => $value) {
-                            $result->addFieldError($key, 'Access denied.');
-                        }
+                    foreach (array_diff_key($params['record'], $allowFieldsEdit) as $key => $value) {
+                        $result->addFieldError($key, 'Access denied.');
                     }
 
                     if ($result->hasErrors()) {
