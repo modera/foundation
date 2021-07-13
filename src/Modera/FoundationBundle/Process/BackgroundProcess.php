@@ -21,7 +21,7 @@ class BackgroundProcess extends Process
     /**
      * {@inheritdoc}
      */
-    public function start(callable $callback = null)
+    public function start(callable $callback = null, array $env = array())
     {
         $env = 1 < \func_num_args() ? \func_get_arg(1) : array();
 
