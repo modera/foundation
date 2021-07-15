@@ -51,20 +51,9 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
      */
     public function merge(array $currentConfig)
     {
+        $locale = null;
         $languages = array();
 
-        /* @var Language[] $dbLanguages */
-        $dbLanguages = $this->em->getRepository(Language::clazz())->findBy(array('isEnabled' => true));
-        foreach ($dbLanguages as $dbLanguage) {
-            $languages[] = array(
-                'id' => $dbLanguage->getId(),
-                'name' => $dbLanguage->getName(),
-                'locale' => $dbLanguage->getLocale(),
-                'direction' => LocaleHelper::getDirection($dbLanguage->getLocale()),
-            );
-        }
-
-        $locale = null;
         $token = $this->tokenStorage->getToken();
         if ($token->isAuthenticated() && $token->getUser() instanceof User) {
             /* @var UserSettings $settings */
@@ -82,6 +71,18 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
                     $locale = $defaultLanguage->getLocale();
                 }
             }
+        }
+
+        /* @var Language[] $dbLanguages */
+        $dbLanguages = $this->em->getRepository(Language::clazz())->findBy(array('isEnabled' => true));
+        foreach ($dbLanguages as $dbLanguage) {
+            $languages[] = array(
+                'id' => $dbLanguage->getId(),
+                'name' => $dbLanguage->getName($locale ?: $this->locale),
+                'locale' => $dbLanguage->getLocale(),
+                'direction' => LocaleHelper::getDirection($dbLanguage->getLocale()),
+                'default' => $dbLanguage->isDefault(),
+            );
         }
 
         return array_merge($currentConfig, array(
