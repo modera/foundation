@@ -58,8 +58,14 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PermissionsWi
                     });
 
                     var store = Ext.create('Ext.data.Store', {
-                        fields: ['id', 'name' , 'category', 'users'],
-                        groupField: 'category',
+                        fields: ['id', 'name', 'category', 'users'],
+                        groupers: [
+                            {
+                                getGroupString: function(record) {
+                                    return record.get('category')['name'];
+                                }
+                            }
+                        ],
                         data: data
                     });
 

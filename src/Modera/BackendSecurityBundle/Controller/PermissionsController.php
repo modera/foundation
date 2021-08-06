@@ -2,9 +2,13 @@
 
 namespace Modera\BackendSecurityBundle\Controller;
 
-use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
-use Modera\SecurityBundle\Entity\Permission;
+use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
+use Modera\SecurityBundle\Model\PermissionCategoryInterface;
+use Modera\SecurityBundle\Model\PermissionInterface;
+use Modera\SecurityBundle\Entity\PermissionCategory;
+use Modera\SecurityBundle\Entity\Permission;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -43,8 +47,11 @@ class PermissionsController extends AbstractCrudController
 
                         return array(
                             'id' => $permission->getId(),
-                            'name' => $permission->getName(),
-                            'category' => $permission->getCategory()->getName(),
+                            'name' => $this->getPermissionName($permission),
+                            'category' => array(
+                                'id' => $permission->getCategory()->getId(),
+                                'name' => $this->getPermissionCategoryName($permission->getCategory()),
+                            ),
                             'users' => $users,
                             'groups' => $groups,
                         );
@@ -55,5 +62,53 @@ class PermissionsController extends AbstractCrudController
                 ),
             ),
         );
+    }
+
+    /**
+     * @param PermissionCategory $entity
+     * @return string
+     */
+    private function getPermissionCategoryName(PermissionCategory $entity)
+    {
+        /* @var PermissionCategoryInterface[] $permissionCategories */
+        $permissionCategories = $this->getPermissionCategoriesProvider()->getItems();
+        foreach ($permissionCategories as $permissionCategory) {
+            if ($permissionCategory->getTechnicalName() === $entity->getTechnicalName()) {
+                return $permissionCategory->getName();
+            }
+        }
+        return $entity->getName();
+    }
+
+    /**
+     * @param Permission $entity
+     * @return string
+     */
+    private function getPermissionName(Permission $entity)
+    {
+        /* @var PermissionInterface[] $permissions */
+        $permissions = $this->getPermissionsProvider()->getItems();
+        foreach ($permissions as $permission) {
+            if ($permission->getRole() === $entity->getRole()) {
+                return $permission->getName();
+            }
+        }
+        return $entity->getName();
+    }
+
+    /**
+     * @return ContributorInterface
+     */
+    private function getPermissionCategoriesProvider()
+    {
+        return $this->get('modera_security.permission_categories_provider');
+    }
+
+    /**
+     * @return ContributorInterface
+     */
+    private function getPermissionsProvider()
+    {
+        return $this->get('modera_security.permissions_provider');
     }
 }

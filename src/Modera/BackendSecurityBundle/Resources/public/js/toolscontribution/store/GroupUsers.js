@@ -5,12 +5,13 @@ Ext.define('Modera.backend.security.toolscontribution.store.GroupUsers', {
     extend: 'Ext.data.DirectStore',
 
     // override
-    constructor: function() {
-        this.config = {
+    constructor: function(config) {
+        var defaults = {
+            remoteSort: true,
+            remoteFilter: true,
             fields: [
                 'id', 'username', 'fullname', 'isActive', 'state'
             ],
-            remoteFilter: true,
             proxy: {
                 type: 'direct',
                 directFn: Actions.ModeraBackendSecurity_Users.list,
@@ -23,8 +24,12 @@ Ext.define('Modera.backend.security.toolscontribution.store.GroupUsers', {
                     root: 'items'
                 }
             },
+            sorters: [
+                { property: 'id', direction: 'ASC' }
+            ],
             autoLoad: false
         };
+        this.config = Ext.apply(defaults, config || {});
         this.callParent([this.config]);
     },
 

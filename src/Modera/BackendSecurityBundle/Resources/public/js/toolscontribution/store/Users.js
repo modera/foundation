@@ -4,8 +4,8 @@
 Ext.define('Modera.backend.security.toolscontribution.store.Users', {
     extend: 'Ext.data.DirectStore',
 
-    constructor: function() {
-        this.config = {
+    constructor: function(config) {
+        var defaults = {
             remoteSort: true,
             remoteFilter: true,
             fields: [
@@ -25,8 +25,12 @@ Ext.define('Modera.backend.security.toolscontribution.store.Users', {
                     root: 'items'
                 }
             },
+            sorters: [
+                { property: 'id', direction: 'ASC' }
+            ],
             autoLoad: true
         };
+        this.config = Ext.apply(defaults, config || {});
         this.callParent([this.config]);
     }
 });

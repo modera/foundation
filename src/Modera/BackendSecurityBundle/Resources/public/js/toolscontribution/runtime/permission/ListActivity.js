@@ -28,19 +28,24 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.permission.ListAct
         var groupsStore = Ext.create('Modera.backend.security.toolscontribution.store.Groups', {
             autoLoad: false
         });
-        groupsStore.load({
-            callback: function() {
+
+        var permissionsStore = Ext.create('Modera.backend.security.toolscontribution.store.Permissions', {
+            autoLoad: false
+        });
+
+        groupsStore.load(function() {
+            permissionsStore.load(function() {
                 sm.isAllowed('ROLE_MANAGE_PERMISSIONS', function(isAllowed) {
                     var grid = Ext.create('Modera.backend.security.toolscontribution.view.permission.List', {
                         hasAccess: isAllowed,
                         groupsType: 'groups',
                         groupsStore: groupsStore,
-                        store: Ext.create('Modera.backend.security.toolscontribution.store.Permissions')
+                        store: permissionsStore
                     });
 
                     callback(grid);
                 });
-            }
+            });
         });
     },
 

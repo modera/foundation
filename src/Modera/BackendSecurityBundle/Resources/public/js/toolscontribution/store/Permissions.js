@@ -4,17 +4,32 @@
 Ext.define('Modera.backend.security.toolscontribution.store.Permissions', {
     extend: 'Ext.data.DirectStore',
 
-    constructor: function() {
-        this.config = {
+    constructor: function(config) {
+        var defaults = {
+            remoteSort: true,
+            remoteFilter: true,
             fields: [
-                'id', 'name' , 'category', 'users', 'groups'
+                'id', 'name', 'category', 'users', 'groups'
             ],
-            groupField: 'category',
+            groupers: [
+                {
+                    property: 'category.position',
+                    direction: 'DESC',
+                    getGroupString: function(record) {
+                        return record.get('category')['name'];
+                    }
+                },
+                {
+                    property: 'category.id',
+                    direction: 'ASC'
+                }
+            ],
             proxy: {
                 type: 'direct',
                 directFn: Actions.ModeraBackendSecurity_Permissions.list,
-                // MPFE-966, removing "limit" parameter from query, so server would return all available permissions:
-                limitParam: null,
+                pageParam: false,
+                startParam: false,
+                limitParam: false,
                 extraParams: {
                     hydration: {
                         profile: 'list'
@@ -24,8 +39,13 @@ Ext.define('Modera.backend.security.toolscontribution.store.Permissions', {
                     root: 'items'
                 }
             },
+            sorters: [
+                { property: 'position', direction: 'DESC' },
+                { property: 'id', direction: 'ASC' }
+            ],
             autoLoad: true
         };
+        this.config = Ext.apply(defaults, config || {});
         this.callParent([this.config]);
     },
 
