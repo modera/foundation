@@ -41,6 +41,8 @@
             <argument type="service" id="translator.formatter" />
             <argument type="service" id="translator.default" />
             <argument>%kernel.debug%</argument>
+
+            <tag name="kernel.locale_aware" />
         </service>
 
         <service id="modera_translations.token_extraction.php_class_token_extraction"
