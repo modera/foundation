@@ -60,6 +60,21 @@
             <argument type="service" id="modera_config.manager.uniquity_validator" />
         </service>
 
+        <service id="modera_config.listener.configuration_entry_subscriber"
+                 class="Modera\ConfigBundle\Listener\ConfigurationEntrySubscriber">
+
+            <argument type="service" id="modera_config.notifying.notification_center" />
+
+            <tag name="doctrine.event_subscriber" />
+        </service>
+
+        <service id="modera_config.notifying.notification_center"
+                 class="Modera\ConfigBundle\Notifying\NotificationCenter"
+                 public="true">
+
+            <argument type="service" id="modera_config.notification_center_listeners_provider" />
+        </service>
+
         <service id="modera_config.configuration_entries_manager"
                  alias="modera_config.default_configuration_entries_manager"
                  public="true"

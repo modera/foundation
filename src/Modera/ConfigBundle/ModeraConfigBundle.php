@@ -3,8 +3,8 @@
 namespace Modera\ConfigBundle;
 
 use Sli\ExpanderBundle\Ext\ExtensionPoint;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -24,5 +24,13 @@ class ModeraConfigBundle extends Bundle
             'Allow to contribute new configuration properties. See ConfigurationEntryInterface.'
         );
         $container->addCompilerPass($configEntriesProvider->createCompilerPass());
+
+        $listenersExtensionPoint = new ExtensionPoint('modera_config.notification_center_listeners');
+        $listenersExtensionPoint->setSingleContributionTag('modera_config.notification_center_listener');
+        $listenersExtensionPoint->setDescription(
+            'Allows you to create listeners to perform custom operations when configuration entry has changes.'
+        );
+
+        $container->addCompilerPass($listenersExtensionPoint->createCompilerPass());
     }
 }
