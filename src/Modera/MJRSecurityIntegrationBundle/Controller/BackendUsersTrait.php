@@ -44,7 +44,6 @@ trait BackendUsersTrait
                     $qb->expr()->in($prefix . 'gp.roleName', ':' . $prefix . 'roleName')
                 )
             )
-            ->groupBy($prefix . 'u.id')
         ;
 
         return $qb;
@@ -56,7 +55,11 @@ trait BackendUsersTrait
      */
     protected function createQuery(array $params)
     {
-        $select = 'partial u.{id, firstName, lastName, username}';
+        $select = implode(', ', array(
+            'partial u.{id, firstName, lastName, username}',
+            'partial up.{id, name}',
+            'partial g.{id, name}',
+        ));
 
         $qb = $this->createQueryBuilder()
             ->select(isset($params['select']) ? $params['select'] : $select)
