@@ -14,6 +14,8 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
     firstNameColumnHeaderText: 'First name',
     lastNameColumnHeaderText: 'Last name',
     usernameColumnHeaderText: 'Principal',
+    groupsColumnHeaderText: 'Membership',
+    directPermissionsText: 'Direct permissions: {0}',
     typeToFilterText: 'type here to filter...',
 
     // override
@@ -21,9 +23,7 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
         var me = this;
 
         var store = Ext.create('Ext.data.DirectStore', {
-            fields: [
-                'id', 'firstName', 'lastName', 'username'
-            ],
+            fields: me.createStoreFields(),
             pageSize: 10,
             remoteSort: true,
             remoteFilter: true,
@@ -34,12 +34,15 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
                     root: 'items'
                 }
             },
+            sorters: [
+                { property: 'id', direction: 'ASC' }
+            ],
             autoLoad: true
         });
 
         var defaults = {
             title: me.titleText,
-            width: 550,
+            width: 750,
             height: 450,
             maxHeight: Ext.getBody().getViewSize().height - 60,
             closeOnOuterClick: true,
@@ -84,26 +87,7 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
                     viewConfig: {
                         markDirty: false
                     },
-                    columns: [
-                        {
-                            width: 160,
-                            text: me.firstNameColumnHeaderText,
-                            dataIndex: 'firstName',
-                            renderer: me.defaultRenderer()
-                        },
-                        {
-                            width: 160,
-                            text: me.lastNameColumnHeaderText,
-                            dataIndex: 'lastName',
-                            renderer: me.defaultRenderer()
-                        },
-                        {
-                            flex: 1,
-                            text: me.usernameColumnHeaderText,
-                            dataIndex: 'username',
-                            renderer: me.defaultRenderer()
-                        }
-                    ],
+                    columns: me.createGridColumns(),
                     dockedItems: [
                         {
                             xtype: 'pagingtoolbar',
@@ -120,6 +104,75 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
         me.callParent([Ext.apply(defaults, config || {})]);
 
         me.assignListeners();
+    },
+
+    // private
+    createStoreFields: function() {
+        return [
+            'id', 'firstName', 'lastName', 'username', 'permissions', 'groups'
+        ];
+    },
+
+    // private
+    createGridColumns: function() {
+        var me = this;
+        return [
+            {
+                width: 160,
+                text: me.firstNameColumnHeaderText,
+                dataIndex: 'firstName',
+                renderer: me.defaultRenderer()
+            },
+            {
+                width: 160,
+                text: me.lastNameColumnHeaderText,
+                dataIndex: 'lastName',
+                renderer: me.defaultRenderer()
+            },
+            {
+                flex: 1,
+                text: me.usernameColumnHeaderText,
+                dataIndex: 'username',
+                renderer: me.defaultRenderer()
+            },
+            {
+                flex: 2,
+                sortable: false,
+                text: me.groupsColumnHeaderText,
+                dataIndex: 'groups',
+                renderer: (function() {
+                    var defaultRenderer = me.defaultRenderer(null, function(value) {
+                        return value;
+                    });
+                    return function(v, m, r) {
+                        var value = Ext.util.Format.htmlEncode(Ext.Array.map(v, function(item) {
+                            return item.name;
+                        }).join(', '));
+
+                        var permissionsCount = r.get('permissions').length;
+                        if (permissionsCount > 0) {
+                            var glyph = FontAwesome.resolve('shield-alt', 'fas');
+                            var tooltip = Ext.String.format(me.directPermissionsText, permissionsCount);
+
+                            var stl = [
+                                'font-size: 14px;',
+                                'font-family: ' + glyph.split('@')[1] + ';',
+                            ].join(' ');
+
+                            var icon = [
+                                '<span style="' + stl + '" data-qtip="' + tooltip + '">',
+                                '&#' + glyph.split('@')[0] + ';',
+                                '</span>'
+                            ].join('');
+
+                            value = [ icon, value ].join(' ').trim();
+                        }
+
+                        return defaultRenderer(value, m, r);
+                    };
+                })()
+            }
+        ];
     },
 
     // private
@@ -171,13 +224,15 @@ Ext.define('Modera.mjrsecurityintegration.view.SwitchUserWindow', {
     },
 
     // private
-    defaultRenderer: function(msg) {
+    defaultRenderer: function(msg, valueFormatter) {
+        if (!valueFormatter) {
+            valueFormatter = Ext.util.Format.htmlEncode;
+        }
         return function(value, m, r) {
             if (Ext.isEmpty(value)) {
                 return '<span class="mfc-empty-text">' + (msg || '-') + '</span>';
             }
-
-            return Ext.util.Format.htmlEncode(value);
+            return valueFormatter(value);
         };
     }
 });
