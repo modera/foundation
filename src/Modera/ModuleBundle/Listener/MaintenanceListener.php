@@ -2,10 +2,11 @@
 
 namespace Modera\ModuleBundle\Listener;
 
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Modera\ModuleBundle\DependencyInjection\ModeraModuleExtension;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -31,14 +32,7 @@ class MaintenanceListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        $maintenance = false;
-        if ($this->container->hasParameter('maintenance')) {
-            $maintenance = $this->container->getParameter('maintenance');
-        }
-
-        $debug = in_array($this->container->get('kernel')->getEnvironment(), array('test', 'dev'));
-
-        if ($maintenance && !$debug) {
+        if ($this->isMaintenanceMode()) {
             $request = $event->getRequest();
             if ($request->isXmlHttpRequest()) {
                 $result = array(
@@ -55,5 +49,15 @@ class MaintenanceListener
             $event->setResponse($response);
             $event->stopPropagation();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isMaintenanceMode()
+    {
+        $debug = in_array($this->container->get('kernel')->getEnvironment(), array('test', 'dev'));
+        $name = ModeraModuleExtension::CONFIG_KEY . '.maintenance_mode';
+        return $this->container->getParameter($name) === true && !$debug;
     }
 }
