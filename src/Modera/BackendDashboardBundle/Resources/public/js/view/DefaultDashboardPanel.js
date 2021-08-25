@@ -4,7 +4,7 @@
 Ext.define('Modera.backend.dashboard.view.DefaultDashboardPanel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.modera-backdashboard-dashboardpanel-default',
-
+    tid: 'defaultDashboard',
 
     requires: [
         'Ext.data.Store'
@@ -29,7 +29,7 @@ Ext.define('Modera.backend.dashboard.view.DefaultDashboardPanel', {
                     '<tpl if="values.length &gt; 0">',
                         '<ul>',
                             '<tpl for=".">',
-                                '<li>',
+                                '<li id="{[this.generateId()]}">',
                                     '<table class="container">',
                                         '<tr><td>',
                                             '{[this.renderIcon(values)]}',
@@ -88,6 +88,9 @@ Ext.define('Modera.backend.dashboard.view.DefaultDashboardPanel', {
                             } else {
                                 return '';
                             }
+                        },
+                        generateId: function() {
+                            return Ext.id();
                         }
                     }
                 ),

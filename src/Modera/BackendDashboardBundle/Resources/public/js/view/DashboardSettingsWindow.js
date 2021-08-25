@@ -4,6 +4,7 @@
  */
 Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
     extend: 'MFC.window.ModalWindow',
+    tid: 'dashboardSettingsWindow',
     alias: 'widget.modera-backend-dashboard-dashboardettingswindow',
 
     requires: [
@@ -45,6 +46,7 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
                     items: [
                         {
                             itemId: 'landingSection',
+                            tid: 'landingSection',
                             xtype: 'combo',
                             editable: false,
                             labelWidth: 150,
@@ -72,6 +74,7 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
                             itemId: 'dashboards',
                             disabled: 'dashboard' !== landingSection,
                             xtype: 'grid',
+                            tid: 'dashboardsGrid',
                             border: true,
                             columns: [
                                 {
@@ -119,6 +122,7 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
                 '->',
                 {
                     text: this.updateBtnText,
+                    tid: 'updateBtn',
                     scale: 'medium',
                     itemId: 'updateBtn',
                     iconCls: 'mfc-icon-apply-24'
