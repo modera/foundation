@@ -45,6 +45,7 @@ Ext.define('Modera.backend.dashboard.runtime.SettingsWindowContributor', {
         lookup[query] =  {
             render: function(menu) {
                 menu.add({
+                    tid: 'landingViewSettings',
                     text: me.settingsBtnText,
                     contributedBy: me,
                     handler: callback,
