@@ -8,7 +8,7 @@ use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\Entity\User;
 use Modera\SecurityBundle\PasswordStrength\PasswordGenerator;
 use Modera\SecurityBundle\PasswordStrength\PasswordManager;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -146,7 +146,7 @@ class UsersControllerTest extends \PHPUnit_Framework_TestCase
             ->thenReturn($anotherUser)
         ;
 
-        $doctrineMock = \Phake::mock(RegistryInterface::class);
+        $doctrineMock = \Phake::mock(ManagerRegistry::class);
         \Phake::when($doctrineMock)
             ->getRepository(User::class)
             ->thenReturn($userRepositoryMock)
