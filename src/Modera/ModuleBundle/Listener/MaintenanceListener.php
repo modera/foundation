@@ -35,15 +35,14 @@ class MaintenanceListener
         if ($this->isMaintenanceMode()) {
             $request = $event->getRequest();
             if ($request->isXmlHttpRequest()) {
-                $result = array(
+                $response = new JsonResponse(array(
                     'success' => false,
                     'message' => 'The server is temporarily down for maintenance.',
-                );
-                $response = new JsonResponse($result);
+                ), JsonResponse::HTTP_SERVICE_UNAVAILABLE);
             } else {
                 $engine = $this->container->get('templating');
                 $content = $engine->render('ModeraModuleBundle::maintenance.html.twig');
-                $response = new Response($content, 503);
+                $response = new Response($content, JsonResponse::HTTP_SERVICE_UNAVAILABLE);
             }
 
             $event->setResponse($response);
