@@ -2,7 +2,7 @@
 
 namespace Modera\BackendToolsActivityLogBundle\AuthorResolving;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Modera\ActivityLoggerBundle\Model\ActivityInterface;
 use Modera\SecurityBundle\Entity\User;
 use Modera\FoundationBundle\Translation\T;
@@ -16,9 +16,9 @@ class ActivityAuthorResolver
     private $om;
 
     /**
-     * @param ObjectManager $om
+     * @param EntityManagerInterface $om
      */
-    public function __construct(ObjectManager $om)
+    public function __construct(EntityManagerInterface $om)
     {
         $this->om = $om;
     }
