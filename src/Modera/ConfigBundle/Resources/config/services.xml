@@ -80,6 +80,11 @@
                  public="true"
         />
 
+        <service id="Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface"
+                 alias="modera_config.configuration_entries_manager"
+                 public="true"
+        />
+
         <service id="modera_config.namespace_mappings_provider"
                  class="Modera\ConfigBundle\Contributions\NamespaceMappingsProvider">
 
