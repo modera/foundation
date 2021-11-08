@@ -17,7 +17,12 @@ use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
  * @copyright 2014 Modera Foundation
  *
  * @ORM\Entity
- * @ORM\Table(name="modera_config_configurationproperty")
+ * @ORM\Table(
+ *     name="modera_config_configurationproperty",
+ *     indexes={
+ *         @ORM\Index(name="name_idx", columns={"name"})
+ *     }
+ * )
  * @ORM\HasLifecycleCallbacks
  */
 class ConfigurationEntry implements ConfigurationEntryInterface
