@@ -10,7 +10,11 @@
     <link href="{{ asset(resource)|mf_modification_time }}" rel="stylesheet" />
 {% endfor %}
 
+{%- set meta_tags -%}
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+{%- endset -%}
+
+    {{ include('ModeraMJRSecurityIntegrationBundle:Index:meta.html.twig') }}
 </head>
 
 <body style="margin:0; padding:0; height:100%;">
