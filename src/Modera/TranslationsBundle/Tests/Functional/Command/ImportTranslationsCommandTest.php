@@ -32,22 +32,13 @@ class ImportTranslationsCommandTest extends AbstractFunctionalTestCase
         $this->assertFalse($token->isObsolete());
         $this->assertEquals('messages', $token->getDomain());
         $this->assertEquals($tokenName, $token->getTokenName());
-        $this->assertEquals(1, count($token->getTranslations()));
         $this->assertEquals(1, count($token->getLanguageTranslationTokens()));
 
-        $translations = $token->getTranslations();
         /* @var LanguageTranslationToken $ltt */
         foreach ($token->getLanguageTranslationTokens() as $ltt) {
             $this->assertTrue($ltt->isNew());
             $this->assertEquals('en', $ltt->getLanguage()->getLocale());
             $this->assertEquals($tokenName, $ltt->getTranslation());
-            $this->assertEquals(array(
-                'id' => $ltt->getId(),
-                'isNew' => $ltt->isNew(),
-                'translation' => $ltt->getTranslation(),
-                'locale' => $ltt->getLanguage()->getLocale(),
-                'language' => $ltt->getLanguage()->getName(),
-            ), $translations[$ltt->getLanguage()->getId()]);
         }
     }
 

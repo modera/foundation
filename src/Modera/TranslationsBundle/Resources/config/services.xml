@@ -20,14 +20,6 @@
             <argument>%kernel.cache_dir%/translations</argument>
         </service>
 
-        <service id="modera_translations.event_listener.language_translation_token_listener"
-                 class="Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener"
-                 public="true">
-
-            <tag name="doctrine.event_listener" event="postPersist" />
-            <tag name="doctrine.event_listener" event="postUpdate" />
-        </service>
-
         <service id="modera_translations.service.translation_handlers_chain"
                  class="Modera\TranslationsBundle\Service\TranslationHandlersChain"
                  public="true">

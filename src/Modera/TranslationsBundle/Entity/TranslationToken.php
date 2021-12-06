@@ -48,14 +48,6 @@ class TranslationToken
     private $isObsolete = false;
 
     /**
-     * See {@class \Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener} for details.
-     *
-     * @var array
-     * @ORM\Column(type="text", nullable=false)
-     */
-    private $translations;
-
-    /**
      * @var ArrayCollection
      * @ORM\OneToMany(targetEntity="LanguageTranslationToken", mappedBy="translationToken", cascade={"persist", "remove"})
      */
@@ -63,7 +55,6 @@ class TranslationToken
 
     public function __construct()
     {
-        $this->setTranslations(array());
         $this->languageTranslationTokens = new ArrayCollection();
     }
 
@@ -168,26 +159,6 @@ class TranslationToken
     }
 
     /**
-     * @return array
-     */
-    public function getTranslations()
-    {
-        return json_decode($this->translations, true);
-    }
-
-    /**
-     * @param array $translations
-     *
-     * @return TranslationToken
-     */
-    public function setTranslations(array $translations)
-    {
-        $this->translations = json_encode($translations, JSON_UNESCAPED_UNICODE);
-
-        return $this;
-    }
-
-    /**
      * @param LanguageTranslationToken $languageTranslationToken
      *
      * @return TranslationToken
@@ -203,7 +174,7 @@ class TranslationToken
     }
 
     /**
-     * @return ArrayCollection
+     * @return LanguageTranslationToken[]
      */
     public function getLanguageTranslationTokens()
     {
@@ -211,7 +182,7 @@ class TranslationToken
     }
 
     /**
-     * @param ArrayCollection $languageTranslationTokens
+     * @param LanguageTranslationToken[] $languageTranslationTokens
      *
      * @return TranslationToken
      */

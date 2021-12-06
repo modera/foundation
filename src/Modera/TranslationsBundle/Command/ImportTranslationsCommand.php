@@ -12,7 +12,6 @@ use Symfony\Component\Translation\Reader\TranslationReader;
 use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\Catalogue\TargetOperation;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Modera\TranslationsBundle\EventListener\LanguageTranslationTokenListener;
 use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
 use Modera\TranslationsBundle\Service\TranslationHandlersChain;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
@@ -52,10 +51,6 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         $ignoreObsolete = $input->getOption('ignore-obsolete');
         $markAsTranslated = $input->getOption('mark-as-translated');
         $fromScratch = $input->getOption('from-scratch');
-
-        /* @var LanguageTranslationTokenListener $listener */
-        $listener = $this->getContainer()->get('modera_translations.event_listener.language_translation_token_listener');
-        $listener->setActive(false);
 
         $printMessageNames = $output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE;
 
@@ -299,13 +294,10 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                     foreach ($translationTokens as $tokenName => $arr) {
                         $token = $this->findTranslationToken($tokens, $domain, $tokenName);
                         if ($token) {
-                            $translations = $this->getTokenTranslations($token, $languages, $listener);
                             $updateTranslationTokens[] = array(
                                 'id' => $token['id'],
                                 'isObsolete' => false,
-                                'translations' => $translations,
                             );
-                            $token['translations'] = $translations;
                         }
                     }
                 }
@@ -313,12 +305,11 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                 foreach ($updateTranslationTokens as $key => $token) {
                     $query = $this->em()->createQuery(
                         sprintf(
-                            'UPDATE %s tt SET tt.isObsolete = :isObsolete, tt.translations = :translations WHERE tt.id = :id',
+                            'UPDATE %s tt SET tt.isObsolete = :isObsolete WHERE tt.id = :id',
                             TranslationToken::clazz()
                         )
                     );
                     $query->setParameter('isObsolete', $token['isObsolete']);
-                    $query->setParameter('translations', json_encode($token['translations'], JSON_UNESCAPED_UNICODE));
                     $query->setParameter('id', $token['id']);
                     $query->execute();
                 }
@@ -341,37 +332,6 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         } else {
             $output->writeln('>>> Nothing to import');
         }
-
-        // update token translations
-        $tokenTranslations = array();
-        foreach ($tokens as $domain => $arr) {
-            foreach ($arr as $token) {
-                $translations = $this->getTokenTranslations($token, $languages, $listener);
-                if (json_encode($translations, JSON_UNESCAPED_UNICODE) != $token['translations']) {
-                    $tokenTranslations[] = array(
-                        'id' => $token['id'],
-                        'translations' => $translations,
-                    );
-                }
-            }
-        }
-
-        if (count($tokenTranslations)) {
-            foreach ($tokenTranslations as $key => $token) {
-                $query = $this->em()->createQuery(
-                    sprintf(
-                        'UPDATE %s tt SET tt.translations = :translations WHERE tt.id = :id',
-                        TranslationToken::clazz()
-                    )
-                );
-                $query->setParameter('translations', json_encode($token['translations'], JSON_UNESCAPED_UNICODE));
-                $query->setParameter('id', $token['id']);
-                $query->execute();
-            }
-            unset($tokenTranslations);
-        }
-
-        $listener->setActive(true);
     }
 
     /**
@@ -642,19 +602,23 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         );
         $languageTranslationTokens = $query->getResult($query::HYDRATE_ARRAY);
 
+        $tmp = array();
         foreach ($languageTranslationTokens as $ltt) {
-            foreach ($translationTokens as $key => $tt) {
-                if ($tt['id'] == $ltt['translationToken']) {
-                    if (!isset($translationTokens[$key]['languageTranslationTokens'])) {
-                        $translationTokens[$key]['languageTranslationTokens'] = array();
-                    }
+            if (!isset($tmp[$ltt['translationToken']])) {
+                $tmp[$ltt['translationToken']] = array();
+            }
 
-                    $translationTokens[$key]['languageTranslationTokens'][] = array_merge($ltt[0], array(
-                        'language' => $ltt['language'],
-                    ));
+            $tmp[$ltt['translationToken']][] = array_merge($ltt[0], array(
+                'language' => $ltt['language'],
+            ));
+        }
 
-                    break;
+        foreach ($translationTokens as $key => $tt) {
+            if (isset($tmp[$tt['id']])) {
+                if (!isset($translationTokens[$key]['languageTranslationTokens'])) {
+                    $translationTokens[$key]['languageTranslationTokens'] = array();
                 }
+                $translationTokens[$key]['languageTranslationTokens'] = $tmp[$tt['id']];
             }
         }
 
@@ -666,33 +630,9 @@ class ImportTranslationsCommand extends ContainerAwareCommand
             $tokens[$token['domain']][] = $token;
         }
 
+        unset($translationTokens, $languageTranslationTokens, $tmp);
+
         return $tokens;
-    }
-
-    /**
-     * @param array $token
-     * @param array $languages
-     * @param LanguageTranslationTokenListener $listener
-     * @return array
-     */
-    private function getTokenTranslations(array $token, array $languages, LanguageTranslationTokenListener $listener)
-    {
-        $translations = array();
-        if (isset($token['languageTranslationTokens'])) {
-            foreach ($token['languageTranslationTokens'] as $ltt) {
-                $lang = $this->findLanguage($languages, $ltt['language']);
-                if ($lang) {
-                    $languageToken = new LanguageTranslationToken();
-                    $languageToken->setNew($ltt['isNew']);
-                    $languageToken->setLanguage($lang);
-                    $languageToken->setTranslation($ltt['translation']);
-                    $translations[$lang->getId()] = $listener->hydrateLanguageTranslationToken($languageToken);
-                    $translations[$lang->getId()]['id'] = $ltt['id'];
-                }
-            }
-        }
-
-        return $translations;
     }
 
     /**
