@@ -13,6 +13,7 @@ use Modera\ServerCrudBundle\Exceptions\BadRequestException;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\ExceptionHandling\ExceptionHandlerInterface;
 use Modera\TranslationsBundle\Compiler\TranslationsCompiler;
+use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\TranslationsBundle\Entity\TranslationToken;
 use Modera\BackendTranslationsToolBundle\DependencyInjection\ModeraBackendTranslationsToolExtension;
 use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
@@ -35,6 +36,21 @@ class TranslationsController extends AbstractCrudController
     }
 
     /**
+     * @param LanguageTranslationToken $ltt
+     * @return array
+     */
+    private function hydrateLanguageTranslationToken(LanguageTranslationToken $ltt)
+    {
+        return array(
+            'id' => $ltt->getId(),
+            'isNew' => $ltt->isNew(),
+            'translation' => $ltt->getTranslation(),
+            'locale' => $ltt->getLanguage()->getLocale(),
+            'language' => $ltt->getLanguage()->getName(),
+        );
+    }
+
+    /**
      * @return array
      */
     public function getConfig()
@@ -46,7 +62,22 @@ class TranslationsController extends AbstractCrudController
             ),
             'hydration' => array(
                 'groups' => array(
-                    'list' => ['id', 'domain', 'tokenName', 'isObsolete', 'translations'],
+                    'list' => function (TranslationToken $translationToken) {
+                        $translations = array();
+                        foreach ($translationToken->getLanguageTranslationTokens() as $ltt) {
+                            if ($ltt->getLanguage()->isEnabled()) {
+                                $translations[$ltt->getLanguage()->getId()] = $this->hydrateLanguageTranslationToken($ltt);
+                            }
+                        }
+
+                        return array(
+                            'id' => $translationToken->getId(),
+                            'domain' => $translationToken->getDomain(),
+                            'tokenName' => $translationToken->getTokenName(),
+                            'isObsolete' => $translationToken->isObsolete(),
+                            'translations' => $translations,
+                        );
+                    },
                 ),
                 'profiles' => array(
                     'list',
@@ -84,10 +115,7 @@ class TranslationsController extends AbstractCrudController
                         [
                             array('property' => 'domain', 'value' => 'eq:'.$filterValue),
                             array('property' => 'tokenName', 'value' => 'like:%'.$filterValue.'%'),
-                            array(
-                                'property' => 'translations',
-                                'value' => 'like:%"translation":"%'.$filterValue.'%"%',
-                            ),
+                            array('property' => 'languageTranslationTokens.translation', 'value' => 'like:%'.$filterValue.'%'),
                         ],
                     ];
                 } else {
