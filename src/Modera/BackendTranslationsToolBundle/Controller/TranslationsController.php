@@ -112,6 +112,7 @@ class TranslationsController extends AbstractCrudController
 
                 if ($filterValue) {
                     $params['filter'] = [
+                        array('property' => 'languageTranslationTokens.language.isEnabled', 'value' => 'eq:true'),
                         [
                             array('property' => 'domain', 'value' => 'eq:'.$filterValue),
                             array('property' => 'tokenName', 'value' => 'like:%'.$filterValue.'%'),

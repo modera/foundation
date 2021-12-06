@@ -32,7 +32,7 @@ class ObsoleteTranslationTokensFilter extends AbstractTranslationTokensFilter
         if (!isset($params['filter'])) {
             $params['filter'] = array();
         }
-        $params['filter'] = array_merge($params['filter'], $this->getFilter());
+        $params['filter'] = array_merge($this->getFilter(), $params['filter']);
 
         return parent::getCount($params);
     }
@@ -45,7 +45,7 @@ class ObsoleteTranslationTokensFilter extends AbstractTranslationTokensFilter
         if (!isset($params['filter'])) {
             $params['filter'] = array();
         }
-        $params['filter'] = array_merge($params['filter'], $this->getFilter());
+        $params['filter'] = array_merge($this->getFilter(), $params['filter']);
 
         return parent::getResult($params);
     }
@@ -55,8 +55,8 @@ class ObsoleteTranslationTokensFilter extends AbstractTranslationTokensFilter
      */
     private function getFilter()
     {
-        $filter[] = ['property' => 'isObsolete', 'value' => 'eq:true'];
-
-        return $filter;
+        return array(
+            ['property' => 'isObsolete', 'value' => 'eq:true'],
+        );
     }
 }

@@ -32,7 +32,7 @@ class NewTranslationTokensFilter extends AbstractTranslationTokensFilter
         if (!isset($params['filter'])) {
             $params['filter'] = array();
         }
-        $params['filter'] = array_merge($params['filter'], $this->getFilter());
+        $params['filter'] = array_merge($this->getFilter(), $params['filter']);
 
         return parent::getCount($params);
     }
@@ -45,7 +45,7 @@ class NewTranslationTokensFilter extends AbstractTranslationTokensFilter
         if (!isset($params['filter'])) {
             $params['filter'] = array();
         }
-        $params['filter'] = array_merge($params['filter'], $this->getFilter());
+        $params['filter'] = array_merge($this->getFilter(), $params['filter']);
 
         return parent::getResult($params);
     }
@@ -55,29 +55,9 @@ class NewTranslationTokensFilter extends AbstractTranslationTokensFilter
      */
     private function getFilter()
     {
-        static $filter = null;
-
-        if (null === $filter) {
-            try {
-                $q = $this->em()->createQuery(
-                    'SELECT IDENTITY(ltt.translationToken) as translationToken '.
-                    'FROM ModeraTranslationsBundle:LanguageTranslationToken ltt '.
-                    'LEFT JOIN ltt.language l '.
-                    'WHERE ltt.isNew=true AND l.isEnabled=true GROUP BY ltt.translationToken'
-                );
-                $result = $q->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
-            } catch (\Exception $e) {
-                $result = array();
-            }
-
-            $ids = array_map(function ($row) {
-                return $row['translationToken'];
-            }, $result);
-
-            $filter[] = ['property' => 'isObsolete', 'value' => 'eq:false'];
-            $filter[] = ['property' => 'id', 'value' => 'in:'.implode(',', $ids)];
-        }
-
-        return $filter;
+        return array(
+            ['property' => 'isObsolete', 'value' => 'eq:false'],
+            ['property' => 'languageTranslationTokens.isNew', 'value' => 'eq:true'],
+        );
     }
 }
