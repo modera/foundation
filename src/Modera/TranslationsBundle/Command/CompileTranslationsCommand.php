@@ -3,12 +3,13 @@
 namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Translation\MessageCatalogue;
 use Modera\TranslationsBundle\Compiler\Adapter\AdapterInterface;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\TranslationsBundle\Service\Translator;
@@ -20,8 +21,23 @@ use Modera\LanguagesBundle\Entity\Language;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class CompileTranslationsCommand extends ContainerAwareCommand
+class CompileTranslationsCommand extends Command
 {
+    /**
+     * @var ContainerInterface
+     */
+    private ContainerInterface $container;
+
+    /**
+     * @required
+     *
+     * @param ContainerInterface $container
+     */
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         $this
@@ -65,6 +81,8 @@ class CompileTranslationsCommand extends ContainerAwareCommand
         } else {
             $output->writeln('>>> Nothing to compile');
         }
+
+        return 0;
     }
 
     /**
@@ -73,8 +91,8 @@ class CompileTranslationsCommand extends ContainerAwareCommand
      */
     protected function extractCatalogues($onlyTranslated = false)
     {
-        /* @var EntityManager $em */
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        /* @var EntityManagerInterface $em */
+        $em = $this->container->get('doctrine.orm.entity_manager');
 
         $qb = $em->createQueryBuilder();
         $qb->select('l')
@@ -122,7 +140,7 @@ class CompileTranslationsCommand extends ContainerAwareCommand
      */
     protected function translationsCacheWarmUp()
     {
-        $this->getTranslator()->warmUp($this->getContainer()->getParameter('kernel.cache_dir'));
+        $this->getTranslator()->warmUp($this->container->getParameter('kernel.cache_dir'));
     }
 
     /**
@@ -131,7 +149,7 @@ class CompileTranslationsCommand extends ContainerAwareCommand
      */
     protected function getAdapter($id = null)
     {
-        return $this->getContainer()->get($id ?: 'modera_translations.compiler.adapter');
+        return $this->container->get($id ?: 'modera_translations.compiler.adapter');
     }
 
     /**
@@ -139,6 +157,6 @@ class CompileTranslationsCommand extends ContainerAwareCommand
      */
     protected function getTranslator()
     {
-        return $this->getContainer()->get('modera_translations.service.translator');
+        return $this->container->get('modera_translations.service.translator');
     }
 }

@@ -8,7 +8,7 @@ use Modera\MJRCacheAwareClassLoaderBundle\Contributions\RoutingResourcesProvider
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class RoutingResourcesProviderTest extends \PHPUnit_Framework_TestCase
+class RoutingResourcesProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetItems()
     {

@@ -10,14 +10,14 @@ use Modera\BackendDashboardBundle\Contributions\ConfigMergersProvider;
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class MenuItemsProviderTest extends \PHPUnit_Framework_TestCase
+class MenuItemsProviderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ConfigMergersProvider
      */
     private $provider;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->provider = \Phake::mock(ConfigMergersProvider::class);
 

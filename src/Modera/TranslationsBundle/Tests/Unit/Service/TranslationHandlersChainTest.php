@@ -9,7 +9,7 @@ use Modera\TranslationsBundle\Service\TranslationHandlersChain;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class TranslationHandlersChainTest extends \PHPUnit_Framework_TestCase
+class TranslationHandlersChainTest extends \PHPUnit\Framework\TestCase
 {
     public function testHandlers()
     {

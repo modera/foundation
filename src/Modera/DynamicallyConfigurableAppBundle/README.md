@@ -1,18 +1,33 @@
 # ModeraDynamicallyConfigurableAppBundle
 
-[![StyleCI](https://styleci.io/repos/29132424/shield)](https://styleci.io/repos/29132424)
-
 Bundle configuration properties that allow to dynamically configure how AppKernel is bootstrapped (env, is-debug).
 
 ## Installation
 
-Add this dependency to your composer.json:
+### Step 1: Download the Bundle
 
-    "modera/dynamically-configurable-app-bundle": "~2.0"
+``` bash
+composer require modera/dynamically-configurable-app-bundle:4.x-dev
+```
 
-Update your AppKernel class and add this:
+This command requires you to have Composer installed globally, as explained
+in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
 
-    new Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBundle(),
+### Step 2: Enable the Bundle
+
+This bundle should be automatically enabled by [Flex](https://symfony.com/doc/current/setup/flex.html).
+In case you don't use Flex, you'll need to manually enable the bundle by
+adding the following line in the `config/bundles.php` file of your project:
+
+``` php
+<?php
+// config/bundles.php
+
+return [
+    // ...
+    Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBundle::class => ['all' => true],
+];
+```
 
 ## Licensing
 

@@ -96,7 +96,6 @@ class ScriptHandler extends AbstractScriptHandler
         $bundles = Helper::getRegisterBundles($event->getComposer());
 
         static::createRegisterBundlesFile($bundles, $appDir.'/'.$bundlesFile);
-        static::executeCommand($event, $consoleDir, 'modera:module:register '.$bundlesFile, $options['process-timeout']);
     }
 
     /**

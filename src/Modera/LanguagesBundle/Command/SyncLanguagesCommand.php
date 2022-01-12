@@ -2,13 +2,14 @@
 
 namespace Modera\LanguagesBundle\Command;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Modera\LanguagesBundle\Entity\Language;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Modera\LanguagesBundle\DependencyInjection\ModeraLanguagesExtension;
+use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * From config to database.
@@ -16,8 +17,20 @@ use Modera\LanguagesBundle\DependencyInjection\ModeraLanguagesExtension;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class SyncLanguagesCommand extends ContainerAwareCommand
+class SyncLanguagesCommand extends Command
 {
+    private EntityManagerInterface $em;
+
+    private ParameterBagInterface $params;
+
+    public function __construct(EntityManagerInterface $em, ParameterBagInterface $params)
+    {
+        $this->em = $em;
+        $this->params = $params;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this
@@ -28,11 +41,8 @@ class SyncLanguagesCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /* @var EntityManager $em */
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-
         $languages = $this->getConfigLanguages();
-        $dbLanguages = $em->getRepository(Language::clazz())->findAll();
+        $dbLanguages = $this->em->getRepository(Language::clazz())->findAll();
 
         $updated = array();
         $tableRows = array();
@@ -53,7 +63,7 @@ class SyncLanguagesCommand extends ContainerAwareCommand
                 } else {
                     $dbLanguage->setEnabled(false);
                 }
-                $em->persist($dbLanguage);
+                $this->em->persist($dbLanguage);
                 $tableRows[] = $this->tableRow($dbLanguage);
             }
         }
@@ -63,17 +73,19 @@ class SyncLanguagesCommand extends ContainerAwareCommand
                 $dbLanguage = new Language();
                 $dbLanguage->setLocale($language['locale']);
                 $dbLanguage->setEnabled($language['is_enabled'] ? true : false);
-                $em->persist($dbLanguage);
+                $this->em->persist($dbLanguage);
                 $tableRows[] = $this->tableRow($dbLanguage);
             }
         }
 
-        $em->flush();
+        $this->em->flush();
         
         $table = new Table($output);
         $table->setHeaders(array('locale', 'name', 'enabled'));
         $table->setRows($tableRows);
         $table->render($output);
+
+        return 0;
     }
 
     /**
@@ -81,7 +93,7 @@ class SyncLanguagesCommand extends ContainerAwareCommand
      */
     protected function getConfigLanguages()
     {
-        return $this->getContainer()->getParameter(ModeraLanguagesExtension::CONFIG_KEY);
+        return $this->params->get(ModeraLanguagesExtension::CONFIG_KEY);
     }
 
     /**

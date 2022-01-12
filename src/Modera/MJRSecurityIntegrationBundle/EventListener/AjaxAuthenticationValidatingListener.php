@@ -4,7 +4,7 @@ namespace Modera\MJRSecurityIntegrationBundle\EventListener;
 
 use Modera\FoundationBundle\Translation\T;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -30,11 +30,11 @@ class AjaxAuthenticationValidatingListener
     }
 
     /**
-     * @param GetResponseForExceptionEvent $event
+     * @param ExceptionEvent $event
      *
      * @return string
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
         if (!$event->getRequest()->isXmlHttpRequest()) {
             return self::RESULT_NOT_AJAX;
@@ -43,9 +43,7 @@ class AjaxAuthenticationValidatingListener
             return self::RESULT_NOT_BACKEND_REQUEST;
         }
 
-        $e = $event->getException();
-
-        $response = null;
+        $e = $event->getThrowable();
 
         if ($e instanceof AccessDeniedException) {
             $msg = "Your session has expired and you need to re-login or you don't have privileges to perform given action.";

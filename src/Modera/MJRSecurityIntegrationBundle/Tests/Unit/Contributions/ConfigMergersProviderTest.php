@@ -2,23 +2,29 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Tests\Unit\Contributions;
 
-use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
-use Modera\MJRSecurityIntegrationBundle\Contributions\ConfigMergersProvider;
-use Modera\SecurityBundle\Entity\User;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
-use Symfony\Component\Security\Core\Role\Role;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Modera\MJRSecurityIntegrationBundle\Contributions\ConfigMergersProvider;
+use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
+use Modera\SecurityBundle\Entity\User;
+
+// TODO: remove in v5.x
+interface MockTokenInterface extends TokenInterface
+{
+    public function getRoleNames(): array;
+}
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
+class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testSecurityRolesMerger()
     {
         $roles = array(
-            new Role('ROLE_USER'),
-            new Role('ROLE_ADMIN'),
+            'ROLE_USER',
+            'ROLE_ADMIN',
         );
 
         $user = \Phake::mock(User::clazz());
@@ -27,13 +33,13 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
         \Phake::when($user)->getEmail()->thenReturn('john.doe@example.org');
         \Phake::when($user)->getUsername()->thenReturn('john.doe');
 
-        $token = \Phake::mock('Symfony\Component\Security\Core\Authentication\Token\TokenInterface');
+        $token = \Phake::mock(MockTokenInterface::class);
         \Phake::when($token)
             ->getUser()
             ->thenReturn($user)
         ;
         \Phake::when($token)
-            ->getRoles()
+            ->getRoleNames()
             ->thenReturn($roles)
         ;
 

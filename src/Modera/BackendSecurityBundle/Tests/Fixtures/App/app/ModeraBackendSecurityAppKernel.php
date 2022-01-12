@@ -12,25 +12,20 @@ class ModeraBackendSecurityAppKernel extends \Modera\FoundationBundle\Testing\Ab
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new Modera\TranslationsBundle\ModeraTranslationsBundle(),
-            new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
 
             new Sli\ExtJsIntegrationBundle\SliExtJsIntegrationBundle(),
             new Sli\AuxBundle\SliAuxBundle(),
             new Sli\ExpanderBundle\SliExpanderBundle($this),
 
+            new Modera\TranslationsBundle\ModeraTranslationsBundle(),
             new Modera\FoundationBundle\ModeraFoundationBundle(),
             new Modera\MjrIntegrationBundle\ModeraMjrIntegrationBundle(),
-
             new Modera\DirectBundle\ModeraDirectBundle(),
             new Modera\SecurityBundle\ModeraSecurityBundle(),
             new Modera\BackendToolsBundle\ModeraBackendToolsBundle(),
             new Modera\ActivityLoggerBundle\ModeraActivityLoggerBundle(),
-
             new Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle(),
-
             new Modera\ServerCrudBundle\ModeraServerCrudBundle(),
-
             new Modera\BackendSecurityBundle\ModeraBackendSecurityBundle(),
 
         );

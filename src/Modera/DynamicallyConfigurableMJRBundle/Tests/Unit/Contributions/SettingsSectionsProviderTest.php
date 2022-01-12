@@ -12,7 +12,7 @@ use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class SettingsSectionsProviderTest extends \PHPUnit_Framework_TestCase
+class SettingsSectionsProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetItems()
     {

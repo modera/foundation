@@ -1,4 +1,5 @@
 
 modera_dynamically_configurable_mjr_logo_css:
-    path:      /logo.css
-    defaults:  { _controller: ModeraDynamicallyConfigurableMJRBundle:Index:logoCss }
+    path: /logo.css
+    defaults:
+        _controller: Modera\DynamicallyConfigurableMJRBundle\Controller\IndexController::logoCssAction

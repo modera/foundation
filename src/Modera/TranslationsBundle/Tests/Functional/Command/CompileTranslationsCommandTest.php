@@ -19,7 +19,7 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
     {
         $fs = new Filesystem();
         $resourcesDir = 'app/Resources';
-        $basePath = dirname(self::$kernel->getContainer()->get('kernel')->getRootdir());
+        $basePath = self::$kernel->getContainer()->get('kernel')->getProjectDir();
 
         $transDir = $resourcesDir.'/translations';
         $transPath = $basePath.'/'.$transDir;
@@ -57,7 +57,7 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
     {
         $fs = new Filesystem();
         $resourcesDir = 'app/Resources';
-        $basePath = dirname(self::$kernel->getContainer()->get('kernel')->getRootdir());
+        $basePath = self::$kernel->getContainer()->get('kernel')->getProjectDir();
 
         $transDir = $resourcesDir.'/translations';
         $transPath = $basePath.'/'.$transDir;

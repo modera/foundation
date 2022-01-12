@@ -17,8 +17,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('modera_mjr_cache_aware_class_loader');
+        $treeBuilder = new TreeBuilder('modera_mjr_cache_aware_class_loader');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()

@@ -2,16 +2,26 @@
 
 namespace Modera\ConfigBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Modera\ConfigBundle\Config\ConfigEntriesInstaller;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class InstallConfigEntriesCommand extends ContainerAwareCommand
+class InstallConfigEntriesCommand extends Command
 {
+    private ConfigEntriesInstaller $installer;
+
+    public function __construct(ConfigEntriesInstaller $installer)
+    {
+        $this->installer = $installer;
+
+        parent::__construct();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -30,9 +40,7 @@ class InstallConfigEntriesCommand extends ContainerAwareCommand
     {
         $output->writeln(' >> Installing configuration-entries ...');
 
-        /* @var \Modera\ConfigBundle\Config\ConfigEntriesInstaller $installer */
-        $installer = $this->getContainer()->get('modera_config.config_entries_installer');
-        $installedEntries = $installer->install();
+        $installedEntries = $this->installer->install();
 
         foreach ($installedEntries as $entry) {
             $output->writeln(sprintf('  - %s ( %s )', $entry->getName(), $entry->getReadableName()));
@@ -42,5 +50,7 @@ class InstallConfigEntriesCommand extends ContainerAwareCommand
         } else {
             $output->writeln(' >> Done!');
         }
+
+        return 0;
     }
 }

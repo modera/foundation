@@ -9,7 +9,7 @@ use Sli\ExpanderBundle\DependencyInjection\CompositeContributorsProviderCompiler
  * @copyright 2013 Modera Foundation
  * @author Alex Rudakov <alexandr.rudakov@modera.net>
  */
-class ModeraBackendDashboardBundleTest extends \PHPUnit_Framework_TestCase
+class ModeraBackendDashboardBundleTest extends \PHPUnit\Framework\TestCase
 {
     public function testContributorIsInjected()
     {

@@ -33,6 +33,7 @@ class ModeraBackendTranslationsToolExtension extends Extension
         }
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('controller.xml');
         $loader->load('services.xml');
     }
 }

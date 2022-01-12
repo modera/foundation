@@ -2,8 +2,8 @@
 
 namespace Modera\ModuleBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
@@ -31,11 +31,5 @@ class ModeraModuleExtension extends Extension
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
-
-        if (class_exists('Symfony\Component\Console\Application')) {
-            try {
-                $loader->load('console.xml');
-            } catch (\Exception $e) {}
-        }
     }
 }

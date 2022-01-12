@@ -1,4 +1,5 @@
 
 modera_backend_languages_extjs_l10n:
-    path:      /extjs-l10n/{locale}.js
-    defaults:  { _controller: ModeraBackendLanguagesBundle:Index:compile }
+    path: /extjs-l10n/{locale}.js
+    defaults:
+        _controller: Modera\BackendLanguagesBundle\Controller\IndexController::compileAction

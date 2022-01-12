@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Reference;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class ModeraConfigExtensionTest extends \PHPUnit_Framework_TestCase
+class ModeraConfigExtensionTest extends \PHPUnit\Framework\TestCase
 {
     public function testLoad()
     {

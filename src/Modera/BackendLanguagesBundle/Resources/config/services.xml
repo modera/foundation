@@ -40,7 +40,7 @@
 
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="security.token_storage" />
-            <argument>%locale%</argument>
+            <argument>%kernel.default_locale%</argument>
 
             <tag name="modera_mjr_integration.config.config_mergers_provider" />
         </service>
@@ -50,7 +50,7 @@
 
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="router" />
-            <argument>%locale%</argument>
+            <argument>%kernel.default_locale%</argument>
 
             <tag name="modera_mjr_integration.js_resources_provider" />
         </service>
@@ -73,7 +73,7 @@
                  class="Modera\BackendLanguagesBundle\EventListener\LocaleListener">
 
             <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument>%locale%</argument>
+            <argument>%kernel.default_locale%</argument>
             <argument>%modera_mjr_security_integration.config.is_authenticated_url%</argument>
 
             <tag name="kernel.event_subscriber" />

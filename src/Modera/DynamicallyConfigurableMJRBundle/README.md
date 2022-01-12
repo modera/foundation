@@ -1,10 +1,5 @@
 # ModeraDynamicallyConfigurableMJRBundle
 
-[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/modera/ModeraDynamicallyConfigurableMJRBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/modera/ModeraDynamicallyConfigurableMJRBundle/?branch=master)
-[![StyleCI](https://styleci.io/repos/29132444/shield)](https://styleci.io/repos/29132444)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/1152f2c6-ed58-448f-8e69-d1fd03eaba4e/mini.png)](https://insight.sensiolabs.com/projects/1152f2c6-ed58-448f-8e69-d1fd03eaba4e)
-
 Given that `ModeraBackendToolsSettingsConfigBundle` is installed this bundle provides integration tools that make it possible
 to configure dynamically through UIs in "Backend / Tools / Settings / General" the following aspects of backend:
 
@@ -14,13 +9,30 @@ to configure dynamically through UIs in "Backend / Tools / Settings / General" t
 
 ## Installation
 
-Add this dependency to your composer.json:
+### Step 1: Download the Bundle
 
-    "modera/dynamically-configurable-mjr-bundle": "~1.0"
+``` bash
+composer require modera/dynamically-configurable-mjr-bundle:4.x-dev
+```
 
-Update your AppKernel class and add this:
+This command requires you to have Composer installed globally, as explained
+in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
 
-    new Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle(),
+### Step 2: Enable the Bundle
+
+This bundle should be automatically enabled by [Flex](https://symfony.com/doc/current/setup/flex.html).
+In case you don't use Flex, you'll need to manually enable the bundle by
+adding the following line in the `config/bundles.php` file of your project:
+
+``` php
+<?php
+// config/bundles.php
+
+return [
+    // ...
+    Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle::class => ['all' => true],
+];
+```
 
 ## Licensing
 

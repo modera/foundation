@@ -2,6 +2,8 @@
 
 namespace Modera\ConfigBundle\Twig;
 
+use Twig\TwigFunction;
+use Twig\Extension\AbstractExtension;
 use Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface;
 
 /**
@@ -12,7 +14,7 @@ use Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class TwigExtension extends \Twig_Extension
+class TwigExtension extends AbstractExtension
 {
     /**
      * @var \Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface
@@ -41,8 +43,8 @@ class TwigExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('modera_config_value', array($this, 'twigModeraConfigValue')),
-            new \Twig_SimpleFunction('modera_config_owner_value', array($this, 'getModeraConfigOwnerValue')),
+            new TwigFunction('modera_config_value', array($this, 'twigModeraConfigValue')),
+            new TwigFunction('modera_config_owner_value', array($this, 'getModeraConfigOwnerValue')),
         ];
     }
 

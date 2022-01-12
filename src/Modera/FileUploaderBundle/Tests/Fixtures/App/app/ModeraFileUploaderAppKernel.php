@@ -8,6 +8,7 @@ class ModeraFileUploaderAppKernel extends \Modera\FoundationBundle\Testing\Abstr
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
+            new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
 
             new Modera\FileRepositoryBundle\ModeraFileRepositoryBundle(),
 

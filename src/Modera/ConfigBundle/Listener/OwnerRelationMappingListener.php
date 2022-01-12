@@ -2,8 +2,8 @@
 
 namespace Modera\ConfigBundle\Listener;
 
-use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Persistence\Event\LoadClassMetadataEventArgs;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 
 /**

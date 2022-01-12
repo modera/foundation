@@ -46,7 +46,7 @@ class TranslationsCompilerTest extends AbstractFunctionalTestCase
 
         $compiler->compile();
 
-        $translationsDir = dirname($kernel->getRootdir()).'/app/Resources/translations';
+        $translationsDir = $kernel->getProjectDir().'/app/Resources/translations';
 
         $fs = new Filesystem();
         $discoveredFiles = array();

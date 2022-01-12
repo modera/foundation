@@ -11,23 +11,21 @@
         }
     ],
     "require": {
-        "php": ">=5.6",
-        "modera/file-repository-bundle": "~3.1|~4.0",
-        "modera/foundation-bundle": "~3.1|~4.0",
-        "sergeil/expander-bundle": "^1.0"
+        "php": ">=7.4",
+        "modera/file-repository-bundle": "^4.0",
+        "modera/foundation-bundle": "^4.0",
+        "sergeil/expander-bundle": "^1.2"
     },
     "require-dev": {
-        "phake/phake": "^2.0",
-        "phpunit/phpunit": "^5.5",
-        "sergeil/aux-bundle": "^1.0"
+        "phake/phake": "^4.0",
+        "phpunit/phpunit": "^6.5"
     },
     "autoload": {
-        "psr-0": { "Modera\\FileUploaderBundle": "" }
+        "psr-4": { "Modera\\FileUploaderBundle\\": "" }
     },
-    "target-dir": "Modera/FileUploaderBundle",
     "extra": {
         "branch-alias": {
-            "dev-master": "3.x-dev"
+            "dev-master": "4.x-dev"
         }
     }
 }

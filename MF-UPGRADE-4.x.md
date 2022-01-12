@@ -1,12 +1,12 @@
-# Notes, thoughts regarding upgrade to Modera Foundation 3.0
+# Notes, thoughts regarding upgrade to Modera Foundation 4.x
 
-MF 3.0 will presumably require:
+MF 4.x will presumably require:
 
- * Symfony 3.x
+ * PHP >=7.4
+ * Symfony >=4.4,<=5.4
  * ExtJs 4.2
- * PHP >=5.6
- * Review existing in-house code base and if something can be done with Symfony/other trusted libraries - use them. Goal:
- minimize code-base we need to maintain
+ * Review existing in-house code base and if something can be done with Symfony/other trusted libraries - use them. 
+ Goal: minimize code-base we need to maintain
 
 ## API
 
@@ -30,7 +30,7 @@ to understand that this piece of API they rely on might be gone without prior no
 
 ### Blocking/non-blocking assets for backend
 
-Before 3.0 all contributed JS/CSS assets to backend are considered as blocking, when 3.0 is released  all assets might be
+Before v4.x all contributed JS/CSS assets to backend are considered as blocking, when v4.x is released all assets might be
 considered as non blocking and if you still want your asset to be considered as blocking suffix it with "!". Already now you can
 start marking your assets as blocking using ! if you are sure that those are needed to be loaded before backend page
 has rendered.
@@ -43,16 +43,6 @@ property. This, for instance, will mark all assets which match `^/bundles/modera
             - ^/bundles/moderabackend.*
 
 `non_blocking_assets_patterns` configuration property will be removed from `\Modera\BackendOnSteroidsBundle\DependencyInjection\Configuration`.
-
-### Security permission categories
-
-When contributing permissions (using `modera_security.permissions` extension point) you should rely on new technical
-names, old ones will be removed in 3.0.
-
-| Old technical name              | New technical name   | 
-|---------------------------------|----------------------|
-| site                            | general              |
-| user-management                 | administration       |
 
 ## TODOs
 

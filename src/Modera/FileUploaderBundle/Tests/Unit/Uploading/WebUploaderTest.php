@@ -9,7 +9,7 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class WebUploaderTest extends \PHPUnit_Framework_TestCase
+class WebUploaderTest extends \PHPUnit\Framework\TestCase
 {
     public function testUpload()
     {

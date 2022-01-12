@@ -2,7 +2,7 @@
 
 namespace Modera\FoundationBundle\Tests\Unit\Translation;
 
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Modera\FoundationBundle\Translation\T;
 
 class MockTranslator implements TranslatorInterface
@@ -30,14 +30,14 @@ class MockTranslator implements TranslatorInterface
  * @author Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class TTest extends \PHPUnit_Framework_TestCase
+class TTest extends \PHPUnit\Framework\TestCase
 {
     private $t;
     private $c;
     private $reflMethod;
 
     // override
-    public function setUp()
+    public function setUp(): void
     {
         $this->t = new MockTranslator();
 
@@ -54,7 +54,7 @@ class TTest extends \PHPUnit_Framework_TestCase
     }
 
     // override
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->reflMethod->setValue(null, null);
     }

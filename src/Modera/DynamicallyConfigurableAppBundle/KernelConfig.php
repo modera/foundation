@@ -13,9 +13,19 @@ class KernelConfig implements KernelConfigInterface
      */
     protected static function getRootDir()
     {
-        $refKernel = new \ReflectionClass('AppKernel');
+        $refKernel = null;
+        try {
+            $refKernel = new \ReflectionClass('App\Kernel');
+        } catch (\Exception $e) {
+            // TODO: BC
+            $refKernel = new \ReflectionClass('AppKernel');
+        } catch (\Exception $e) {}
 
-        return dirname($refKernel->getFileName());
+        if (null === $refKernel) {
+            throw new \RuntimeException('Undefined project structure');
+        }
+
+        return \dirname($refKernel->getFileName());
     }
 
     /**

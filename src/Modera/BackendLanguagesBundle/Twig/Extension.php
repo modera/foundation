@@ -2,7 +2,11 @@
 
 namespace Modera\BackendLanguagesBundle\Twig;
 
-use Symfony\Component\Intl\Intl;
+use Symfony\Component\Intl\Locales;
+use Twig\TwigFilter;
+use Twig\Environment;
+use Twig\TwigFunction;
+use Twig\Extension\AbstractExtension;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\BackendLanguagesBundle\ExtUtilFormatResolving\ExtUtilFormatResolverInterface;
 use Modera\BackendLanguagesBundle\Service\SanitizeInterface;
@@ -10,7 +14,7 @@ use Modera\BackendLanguagesBundle\Service\SanitizeInterface;
 /**
  * @author Sergei Vizel <sergei.vizel@gmail.com>
  */
-class Extension extends \Twig_Extension
+class Extension extends AbstractExtension
 {
     const REGION_LANGUAGES = array(
         'AD' => 'ca',
@@ -350,13 +354,10 @@ class Extension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            new \Twig_Filter(
+            new TwigFilter(
                 'modera_backend_languages_escape',
                 array($this, 'escapeJsString'),
-                array(
-                    'needs_environment' => true,
-                    'is_safe_callback' => 'twig_escape_filter_is_safe'
-                )
+                array('is_safe' => array('html', 'js'), 'needs_environment' => true)
             ),
         );
     }
@@ -367,22 +368,22 @@ class Extension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'modera_backend_languages_ext_util_format',
                 array($this, 'getExtUtilFormat'),
                 array('is_safe' => array('html', 'js'))
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'modera_backend_languages_ext_date_format',
                 array($this, 'getExtDateFormat'),
                 array('is_safe' => array('html', 'js'))
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'modera_backend_languages_ext_time_format',
                 array($this, 'getExtTimeFormat'),
                 array('is_safe' => array('html', 'js'))
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'modera_backend_languages_ext_start_day',
                 array($this, 'getExtStartDay'),
                 array('is_safe' => array('html', 'js'))
@@ -393,7 +394,7 @@ class Extension extends \Twig_Extension
     /**
      * @return string
      */
-    public function escapeJsString(\Twig_Environment $env, $string)
+    public function escapeJsString(Environment $env, $string)
     {
         $string = $this->sanitizationService->sanitizeHtml($string);
 
@@ -450,7 +451,7 @@ class Extension extends \Twig_Extension
      */
     private function getLocales()
     {
-        $locales = array_keys(Intl::getLocaleBundle()->getLocaleNames());
+        $locales = array_keys(Locales::getNames());
         foreach ($this->getCustomLocales() as $locale) {
             $locales[] = $locale;
         }

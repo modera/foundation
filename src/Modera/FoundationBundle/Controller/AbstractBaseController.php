@@ -2,8 +2,7 @@
 
 namespace Modera\FoundationBundle\Controller;
 
-use Modera\FoundationBundle\Utils\DeprecationNoticeEmitter;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 
 /**
  * Controller provides a bunch of auxiliary methods.
@@ -16,7 +15,7 @@ class AbstractBaseController extends Controller
     /**
      * Shortcut access to "doctrine.orm.entity_manager" service.
      *
-     * @return \Doctrine\ORM\EntityManager $em
+     * @return \Doctrine\ORM\EntityManagerInterface $em
      */
     protected function em()
     {

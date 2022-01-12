@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Definition;
  * @copyright 2013 Modera Foundation
  * @author Alex Rudakov <alexandr.rudakov@modera.net>
  */
-class ModeraBackendDashboardExtensionTest extends \PHPUnit_Framework_TestCase
+class ModeraBackendDashboardExtensionTest extends \PHPUnit\Framework\TestCase
 {
     public function testConfigLoad()
     {
@@ -25,7 +25,7 @@ class ModeraBackendDashboardExtensionTest extends \PHPUnit_Framework_TestCase
 
         $bundle->build($builder);
 
-        $definition = new Definition(new \stdClass());
+        $definition = new Definition(\stdClass::class);
         $builder->setDefinition('modera_backend_translations_tool.handling.extjs_translation_handler', $definition);
         $builder->setDefinition('modera_translations.handling.php_classes_translation_handler', $definition);
 

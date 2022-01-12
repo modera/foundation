@@ -9,7 +9,7 @@ use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBund
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class MainConfigTest extends \PHPUnit_Framework_TestCase
+class MainConfigTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var MainConfig
@@ -21,7 +21,7 @@ class MainConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->mgr = \Phake::mock('Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface');
         $this->mc = new MainConfig($this->mgr);

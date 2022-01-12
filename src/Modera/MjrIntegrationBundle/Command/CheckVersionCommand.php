@@ -2,18 +2,31 @@
 
 namespace Modera\MjrIntegrationBundle\Command;
 
-use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class CheckVersionCommand extends ContainerAwareCommand
+class CheckVersionCommand extends Command
 {
+    private ParameterBagInterface $params;
+
+    public function __construct(ParameterBagInterface $params)
+    {
+        $this->params = $params;
+
+        parent::__construct();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -31,7 +44,7 @@ class CheckVersionCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->getContainer()->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
+        $config = $this->params->get(ModeraMjrIntegrationExtension::CONFIG_KEY);
 
         $mjrPath = implode(DIRECTORY_SEPARATOR, array(
             getcwd(), 'web', substr($config['runtime_path'], 1),
@@ -71,5 +84,7 @@ class CheckVersionCommand extends ContainerAwareCommand
         } else {
             $output->writeln('<info>You have latest version of MJR, no need to update it.<info>');
         }
+
+        return 0;
     }
 }

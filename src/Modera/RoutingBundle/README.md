@@ -1,28 +1,44 @@
 # ModeraRoutingBundle
 
-[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/modera/ModeraRoutingBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/modera/ModeraRoutingBundle/?branch=master)
-[![StyleCI](https://styleci.io/repos/20248909/shield)](https://styleci.io/repos/20248909)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/f6b8c8d6-b528-4134-a8c7-e1d43c753fc2/mini.png)](https://insight.sensiolabs.com/projects/f6b8c8d6-b528-4134-a8c7-e1d43c753fc2)
-
 This bundle makes it possible for bundles to dynamically include routing files so you don't need to manually register
 them in root `app/config/routing.yml` file.
 
 ## Installation
 
-Add this dependency to your composer.json:
+### Step 1: Download the Bundle
 
-    "modera/routing-bundle": "~1.0"
+``` bash
+composer require modera/routing-bundle:4.x-dev
+```
 
-Update your AppKernel class and add these bundles there:
+This command requires you to have Composer installed globally, as explained
+in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
 
-    new Sli\ExpanderBundle\SliExpanderBundle(),
-    new Modera\RoutingBundle\ModeraRoutingBundle(),
+### Step 2: Enable the Bundle
 
-At finally update your root routing.yml (`app/config/routing.yml`) file by adding this line there:
+This bundle should be automatically enabled by [Flex](https://symfony.com/doc/current/setup/flex.html).
+In case you don't use Flex, you'll need to manually enable the bundle by
+adding the following line in the `config/bundles.php` file of your project:
 
-    _modera_routing:
-        resource: "@ModeraRoutingBundle/Resources/config/routing.yml"
+``` php
+<?php
+// config/bundles.php
+
+return [
+    // ...
+    Sli\ExpanderBundle\SliExpanderBundle::class => ['all' => true], // if you still don't have it
+    Modera\RoutingBundle\ModeraRoutingBundle::class => ['all' => true],
+];
+```
+
+### Step 3: Add routing
+
+``` yaml
+// config/routes.yaml
+
+_modera_routing:
+    resource: "@ModeraRoutingBundle/Resources/config/routing.yml"
+```
 
 ## Documentation
 
@@ -34,42 +50,56 @@ points. Shortly speaking, in order for a bundle to contribute routing resources 
 
 This is how your contributor class may look like:
 
-    namespace Modera\ExampleBundle\Contributions;
+``` php
+<?php
 
-    use Sli\ExpanderBundle\Ext\ContributorInterface;
+namespace Modera\ExampleBundle\Contributions;
 
-    class RoutingResourcesProvider implements ContributorInterface
+use Sli\ExpanderBundle\Ext\ContributorInterface;
+
+class RoutingResourcesProvider implements ContributorInterface
+{
+    public function getItems()
     {
-        public function getItems()
-        {
-            return array(
-                '@ModeraExampleBundle/Resources/config/routing.yml'
-            );
-        }
+        return array(
+            '@ModeraExampleBundle/Resources/config/routing.yml'
+        );
     }
+}
+```
 
 And here we have its service container definition:
 
+``` xml
+<services>
     <service id="modera_example.contributions.routing_resources_provider"
              class="Modera\ExampleBundle\Contributions\RoutingResourcesProvider">
 
         <tag name="modera_routing.routing_resources_provider" />
     </service>
+</services>
+```
 
 Since version v1.1 a simplified way of contributing new routing resources has been added (which
 doesn't require adding intermediate files). Instead of having getItems() method return a path
 to a routing file you can now return normalized file's content:
 
+``` php
+<?php
 
+class RoutingResourcesProvider implements ContributorInterface
+{
     public function getItems()
     {
         return array(
             array(
-                'resource' => '@AcmeFooBundle/Controller/DefaultController.php',
+                'resource' => '@ModeraExampleBundle/Controller/DefaultController.php',
                 'type' => 'annotation',
             ),
         );
     }
+}
+```
 
 ## Licensing
 

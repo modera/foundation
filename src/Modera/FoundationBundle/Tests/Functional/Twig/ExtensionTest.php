@@ -13,7 +13,7 @@ class ExtensionTest extends FunctionalTestCase
 {
     public function testHasExtension()
     {
-        /* @var \Twig_Environment $twig */
+        /* @var \Twig\Environment $twig */
         $twig = self::$container->get('twig');
 
         $this->assertTrue($twig->hasExtension(Extension::clazz()));
@@ -21,9 +21,9 @@ class ExtensionTest extends FunctionalTestCase
 
     public function testHasFilters()
     {
-        /* @var \Twig_Environment $twig */
+        /* @var \Twig\Environment $twig */
         $twig = self::$container->get('twig');
 
-        $this->assertInstanceOf('Twig_SimpleFilter', $twig->getFilter('mf_prepend_every_line'));
+        $this->assertInstanceOf('Twig\TwigFilter', $twig->getFilter('mf_prepend_every_line'));
     }
 }

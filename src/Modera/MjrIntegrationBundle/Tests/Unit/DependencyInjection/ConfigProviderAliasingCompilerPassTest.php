@@ -9,7 +9,7 @@ use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtensio
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class ConfigProviderAliasingCompilerPassTest extends \PHPUnit_Framework_TestCase
+class ConfigProviderAliasingCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     public function testProcess()
     {

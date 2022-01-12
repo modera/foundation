@@ -30,14 +30,14 @@ class DummyEntity
 /**
  * @author Sergei Lissovski <sergei.lissovski@modera.org>
  */
-class EntityRepositoryHandlerTest extends \PHPUnit_Framework_TestCase
+class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
 {
     private $ce;
     private $em;
     /* @var EntityRepositoryHandler $handler */
     private $handler;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->em = $this->createMock('Doctrine\ORM\EntityManager', array(), array(), '', false);
         $this->ce = $this->createMock(ConfigurationEntry::clazz(), array(), array(), '', false);

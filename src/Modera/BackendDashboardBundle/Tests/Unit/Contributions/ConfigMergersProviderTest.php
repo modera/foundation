@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
+class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ConfigMergersProvider
@@ -30,7 +30,7 @@ class ConfigMergersProviderTest extends \PHPUnit_Framework_TestCase
 
     private $dashboardMgr;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->container = \Phake::mock(ContainerInterface::class);
         $this->contributor = \Phake::mock(ContributorInterface::class);

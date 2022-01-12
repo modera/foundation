@@ -3,7 +3,9 @@
 namespace Modera\LanguagesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Intl\Intl;
+use Symfony\Component\Intl\Locales;
+use Symfony\Component\Intl\Countries;
+use Symfony\Component\Intl\Exception\MissingResourceException;
 
 /**
  * @ORM\Entity
@@ -57,16 +59,25 @@ class Language
      */
     public static function getLocaleName($locale, $displayLocale = null)
     {
-        $str = Intl::getLocaleBundle()->getLocaleName($locale, $displayLocale ?: $locale);
+        $str = null;
+        try {
+            $str = Locales::getName($locale, $displayLocale ?: $locale);
+        } catch (MissingResourceException $e) {}
 
         if (!$str) {
             $parts = explode('_', $locale);
             if (count($parts) > 1) {
                 $code = array_pop($parts);
-                $country = Intl::getRegionBundle()->getCountryName($code, $displayLocale ?: $parts[0]) ?: $code;
+                $country = $code;
+                try {
+                    $country = Countries::getName($code, $displayLocale ?: $parts[0]);
+                } catch (MissingResourceException $e) {}
                 while (count($parts) && !$str) {
                     $value = implode('_', $parts);
-                    $str = Intl::getLocaleBundle()->getLocaleName($value, $displayLocale ?: $value);
+                    $str = null;
+                    try {
+                        $str = Locales::getName($value, $displayLocale ?: $value);
+                    } catch (MissingResourceException $e) {}
                     array_pop($parts);
                 }
 

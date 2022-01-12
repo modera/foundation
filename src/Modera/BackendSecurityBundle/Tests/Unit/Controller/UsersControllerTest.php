@@ -2,13 +2,13 @@
 
 namespace Modera\BackendSecurityBundle\Tests\Unit\Controller;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Persistence\ObjectRepository;
 use Modera\BackendSecurityBundle\Controller\UsersController;
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\Entity\User;
 use Modera\SecurityBundle\PasswordStrength\PasswordGenerator;
 use Modera\SecurityBundle\PasswordStrength\PasswordManager;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class UsersControllerTest extends \PHPUnit_Framework_TestCase
+class UsersControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var UsersController
@@ -30,7 +30,7 @@ class UsersControllerTest extends \PHPUnit_Framework_TestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->controller = new UsersController();
     }

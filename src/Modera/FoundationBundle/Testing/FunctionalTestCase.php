@@ -51,7 +51,7 @@ class FunctionalTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    final public static function setUpBeforeClass()
+    final public static function setUpBeforeClass(): void
     {
         static::$kernel = static::createKernel();
         static::$kernel->boot();
@@ -78,7 +78,7 @@ class FunctionalTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    final public static function tearDownAfterClass()
+    final public static function tearDownAfterClass(): void
     {
         if (static::getIsolationLevel() == self::IM_CLASS && self::emExists()) {
             static::rollbackTransaction();
@@ -107,7 +107,7 @@ class FunctionalTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    final public function setUp()
+    final public function setUp(): void
     {
         if ($this->getIsolationLevel() == self::IM_METHOD && $this->emExists()) {
             self::$em->getConnection()->beginTransaction();
@@ -126,7 +126,7 @@ class FunctionalTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    final public function tearDown()
+    final public function tearDown(): void
     {
         if ($this->getIsolationLevel() == self::IM_METHOD && $this->emExists()) {
             self::rollbackTransaction();

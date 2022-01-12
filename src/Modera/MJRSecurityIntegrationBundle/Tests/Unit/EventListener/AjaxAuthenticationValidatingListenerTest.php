@@ -2,32 +2,34 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Tests\Unit\EventListener;
 
-use Modera\MJRSecurityIntegrationBundle\EventListener\AjaxAuthenticationValidatingListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Modera\MJRSecurityIntegrationBundle\EventListener\AjaxAuthenticationValidatingListener;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
-class AjaxAuthenticationValidatingListenerTest extends \PHPUnit_Framework_TestCase
+class AjaxAuthenticationValidatingListenerTest extends \PHPUnit\Framework\TestCase
 {
-    private function createMockEvent($isAjax, $pathInfo = '', $e = null)
+    private function createEvent($isAjax, $pathInfo = '', $e = null)
     {
         $request = \Phake::mock('Symfony\Component\HttpFoundation\Request');
         \Phake::when($request)->isXmlHttpRequest()->thenReturn($isAjax);
         \Phake::when($request)->getPathInfo()->thenReturn($pathInfo);
 
-        $event = \Phake::mock('Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent');
-        \Phake::when($event)->getRequest()->thenReturn($request);
-        \Phake::when($event)->getException()->thenReturn($e);
+        $kernel = \Phake::mock(HttpKernelInterface::class);
+
+        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $e ?: new \RuntimeException());
 
         return $event;
     }
 
     public function testOnKernelExceptionWithNotAjaxRequest()
     {
-        $event = $this->createMockEvent(false);
+        $event = $this->createEvent(false);
 
         $lnr = new AjaxAuthenticationValidatingListener('/mega-backend');
 
@@ -36,7 +38,7 @@ class AjaxAuthenticationValidatingListenerTest extends \PHPUnit_Framework_TestCa
 
     public function testOnKernelExceptionWithNoBackend()
     {
-        $event = $this->createMockEvent(true, '/another-backend');
+        $event = $this->createEvent(true, '/another-backend');
 
         $lnr = new AjaxAuthenticationValidatingListener('/mega-backend');
 
@@ -45,32 +47,23 @@ class AjaxAuthenticationValidatingListenerTest extends \PHPUnit_Framework_TestCa
 
     public function testOnKernelExceptionWithInvalidException()
     {
-        $event = $this->createMockEvent(true, '/mega-backend', new \RuntimeException());
+        $event = $this->createEvent(true, '/mega-backend');
 
         $lnr = new AjaxAuthenticationValidatingListener('/mega-backend');
-
         $lnr->onKernelException($event);
 
-        \Phake::verify($event, \Phake::times(2))->getRequest();
-        \Phake::verify($event)->getException();
-        \Phake::verifyNoOtherInteractions($event);
+        $this->assertNull($event->getResponse());
     }
 
     public function testOnKernelException()
     {
-        $event = $this->createMockEvent(true, '/mega-backend', new AccessDeniedException());
+        $event = $this->createEvent(true, '/mega-backend', new AccessDeniedException());
 
         $lnr = new AjaxAuthenticationValidatingListener('/mega-backend');
-
         $lnr->onKernelException($event);
 
-        \Phake::verify($event, \Phake::times(2))->getRequest();
-        \Phake::verify($event)->getException();
-        \Phake::verify($event)->setResponse(\Phake::capture($response));
-
-        \Phake::verifyNoOtherInteractions($event);
-
         /* @var JsonResponse $response */
+        $response = $event->getResponse();
 
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\JsonResponse', $response);
         $content = json_decode($response->getContent(), true);

@@ -3,7 +3,7 @@
 namespace Modera\MJRCacheAwareClassLoaderBundle\EventListener;
 
 use Modera\MJRCacheAwareClassLoaderBundle\VersionResolving\VersionResolverInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * @internal
@@ -39,9 +39,9 @@ class VersionInjectorEventListener
     }
 
     /**
-     * @param FilterResponseEvent $event
+     * @param ResponseEvent $event
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         foreach ($this->semanticConfig['listener_response_paths'] as $path) {
             if (preg_match("@$path@", $event->getRequest()->getPathInfo())) {

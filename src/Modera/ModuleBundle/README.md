@@ -1,29 +1,45 @@
 # ModeraModuleBundle
 
-[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/modera/ModeraModuleBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/modera/ModeraModuleBundle/?branch=master)
-[![StyleCI](https://styleci.io/repos/29133054/shield)](https://styleci.io/repos/29133054)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/56e241ed-05dc-4d33-a079-3d0a9ee6b98f/mini.png)](https://insight.sensiolabs.com/projects/56e241ed-05dc-4d33-a079-3d0a9ee6b98f)
-
 Makes it possible to dynamically install and inject new bundles to your AppKernel class when a new bundle
 is installed by composer. To make your bundle susceptible to automatic kernel installation please add similar lines
 to your `composer.json` file:
 
+``` json
+{
     "extra": {
         "modera-module": {
             "register-bundle": "MyCompany\\HelloWorldBundle\\MyCompanyHelloWorldBundle"
         }
     }
+}
+```
 
 ## Installation
 
-Add this dependency to your composer.json:
+### Step 1: Download the Bundle
 
-    "modera/module-bundle": "~1.0"
+``` bash
+composer require modera/module-bundle:4.x-dev
+```
 
-Update your AppKernel class and add this:
+This command requires you to have Composer installed globally, as explained
+in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
 
-    new Modera\ModuleBundle\ModeraModuleBundle(),
+### Step 2: Enable the Bundle
+
+This bundle should be automatically enabled by [Flex](https://symfony.com/doc/current/setup/flex.html).
+In case you don't use Flex, you'll need to manually enable the bundle by
+adding the following line in the `config/bundles.php` file of your project:
+
+``` php
+<?php
+// config/bundles.php
+
+return [
+    // ...
+    Modera\ModuleBundle\ModeraModuleBundle::class => ['all' => true],
+];
+```
 
 ## Licensing
 

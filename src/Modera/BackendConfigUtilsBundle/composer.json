@@ -11,21 +11,20 @@
         }
     ],
     "require": {
-        "php": ">=5.6",
-        "modera/server-crud-bundle": "~3.1|~4.0",
-        "modera/dynamically-configurable-mjr-bundle": "~3.1|~4.0"
+        "php": ">=7.4",
+        "modera/server-crud-bundle": "^4.0",
+        "modera/dynamically-configurable-mjr-bundle": "^4.0"
     },
     "require-dev": {
-        "phake/phake": "^2.0",
-        "phpunit/phpunit": "^5.5"
+        "phake/phake": "^4.0",
+        "phpunit/phpunit": "^6.5"
     },
     "autoload": {
-        "psr-0": { "Modera\\BackendConfigUtilsBundle": "" }
+        "psr-4": { "Modera\\BackendConfigUtilsBundle\\": "" }
     },
-    "target-dir": "Modera/BackendConfigUtilsBundle",
     "extra": {
         "branch-alias": {
-            "dev-master": "3.x-dev"
+            "dev-master": "4.x-dev"
         }
     }
 }

@@ -2,20 +2,23 @@
 
 namespace Modera\FoundationBundle\Twig;
 
+use Twig\TwigFilter;
+use Twig\Extension\AbstractExtension;
+
 /**
  * Base twig extensions used throughout the foundation.
  *
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
-final class Extension extends \Twig_Extension
+final class Extension extends AbstractExtension
 {
-    /**
-     * @internal
-     *
-     * @var string
-     */
-    public $kernelPath;
+    private string $publicDir;
+
+    public function __construct(string $publicDir)
+    {
+        $this->publicDir = $publicDir;
+    }
 
     /**
      * @return string
@@ -31,8 +34,8 @@ final class Extension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter('mf_prepend_every_line', array($this, 'filter_prepend_every_line')),
-            new \Twig_SimpleFilter('mf_modification_time', array($this, 'filter_modification_time')), // internal!
+            new TwigFilter('mf_prepend_every_line', array($this, 'filter_prepend_every_line')),
+            new TwigFilter('mf_modification_time', array($this, 'filter_modification_time')), // internal!
         );
     }
 
@@ -48,17 +51,9 @@ final class Extension extends \Twig_Extension
      */
     public function filter_modification_time($webPath)
     {
-        if (!$this->kernelPath) {
-            $reflClass = new \ReflectionClass(\AppKernel::class);
+        $assumedLocalPath = $this->publicDir . '/' . $webPath;
 
-            $this->kernelPath = dirname($reflClass->getFileName());
-        }
-
-        // because it is kind of convention already
-        $webDir = $this->kernelPath.'/../web/';
-
-        $assumedLocalPath = $webDir.$webPath;
-        if (@file_exists($webDir.$webPath)) {
+        if (@file_exists($assumedLocalPath)) {
             $mtime = filemtime($assumedLocalPath);
 
             // If server uses "expiration caching model" and we were unable to retrieve file's modification time

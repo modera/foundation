@@ -13,9 +13,7 @@ framework:
     secret:          Hell yeah!
     csrf_protection: true
     session:         ~
-    router:          { resource: "%kernel.root_dir%/config/routing.yml" }
-    templating:
-        engines: ['twig']
+    router:          { resource: "%kernel.project_dir%/app/config/routing.yml" }
 
 # Doctrine Configuration
 doctrine:
@@ -36,6 +34,6 @@ doctrine:
             MyProjectCoreBundle:
               mapping: true
               type: annotation
-              dir: '%kernel.root_dir%/../../Entities'
+              dir: '%kernel.project_dir%/../Entities'
               is_bundle: false
               prefix: "Modera\\ConfigBundle\\Tests\\Fixtures\\Entities"

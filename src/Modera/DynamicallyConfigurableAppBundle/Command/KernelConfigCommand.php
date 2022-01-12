@@ -2,11 +2,12 @@
 
 namespace Modera\DynamicallyConfigurableAppBundle\Command;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Modera\DynamicallyConfigurableAppBundle\KernelConfig;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 
@@ -14,8 +15,20 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2019 Modera Foundation
  */
-class KernelConfigCommand extends ContainerAwareCommand
+class KernelConfigCommand extends Command
 {
+    private EntityManagerInterface $em;
+
+    private ParameterBagInterface $params;
+
+    public function __construct(EntityManagerInterface $em, ParameterBagInterface $params)
+    {
+        $this->em = $em;
+        $this->params = $params;
+
+        parent::__construct();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -56,6 +69,8 @@ class KernelConfigCommand extends ContainerAwareCommand
                 return '_comment' !== $key;
             }, ARRAY_FILTER_USE_KEY), JSON_PRETTY_PRINT));
         }
+
+        return 0;
     }
 
     /**
@@ -78,7 +93,7 @@ class KernelConfigCommand extends ContainerAwareCommand
 
         foreach ($mode as $key => $value) {
             if (array_key_exists($key, $types)) {
-                $this->em()->createQuery(sprintf(
+                $this->em->createQuery(sprintf(
                     'UPDATE %s e SET e.%sValue = :value WHERE e.name = :name AND e.category = :category',
                     ConfigurationEntry::clazz(),
                     $types[$key]
@@ -99,16 +114,8 @@ class KernelConfigCommand extends ContainerAwareCommand
      */
     private function getKernelConfigFQCN()
     {
-        $kernelConfig = $this->getContainer()->getParameter('modera_dynamically_configurable_app.kernel_config_fqcn');
+        $kernelConfig = $this->params->get('modera_dynamically_configurable_app.kernel_config_fqcn');
 
         return $kernelConfig ?: KernelConfig::class;
-    }
-
-    /**
-     * @return EntityManager
-     */
-    protected function em()
-    {
-        return $this->getContainer()->get('doctrine')->getManager();
     }
 }

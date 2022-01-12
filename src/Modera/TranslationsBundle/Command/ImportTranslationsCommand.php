@@ -4,14 +4,15 @@ namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Translation\Reader\TranslationReader;
-use Symfony\Component\Translation\Catalogue\MergeOperation;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Translation\Catalogue\TargetOperation;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Translation\Catalogue\MergeOperation;
+use Symfony\Component\Translation\Reader\TranslationReader;
 use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
 use Modera\TranslationsBundle\Service\TranslationHandlersChain;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
@@ -24,8 +25,23 @@ use Modera\LanguagesBundle\Entity\Language;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class ImportTranslationsCommand extends ContainerAwareCommand
+class ImportTranslationsCommand extends Command
 {
+    /**
+     * @var ContainerInterface
+     */
+    private ContainerInterface $container;
+
+    /**
+     * @required
+     *
+     * @param ContainerInterface $container
+     */
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -81,7 +97,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
                 $extractedCatalogue = $this->getExtractedCatalogue($input, $output, $locale);
             } catch (\RuntimeException $e) {
                 $output->writeln($e->getMessage());
-                return;
+                return 1;
             }
 
             $databaseCatalogue = new MessageCatalogue($locale);
@@ -332,6 +348,8 @@ class ImportTranslationsCommand extends ContainerAwareCommand
         } else {
             $output->writeln('>>> Nothing to import');
         }
+
+        return 0;
     }
 
     /**
@@ -341,8 +359,8 @@ class ImportTranslationsCommand extends ContainerAwareCommand
     {
         $strategy = TranslationHandlerInterface::STRATEGY_SOURCE_TREE;
 
-        if ($this->getContainer()->hasParameter('modera.translations_import_strategy')) {
-            $strategy = $this->getContainer()->getParameter('modera.translations_import_strategy');
+        if ($this->container->hasParameter('modera.translations_import_strategy')) {
+            $strategy = $this->container->getParameter('modera.translations_import_strategy');
         }
 
         return $strategy;
@@ -490,12 +508,12 @@ class ImportTranslationsCommand extends ContainerAwareCommand
     {
         $defaultLocale = null;
 
-        if ($this->getContainer()->hasParameter('kernel.default_locale')) {
-            $defaultLocale = $this->getContainer()->getParameter('kernel.default_locale');
+        if ($this->container->hasParameter('kernel.default_locale')) {
+            $defaultLocale = $this->container->getParameter('kernel.default_locale');
         }
 
-        if ($this->getContainer()->hasParameter('modera.translations_default_locale')) {
-            $defaultLocale = $this->getContainer()->getParameter('modera.translations_default_locale');
+        if ($this->container->hasParameter('modera.translations_default_locale')) {
+            $defaultLocale = $this->container->getParameter('modera.translations_default_locale');
         }
 
         return $defaultLocale;
@@ -506,13 +524,13 @@ class ImportTranslationsCommand extends ContainerAwareCommand
      */
     private function getTranslationsDir()
     {
-        $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
-        $translationsDir = join(DIRECTORY_SEPARATOR, [ $rootDir, 'Resources', 'translations' ]);
+        $projectDir = $this->container->getParameter('kernel.project_dir');
+        $translationsDir = join(DIRECTORY_SEPARATOR, [ $projectDir, 'app', 'Resources', 'translations' ]);
 
-        if ($this->getContainer()->hasParameter('modera.translations_dir')) {
-            $translationsDir = $this->getContainer()->getParameter('modera.translations_dir');
-        } else if ($this->getContainer()->hasParameter('translator.default_path')) {
-            $translationsDir = $this->getContainer()->getParameter('translator.default_path');
+        if ($this->container->hasParameter('modera.translations_dir')) {
+            $translationsDir = $this->container->getParameter('modera.translations_dir');
+        } else if ($this->container->hasParameter('translator.default_path')) {
+            $translationsDir = $this->container->getParameter('translator.default_path');
         }
 
         return $translationsDir;
@@ -523,7 +541,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
      */
     private function getTranslationReader()
     {
-        return $this->getContainer()->get('modera_translations.translation.reader');
+        return $this->container->get('modera_translations.translation.reader');
     }
 
     /**
@@ -531,7 +549,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
      */
     private function getTranslationHandlersChain()
     {
-        return $this->getContainer()->get('modera_translations.service.translation_handlers_chain');
+        return $this->container->get('modera_translations.service.translation_handlers_chain');
     }
 
     /**
@@ -539,7 +557,7 @@ class ImportTranslationsCommand extends ContainerAwareCommand
      */
     private function em()
     {
-        return $this->getContainer()->get('doctrine.orm.entity_manager');
+        return $this->container->get('doctrine.orm.entity_manager');
     }
 
     /**
@@ -558,7 +576,10 @@ class ImportTranslationsCommand extends ContainerAwareCommand
      */
     private function createAndReturnDefaultLanguage()
     {
-        $defaultLocale = $this->getContainer()->getParameter('locale');
+        $defaultLocale = 'en';
+        if ($this->container->hasParameter('kernel.default_locale')) {
+            $defaultLocale = $this->container->getParameter('kernel.default_locale');
+        }
 
         $language = new Language();
         $language->setLocale($defaultLocale);

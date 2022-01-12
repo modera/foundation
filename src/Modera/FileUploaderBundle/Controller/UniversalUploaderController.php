@@ -5,7 +5,7 @@ namespace Modera\FileUploaderBundle\Controller;
 use Modera\FileRepositoryBundle\Exceptions\FileValidationException;
 use Modera\FileUploaderBundle\Uploading\WebUploader;
 use Modera\FoundationBundle\Translation\T;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;

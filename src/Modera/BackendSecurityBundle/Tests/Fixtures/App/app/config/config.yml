@@ -12,13 +12,13 @@ framework:
     session:        ~
     validation: {enable_annotations: true}
     router:
-        resource: "%kernel.root_dir%/config/routing.yml"
+        resource: "%kernel.project_dir%/app/config/routing.yml"
         strict_requirements: ~
     translator:      { fallback: '%locale%' }
     csrf_protection: ~
-    templating:
-        engines: ['twig']
     fragments:  ~
+    mailer:
+        dsn: 'null://null'
 
 # Doctrine Configuration
 doctrine:

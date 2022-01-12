@@ -1,21 +1,33 @@
 # ModeraMjrIntegrationBundle
 
-[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
-[![StyleCI](https://styleci.io/repos/29132560/shield)](https://styleci.io/repos/29132560)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/modera/ModeraMjrIntegrationBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/modera/ModeraMjrIntegrationBundle/?branch=master)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/607adf13-33be-4868-a614-6ca51f44ac0c/mini.png)](https://insight.sensiolabs.com/projects/607adf13-33be-4868-a614-6ca51f44ac0c)
-
 Provides low level integration for MJR.
 
 ## Installation
 
-Add this dependency to your composer.json:
+### Step 1: Download the Bundle
 
-    "modera/mjr-integration-bundle": "dev-master"
+``` bash
+composer require modera/mjr-integration-bundle:4.x-dev
+```
 
-Update your AppKernel class and add this:
+This command requires you to have Composer installed globally, as explained
+in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
 
-    new Modera\MjrIntegrationBundle\ModeraMjrIntegrationBundle(),
+### Step 2: Enable the Bundle
+
+This bundle should be automatically enabled by [Flex](https://symfony.com/doc/current/setup/flex.html).
+In case you don't use Flex, you'll need to manually enable the bundle by
+adding the following line in the `config/bundles.php` file of your project:
+
+``` php
+<?php
+// config/bundles.php
+
+return [
+    // ...
+    Modera\MjrIntegrationBundle\ModeraMjrIntegrationBundle::class => ['all' => true],
+];
+```
 
 ## Licensing
 

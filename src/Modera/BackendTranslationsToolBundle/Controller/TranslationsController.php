@@ -178,7 +178,7 @@ class TranslationsController extends AbstractCrudController
         $app->setAutoExit(false);
 
         $input = new ArrayInput(array(
-            'command' => $this->getParameter(ModeraBackendTranslationsToolExtension::CONFIG_KEY . '.import_cmd'),
+            'command' => $this->container->getParameter(ModeraBackendTranslationsToolExtension::CONFIG_KEY . '.import_cmd'),
         ));
         $input->setInteractive(false);
 

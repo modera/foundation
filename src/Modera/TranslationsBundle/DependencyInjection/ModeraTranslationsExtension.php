@@ -34,9 +34,9 @@ class ModeraTranslationsExtension extends Extension implements PrependExtensionI
             } catch (\Exception $e) {}
         }
 
-        $rootDir = $container->getParameter('kernel.root_dir');
+        $projectDir = $container->getParameter('kernel.project_dir');
 
-        $translationsDir = join(DIRECTORY_SEPARATOR, [ $rootDir, 'Resources', 'translations' ]);
+        $translationsDir = join(DIRECTORY_SEPARATOR, [ $projectDir, 'app', 'Resources', 'translations' ]);
         if ($container->hasParameter('modera.translations_dir')) {
             $translationsDir = $container->getParameter('modera.translations_dir');
         } else if ($container->hasParameter('translator.default_path')) {

@@ -1,4 +1,8 @@
 parameters:
+    db_host: '%env(SYMFONY__DB_HOST)%'
+    db_port: '%env(SYMFONY__DB_PORT)%'
+    db_user: '%env(SYMFONY__DB_USER)%'
+    db_password: '%env(SYMFONY__DB_PASSWORD)%'
     locale: en
 
 # Needed in order to have "security.token_storage" available
@@ -17,6 +21,20 @@ framework:
     secret:          Hell yeah!
     csrf_protection: true
     session:         ~
-    router:          { resource: "%kernel.root_dir%/config/routing.yml" }
-    templating:
-        engines: ['twig']
+    router:          { resource: "%kernel.project_dir%/app/config/routing.yml" }
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        # http://symfony.com/doc/current/configuration/external_parameters.html
+        driver:   pdo_mysql
+        host:     '%db_host%'
+        port:     '%db_port%'
+        user:     '%db_user%'
+        password: '%db_password%'
+        dbname:   modera_file_uploader_bundle
+        charset:  UTF8
+
+    orm:
+        auto_generate_proxy_classes: true
+        auto_mapping: true

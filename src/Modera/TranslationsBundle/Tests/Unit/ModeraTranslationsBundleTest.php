@@ -8,7 +8,7 @@ use Modera\TranslationsBundle\ModeraTranslationsBundle;
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class ModeraTranslationsBundleTest extends \PHPUnit_Framework_TestCase
+class ModeraTranslationsBundleTest extends \PHPUnit\Framework\TestCase
 {
     public function testTranslationHandlersCompilerPass()
     {

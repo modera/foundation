@@ -40,7 +40,4 @@ run_tests_with_php() {
     sudo cp $SCRIPT_DIR/composer.lock $SCRIPT_DIR/composer.php$1
 }
 
-run_tests_with_php 7.1
-run_tests_with_php 7.2
-run_tests_with_php 7.3
 run_tests_with_php 7.4

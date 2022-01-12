@@ -102,9 +102,9 @@ class ConfigMergersProvider implements ContributorInterface
                 if ($token = $self->tokenStorage->getToken()) {
                     $roles = array();
 
-                    foreach ($token->getRoles() as $role) {
-                        $roles[] = $role->getRole();
-                        $roles = array_merge($roles, $this->findHierarchicalRoles($role->getRole(), $self->roleHierarchy));
+                    foreach ($token->getRoleNames() as $role) {
+                        $roles[] = $role;
+                        $roles = array_merge($roles, $this->findHierarchicalRoles($role, $self->roleHierarchy));
                     }
 
                     return array_merge($currentConfig, array(

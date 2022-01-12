@@ -39,7 +39,7 @@ class StandardVersionResolver implements VersionResolverInterface
     public function resolve()
     {
         $configuredVersion = isset($this->semanticConfig['version']) ? $this->semanticConfig['version'] : '';
-        $fileVersion = @file_get_contents($this->kernel->getRootDir().'/../modera-version.txt');
+        $fileVersion = @file_get_contents($this->kernel->getProjectDir().'/modera-version.txt');
 
         if ('' != $configuredVersion) {
             return $configuredVersion;

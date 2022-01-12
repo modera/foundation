@@ -8,13 +8,13 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
 /**
  * @author Sergei Lissovski <sergei.lissovski@modera.org>
  */
-class AsIsHandlerTest extends \PHPUnit_Framework_TestCase
+class AsIsHandlerTest extends \PHPUnit\Framework\TestCase
 {
     private $entry;
     /* @var AsIsHandler */
     private $handler;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->entry = $this->createMock(
             ConfigurationEntry::clazz(), array(), array(), '', null, false

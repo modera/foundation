@@ -3,7 +3,7 @@
 namespace Modera\FoundationBundle\Translation;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Translation\Translator;
 
 /**
@@ -23,7 +23,7 @@ class T
     private static $container;
 
     /**
-     * @see \Symfony\Component\Translation\TranslatorInterface::trans
+     * @see \Symfony\Contracts\Translation\TranslatorInterface::trans
      *
      * @param string $id
      * @param array  $parameters
@@ -45,7 +45,7 @@ class T
     }
 
     /**
-     * @see \Symfony\Component\Translation\TranslatorInterface::transChoice
+     * @see \Symfony\Contracts\Translation\TranslatorInterface::transChoice
      *
      * @param string $id
      * @param number $number

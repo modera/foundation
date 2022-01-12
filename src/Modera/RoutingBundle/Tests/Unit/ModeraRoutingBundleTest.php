@@ -8,7 +8,7 @@ use Modera\RoutingBundle\ModeraRoutingBundle;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
-class ModeraRoutingBundleTest extends \PHPUnit_Framework_TestCase
+class ModeraRoutingBundleTest extends \PHPUnit\Framework\TestCase
 {
     public function testBuild()
     {

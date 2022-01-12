@@ -27,23 +27,13 @@ class ModeraMjrIntegrationExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        // making sure that 'route_prefix' still works
-        if ('' != $config['route_prefix']) {
-            $msg = implode(' ', [
-                'modera_mjr_integration/route_prefix is deprecated since version 1.4.1',
-                'and will be removed in 2.0. Use modera_mjr_integration/routes_prefix instead.',
-            ]);
-            @trigger_error($msg, E_USER_DEPRECATED);
-
-            $config['routes_prefix'] = $config['route_prefix'];
-        }
-
         $container->setParameter(self::CONFIG_KEY, $config);
         $container->setParameter(self::CONFIG_APP_NAME, $config['app_name']);
         $container->setParameter(self::CONFIG_RUNTIME_PATH, $config['runtime_path']);
         $container->setParameter(self::CONFIG_ROUTES_PREFIX, $config['routes_prefix']);
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('controller.xml');
         $loader->load('services.xml');
 
         if (class_exists('Modera\BackendTranslationsToolBundle\Handling\ExtjsTranslationHandler')) {

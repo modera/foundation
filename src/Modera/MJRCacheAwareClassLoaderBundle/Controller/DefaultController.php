@@ -3,7 +3,7 @@
 namespace Modera\MJRCacheAwareClassLoaderBundle\Controller;
 
 use Modera\MJRCacheAwareClassLoaderBundle\VersionResolving\VersionResolverInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,7 +21,7 @@ class DefaultController extends Controller
         /* @var VersionResolverInterface $versionProvider */
         $versionProvider = $this->get('modera_mjr_cache_aware_class_loader.version_resolver');
 
-        $content = $this->renderView('ModeraMJRCacheAwareClassLoaderBundle:Default:class-loader.html.twig', array(
+        $content = $this->renderView('@ModeraMJRCacheAwareClassLoader/Default/class-loader.html.twig', array(
             'version' => trim($versionProvider->resolve()),
         ));
 

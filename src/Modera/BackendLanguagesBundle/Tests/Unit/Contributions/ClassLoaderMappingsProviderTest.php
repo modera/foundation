@@ -7,7 +7,7 @@ use Modera\BackendLanguagesBundle\Contributions\ClassLoaderMappingsProvider;
 /**
  * @author Sergei Lissovski <sergei.lissovski@gmail.org>
  */
-class ClassLoaderMappingsProviderTest extends \PHPUnit_Framework_TestCase
+class ClassLoaderMappingsProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetItems()
     {

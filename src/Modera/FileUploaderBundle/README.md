@@ -1,32 +1,52 @@
 # ModeraFileUploaderBundle
 
-[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
-[![StyleCI](https://styleci.io/repos/29134461/shield)](https://styleci.io/repos/29134461)
-
 The bundle simplifies and introduces a consistent approach to uploading and storing uploaded files.
 
 ## Installation
 
-Add this dependency to your composer.json:
+### Step 1: Download the Bundle
 
-    "modera/file-uploader-bundle": "~1.0"
+``` bash
+composer require modera/file-uploader-bundle:4.x-dev
+```
 
-Update your AppKernel class and add these bundles there:
+This command requires you to have Composer installed globally, as explained
+in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
 
-    new Modera\FileRepositoryBundle\ModeraFileRepositoryBundle(), // if you still don't have it
-    new Modera\FileUploaderBundle\ModeraFileUploaderBundle()
+### Step 2: Enable the Bundle
 
-Update your routing.yml file and add these lines there:
+This bundle should be automatically enabled by [Flex](https://symfony.com/doc/current/setup/flex.html).
+In case you don't use Flex, you'll need to manually enable the bundle by
+adding the following line in the `config/bundles.php` file of your project:
 
-    modera_file_uploader:
-        resource: "@ModeraFileUploaderBundle/Controller/"
-        type:     annotation
-        prefix:   /
+``` php
+<?php
+// config/bundles.php
 
-Update your app/config/config.yml and enable the uploader:
+return [
+    // ...
+    Modera\FileRepositoryBundle\ModeraFileRepositoryBundle::class => ['all' => true], // if you still don't have it
+    Modera\FileUploaderBundle\ModeraFileUploaderBundle::class => ['all' => true],
+];
+```
 
-    modera_file_uploader:
-        is_enabled: true
+### Step 3: Add routing
+
+``` yaml
+// config/routes.yaml
+
+file_uploader:
+    resource: "@ModeraFileUploaderBundle/Resources/config/routing.yml"
+```
+
+### Step 4: Enable uploader
+
+``` yaml
+// config/packages/modera.yaml
+
+modera_file_uploader:
+    is_enabled: true
+```
 
 ## Documentation
 
@@ -37,12 +57,14 @@ Once you have a repository configured, from web you can send request with files 
 modera_file_uploader/url configuration property, default value is `uploader-gateway` ) and it will upload them and
 put to a configured repository. For example, javascript pseudo code:
 
-    filesForm.submit({
-        url: 'uploader-gateway',
-        params: {
-            _repository: 'my_files'
-        }
-    });
+``` js
+filesForm.submit({
+    url: 'uploader-gateway',
+    params: {
+        _repository: 'my_files'
+    }
+});
+```
 
 Request parameter `_repository` will be used to determine what repository to use to store uploaded files. By default
 all repositories are exposed to web and files can be uploaded to them, this feature is controller by `expose_all_repositories`

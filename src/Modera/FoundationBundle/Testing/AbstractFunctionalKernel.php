@@ -60,6 +60,13 @@ abstract class AbstractFunctionalKernel extends Kernel
         $loader->load(dirname($reflClass->getFileName()).'/config/config.yml');
     }
 
+    public function getProjectDir()
+    {
+        $r = new \ReflectionObject($this);
+
+        return \dirname($r->getFileName(), 2);
+    }
+
     /**
      * {@inheritdoc}
      */

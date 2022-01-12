@@ -6,13 +6,14 @@ use Modera\MJRCacheAwareClassLoaderBundle\EventListener\VersionInjectorEventList
 use Modera\MJRCacheAwareClassLoaderBundle\VersionResolving\VersionResolverInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-class VersionInjectorEventListenerTest extends \PHPUnit_Framework_TestCase
+class VersionInjectorEventListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var VersionResolverInterface
@@ -28,7 +29,7 @@ class VersionInjectorEventListenerTest extends \PHPUnit_Framework_TestCase
 
     private $mockEvent;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->versionResolver = \Phake::mock(VersionResolverInterface::class);
         \Phake::when($this->versionResolver)
@@ -40,23 +41,13 @@ class VersionInjectorEventListenerTest extends \PHPUnit_Framework_TestCase
 
         $this->mockRequest = \Phake::mock(Request::class);
 
-        $this->mockEvent = \Phake::mock(FilterResponseEvent::class);
-        \Phake::when($this->mockEvent)
-            ->getResponse()
-            ->thenReturn($this->response)
-        ;
-        \Phake::when($this->mockEvent)
-            ->getRequest()
-            ->thenReturn($this->mockRequest)
-        ;
+        $kernel = \Phake::mock(HttpKernelInterface::class);
+
+        $this->mockEvent = new ResponseEvent($kernel, $this->mockRequest, HttpKernelInterface::MASTER_REQUEST, $this->response);
     }
 
     public function testOnKernelResponse_happyPath()
     {
-        \Phake::when($this->mockEvent)
-            ->isMasterRequest()
-            ->thenReturn(true)
-        ;
         \Phake::when($this->mockRequest)
             ->getPathInfo()
             ->thenReturn('/backend/direct')
@@ -80,10 +71,6 @@ class VersionInjectorEventListenerTest extends \PHPUnit_Framework_TestCase
 
     public function testOnKernelResponse_pathDoesNotMatch()
     {
-        \Phake::when($this->mockEvent)
-            ->isMasterRequest()
-            ->thenReturn(true)
-        ;
         \Phake::when($this->mockRequest)
             ->getPathInfo()
             ->thenReturn('/products/sections')

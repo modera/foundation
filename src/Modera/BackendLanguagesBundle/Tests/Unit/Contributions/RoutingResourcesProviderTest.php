@@ -7,7 +7,7 @@ use Modera\BackendLanguagesBundle\Contributions\RoutingResourcesProvider;
 /**
  * @author Sergei Lissovski <sergei.lissovski@gmail.org>
  */
-class RoutingResourcesProviderTest extends \PHPUnit_Framework_TestCase
+class RoutingResourcesProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetItems()
     {

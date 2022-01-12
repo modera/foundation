@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- since 4.0.0 -->
+        <service id="modera_backend_security.password_strength.mail.default_mail_service"
+                 class="Modera\BackendSecurityBundle\PasswordStrength\Mail\DefaultMailService"
+                 autoconfigure="true"
+                 autowire="true"
+                 public="true">
+
+            <call method="setDefaultLocale">
+                <argument>%kernel.default_locale%</argument>
+            </call>
+
+            <call method="setMailSender">
+                <argument>%modera_backend_security.config.mail_sender%</argument>
+            </call>
+        </service>
+    </services>
+</container>

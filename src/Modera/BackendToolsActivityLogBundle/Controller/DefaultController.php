@@ -11,7 +11,7 @@ use Modera\BackendToolsActivityLogBundle\AutoSuggest\FilterAutoSuggestService;
 use Modera\BackendToolsActivityLogBundle\ModeraBackendToolsActivityLogBundle;
 use Modera\ServerCrudBundle\Hydration\DoctrineEntityHydrator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Modera\ServerCrudBundle\Hydration\HydrationService;
 
 /**

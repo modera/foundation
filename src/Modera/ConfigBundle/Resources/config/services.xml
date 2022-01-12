@@ -21,6 +21,9 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
 
+        <service id="Modera\ConfigBundle\Config\ConfigEntriesInstaller"
+                 alias="modera_config.config_entries_installer" />
+
         <service id="modera_config.entity_repository_handler"
                  class="Modera\ConfigBundle\Config\EntityRepositoryHandler"
                  public="true">
@@ -34,7 +37,7 @@
         />
 
         <service id="modera_config.boolean_handler"
-             class="Modera\ConfigBundle\Config\BooleanHandler"
+                 class="Modera\ConfigBundle\Config\BooleanHandler"
                  public="true"
         />
 

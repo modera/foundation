@@ -17,8 +17,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('modera_mjr_integration');
+        $treeBuilder = new TreeBuilder('modera_mjr_integration');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
@@ -128,10 +128,6 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('routes_prefix')
                     ->defaultValue('/backend')
                 ->end()
-                // Deprecated and will be removed as of 2.0. Please use "routes_prefix" instead
-                ->scalarNode('route_prefix')
-                    ->defaultValue('')
-                ->end()
                 // Specifies what class ExtJs application should extend, this might be useful
                 // if you need to tweak some bootstrapping logic. For more details how this
                 // configuration parameter can be used you can take a look at
@@ -143,7 +139,7 @@ class Configuration implements ConfigurationInterface
                 // since 2.56.0
                 ->scalarNode('moment_js_version')
                     ->cannotBeEmpty()
-                    ->defaultValue('2.24.0')
+                    ->defaultValue('2.29.1')
                 ->end()
             ->end()
         ;

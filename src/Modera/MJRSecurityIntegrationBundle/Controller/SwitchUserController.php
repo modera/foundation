@@ -25,7 +25,7 @@ class SwitchUserController extends Controller
     public function listAction(array $params)
     {
         $role = ModeraSecurityBundle::ROLE_ROOT_USER;
-        if ($switchUserConfig = $this->getParameter(ModeraSecurityExtension::CONFIG_KEY . '.switch_user')) {
+        if ($switchUserConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY . '.switch_user')) {
             $role = $switchUserConfig['role'];
         }
         $this->denyAccessUnlessGranted($role);

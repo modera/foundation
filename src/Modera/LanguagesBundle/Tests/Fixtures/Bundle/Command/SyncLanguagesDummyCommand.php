@@ -26,7 +26,7 @@ class SyncLanguagesDummyCommand extends SyncLanguagesCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->dummyInput = $input;
-        parent::execute($input, $output);
+        return parent::execute($input, $output);
     }
 
     /**

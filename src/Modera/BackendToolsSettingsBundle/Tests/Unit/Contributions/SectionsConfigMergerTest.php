@@ -40,7 +40,7 @@ class DummySection implements SectionInterface
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class SectionsConfigMergerTest extends \PHPUnit_Framework_TestCase
+class SectionsConfigMergerTest extends \PHPUnit\Framework\TestCase
 {
     public function testMerge()
     {

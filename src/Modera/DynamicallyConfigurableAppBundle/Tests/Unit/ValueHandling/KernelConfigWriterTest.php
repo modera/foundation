@@ -11,7 +11,7 @@ use Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBund
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2018 Modera Foundation
  */
-class KernelConfigWriterTest extends \PHPUnit_Framework_TestCase
+class KernelConfigWriterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider onUpdateDataProvider

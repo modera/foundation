@@ -8,7 +8,7 @@ use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
-class ModeraMJRSecurityIntegrationBundleTest extends \PHPUnit_Framework_TestCase
+class ModeraMJRSecurityIntegrationBundleTest extends \PHPUnit\Framework\TestCase
 {
     public function testBuild()
     {

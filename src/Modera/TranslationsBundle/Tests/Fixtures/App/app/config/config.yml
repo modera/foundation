@@ -9,13 +9,11 @@ framework:
     secret:          Hell yeah!
     csrf_protection: true
     session:         ~
-    router:          { resource: "%kernel.root_dir%/config/routing.yml" }
+    router:          { resource: "%kernel.project_dir%/app/config/routing.yml" }
     default_locale:  "%locale%"
     translator:
         fallback: "%locale%"
-        default_path: "%kernel.root_dir%/Resources/translations"
-    templating:
-        engines: ['twig']
+        default_path: "%kernel.project_dir%/app/Resources/translations"
 
 # Doctrine Configuration
 doctrine:

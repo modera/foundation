@@ -2,25 +2,32 @@
 
 namespace Modera\MJRCacheAwareClassLoaderBundle\Tests\Unit\VersionResolving;
 
+use Symfony\Component\HttpKernel\KernelInterface;
 use Modera\MJRCacheAwareClassLoaderBundle\DependencyInjection\ModeraMJRCacheAwareClassLoaderExtension;
 use Modera\MJRCacheAwareClassLoaderBundle\VersionResolving\StandardVersionResolver;
+
+// TODO: remove in v5.x
+interface MockKernelInterface extends KernelInterface
+{
+    public function getProjectDir();
+}
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class StandardVersionResolverTest extends \PHPUnit_Framework_TestCase
+class StandardVersionResolverTest extends \PHPUnit\Framework\TestCase
 {
     private $container;
 
     // override
-    public function setUp()
+    public function setUp(): void
     {
         $this->container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
     }
 
     // override
-    public function tearDown()
+    public function tearDown(): void
     {
         @unlink(__DIR__.'/../modera-version.txt');
     }
@@ -31,7 +38,7 @@ class StandardVersionResolverTest extends \PHPUnit_Framework_TestCase
             'version' => 'foo-bar',
         );
 
-        $kernel = \Phake::mock('Symfony\Component\HttpKernel\KernelInterface');
+        $kernel = \Phake::mock(MockKernelInterface::class);
         \Phake::when($this->container)->get('kernel')->thenReturn($kernel);
         \Phake::when($this->container)->getParameter(ModeraMJRCacheAwareClassLoaderExtension::CONFIG_KEY)->thenReturn($config);
 
@@ -44,8 +51,8 @@ class StandardVersionResolverTest extends \PHPUnit_Framework_TestCase
     {
         file_put_contents(__DIR__.'/../modera-version.txt', 'ololo');
 
-        $kernel = \Phake::mock('Symfony\Component\HttpKernel\KernelInterface');
-        \Phake::when($kernel)->getRootDir()->thenReturn(__DIR__);
+        $kernel = \Phake::mock(MockKernelInterface::class);
+        \Phake::when($kernel)->getProjectDir()->thenReturn(\dirname(__DIR__));
         \Phake::when($this->container)->get('kernel')->thenReturn($kernel);
         \Phake::when($this->container)->getParameter(ModeraMJRCacheAwareClassLoaderExtension::CONFIG_KEY)->thenReturn(array());
 
@@ -56,8 +63,8 @@ class StandardVersionResolverTest extends \PHPUnit_Framework_TestCase
 
     public function testResolve()
     {
-        $kernel = \Phake::mock('Symfony\Component\HttpKernel\KernelInterface');
-        \Phake::when($kernel)->getRootDir()->thenReturn(__DIR__);
+        $kernel = \Phake::mock(MockKernelInterface::class);
+        \Phake::when($kernel)->getProjectDir()->thenReturn(\dirname(__DIR__));
         \Phake::when($this->container)->get('kernel')->thenReturn($kernel);
         \Phake::when($this->container)->getParameter(ModeraMJRCacheAwareClassLoaderExtension::CONFIG_KEY)->thenReturn(array());
 

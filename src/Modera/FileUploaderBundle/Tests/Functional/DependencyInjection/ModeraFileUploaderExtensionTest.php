@@ -1,6 +1,6 @@
 <?php
 
-namespace Modera\FileRepositoryBundle\Tests\Functional\DependencyInjection;
+namespace Modera\FileUploaderBundle\Tests\Functional\DependencyInjection;
 
 use Modera\FileUploaderBundle\DependencyInjection\ModeraFileUploaderExtension;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
@@ -13,6 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class ModeraFileUploaderExtensionTest extends FunctionalTestCase
 {
     private $ext;
+
     /* @var ContainerBuilder */
     private $cb;
 

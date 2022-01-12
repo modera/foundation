@@ -2,7 +2,7 @@
 
 namespace Modera\BackendLanguagesBundle\Controller;
 
-use Symfony\Component\Intl\Intl;
+use Symfony\Component\Intl\Locales;
 use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
 use Modera\FoundationBundle\Controller\AbstractBaseController;
 use Modera\LanguagesBundle\Entity\Language;
@@ -74,7 +74,7 @@ class LocalesController extends AbstractBaseController
      */
     private function getLocales()
     {
-        $locales = array_keys(Intl::getLocaleBundle()->getLocaleNames());
+        $locales = array_keys(Locales::getNames());
         foreach ($this->get('modera_backend_languages.locales_provider')->getItems() as $locale) {
             $locales[] = $locale;
         }

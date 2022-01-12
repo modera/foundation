@@ -1,21 +1,33 @@
 # ModeraBackendSecurityBundle
 
-[![Build Status](https://travis-ci.org/modera/foundation.svg?branch=master)](https://travis-ci.org/modera/foundation)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/modera/ModeraBackendSecurityBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/modera/ModeraBackendSecurityBundle/?branch=master)
-[![StyleCI](https://styleci.io/repos/29132246/shield)](https://styleci.io/repos/29132246)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/df758e1e-7e57-42c6-bb28-5c05ac002ad8/mini.png)](https://insight.sensiolabs.com/projects/df758e1e-7e57-42c6-bb28-5c05ac002ad8)
-
 Bundle provides UI section for MF that makes it possible to manage users/groups/permissions.
 
 ## Installation
 
-Add this dependency to your composer.json:
+### Step 1: Download the Bundle
 
-    "modera/backend-security-bundle": "~2.0"
+``` bash
+composer require modera/backend-security-bundle:4.x-dev
+```
 
-Update your AppKernel class and add this:
+This command requires you to have Composer installed globally, as explained
+in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
 
-    new Modera\BackendSecurityBundle\ModeraBackendSecurityBundle(),
+### Step 2: Enable the Bundle
+
+This bundle should be automatically enabled by [Flex](https://symfony.com/doc/current/setup/flex.html).
+In case you don't use Flex, you'll need to manually enable the bundle by
+adding the following line in the `config/bundles.php` file of your project:
+
+``` php
+<?php
+// config/bundles.php
+
+return [
+    // ...
+    Modera\BackendSecurityBundle\ModeraBackendSecurityBundle::class => ['all' => true],
+];
+```
 
 ## Licensing
 

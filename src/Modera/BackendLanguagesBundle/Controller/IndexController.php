@@ -5,7 +5,7 @@ namespace Modera\BackendLanguagesBundle\Controller;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Modera\LanguagesBundle\Helper\LocaleHelper;
 
 /**
@@ -27,7 +27,7 @@ class IndexController extends Controller
      */
     protected function getTemplate()
     {
-        return 'ModeraBackendLanguagesBundle:Index:compile.js.twig';
+        return '@ModeraBackendLanguages/Index/compile.js.twig';
     }
 
     /**

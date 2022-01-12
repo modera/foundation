@@ -8,7 +8,7 @@ use Modera\MjrIntegrationBundle\Config\CallbackConfigMerger;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class CallbackConfigMergerTest extends \PHPUnit_Framework_TestCase
+class CallbackConfigMergerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @expectedException InvalidArgumentException

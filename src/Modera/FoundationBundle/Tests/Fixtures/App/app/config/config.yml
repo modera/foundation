@@ -2,8 +2,6 @@ framework:
     secret:          Hell yeah!
     csrf_protection: true
     session:         ~
-    templating:
-        engines: ['twig']
 
 # Twig Configuration
 twig:

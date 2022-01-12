@@ -35,6 +35,7 @@ class ModeraMJRSecurityIntegrationExtension extends Extension implements Prepend
         }
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('controller.xml');
         $loader->load('services.xml');
 
         if (interface_exists('Modera\TranslationsBundle\Handling\TranslationHandlerInterface')) {

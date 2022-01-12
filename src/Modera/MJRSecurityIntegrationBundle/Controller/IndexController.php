@@ -16,7 +16,7 @@ use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtensio
 use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
 use Modera\MJRSecurityIntegrationBundle\DependencyInjection\ModeraMJRSecurityIntegrationExtension;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
@@ -78,7 +78,7 @@ class IndexController extends Controller
         $kernel = $this->get('kernel');
 
         $content = $this->renderView(
-            'ModeraMJRSecurityIntegrationBundle:Index:index.html.twig',
+            '@ModeraMJRSecurityIntegration/Index/index.html.twig',
             array(
                 'config' => array_merge($runtimeConfig, $securedRuntimeConfig),
                 'css_resources' => $assetsProvider->getCssAssets(AssetsProvider::TYPE_BLOCKING),
@@ -114,7 +114,7 @@ class IndexController extends Controller
         /* @var ServiceDefinitionsManager $definitionsMgr */
         $definitionsMgr = $this->container->get('modera_mjr_integration.csdi.service_definitions_manager');
         $content = $this->renderView(
-            'ModeraMJRSecurityIntegrationBundle:Index:application.html.twig',
+            '@ModeraMJRSecurityIntegration/Index/application.html.twig',
             array(
                 'non_blocking_resources' => $nonBlockingResources,
                 'container_services' => $definitionsMgr->getDefinitions(),

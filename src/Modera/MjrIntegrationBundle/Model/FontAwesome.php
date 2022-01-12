@@ -13,7 +13,7 @@ class FontAwesome
     /**
      * @var string
      */
-    public static $version = '5.8.2';
+    public static $version = '5.15.4';
 
     /**
      * @var string
