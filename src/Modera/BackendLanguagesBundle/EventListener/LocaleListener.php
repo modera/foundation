@@ -82,7 +82,7 @@ class LocaleListener implements EventSubscriberInterface
                     $locale = null;
 
                     /* @var UserSettings $settings */
-                    $settings = $this->em->getRepository(UserSettings::clazz())->findOneBy(array(
+                    $settings = $this->em->getRepository(UserSettings::class)->findOneBy(array(
                         'user' => $content['profile']['id'],
                     ));
                     if ($settings && $settings->getLanguage() && $settings->getLanguage()->isEnabled()) {
@@ -91,7 +91,7 @@ class LocaleListener implements EventSubscriberInterface
 
                     if (!$locale) {
                         /* @var Language $defaultLanguage */
-                        $defaultLanguage = $this->em->getRepository(Language::clazz())->findOneBy(array(
+                        $defaultLanguage = $this->em->getRepository(Language::class)->findOneBy(array(
                             'isDefault' => true,
                         ));
                         if ($defaultLanguage) {

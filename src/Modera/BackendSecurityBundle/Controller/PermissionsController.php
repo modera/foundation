@@ -22,7 +22,7 @@ class PermissionsController extends AbstractCrudController
     public function getConfig()
     {
         return array(
-            'entity' => Permission::clazz(),
+            'entity' => Permission::class,
             'security' => array(
                 'role' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
                 'actions' => array(

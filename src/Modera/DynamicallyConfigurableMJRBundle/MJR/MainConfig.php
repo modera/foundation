@@ -3,7 +3,7 @@
 namespace Modera\DynamicallyConfigurableMJRBundle\MJR;
 
 use Modera\MjrIntegrationBundle\Config\MainConfigInterface;
-use Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface;
+use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
 use Modera\DynamicallyConfigurableMJRBundle\Resolver\ValueResolverInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
 
@@ -34,14 +34,6 @@ class MainConfig implements MainConfigInterface
     {
         $this->mgr = $mgr;
         $this->resolver = $resolver;
-    }
-
-    /**
-     * @return string
-     */
-    public static function clazz()
-    {
-        return get_called_class();
     }
 
     /**

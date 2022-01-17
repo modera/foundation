@@ -21,7 +21,7 @@ class DefaultController extends AbstractCrudController
     public function getConfig()
     {
         return array(
-            'entity' => ConfigurationEntry::clazz(),
+            'entity' => ConfigurationEntry::class,
             'security' => array(
                 'role' => ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS,
             ),

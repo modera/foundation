@@ -18,7 +18,7 @@ class UserSettingsController extends AbstractSettingsController
 {
     protected function getEntityClass()
     {
-        return UserSettings::clazz();
+        return UserSettings::class;
     }
 
     /**
@@ -50,7 +50,7 @@ class UserSettingsController extends AbstractSettingsController
                     if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)) {
                         return true;
                     } else if (isset($params['record']['id'])) {
-                        $entities = $this->getPersistenceHandler()->query(UserSettings::clazz(), array(
+                        $entities = $this->getPersistenceHandler()->query(UserSettings::class, array(
                             'filter' => array(
                                 array(
                                     'property' => 'id',

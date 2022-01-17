@@ -29,12 +29,4 @@ class ClassLoaderMappingsProvider implements ContributorInterface
     {
         return $this->items;
     }
-
-    /**
-     * @return string
-     */
-    public static function clazz()
-    {
-        return get_called_class();
-    }
 }

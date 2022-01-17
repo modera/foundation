@@ -56,7 +56,7 @@ class TranslationsController extends AbstractCrudController
     public function getConfig()
     {
         return array(
-            'entity' => TranslationToken::clazz(),
+            'entity' => TranslationToken::class,
             'security' => array(
                 'role' => ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION,
             ),

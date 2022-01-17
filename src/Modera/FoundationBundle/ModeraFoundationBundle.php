@@ -10,7 +10,7 @@ class ModeraFoundationBundle extends Bundle
     // override
     public function boot()
     {
-        $reflClass = new \ReflectionClass(T::clazz());
+        $reflClass = new \ReflectionClass(T::class);
         $reflProp = $reflClass->getProperty('container');
         $reflProp->setAccessible(true);
         $reflProp->setValue(null, $this->container);

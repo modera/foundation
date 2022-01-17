@@ -39,7 +39,7 @@ class ConfigEntriesInstaller
      */
     private function findEntry(ConfigurationEntryDefinition $entryDef)
     {
-        return $this->em->getRepository(ConfigurationEntry::clazz())->findOneBy(array('name' => $entryDef->getName()));
+        return $this->em->getRepository(ConfigurationEntry::class)->findOneBy(array('name' => $entryDef->getName()));
     }
 
     /**

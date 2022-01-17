@@ -47,11 +47,6 @@ class IndexController extends Controller
         $runtimeConfig = $this->container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
         $securedRuntimeConfig = $this->container->getParameter(ModeraMJRSecurityIntegrationExtension::CONFIG_KEY);
 
-        // TODO: remove in v4
-        if (array_key_exists('extjs_ajax_timeout', $securedRuntimeConfig) && null === $securedRuntimeConfig['extjs_ajax_timeout']) {
-            unset($securedRuntimeConfig['extjs_ajax_timeout']);
-        }
-
         /* @var ContributorInterface $classLoaderMappingsProvider */
         $classLoaderMappingsProvider = $this->get('modera_mjr_integration.bootstrapping_class_loader_mappings_provider');
 

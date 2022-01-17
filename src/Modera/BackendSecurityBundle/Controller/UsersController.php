@@ -37,7 +37,7 @@ class UsersController extends AbstractCrudController
         $self = $this;
 
         return array(
-            'entity' => User::clazz(),
+            'entity' => User::class,
             'create_default_data_mapper' => function (ContainerInterface $container) {
                 return $this->container->get('modera_backend_security.data_mapper.user_data_mapper');
             },
@@ -310,7 +310,7 @@ class UsersController extends AbstractCrudController
                     /* @var User $entity*/
                     $userService->remove($entity);
 
-                    $operationResult->reportEntity(User::clazz(), $entity->getId(), OperationResult::TYPE_ENTITY_REMOVED);
+                    $operationResult->reportEntity(User::class, $entity->getId(), OperationResult::TYPE_ENTITY_REMOVED);
                 }
 
                 return $operationResult;

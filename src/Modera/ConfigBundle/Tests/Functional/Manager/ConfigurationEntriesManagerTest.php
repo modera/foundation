@@ -1,8 +1,8 @@
 <?php
 
-namespace Modera\ConfigBundle\Tests\Functional\Config;
+namespace Modera\ConfigBundle\Tests\Functional\Manager;
 
-use Modera\ConfigBundle\Config\ConfigurationEntriesManager;
+use Modera\ConfigBundle\Manager\ConfigurationEntriesManager;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 use Modera\ConfigBundle\Tests\Fixtures\Entities\User;
 use Modera\ConfigBundle\Tests\Functional\AbstractFunctionalTestCase;

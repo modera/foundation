@@ -95,7 +95,7 @@ class KernelConfigCommand extends Command
             if (array_key_exists($key, $types)) {
                 $this->em->createQuery(sprintf(
                     'UPDATE %s e SET e.%sValue = :value WHERE e.name = :name AND e.category = :category',
-                    ConfigurationEntry::clazz(),
+                    ConfigurationEntry::class,
                     $types[$key]
                 ))
                     ->setParameter('value', $value)

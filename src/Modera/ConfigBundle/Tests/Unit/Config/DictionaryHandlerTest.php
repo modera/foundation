@@ -25,7 +25,7 @@ class DictionaryHandlerTest extends \PHPUnit\Framework\TestCase
             ),
         );
         $this->entry = $this->createMock(
-            ConfigurationEntry::clazz(), array(), array(), '', null, false
+            ConfigurationEntry::class, array(), array(), '', null, false
         );
         $this->entry
              ->expects($this->any())

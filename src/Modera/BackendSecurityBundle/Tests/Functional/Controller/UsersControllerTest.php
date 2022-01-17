@@ -103,7 +103,7 @@ class UsersControllerTest extends FunctionalTestCase
     {
         $this->assertNotNull(static::$user);
 
-        $user = static::$em->find(User::clazz(), static::$user->getId());
+        $user = static::$em->find(User::class, static::$user->getId());
 
         $this->assertNotNull($user);
 
@@ -173,7 +173,7 @@ class UsersControllerTest extends FunctionalTestCase
         $this->assertTrue($response['success']);
 
         /* @var User[] $userList */
-        $userList = static::$em->getRepository(User::clazz())->findAll();
+        $userList = static::$em->getRepository(User::class)->findAll();
 
         $lastUser = array_pop($userList);
 
@@ -206,7 +206,7 @@ class UsersControllerTest extends FunctionalTestCase
 
         $this->assertTrue($response['success']);
         /* @var User[] $userList */
-        $userList = static::$em->getRepository(User::clazz())->findAll();
+        $userList = static::$em->getRepository(User::class)->findAll();
 
         $lastUser = array_pop($userList);
 
@@ -250,7 +250,7 @@ class UsersControllerTest extends FunctionalTestCase
         /*
          * @var User[] $userList
          */
-        $userFromDb = static::$em->getRepository(User::clazz())->find($user->getId());
+        $userFromDb = static::$em->getRepository(User::class)->find($user->getId());
 
         $this->assertEquals('test1@test.com', $userFromDb->getEmail());
         $this->assertEquals($userMeta, $userFromDb->getMeta());
@@ -281,7 +281,7 @@ class UsersControllerTest extends FunctionalTestCase
         /*
          * @var User[]
          */
-        $userList = static::$em->getRepository(User::clazz())->findAll();
+        $userList = static::$em->getRepository(User::class)->findAll();
 
         $lastUser = array_pop($userList);
 
@@ -314,11 +314,11 @@ class UsersControllerTest extends FunctionalTestCase
     private static function getTablesClasses()
     {
         return array(
-            Permission::clazz(),
-            PermissionCategory::clazz(),
-            User::clazz(),
-            Group::clazz(),
-            Activity::clazz(),
+            Permission::class,
+            PermissionCategory::class,
+            User::class,
+            Group::class,
+            Activity::class,
         );
     }
 

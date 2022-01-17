@@ -42,7 +42,7 @@ class SyncLanguagesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $languages = $this->getConfigLanguages();
-        $dbLanguages = $this->em->getRepository(Language::clazz())->findAll();
+        $dbLanguages = $this->em->getRepository(Language::class)->findAll();
 
         $updated = array();
         $tableRows = array();

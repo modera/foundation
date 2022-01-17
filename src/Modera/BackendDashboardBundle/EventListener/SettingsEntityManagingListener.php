@@ -28,24 +28,24 @@ class SettingsEntityManagingListener
                 $userSettings->setUser($entity);
 
                 $em->persist($userSettings);
-                $uow->computeChangeSet($em->getClassMetadata(UserSettings::clazz()), $userSettings);
+                $uow->computeChangeSet($em->getClassMetadata(UserSettings::class), $userSettings);
             }
             if ($entity instanceof Group) {
                 $groupSettings = new GroupSettings();
                 $groupSettings->setGroup($entity);
 
                 $em->persist($groupSettings);
-                $uow->computeChangeSet($em->getClassMetadata(GroupSettings::clazz()), $groupSettings);
+                $uow->computeChangeSet($em->getClassMetadata(GroupSettings::class), $groupSettings);
             }
         }
 
         foreach ($uow->getScheduledEntityDeletions() as $entity) {
             if ($entity instanceof User) {
-                $query = $em->createQuery(sprintf('DELETE FROM %s us WHERE us.user = ?0', UserSettings::clazz()));
+                $query = $em->createQuery(sprintf('DELETE FROM %s us WHERE us.user = ?0', UserSettings::class));
                 $query->execute(array($entity));
             }
             if ($entity instanceof Group) {
-                $query = $em->createQuery(sprintf('DELETE FROM %s us WHERE us.group = ?0', GroupSettings::clazz()));
+                $query = $em->createQuery(sprintf('DELETE FROM %s us WHERE us.group = ?0', GroupSettings::class));
                 $query->execute(array($entity));
             }
         }

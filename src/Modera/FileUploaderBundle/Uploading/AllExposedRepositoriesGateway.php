@@ -64,9 +64,4 @@ class AllExposedRepositoriesGateway implements UploadGatewayInterface
             'ids' => $ids,
         );
     }
-
-    public static function clazz()
-    {
-        return get_called_class();
-    }
 }

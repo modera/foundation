@@ -25,7 +25,7 @@ class FilterAutoSuggestServiceTest //extends FunctionalTestCase
 
     public function testServiceExists()
     {
-        $this->assertInstanceOf(FilterAutoSuggestService::clazz(), $this->s);
+        $this->assertInstanceOf(FilterAutoSuggestService::class, $this->s);
     }
 
     private function createUser()

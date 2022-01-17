@@ -8,7 +8,7 @@ use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
-interface ConfigurationEntriesManagerInterface extends \Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface
+interface ConfigurationEntriesManagerInterface
 {
     /**
      * @param string $name
@@ -27,4 +27,11 @@ interface ConfigurationEntriesManagerInterface extends \Modera\ConfigBundle\Conf
      * @return ConfigurationEntryInterface
      */
     public function findOneByNameOrDie($name, $owner = null);
+
+    /**
+     * @throws ConfigurationEntryAlreadyExistsException
+     *
+     * @param ConfigurationEntryInterface $entry
+     */
+    public function save(ConfigurationEntryInterface $entry);
 }

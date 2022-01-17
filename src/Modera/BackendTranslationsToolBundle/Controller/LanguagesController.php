@@ -18,7 +18,7 @@ class LanguagesController extends AbstractCrudController
     public function getConfig()
     {
         return array(
-            'entity' => Language::clazz(),
+            'entity' => Language::class,
             'security' => array(
                 'role' => ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION,
             ),

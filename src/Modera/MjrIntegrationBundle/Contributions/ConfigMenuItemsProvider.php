@@ -56,9 +56,4 @@ class ConfigMenuItemsProvider implements ContributorInterface
 
         return $this->items;
     }
-
-    public static function clazz()
-    {
-        return get_called_class();
-    }
 }

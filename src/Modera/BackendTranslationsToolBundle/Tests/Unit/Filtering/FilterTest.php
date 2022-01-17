@@ -20,7 +20,7 @@ class FilterTest extends \PHPUnit\Framework\TestCase
         parent::setUp();
 
         $this->container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
-        \Phake::when($this->container)->get('modera_server_crud.persistence.default_handler')->thenReturn(new DummyDoctrinePersistenceHandler());
+        \Phake::when($this->container)->get('modera_server_crud.persistence.doctrine_registry_handler')->thenReturn(new DummyDoctrinePersistenceHandler());
         \Phake::when($this->container)->get('doctrine.orm.entity_manager')->thenReturn(new DummyDoctrineEntityManager());
     }
 

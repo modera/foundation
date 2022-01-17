@@ -19,7 +19,7 @@ class LanguagesController extends AbstractCrudController
     public function getConfig()
     {
         return array(
-            'entity' => Language::clazz(),
+            'entity' => Language::class,
             'security' => array(
                 'role' => ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER,
                 'actions' => array(

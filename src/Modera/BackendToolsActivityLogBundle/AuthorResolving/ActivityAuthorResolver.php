@@ -34,7 +34,7 @@ class ActivityAuthorResolver
 
         if ($isId) {
             /* @var User $user */
-            $user = $this->om->find(User::clazz(), $activity->getAuthor());
+            $user = $this->om->find(User::class, $activity->getAuthor());
             if ($user) {
                 return array(
                     'id' => $user->getId(),

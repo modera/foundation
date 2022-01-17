@@ -26,12 +26,4 @@ class ConfigEntriesProvider implements ContributorInterface
             new CED(Bundle::CONFIG_LOGO_URL, 'Logo URL', '', 'general'),
         ];
     }
-
-    /**
-     * @return string
-     */
-    public static function clazz()
-    {
-        return get_called_class();
-    }
 }

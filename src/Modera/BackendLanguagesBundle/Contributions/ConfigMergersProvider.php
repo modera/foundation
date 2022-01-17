@@ -57,14 +57,14 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         $token = $this->tokenStorage->getToken();
         if ($token->isAuthenticated() && $token->getUser() instanceof User) {
             /* @var UserSettings $settings */
-            $settings = $this->em->getRepository(UserSettings::clazz())->findOneBy(array('user' => $token->getUser()->getId()));
+            $settings = $this->em->getRepository(UserSettings::class)->findOneBy(array('user' => $token->getUser()->getId()));
             if ($settings && $settings->getLanguage() && $settings->getLanguage()->isEnabled()) {
                 $locale = $settings->getLanguage()->getLocale();
             }
 
             if (!$locale) {
                 /* @var Language $defaultLanguage */
-                $defaultLanguage = $this->em->getRepository(Language::clazz())->findOneBy(array(
+                $defaultLanguage = $this->em->getRepository(Language::class)->findOneBy(array(
                     'isDefault' => true,
                 ));
                 if ($defaultLanguage) {
@@ -74,7 +74,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         }
 
         /* @var Language[] $dbLanguages */
-        $dbLanguages = $this->em->getRepository(Language::clazz())->findBy(array('isEnabled' => true));
+        $dbLanguages = $this->em->getRepository(Language::class)->findBy(array('isEnabled' => true));
         foreach ($dbLanguages as $dbLanguage) {
             $languages[] = array(
                 'id' => $dbLanguage->getId(),

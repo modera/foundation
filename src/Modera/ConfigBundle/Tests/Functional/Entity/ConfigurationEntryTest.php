@@ -24,7 +24,7 @@ class ConfigurationEntryTest extends FunctionalTestCase
     {
         self::$st = new SchemaTool(self::$em);
         self::$st->createSchema([
-            self::$em->getClassMetadata(ConfigurationEntry::clazz()),
+            self::$em->getClassMetadata(ConfigurationEntry::class),
         ]);
     }
 
@@ -34,7 +34,7 @@ class ConfigurationEntryTest extends FunctionalTestCase
     public static function doTearDownAfterClass()
     {
         self::$st->dropSchema([
-            self::$em->getClassMetadata(ConfigurationEntry::clazz()),
+            self::$em->getClassMetadata(ConfigurationEntry::class),
         ]);
     }
 
@@ -80,7 +80,7 @@ class ConfigurationEntryTest extends FunctionalTestCase
         $em->clear();
 
         /* @var CE $floatValue2 */
-        $floatValue2 = self::$em->find(CE::clazz(), $floatValue2->getId());
+        $floatValue2 = self::$em->find(CE::class, $floatValue2->getId());
         $this->assertEquals(CE::TYPE_FLOAT, $floatValue2->getSavedAs());
         $this->assertTrue(is_float($floatValue2->getValue()));
         $this->assertEquals(0.009, $floatValue2->getValue());
@@ -96,10 +96,10 @@ class ConfigurationEntryTest extends FunctionalTestCase
         $em->flush();
         $em->getUnitOfWork()->clear();
 
-        $ce = $em->getRepository(CE::clazz())->findOneBy(array(
+        $ce = $em->getRepository(CE::class)->findOneBy(array(
             'name' => 'greeting_msg',
         ));
-        $this->assertInstanceOf(CE::clazz(), $ce);
+        $this->assertInstanceOf(CE::class, $ce);
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerInterface', $ce->getContainer());
     }
 
@@ -122,7 +122,7 @@ class ConfigurationEntryTest extends FunctionalTestCase
         $handler = $this->createMock('Modera\ConfigBundle\Config\HandlerInterface');
         $handler->expects($this->atLeastOnce())
             ->method('getValue')
-            ->with($this->isInstanceOf(CE::clazz()))
+            ->with($this->isInstanceOf(CE::class))
             ->will($this->returnValue($expectedValue));
 
         $container = $this->createMockContainer($handlerServiceId, $handler);
@@ -147,7 +147,7 @@ class ConfigurationEntryTest extends FunctionalTestCase
         $handler = $this->createMock('Modera\ConfigBundle\Config\HandlerInterface');
         $handler->expects($this->atLeastOnce())
                ->method('convertToStorageValue')
-               ->with($this->equalTo($clientValue), $this->isInstanceOf(CE::clazz()))
+               ->with($this->equalTo($clientValue), $this->isInstanceOf(CE::class))
                ->will($this->returnValue($convertedValue));
 
         $container = $this->createMockContainer($handlerServiceId, $handler);

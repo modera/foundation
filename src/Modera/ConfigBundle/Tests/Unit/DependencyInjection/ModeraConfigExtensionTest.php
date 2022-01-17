@@ -23,7 +23,7 @@ class ModeraConfigExtensionTest extends \PHPUnit\Framework\TestCase
 
         $def = $builder->getDefinition('modera_config.twig.twig_extension');
 
-        $this->assertEquals(TwigExtension::clazz(), $def->getClass());
+        $this->assertEquals(TwigExtension::class, $def->getClass());
         $this->assertEquals(1, count($def->getTag('twig.extension')));
 
         /* @var Reference $arg */

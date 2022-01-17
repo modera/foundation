@@ -12,6 +12,6 @@ class GroupSettingsController extends AbstractSettingsController
 {
     protected function getEntityClass()
     {
-        return GroupSettings::clazz();
+        return GroupSettings::class;
     }
 }

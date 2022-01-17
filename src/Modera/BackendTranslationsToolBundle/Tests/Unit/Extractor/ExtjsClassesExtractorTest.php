@@ -36,7 +36,7 @@ class ExtjsClassesExtractorTest extends \PHPUnit\Framework\TestCase
     public function test__construct()
     {
         $extractor = new ExtjsClassesExtractor();
-        $this->assertInstanceOf(ExtjsClassesProvider::clazz(), $extractor->getPathProvider());
+        $this->assertInstanceOf(ExtjsClassesProvider::class, $extractor->getPathProvider());
     }
 
     private function assetToken($name, $value, array $tokens)

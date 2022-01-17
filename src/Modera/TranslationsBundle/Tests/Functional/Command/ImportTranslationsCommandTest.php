@@ -28,7 +28,7 @@ class ImportTranslationsCommandTest extends AbstractFunctionalTestCase
     private function assertToken($token, $tokenName = 'Test token')
     {
         /* @var TranslationToken $token */
-        $this->assertInstanceOf(TranslationToken::clazz(), $token);
+        $this->assertInstanceOf(TranslationToken::class, $token);
         $this->assertFalse($token->isObsolete());
         $this->assertEquals('messages', $token->getDomain());
         $this->assertEquals($tokenName, $token->getTokenName());
@@ -44,31 +44,31 @@ class ImportTranslationsCommandTest extends AbstractFunctionalTestCase
 
     public function testImport()
     {
-        $tokens = self::$em->getRepository(TranslationToken::clazz())->findAll();
+        $tokens = self::$em->getRepository(TranslationToken::class)->findAll();
         $this->assertEquals(0, count($tokens));
 
         $this->launchImportCommand();
 
-        $tokens = self::$em->getRepository(TranslationToken::clazz())->findAll();
+        $tokens = self::$em->getRepository(TranslationToken::class)->findAll();
         $this->assertEquals(3, count($tokens));
 
-        $tokens = self::$em->getRepository(TranslationToken::clazz())->findBy(array(
+        $tokens = self::$em->getRepository(TranslationToken::class)->findBy(array(
             'tokenName' => 'Test token'
         ));
         $this->assertCount(1, $tokens);
         $this->assertToken($tokens[0]);
 
-        $token = self::$em->getRepository(TranslationToken::clazz())->findOneBy(array(
+        $token = self::$em->getRepository(TranslationToken::class)->findOneBy(array(
             'tokenName' => 'Test token only in twig'
         ));
         $this->assertToken($token, 'Test token only in twig');
 
-        $token = self::$em->getRepository(TranslationToken::clazz())->findOneBy(array(
+        $token = self::$em->getRepository(TranslationToken::class)->findOneBy(array(
             'tokenName' => 'This token is only in SecondDummy bundle'
         ));
         $this->assertToken($token, 'This token is only in SecondDummy bundle');
 
-        $token = self::$em->getRepository(TranslationToken::clazz())->findOneBy(array(
+        $token = self::$em->getRepository(TranslationToken::class)->findOneBy(array(
             'tokenName' => 'undefined',
         ));
         $this->assertFalse($token instanceof TranslationToken);

@@ -52,7 +52,7 @@ class LanguageSubscriber implements EventSubscriber
                 $query = $em->createQuery(
                     sprintf(
                         'UPDATE %s l SET l.isDefault = :status WHERE l.id != :id',
-                        Language::clazz()
+                        Language::class
                     )
                 );
                 $query->setParameter('status', false);

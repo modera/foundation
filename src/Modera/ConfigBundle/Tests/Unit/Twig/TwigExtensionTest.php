@@ -23,7 +23,7 @@ class TwigExtensionTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->configEntriesManager = \Phake::mock('Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface');
+        $this->configEntriesManager = \Phake::mock('Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface');
 
         $this->ext = new TwigExtension($this->configEntriesManager);
     }

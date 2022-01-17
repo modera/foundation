@@ -239,7 +239,6 @@ class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
 
     public function testGetters()
     {
-        $this->assertSame($this->container, $this->provider->getContainer());
         $this->assertSame($this->contributor, $this->provider->getDashboardProvider());
     }
 

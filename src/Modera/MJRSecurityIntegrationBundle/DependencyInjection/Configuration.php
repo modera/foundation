@@ -41,9 +41,6 @@ class Configuration implements ConfigurationInterface
                     ->cannotBeEmpty()
                     ->defaultValue('Actions.ModeraMJRSecurityIntegration_SwitchUser.list')
                 ->end()
-                ->scalarNode('extjs_ajax_timeout') // deprecated, will be removed in v4
-                    ->defaultValue(null)
-                ->end()
             ->end();
 
         return $treeBuilder;

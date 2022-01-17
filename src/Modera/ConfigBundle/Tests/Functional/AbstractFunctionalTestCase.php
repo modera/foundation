@@ -25,8 +25,8 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
     {
         self::$st = new SchemaTool(self::$em);
         self::$st->createSchema([
-            self::$em->getClassMetadata(ConfigurationEntry::clazz()),
-            self::$em->getClassMetadata(User::clazz()),
+            self::$em->getClassMetadata(ConfigurationEntry::class),
+            self::$em->getClassMetadata(User::class),
         ]);
     }
 
@@ -36,8 +36,8 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
     public static function doTearDownAfterClass()
     {
         self::$st->dropSchema([
-            self::$em->getClassMetadata(ConfigurationEntry::clazz()),
-            self::$em->getClassMetadata(User::clazz()),
+            self::$em->getClassMetadata(ConfigurationEntry::class),
+            self::$em->getClassMetadata(User::class),
         ]);
     }
 }

@@ -71,7 +71,7 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $this->launchImportCommand();
 
         /* @var TranslationToken $tt */
-        $tt = self::$em->getRepository(TranslationToken::clazz())->findOneBy([
+        $tt = self::$em->getRepository(TranslationToken::class)->findOneBy([
             'tokenName' => 'Test token'
         ]);
         foreach ($tt->getLanguageTranslationTokens() as $languageTranslationToken) {

@@ -24,13 +24,13 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
     public static function doSetUpBeforeClass()
     {
         self::$st = new SchemaTool(self::$em);
-        self::$st->createSchema(array(self::$em->getClassMetadata(Language::clazz())));
+        self::$st->createSchema(array(self::$em->getClassMetadata(Language::class)));
     }
 
     // override
     public static function doTearDownAfterClass()
     {
-        self::$st->dropSchema(array(self::$em->getClassMetadata(Language::clazz())));
+        self::$st->dropSchema(array(self::$em->getClassMetadata(Language::class)));
     }
 
     /**
@@ -53,14 +53,14 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
 
     private function checkCount($expected)
     {
-        $dbLanguages = self::$em->getRepository(Language::clazz())->findAll();
+        $dbLanguages = self::$em->getRepository(Language::class)->findAll();
         $this->assertEquals($expected, count($dbLanguages));
     }
 
     private function checkEnabled($expected)
     {
         $actual = 0;
-        $dbLanguages = self::$em->getRepository(Language::clazz())->findAll();
+        $dbLanguages = self::$em->getRepository(Language::class)->findAll();
         foreach ($dbLanguages as $dbLanguage) {
             if ($dbLanguage->isEnabled()) {
                 ++$actual;

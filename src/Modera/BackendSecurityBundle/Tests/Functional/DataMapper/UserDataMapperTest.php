@@ -29,7 +29,7 @@ class UserDataMapperTest extends FunctionalTestCase
 
     public function testDataMapper_ExcludedFiled()
     {
-        $mappedFields = \Phake::makeVisible($this->mapperMock)->getAllowedFields(User::clazz());
+        $mappedFields = \Phake::makeVisible($this->mapperMock)->getAllowedFields(User::class);
 
         $this->assertTrue(false === array_search('meta', $mappedFields));
     }

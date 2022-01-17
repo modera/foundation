@@ -26,18 +26,18 @@ class ModeraDynamicallyConfigurableMJRExtensionTest extends \PHPUnit\Framework\T
 
         $classLoaderMappingsProvider = $builder->getDefinition('modera_dynamically_configurable_mjr.contributions.class_loader_mappings_provider');
         $this->assertEquals(1, count($classLoaderMappingsProvider->getTag('modera_mjr_integration.class_loader_mappings_provider')));
-        $this->assertEquals(ClassLoaderMappingsProvider::clazz(), $classLoaderMappingsProvider->getClass());
+        $this->assertEquals(ClassLoaderMappingsProvider::class, $classLoaderMappingsProvider->getClass());
 
         $configEntriesProvider = $builder->getDefinition('modera_dynamically_configurable_mjr.contributions.config_entries_provider');
         $this->assertEquals(1, count($configEntriesProvider->getTag('modera_config.config_entries_provider')));
-        $this->assertEquals(ConfigEntriesProvider::clazz(), $configEntriesProvider->getClass());
+        $this->assertEquals(ConfigEntriesProvider::class, $configEntriesProvider->getClass());
 
         $settingsSectionsProvider = $builder->getDefinition('modera_dynamically_configurable_mjr.contributions.settings_sections_provider');
         $this->assertEquals(1, count($settingsSectionsProvider->getTag('modera_backend_tools_settings.contributions.sections_provider')));
-        $this->assertEquals(SettingsSectionsProvider::clazz(), $settingsSectionsProvider->getClass());
+        $this->assertEquals(SettingsSectionsProvider::class, $settingsSectionsProvider->getClass());
 
         $mainConfig = $builder->getDefinition('modera_dynamically_configurable_mjr.mjr.main_config');
-        $this->assertEquals(MainConfig::clazz(), $mainConfig->getClass());
+        $this->assertEquals(MainConfig::class, $mainConfig->getClass());
         /* @var Reference $arg */
         $arg = $mainConfig->getArgument(0);
         $this->assertEquals('modera_config.configuration_entries_manager', (string) $arg);

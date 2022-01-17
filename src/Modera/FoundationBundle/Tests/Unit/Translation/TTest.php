@@ -47,7 +47,7 @@ class TTest extends \PHPUnit\Framework\TestCase
              ->with($this->equalTo('translator'))
              ->will($this->returnValue($this->t));
 
-        $reflClass = new \ReflectionClass(T::clazz());
+        $reflClass = new \ReflectionClass(T::class);
         $this->reflMethod = $reflClass->getProperty('container');
         $this->reflMethod->setAccessible(true);
         $this->reflMethod->setValue(null, $this->c);

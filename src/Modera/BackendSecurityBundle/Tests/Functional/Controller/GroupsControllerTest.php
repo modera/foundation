@@ -120,7 +120,7 @@ class GroupsControllerTest extends FunctionalTestCase
      */
     public function testCreateAction()
     {
-        $beforeGroupsCount = count(static::$em->getRepository(Group::clazz())->findAll());
+        $beforeGroupsCount = count(static::$em->getRepository(Group::class)->findAll());
 
         $params = array(
             'record' => array(
@@ -138,10 +138,10 @@ class GroupsControllerTest extends FunctionalTestCase
         $this->assertArrayHasKey('modera.security_bundle.group', $result['created_models']);
         $this->assertCount(1, $result['created_models']['modera.security_bundle.group']);
 
-        $afterGroupsCount = count(static::$em->getRepository(Group::clazz())->findAll());
+        $afterGroupsCount = count(static::$em->getRepository(Group::class)->findAll());
         $this->assertEquals($beforeGroupsCount + 1, $afterGroupsCount);
 
-        $createdGroup = static::$em->getRepository(Group::clazz())->find($result['created_models']['modera.security_bundle.group'][0]);
+        $createdGroup = static::$em->getRepository(Group::class)->find($result['created_models']['modera.security_bundle.group'][0]);
 
         $this->assertEquals('testName', $createdGroup->getName());
         $this->assertEquals('TESTREFNAME', $createdGroup->getRefName());
@@ -216,7 +216,7 @@ class GroupsControllerTest extends FunctionalTestCase
         $this->assertEquals($group->getId(), $result['updated_models']['modera.security_bundle.group'][0]);
 
         /** @var Group $groupFromDb */
-        $groupFromDb = static::$em->find(Group::clazz(), $group->getId());
+        $groupFromDb = static::$em->find(Group::class, $group->getId());
 
         $this->assertEquals('testNameUpdated', $groupFromDb->getName());
         $this->assertEquals('TESTREFNAMEUPDATED', $groupFromDb->getRefName());
@@ -252,7 +252,7 @@ class GroupsControllerTest extends FunctionalTestCase
         $this->assertEquals($group->getId(), $result['updated_models']['modera.security_bundle.group'][0]);
 
         /** @var Group $groupFromDb */
-        $groupFromDb = static::$em->find(Group::clazz(), $group->getId());
+        $groupFromDb = static::$em->find(Group::class, $group->getId());
 
         $this->assertEquals('newTestName', $groupFromDb->getName());
         $this->assertEquals('TESTREFNAMEUPDATED', $groupFromDb->getRefName());
@@ -299,10 +299,10 @@ class GroupsControllerTest extends FunctionalTestCase
     private static function getTablesClasses()
     {
         return array(
-            Permission::clazz(),
-            PermissionCategory::clazz(),
-            User::clazz(),
-            Group::clazz(),
+            Permission::class,
+            PermissionCategory::class,
+            User::class,
+            Group::class,
         );
     }
 

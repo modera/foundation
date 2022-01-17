@@ -21,14 +21,6 @@ final class Extension extends AbstractExtension
     }
 
     /**
-     * @return string
-     */
-    static public function clazz()
-    {
-        return get_called_class();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getFilters()

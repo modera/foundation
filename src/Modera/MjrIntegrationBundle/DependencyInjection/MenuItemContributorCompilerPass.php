@@ -20,7 +20,7 @@ class MenuItemContributorCompilerPass implements CompilerPassInterface
     {
         $config = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
 
-        $def = new Definition(ConfigMenuItemsProvider::clazz(), array($config));
+        $def = new Definition(ConfigMenuItemsProvider::class, array($config));
         $def->addTag('modera_mjr_integration.menu.menu_items_provider');
 
         $container->addDefinitions(array(

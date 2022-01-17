@@ -99,7 +99,7 @@ In order to fetch a configuration property in your application code you need to 
 ``` php
 <?php
 
-/* @var \Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface $service */
+/* @var \Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface $service */
 $service = $container->get('modera_config.configuration_entries_manager');
 
 /* @var \Modera\ConfigBundle\Config\ConfigurationEntryInterface $entry */

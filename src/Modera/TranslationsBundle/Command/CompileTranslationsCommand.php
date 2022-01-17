@@ -96,7 +96,7 @@ class CompileTranslationsCommand extends Command
 
         $qb = $em->createQueryBuilder();
         $qb->select('l')
-            ->from(Language::clazz(), 'l')
+            ->from(Language::class, 'l')
             ->where($qb->expr()->eq('l.isEnabled', ':isEnabled'))
             ->setParameter('isEnabled', true);
 
@@ -107,7 +107,7 @@ class CompileTranslationsCommand extends Command
 
         $qb = $em->createQueryBuilder();
         $qb->select('ltt.id, ltt.translation, IDENTITY(ltt.language) AS language, tt.domain, tt.tokenName')
-            ->from(LanguageTranslationToken::clazz(), 'ltt')
+            ->from(LanguageTranslationToken::class, 'ltt')
             ->leftJoin('ltt.translationToken', 'tt')
             ->where($qb->expr()->in('ltt.language', array_keys($languages)))
             ->andWhere($qb->expr()->in('tt.isObsolete', ':isObsolete'))

@@ -48,7 +48,7 @@ class DefaultControllerTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue(is_callable($hydrator));
 
-        $entry = \Phake::mock(ConfigurationEntry::clazz());
+        $entry = \Phake::mock(ConfigurationEntry::class);
 
         $this->teachEntry($entry, 'getId', 'foo_id');
         $this->teachEntry($entry, 'getName', 'foo_name');
@@ -83,7 +83,7 @@ class DefaultControllerTest extends \PHPUnit\Framework\TestCase
 
         $mapper = $config['map_data_on_update'];
 
-        $entry = \Phake::mock(ConfigurationEntry::clazz());
+        $entry = \Phake::mock(ConfigurationEntry::class);
         $this->teachEntry($entry, 'isReadOnly', true);
     }
 

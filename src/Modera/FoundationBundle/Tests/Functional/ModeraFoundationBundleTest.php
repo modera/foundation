@@ -12,7 +12,7 @@ class ModeraFoundationBundleTest extends FunctionalTestCase
 {
     public function testBoot()
     {
-        $reflProp = new \ReflectionProperty(T::clazz(), 'container');
+        $reflProp = new \ReflectionProperty(T::class, 'container');
         $reflProp->setAccessible(true);
 
         $this->assertInstanceOf(

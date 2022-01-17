@@ -28,7 +28,7 @@ trait BackendUsersTrait
 
         $qb = $this->em()->createQueryBuilder();
         $qb
-            ->from(User::clazz(), $prefix . 'u')
+            ->from(User::class, $prefix . 'u')
             ->leftJoin($prefix . 'u.permissions', $prefix . 'up')
             ->leftJoin($prefix . 'u.groups', $prefix . 'g')
             ->leftJoin($prefix . 'g.permissions', $prefix . 'gp')

@@ -4,7 +4,7 @@ namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
-use Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface;
+use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
 
 /**

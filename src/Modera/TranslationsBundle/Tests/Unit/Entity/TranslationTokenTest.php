@@ -32,13 +32,13 @@ class TranslationTokenTest extends \PHPUnit\Framework\TestCase
 
     public function testCreateLanguageToken()
     {
-        $lang = \Phake::mock(Language::clazz());
+        $lang = \Phake::mock(Language::class);
 
         $token = new TranslationToken();
 
         $languageToken = $token->createLanguageToken($lang);
 
-        $this->assertInstanceOf(LanguageTranslationToken::clazz(), $languageToken);
+        $this->assertInstanceOf(LanguageTranslationToken::class, $languageToken);
         $this->assertSame($token, $languageToken->getTranslationToken());
         $this->assertSame($lang, $languageToken->getLanguage());
 

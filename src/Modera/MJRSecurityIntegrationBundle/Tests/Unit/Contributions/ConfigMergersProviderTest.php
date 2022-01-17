@@ -27,7 +27,7 @@ class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
             'ROLE_ADMIN',
         );
 
-        $user = \Phake::mock(User::clazz());
+        $user = \Phake::mock(User::class);
         \Phake::when($user)->getId()->thenReturn(777);
         \Phake::when($user)->getFullName()->thenReturn('John Doe');
         \Phake::when($user)->getEmail()->thenReturn('john.doe@example.org');

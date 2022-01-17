@@ -26,17 +26,17 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
     public static function setUpDatabase()
     {
         self::$st = new SchemaTool(self::$em);
-        self::$st->createSchema([self::$em->getClassMetadata(Language::clazz())]);
-        self::$st->createSchema([self::$em->getClassMetadata(TranslationToken::clazz())]);
-        self::$st->createSchema([self::$em->getClassMetadata(LanguageTranslationToken::clazz())]);
+        self::$st->createSchema([self::$em->getClassMetadata(Language::class)]);
+        self::$st->createSchema([self::$em->getClassMetadata(TranslationToken::class)]);
+        self::$st->createSchema([self::$em->getClassMetadata(LanguageTranslationToken::class)]);
     }
 
     // override
     public static function dropDatabase()
     {
-        self::$st->dropSchema([self::$em->getClassMetadata(Language::clazz())]);
-        self::$st->dropSchema([self::$em->getClassMetadata(TranslationToken::clazz())]);
-        self::$st->dropSchema([self::$em->getClassMetadata(LanguageTranslationToken::clazz())]);
+        self::$st->dropSchema([self::$em->getClassMetadata(Language::class)]);
+        self::$st->dropSchema([self::$em->getClassMetadata(TranslationToken::class)]);
+        self::$st->dropSchema([self::$em->getClassMetadata(LanguageTranslationToken::class)]);
     }
 
     protected function launchCompileCommand(array $parameters = array())

@@ -3,6 +3,8 @@
 namespace Modera\BackendTranslationsToolBundle\Filtering\Filter;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Modera\ServerCrudBundle\DependencyInjection\ModeraServerCrudExtension;
+use Modera\ServerCrudBundle\Exceptions\BadConfigException;
 use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
 use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
 use Modera\TranslationsBundle\Entity\TranslationToken;
@@ -31,7 +33,18 @@ abstract class AbstractTranslationTokensFilter implements FilterInterface
      */
     protected function getPersistenceHandler()
     {
-        return $this->container->get('modera_server_crud.persistence.default_handler');
+        $config = $this->container->getParameter(ModeraServerCrudExtension::CONFIG_KEY);
+
+        $serviceId = 'modera_server_crud.persistence.doctrine_registry_handler';
+        if (isset($config[$serviceType = 'persistence_handler'])) {
+            $serviceId = $config[$serviceType];
+        }
+
+        try {
+            return $this->container->get($serviceId);
+        } catch (\Exception $e) {
+            throw BadConfigException::create($serviceType, $config, $e);
+        }
     }
 
     /**
@@ -51,7 +64,7 @@ abstract class AbstractTranslationTokensFilter implements FilterInterface
             $params['filter'] = array();
         }
 
-        return $this->getPersistenceHandler()->getCount(TranslationToken::clazz(), $params);
+        return $this->getPersistenceHandler()->getCount(TranslationToken::class, $params);
     }
 
     /**
@@ -66,7 +79,7 @@ abstract class AbstractTranslationTokensFilter implements FilterInterface
         $total = $this->getCount($params);
         $entities = array();
         if ($total > 0) {
-            $entities = $this->getPersistenceHandler()->query(TranslationToken::clazz(), $params);
+            $entities = $this->getPersistenceHandler()->query(TranslationToken::class, $params);
         }
 
         return array(

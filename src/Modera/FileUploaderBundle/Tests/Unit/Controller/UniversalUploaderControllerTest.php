@@ -29,7 +29,7 @@ class UniversalUploaderControllerTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
-        $this->webUploader = \Phake::mock(WebUploader::clazz());
+        $this->webUploader = \Phake::mock(WebUploader::class);
 
         $this->ctr = new UniversalUploaderController();
         $this->ctr->setContainer($this->container);

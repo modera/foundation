@@ -4,7 +4,7 @@ namespace Modera\ConfigBundle\Twig;
 
 use Twig\TwigFunction;
 use Twig\Extension\AbstractExtension;
-use Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface;
+use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
 
 /**
  * You may rely on functions exposed by this class but the class itself may be moved or renamed later.
@@ -83,13 +83,5 @@ class TwigExtension extends AbstractExtension
 
             return $property ? $property->getValue() : null;
         }
-    }
-
-    /**
-     * @return string
-     */
-    public static function clazz()
-    {
-        return get_called_class();
     }
 }

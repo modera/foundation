@@ -44,7 +44,7 @@ class FilterAutoSuggestService
         if ('user' == $queryType) {
             $dql = $this->em->createQuery(sprintf(
                 'SELECT u FROM %s u WHERE u.firstName LIKE ?0 OR u.lastName LIKE ?0 OR u.username LIKE ?0 OR u.email LIKE ?0',
-                User::clazz()
+                User::class
             ));
             $dql->setParameter(0, '%'.$query.'%');
 
@@ -62,7 +62,7 @@ class FilterAutoSuggestService
 
             return $rawResult;
         } elseif ('exact-user' == $queryType) { // find by ID
-            $user = $this->em->find(User::clazz(), $query);
+            $user = $this->em->find(User::class, $query);
 
             if (!$user) {
                 throw new \DomainException(T::trans('Unable to find a user "%username%"', array('%username%' => $query)));
@@ -99,10 +99,5 @@ class FilterAutoSuggestService
 
             return $result;
         }
-    }
-
-    public static function clazz()
-    {
-        return get_called_class();
     }
 }

@@ -146,16 +146,6 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
     }
 
     /**
-     * @deprecated
-     *
-     * @return mixed
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
      * Return dashboardProvider.
      *
      * @return mixed
@@ -181,13 +171,13 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         $settings = [];
         foreach ($user->getGroups() as $group) {
             /** @var GroupSettings $groupSettings */
-            $groupSettings = $em->getRepository(GroupSettings::clazz())->findOneBy(array('group' => $group));
+            $groupSettings = $em->getRepository(GroupSettings::class)->findOneBy(array('group' => $group));
             if ($groupSettings) {
                 $settings[] = $groupSettings->getDashboardSettings();
             }
         }
         /** @var UserSettings $userSettings */
-        $userSettings = $em->getRepository(UserSettings::clazz())->findOneBy(array('user' => $user));
+        $userSettings = $em->getRepository(UserSettings::class)->findOneBy(array('user' => $user));
         if ($userSettings) {
             $settings[] = $userSettings->getDashboardSettings();
         }

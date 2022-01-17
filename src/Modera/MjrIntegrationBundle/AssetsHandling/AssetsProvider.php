@@ -133,9 +133,4 @@ class AssetsProvider
     {
         return $this->filterRawAssetsByType($type, $this->jsResourcesProvider->getItems());
     }
-
-    public static function clazz()
-    {
-        return get_called_class();
-    }
 }

@@ -16,7 +16,7 @@ class ExtensionTest extends FunctionalTestCase
         /* @var \Twig\Environment $twig */
         $twig = self::$container->get('twig');
 
-        $this->assertTrue($twig->hasExtension(Extension::clazz()));
+        $this->assertTrue($twig->hasExtension(Extension::class));
     }
 
     public function testHasFilters()

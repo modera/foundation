@@ -48,7 +48,7 @@ class JsResourcesProvider implements ContributorInterface
         $locale = $this->defaultLocale;
 
         /* @var Language $defaultLanguage */
-        $defaultLanguage = $this->em->getRepository(Language::clazz())->findOneBy(array(
+        $defaultLanguage = $this->em->getRepository(Language::class)->findOneBy(array(
             'isDefault' => true,
         ));
         if ($defaultLanguage) {

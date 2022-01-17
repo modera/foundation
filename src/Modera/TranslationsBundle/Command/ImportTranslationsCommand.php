@@ -71,7 +71,7 @@ class ImportTranslationsCommand extends Command
         $printMessageNames = $output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE;
 
         /* @var Language[] $languages */
-        $languages = $this->em()->getRepository(Language::clazz())->findAll();
+        $languages = $this->em()->getRepository(Language::class)->findAll();
         if (!count($languages)) {
             $languages = array($this->createAndReturnDefaultLanguage());
         }
@@ -265,8 +265,8 @@ class ImportTranslationsCommand extends Command
 
                 foreach ($insertLanguageTranslationTokens as $key => $data) {
                     $languageToken = new LanguageTranslationToken();
-                    $languageToken->setLanguage($this->em()->getReference(Language::clazz(), $data['language']));
-                    $languageToken->setTranslationToken($this->em()->getReference(TranslationToken::clazz(), $data['translationToken']));
+                    $languageToken->setLanguage($this->em()->getReference(Language::class, $data['language']));
+                    $languageToken->setTranslationToken($this->em()->getReference(TranslationToken::class, $data['translationToken']));
                     $languageToken->setTranslation($data['translation']);
 
                     if ($markAsTranslated) {
@@ -287,7 +287,7 @@ class ImportTranslationsCommand extends Command
                     $query = $this->em()->createQuery(
                         sprintf(
                             'UPDATE %s ltt SET ltt.translation = :translation %s WHERE ltt.id = :id',
-                            LanguageTranslationToken::clazz(),
+                            LanguageTranslationToken::class,
                             $markAsTranslated ? ', ltt.isNew = :isNew' : ''
                         )
                     );
@@ -322,7 +322,7 @@ class ImportTranslationsCommand extends Command
                     $query = $this->em()->createQuery(
                         sprintf(
                             'UPDATE %s tt SET tt.isObsolete = :isObsolete WHERE tt.id = :id',
-                            TranslationToken::clazz()
+                            TranslationToken::class
                         )
                     );
                     $query->setParameter('isObsolete', $token['isObsolete']);
@@ -337,7 +337,7 @@ class ImportTranslationsCommand extends Command
                 $query = $this->em()->createQuery(
                     sprintf(
                         'UPDATE %s tt SET tt.isObsolete = true WHERE tt.id IN(:ids)',
-                        TranslationToken::clazz()
+                        TranslationToken::class
                     )
                 );
                 $query->setParameter('ids', $obsolete);
@@ -593,10 +593,10 @@ class ImportTranslationsCommand extends Command
 
     private function cleanDatabaseTables()
     {
-        $query = $this->em()->createQuery(sprintf('DELETE %s ltt', LanguageTranslationToken::clazz()));
+        $query = $this->em()->createQuery(sprintf('DELETE %s ltt', LanguageTranslationToken::class));
         $query->execute();
 
-        $query = $this->em()->createQuery(sprintf('DELETE %s tt', TranslationToken::clazz()));
+        $query = $this->em()->createQuery(sprintf('DELETE %s tt', TranslationToken::class));
         $query->execute();
     }
 
@@ -610,7 +610,7 @@ class ImportTranslationsCommand extends Command
         $query = $this->em()->createQuery(
             sprintf(
                 'SELECT tt FROM %s tt',
-                TranslationToken::clazz()
+                TranslationToken::class
             )
         );
         $translationTokens = $query->getResult($query::HYDRATE_ARRAY);
@@ -618,7 +618,7 @@ class ImportTranslationsCommand extends Command
         $query = $this->em()->createQuery(
             sprintf(
                 'SELECT ltt, IDENTITY(ltt.language) as language, IDENTITY(ltt.translationToken) as translationToken FROM %s ltt',
-                LanguageTranslationToken::clazz()
+                LanguageTranslationToken::class
             )
         );
         $languageTranslationTokens = $query->getResult($query::HYDRATE_ARRAY);

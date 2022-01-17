@@ -37,12 +37,12 @@ class ModeraFileUploaderExtension extends Extension
         $container->setParameter('modera_file_uploader.uploader_url', $config['url']);
 
         if (true == $config['expose_all_repositories']) {
-            $gateway = new Definition(AllExposedRepositoriesGateway::clazz());
+            $gateway = new Definition(AllExposedRepositoriesGateway::class);
             $gateway->addArgument(new Reference('modera_file_repository.repository.file_repository'));
 
             $container->setDefinition('modera_file_uploader.uploading.all_exposed_repositories_gateway', $gateway);
 
-            $provider = new Definition(ExposedGatewayProvider::clazz());
+            $provider = new Definition(ExposedGatewayProvider::class);
             $provider->addArgument(new Reference('modera_file_uploader.uploading.all_exposed_repositories_gateway'));
             $provider->addTag('modera_file_uploader.uploading.gateways_provider');
 

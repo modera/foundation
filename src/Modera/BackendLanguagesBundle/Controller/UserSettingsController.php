@@ -25,7 +25,7 @@ class UserSettingsController extends AbstractCrudController
         $self = $this;
 
         return array(
-            'entity' => UserSettings::clazz(),
+            'entity' => UserSettings::class,
             'security' => array(
                 'actions' => array(
                     'create' => function (AuthorizationCheckerInterface $ac, array $params) use ($self) {
@@ -46,7 +46,7 @@ class UserSettingsController extends AbstractCrudController
                         if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)) {
                             return true;
                         } else if (isset($params['record']['id'])) {
-                            $entities = $this->getPersistenceHandler()->query(UserSettings::clazz(), array(
+                            $entities = $this->getPersistenceHandler()->query(UserSettings::class, array(
                                 'filter' => array(
                                     array(
                                         'property' => 'id',

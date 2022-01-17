@@ -20,11 +20,6 @@ class DummyEntity
     {
         return $this->id;
     }
-
-    public static function clazz()
-    {
-        return get_called_class();
-    }
 }
 
 /**
@@ -40,14 +35,14 @@ class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         $this->em = $this->createMock('Doctrine\ORM\EntityManager', array(), array(), '', false);
-        $this->ce = $this->createMock(ConfigurationEntry::clazz(), array(), array(), '', false);
+        $this->ce = $this->createMock(ConfigurationEntry::class, array(), array(), '', false);
         $this->handler = new EntityRepositoryHandler($this->em);
     }
 
     private function teachConfigEntryToReturnServerHandlerConfig(array $overrideConfig = array())
     {
         $cfg = array_merge(array(
-            'entityFqcn' => DummyEntity::clazz(),
+            'entityFqcn' => DummyEntity::class,
             'toStringMethodName' => 'getValue',
             'clientValueMethodName' => 'getId',
         ), $overrideConfig);
@@ -67,7 +62,7 @@ class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
     {
         $this->em->expects($this->any())
              ->method('find')
-             ->with($this->equalTo(DummyEntity::clazz(), $id))
+             ->with($this->equalTo(DummyEntity::class, $id))
              ->will($this->returnValue($entityInstance));
     }
 

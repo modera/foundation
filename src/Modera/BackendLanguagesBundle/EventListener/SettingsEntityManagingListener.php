@@ -26,13 +26,13 @@ class SettingsEntityManagingListener
                 $userSettings->setUser($entity);
 
                 $em->persist($userSettings);
-                $uow->computeChangeSet($em->getClassMetadata(UserSettings::clazz()), $userSettings);
+                $uow->computeChangeSet($em->getClassMetadata(UserSettings::class), $userSettings);
             }
         }
 
         foreach ($uow->getScheduledEntityDeletions() as $entity) {
             if ($entity instanceof User) {
-                $query = $em->createQuery(sprintf('DELETE FROM %s us WHERE us.user = ?0', UserSettings::clazz()));
+                $query = $em->createQuery(sprintf('DELETE FROM %s us WHERE us.user = ?0', UserSettings::class));
                 $query->execute(array($entity));
             }
         }

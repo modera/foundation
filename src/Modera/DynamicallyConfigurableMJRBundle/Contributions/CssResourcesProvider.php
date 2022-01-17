@@ -3,7 +3,7 @@
 namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
 use Sli\ExpanderBundle\Ext\ContributorInterface;
-use Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface;
+use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
 use Modera\DynamicallyConfigurableMJRBundle\Resolver\ValueResolverInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
 

@@ -14,7 +14,7 @@ class ServiceDefinitionsProviderTest extends \PHPUnit\Framework\TestCase
 {
     private function createMockContainer(array $jsAssets, array $cssAssets, array $bundleConfig = array())
     {
-        $assetsProvider = \Phake::mock(AssetsProvider::clazz());
+        $assetsProvider = \Phake::mock(AssetsProvider::class);
         \Phake::when($assetsProvider)->getJavascriptAssets(AssetsProvider::TYPE_NON_BLOCKING)->thenReturn($jsAssets);
         \Phake::when($assetsProvider)->getCssAssets(AssetsProvider::TYPE_NON_BLOCKING)->thenReturn($cssAssets);
 

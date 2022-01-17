@@ -32,7 +32,7 @@ class GroupsController extends AbstractCrudController
             }
 
             /** @var Group[] $groupWithSuchRefNameList */
-            $groupWithSuchRefNameList = $em->getRepository(Group::clazz())->findByRefName($group->getRefName());
+            $groupWithSuchRefNameList = $em->getRepository(Group::class)->findByRefName($group->getRefName());
 
             if (count($groupWithSuchRefNameList) > 0) {
                 $groupWithSuchRefName = $groupWithSuchRefNameList[0];
@@ -72,7 +72,7 @@ class GroupsController extends AbstractCrudController
         };
 
         return array(
-            'entity' => Group::clazz(),
+            'entity' => Group::class,
             'security' => array(
                 'role' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
                 'actions' => array(

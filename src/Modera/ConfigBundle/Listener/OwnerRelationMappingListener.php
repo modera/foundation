@@ -34,7 +34,7 @@ class OwnerRelationMappingListener
         /* @var ClassMetadataInfo $mapping */
         $mapping = $args->getClassMetadata();
 
-        if ($mapping->getName() == ConfigurationEntry::clazz()) {
+        if ($mapping->getName() == ConfigurationEntry::class) {
             $mapping->mapManyToOne(array(
                 'fieldName' => 'owner',
                 'type' => ClassMetadataInfo::MANY_TO_ONE,

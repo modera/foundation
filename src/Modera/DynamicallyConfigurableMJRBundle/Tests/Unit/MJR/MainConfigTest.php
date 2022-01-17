@@ -23,7 +23,7 @@ class MainConfigTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->mgr = \Phake::mock('Modera\ConfigBundle\Config\ConfigurationEntriesManagerInterface');
+        $this->mgr = \Phake::mock('Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface');
         $this->mc = new MainConfig($this->mgr);
     }
 

@@ -30,12 +30,4 @@ class User
     {
         $this->username = $username;
     }
-
-    /**
-     * @return string
-     */
-    public static function clazz()
-    {
-        return get_called_class();
-    }
 }
