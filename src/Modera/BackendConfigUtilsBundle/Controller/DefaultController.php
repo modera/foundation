@@ -16,9 +16,9 @@ use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
 class DefaultController extends AbstractCrudController
 {
     /**
-     * @return array
+     * {@inheritdoc}
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return array(
             'entity' => ConfigurationEntry::class,
@@ -58,11 +58,7 @@ class DefaultController extends AbstractCrudController
         );
     }
 
-    /**
-     * @param ConfigurationEntry $entity
-     * @return null|ConfigurationEntryDefinition
-     */
-    private function getEntryDef(ConfigurationEntry $entity)
+    private function getEntryDef(ConfigurationEntry $entity): ?ConfigurationEntryDefinition
     {
         /* @var ContributorInterface $provider */
         $provider = $this->get('modera_config.config_entries_provider');
