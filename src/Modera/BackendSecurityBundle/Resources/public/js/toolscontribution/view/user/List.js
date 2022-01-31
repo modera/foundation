@@ -27,7 +27,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
     groupsBtnText: 'Groups',
     permissionsBtnText: 'Permissions',
     changePasswordBtnText: 'Password',
-    deleteBtnText: 'Delete',
+    deleteBtnText: 'Remove',
     enableBtnText: 'Enable user',
     disableBtnText: 'Disable user',
     stateNewText: 'New',
@@ -137,7 +137,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                 {
                     security: {
                         role: function(roles, callback) {
-                            callback(['ROLE_MANAGE_USER_PROFILES', 'ROLE_MANAGE_USER_PROFILE_INFORMATION'].filter(function(role) {
+                            callback(['ROLE_MANAGE_USER_ACCOUNTS', 'ROLE_MANAGE_USER_PROFILES', 'ROLE_MANAGE_USER_PROFILE_INFORMATION'].filter(function(role) {
                                     return roles.indexOf(role) > -1;
                                 }).length > 0);
                         },
@@ -154,7 +154,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                             text: me.addBtnText,
                             scale: 'medium',
                             security: {
-                                role: 'ROLE_MANAGE_USER_PROFILES',
+                                role: 'ROLE_MANAGE_USER_ACCOUNTS',
                                 strategy: 'hide'
                             },
                             tid: 'newuserbtn'
@@ -163,6 +163,16 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                         {
                             xtype: 'splitbutton',
                             disabled: true,
+                            handleSecurity: function(securityMgr, application) {
+                                var btn = this;
+                                securityMgr.isAllowed(function(roles, callback) {
+                                    callback(['ROLE_MANAGE_USER_PROFILES', 'ROLE_MANAGE_USER_PROFILE_INFORMATION'].filter(function(role) {
+                                        return roles.indexOf(role) > -1;
+                                    }).length > 0);
+                                }, function(isAllowed) {
+                                    btn.isAllowed = isAllowed;
+                                });
+                            },
                             selectionAware: true,
                             multipleSelectionSupported: true,
                             itemId: 'editRecordBtn',
@@ -178,43 +188,45 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                                         text: me.deleteBtnText,
                                         iconCls: 'mfc-icon-delete-16',
                                         security: {
-                                            role: 'ROLE_MANAGE_USER_PROFILES',
+                                            role: 'ROLE_MANAGE_USER_ACCOUNTS',
                                             strategy: 'hide'
                                         },
                                         tid: 'deleteUserButton'
                                     },
                                     {
                                         hidden: true,
+                                        handleSecurity: function(securityMgr, application) {
+                                            var btn = this;
+                                            securityMgr.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
+                                                btn.isAllowed = isAllowed;
+                                                btn.setVisible(btn.isAllowed && btn.applyVisibility);
+                                            });
+                                        },
                                         selectionAware: function(selected) {
-                                            if (1 == selected.length && !selected[0].get('isActive') && !config.hideDisableEnableUserFunctionality) {
-                                                return this.show();
-                                            }
-                                            this.hide();
+                                            this.applyVisibility = 1 == selected.length && !selected[0].get('isActive');
+                                            this.setVisible(this.isAllowed && this.applyVisibility);
                                         },
                                         itemId: 'enableBtn',
                                         text: me.enableBtnText,
                                         iconCls: 'mfc-icon-apply-16',
-                                        security: {
-                                            role: 'ROLE_MANAGE_USER_PROFILES',
-                                            strategy: 'hide'
-                                        },
                                         tid: 'enableUserButton'
                                     },
                                     {
                                         hidden: true,
+                                        handleSecurity: function(securityMgr, application) {
+                                            var btn = this;
+                                            securityMgr.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
+                                                btn.isAllowed = isAllowed;
+                                                btn.setVisible(btn.isAllowed && btn.applyVisibility);
+                                            });
+                                        },
                                         selectionAware: function(selected) {
-                                            if (1 == selected.length && selected[0].get('isActive') && !config.hideDisableEnableUserFunctionality) {
-                                                return this.show();
-                                            }
-                                            this.hide();
+                                            this.applyVisibility = 1 == selected.length && selected[0].get('isActive');
+                                            this.setVisible(this.isAllowed && this.applyVisibility);
                                         },
                                         itemId: 'disableBtn',
                                         text: me.disableBtnText,
                                         iconCls: 'mfc-icon-error-16',
-                                        security: {
-                                            role: 'ROLE_MANAGE_USER_PROFILES',
-                                            strategy: 'hide'
-                                        },
                                         tid: 'disableUserButton'
                                     }
                                 ]
@@ -228,7 +240,8 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                             itemId: 'editGroupsBtn',
                             iconCls: 'modera-backend-security-icon-group-24',
                             text: me.groupsBtnText,
-                            scale: 'medium',security: {
+                            scale: 'medium',
+                            security: {
                                 role: 'ROLE_MANAGE_USER_PROFILES',
                                 strategy: 'hide'
                             },
@@ -371,7 +384,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
 
         me.on('selectionchange', function() {
             var btn = me.down('#editRecordBtn');
-            if (me.getSelectedRecords().length > 1) {
+            if (!btn.isAllowed || me.getSelectedRecords().length > 1) {
                 btn.btnEl.addCls('modera-backend-security-btn-disabled');
             } else {
                 btn.btnEl.removeCls('modera-backend-security-btn-disabled');
@@ -380,14 +393,12 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
 
         me.down('#editRecordBtn').on('click', function(btn) {
             var records = me.getSelectedRecords();
-            if (records.length > 1) {
+            if (!btn.isAllowed || records.length > 1) {
                 btn.maybeShowMenu();
             } else {
                 var record = records[0];
-                console.log('record meta', record.get('meta') );
                 me.fireEvent('editrecord', me, { id: record.get('id'), meta: record.get('meta') });
             }
-
         });
 
         me.down('#deleteBtn').on('click', function() {

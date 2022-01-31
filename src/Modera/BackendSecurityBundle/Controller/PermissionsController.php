@@ -19,7 +19,7 @@ class PermissionsController extends AbstractCrudController
     /**
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return array(
             'entity' => Permission::class,
@@ -64,11 +64,7 @@ class PermissionsController extends AbstractCrudController
         );
     }
 
-    /**
-     * @param PermissionCategory $entity
-     * @return string
-     */
-    private function getPermissionCategoryName(PermissionCategory $entity)
+    private function getPermissionCategoryName(PermissionCategory $entity): string
     {
         /* @var PermissionCategoryInterface[] $permissionCategories */
         $permissionCategories = $this->getPermissionCategoriesProvider()->getItems();
@@ -80,11 +76,7 @@ class PermissionsController extends AbstractCrudController
         return $entity->getName();
     }
 
-    /**
-     * @param Permission $entity
-     * @return string
-     */
-    private function getPermissionName(Permission $entity)
+    private function getPermissionName(Permission $entity): string
     {
         /* @var PermissionInterface[] $permissions */
         $permissions = $this->getPermissionsProvider()->getItems();
@@ -96,18 +88,12 @@ class PermissionsController extends AbstractCrudController
         return $entity->getName();
     }
 
-    /**
-     * @return ContributorInterface
-     */
-    private function getPermissionCategoriesProvider()
+    private function getPermissionCategoriesProvider(): ContributorInterface
     {
         return $this->get('modera_security.permission_categories_provider');
     }
 
-    /**
-     * @return ContributorInterface
-     */
-    private function getPermissionsProvider()
+    private function getPermissionsProvider(): ContributorInterface
     {
         return $this->get('modera_security.permissions_provider');
     }

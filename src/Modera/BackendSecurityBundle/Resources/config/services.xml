@@ -59,14 +59,6 @@
             <tag name="modera_security.permission_categories_provider" />
         </service>
 
-        <service id="modera_backend_security.data_mapper.user_data_mapper"
-                 class="Modera\BackendSecurityBundle\DataMapper\UserDataMapper"
-                 public="true">
-
-            <argument type="service" id="sli.extjsintegration.entity_data_mapper" />
-            <argument type="service" id="doctrine.orm.entity_manager" />
-        </service>
-
         <service id="modera_backend_security.contributions.config_mergers_provider"
                  class="Modera\BackendSecurityBundle\Contributions\ConfigMergersProvider">
 

@@ -20,7 +20,7 @@ class GroupsController extends AbstractCrudController
     /**
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         $em = $this->getDoctrine();
 

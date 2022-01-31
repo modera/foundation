@@ -15,7 +15,7 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.NewWindowActi
 
     getSecurityConfig: function() {
         return {
-            role: 'ROLE_MANAGE_USER_PROFILES'
+            role: 'ROLE_MANAGE_USER_ACCOUNTS'
         }
     },
 

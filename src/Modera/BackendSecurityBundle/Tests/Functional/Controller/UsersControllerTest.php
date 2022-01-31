@@ -77,10 +77,17 @@ class UsersControllerTest extends FunctionalTestCase
         $entityPermission4->setName('ROLE_MANAGE_USER_PROFILES');
         $entityPermission4->setCategory($entityPermissionCategory);
 
+        $entityPermission5 = new Permission();
+        $entityPermission5->setRoleName('ROLE_MANAGE_USER_ACCOUNTS');
+        $entityPermission5->setDescription('ROLE_MANAGE_USER_ACCOUNTS');
+        $entityPermission5->setName('ROLE_MANAGE_USER_ACCOUNTS');
+        $entityPermission5->setCategory($entityPermissionCategory);
+
         static::$em->persist($entityPermission);
         static::$em->persist($entityPermission2);
         static::$em->persist($entityPermission3);
         static::$em->persist($entityPermission4);
+        static::$em->persist($entityPermission5);
         static::$em->flush();
 
         $group = new Group();
@@ -90,6 +97,7 @@ class UsersControllerTest extends FunctionalTestCase
         $group->addPermission($entityPermission2);
         $group->addPermission($entityPermission3);
         $group->addPermission($entityPermission4);
+        $group->addPermission($entityPermission5);
 
         static::$user->addToGroup($group);
 
@@ -99,32 +107,17 @@ class UsersControllerTest extends FunctionalTestCase
         static::$em->flush();
     }
 
-    public function testMainFormHydration()
+    public function testListAction()
     {
-        $this->assertNotNull(static::$user);
-
-        $user = static::$em->find(User::class, static::$user->getId());
-
-        $this->assertNotNull($user);
-
-        $this->assertEquals(static::$user, $user);
-
-        $userMeta = array('rootElement' => array('subElement' => 'subElementValue', 'subElement2' => 'subElementValue2'),
-        );
-        static::$user->setMeta($userMeta);
-
-        static::$em->flush();
-
         $controller = $this->getController();
-
-        $response = $controller->listAction(
-            array(
-                'hydration' => array('profile' => 'list'),
-                'page' => 1,
-                'start' => 0,
-                'limit' => 25,
-            )
-        );
+        $response = $controller->listAction(array(
+            'hydration' => array(
+                'profile' => 'list'
+            ),
+            'page' => 1,
+            'start' => 0,
+            'limit' => 25,
+        ));
 
         $this->assertArrayHasKey('success', $response);
         $this->assertArrayHasKey('total', $response);
@@ -140,154 +133,75 @@ class UsersControllerTest extends FunctionalTestCase
         $this->assertArrayHasKey('firstName', $hydratedUser);
         $this->assertArrayHasKey('lastName', $hydratedUser);
         $this->assertArrayHasKey('middleName', $hydratedUser);
+        $this->assertArrayHasKey('isActive', $hydratedUser);
         $this->assertArrayHasKey('state', $hydratedUser);
+        $this->assertArrayHasKey('lastLogin', $hydratedUser);
         $this->assertArrayHasKey('groups', $hydratedUser);
-        $this->assertCount(1, $hydratedUser['groups']);
+        $this->assertArrayHasKey('permissions', $hydratedUser);
         $this->assertArrayHasKey('meta', $hydratedUser);
-        $this->assertEquals($userMeta, $hydratedUser['meta']);
+        $this->assertCount(1, $hydratedUser['groups']);
     }
 
-    public function testIsMetaInfoStoredOnCreation()
+    public function testCreateAction()
     {
-        $userMeta = array(
-            'modera_backend_service_account_plugin' => array(
-                'isService' => true,
-                'password' => '1234',
-            )
-        );
-
         $params = array(
             'record' => array(
                 'id' => '',
-                'lastName' => 'Full Display Name',
-                'username' => 'serviceAccount',
-                'email' => 'test1@test.com',
-                'meta' => $userMeta,
+                'firstName' => 'John',
+                'lastName' => 'Doe',
+                'email' => 'john.doe@test.com',
+                'username' => 'john.doe',
             ),
         );
 
         $controller = $this->getController();
-
         $response = $controller->createAction($params);
 
         $this->assertTrue($response['success']);
 
         /* @var User[] $userList */
         $userList = static::$em->getRepository(User::class)->findAll();
-
         $lastUser = array_pop($userList);
 
-        $this->assertEquals('test1@test.com', $lastUser->getEmail());
+        $this->assertEquals($params['record']['firstName'], $lastUser->getFirstName());
+        $this->assertEquals($params['record']['lastName'], $lastUser->getLastName());
+        $this->assertEquals($params['record']['email'], $lastUser->getEmail());
+        $this->assertEquals($params['record']['username'], $lastUser->getUsername());
         $this->assertArrayHasKey('modera_security', $lastUser->getMeta());
         $this->assertArrayHasKey('used_passwords', $lastUser->getMeta()['modera_security']);
-        $lastUserMeta = $lastUser->getMeta();
-        unset($lastUserMeta['modera_security']);
-        $this->assertEquals($userMeta, $lastUserMeta);
-        $lastUser->setMeta($lastUserMeta);
-
-        return $lastUser;
-    }
-
-    public function testIsMetaInfoStoredOnCreation_NoMeta()
-    {
-        $params = array(
-            'record' => array(
-                'id' => '',
-                'lastName' => 'Full Display Name',
-                'username' => 'serviceAccount_NoMeta',
-                'email' => 'test3@test.com',
-                'meta' => '',
-            ),
-        );
-
-        $controller = $this->getController();
-
-        $response = $controller->createAction($params);
-
-        $this->assertTrue($response['success']);
-        /* @var User[] $userList */
-        $userList = static::$em->getRepository(User::class)->findAll();
-
-        $lastUser = array_pop($userList);
-
-        $this->assertEquals('test3@test.com', $lastUser->getEmail());
-        $lastUserMeta = $lastUser->getMeta();
-        unset($lastUserMeta['modera_security']); // we are not going to be checking "password rotation" logic here
-        $this->assertEquals(array(), $lastUserMeta);
 
         return $lastUser;
     }
 
     /**
-     * @depends testIsMetaInfoStoredOnCreation
+     * @depends testCreateAction
      *
      * @param User $user
      */
-    public function testIsMetaInfoStoredOnUpdate(User $user)
+    public function testUpdateAction(User $user)
     {
-        $userMeta = array(
-            'modera_backend_service_account_plugin' => array(
-                'isService' => true,
-                'password' => '5678',
-            ),
-        );
-
         $params = array(
             'record' => array(
                 'id' => $user->getId(),
-                'lastName' => $user->getLastName(),
-                'username' => $user->getUsername(),
-                'email' => $user->getEmail(),
-                'meta' => $userMeta,
+                'firstName' => 'Homer',
+                'lastName' => 'Simpson',
+                'email' => 'homer.simpson@test.com',
+                'username' => 'homer.simpson',
             ),
         );
 
         $controller = $this->getController();
-
         $response = $controller->updateAction($params);
 
         $this->assertTrue($response['success']);
-        /*
-         * @var User[] $userList
-         */
+
+        /* @var User $userFromDb */
         $userFromDb = static::$em->getRepository(User::class)->find($user->getId());
 
-        $this->assertEquals('test1@test.com', $userFromDb->getEmail());
-        $this->assertEquals($userMeta, $userFromDb->getMeta());
-    }
-
-    /**
-     * @depends testIsMetaInfoStoredOnCreation
-     *
-     * @param User $user
-     */
-    public function testIsMetaStoredOnUpdate_NoMeta(User $user)
-    {
-        $params = array(
-            'record' => array(
-                'id' => $user->getId(),
-                'lastName' => $user->getLastName(),
-                'username' => $user->getUsername(),
-                'email' => $user->getEmail(),
-                'meta' => '',
-            ),
-        );
-
-        $controller = $this->getController();
-
-        $response = $controller->updateAction($params);
-
-        $this->assertTrue($response['success']);
-        /*
-         * @var User[]
-         */
-        $userList = static::$em->getRepository(User::class)->findAll();
-
-        $lastUser = array_pop($userList);
-
-        $this->assertEquals('test1@test.com', $user->getEmail());
-        $this->assertTrue(is_array($user->getMeta()));
-        $this->assertCount(0, $user->getMeta());
+        $this->assertEquals($params['record']['firstName'], $userFromDb->getFirstName());
+        $this->assertEquals($params['record']['lastName'], $userFromDb->getLastName());
+        $this->assertEquals($params['record']['email'], $userFromDb->getEmail());
+        $this->assertEquals($params['record']['username'], $userFromDb->getUsername());
     }
 
     public function doSetUp()
