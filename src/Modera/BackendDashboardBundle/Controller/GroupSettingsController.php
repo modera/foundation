@@ -10,7 +10,7 @@ use Modera\BackendDashboardBundle\Entity\GroupSettings;
  */
 class GroupSettingsController extends AbstractSettingsController
 {
-    protected function getEntityClass()
+    protected function getEntityClass(): string
     {
         return GroupSettings::class;
     }

@@ -2,7 +2,6 @@
 
 namespace Modera\BackendDashboardBundle\Controller;
 
-
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
@@ -18,10 +17,8 @@ abstract class AbstractSettingsController extends AbstractCrudController
     /**
      * {@inheritdoc}
      */
-    public function getConfig()
+    public function getConfig(): array
     {
-        $me = $this;
-
         return array(
             'entity' => $this->getEntityClass(),
             'security' => array(
@@ -29,16 +26,16 @@ abstract class AbstractSettingsController extends AbstractCrudController
             ),
             'hydration' => array(
                 'groups' => array(
-                    'main' => function ($settings) use ($me) {
-                        return $me->hydrateSettings($settings);
+                    'main' => function ($settings) {
+                        return $this->hydrateSettings($settings);
                     },
                 ),
                 'profiles' => array(
                     'main',
                 ),
             ),
-            'map_data_on_update' => function ($params, $entity, $defaultMapper) use ($me) {
-                $me->mapEntityOnUpdate($params, $entity, $defaultMapper);
+            'map_data_on_update' => function ($params, $entity, $defaultMapper) {
+                $this->mapEntityOnUpdate($params, $entity, $defaultMapper);
             },
         );
     }
@@ -46,7 +43,7 @@ abstract class AbstractSettingsController extends AbstractCrudController
     /**
      * @return string
      */
-    abstract protected function getEntityClass();
+    abstract protected function getEntityClass(): string;
 
     private function mapEntityOnUpdate(array $params, SettingsEntityInterface $entity)
     {
@@ -76,15 +73,12 @@ abstract class AbstractSettingsController extends AbstractCrudController
         }
     }
 
-    /**
-     * @return ContributorInterface
-     */
-    private function getDashboardProvider()
+    private function getDashboardProvider(): ContributorInterface
     {
         return $this->get('modera_backend_dashboard.dashboard_provider');
     }
 
-    private function hydrateSettings(SettingsEntityInterface $e)
+    private function hydrateSettings(SettingsEntityInterface $e): array
     {
         $dashboards = array();
         foreach ($this->getDashboardProvider()->getItems() as $dashboard) {
