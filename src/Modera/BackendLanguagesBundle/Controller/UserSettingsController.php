@@ -2,14 +2,14 @@
 
 namespace Modera\BackendLanguagesBundle\Controller;
 
-use Modera\SecurityBundle\Entity\User;
-use Modera\BackendLanguagesBundle\Entity\UserSettings;
-use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
-use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filter;
+use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filters;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filters;
-use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filter;
+use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
+use Modera\BackendLanguagesBundle\Entity\UserSettings;
+use Modera\SecurityBundle\Entity\User;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -18,9 +18,9 @@ use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filter;
 class UserSettingsController extends AbstractCrudController
 {
     /**
-     * @return array
+     * {@inheritdoc}
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         $self = $this;
 
@@ -32,14 +32,13 @@ class UserSettingsController extends AbstractCrudController
                         if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)) {
                             return true;
                         } else {
-                            /* @var TokenStorageInterface $ts */
-                            $ts = $self->get('security.token_storage');
-                            /* @var User $user */
-                            $user = $ts->getToken()->getUser();
                             // irrespectively of what privileges user has we will always allow him to create his
                             // own profile data
-                            return $user instanceof User && isset($params['record']['user'])
-                            && $user->getId() == $params['record']['user'];
+                            return (
+                                isset($params['record']['user'])
+                                && ($user = $this->getUser()) instanceof User
+                                && $user->getId() == $params['record']['user']
+                            );
                         }
                     },
                     'update' => function (AuthorizationCheckerInterface $ac, array $params) use ($self) {
@@ -57,20 +56,19 @@ class UserSettingsController extends AbstractCrudController
                             if (count($entities)) {
                                 /* @var UserSettings $userSettings */
                                 $userSettings = $entities[0];
-
-                                /* @var TokenStorageInterface $ts */
-                                $ts = $self->get('security.token_storage');
-                                /* @var User $user */
-                                $user = $ts->getToken()->getUser();
-
                                 // irrespectively of what privileges user has we will always allow him to edit his
                                 // own profile data
-                                return $user instanceof User && $user->getId() == $userSettings->getUser()->getId();
+                                return (
+                                    ($user = $this->getUser()) instanceof User
+                                    && $user->getId() == $userSettings->getUser()->getId()
+                                );
                             }
                         }
 
                         return false;
                     },
+                    'batchUpdate' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
+                    'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
                     'get' => function(AuthorizationCheckerInterface $ac, array $params) {
                         $userId = null;
                         if (isset($params['filter'])) {
@@ -82,14 +80,9 @@ class UserSettingsController extends AbstractCrudController
                             }
                         }
 
-                        $isPossiblyEditingOwnProfile = null !== $userId;
-                        if ($isPossiblyEditingOwnProfile) {
-                            /* @var TokenStorageInterface $ts */
-                            $ts = $this->get('security.token_storage');
-                            /* @var User $user */
-                            $user = $ts->getToken()->getUser();
-
-                            if ($user->getId() == $userId) {
+                        // editing own profile
+                        if (null !== $userId) {
+                            if (($user = $this->getUser()) && $user->getId() == $userId) {
                                 return true;
                             }
                         }
@@ -97,8 +90,6 @@ class UserSettingsController extends AbstractCrudController
                         return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
                     },
                     'list' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
-                    'batchUpdate' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
-                    'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
                 ),
             ),
             'hydration' => array(
@@ -121,7 +112,7 @@ class UserSettingsController extends AbstractCrudController
     /**
      * @Remote
      */
-    public function getOrCreateAction(array $params)
+    public function getOrCreateAction(array $params): array
     {
         $response = array(
             'success' => false,

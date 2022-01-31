@@ -14,28 +14,17 @@ use Modera\LanguagesBundle\Helper\LocaleHelper;
  */
 class IndexController extends Controller
 {
-    /**
-     * @return string
-     */
-    protected function getDomain()
+    protected function getDomain(): string
     {
         return 'extjs';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getTemplate()
+    protected function getTemplate(): string
     {
         return '@ModeraBackendLanguages/Index/compile.js.twig';
     }
 
-    /**
-     * @param Request $request
-     * @param string $locale
-     * @return Response
-     */
-    public function compileAction(Request $request, $locale = null)
+    public function compileAction(Request $request, ?string $locale = null): Response
     {
         if (!$locale) {
             $locale = $request->getLocale();

@@ -23,11 +23,8 @@ class LocalesController extends AbstractBaseController
 
     /**
      * @Remote
-     *
-     * @param array $params
-     * @return array
      */
-    public function listAction(array $params)
+    public function listAction(array $params): array
     {
         $this->checkAccess();
 
@@ -69,10 +66,7 @@ class LocalesController extends AbstractBaseController
         );
     }
 
-    /**
-     * @return array
-     */
-    private function getLocales()
+    private function getLocales(): array
     {
         $locales = array_keys(Locales::getNames());
         foreach ($this->get('modera_backend_languages.locales_provider')->getItems() as $locale) {
@@ -81,10 +75,7 @@ class LocalesController extends AbstractBaseController
         return $locales;
     }
 
-    /**
-     * @return string
-     */
-    private function getDisplayLocale()
+    private function getDisplayLocale(): string
     {
         $request = $this->get('request_stack')->getCurrentRequest();
         return $request->getLocale();

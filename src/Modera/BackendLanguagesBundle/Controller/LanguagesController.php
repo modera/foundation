@@ -14,9 +14,9 @@ use Modera\LanguagesBundle\Entity\Language;
 class LanguagesController extends AbstractCrudController
 {
     /**
-     * @return array
+     * {@inheritdoc}
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return array(
             'entity' => Language::class,
@@ -53,10 +53,7 @@ class LanguagesController extends AbstractCrudController
         );
     }
 
-    /**
-     * @return string
-     */
-    private function getDisplayLocale()
+    private function getDisplayLocale(): string
     {
         $request = $this->get('request_stack')->getCurrentRequest();
         return $request->getLocale();
