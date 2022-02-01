@@ -30,10 +30,8 @@ class SettingsSectionsProvider implements ContributorInterface
      */
     public function getItems()
     {
-        $roles = array(
-            ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS
-        );
-        if ($this->authorizationChecker->isGranted($roles)) {
+        $role = ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS;
+        if ($this->authorizationChecker->isGranted($role)) {
             return array(
                 new StandardSection(
                     'localisation',

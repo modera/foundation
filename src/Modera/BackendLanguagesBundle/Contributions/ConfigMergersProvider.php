@@ -55,7 +55,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
         $languages = array();
 
         $token = $this->tokenStorage->getToken();
-        if ($token->isAuthenticated() && $token->getUser() instanceof User) {
+        if ($token && $token->getUser() instanceof User) {
             /* @var UserSettings $settings */
             $settings = $this->em->getRepository(UserSettings::class)->findOneBy(array('user' => $token->getUser()->getId()));
             if ($settings && $settings->getLanguage() && $settings->getLanguage()->isEnabled()) {

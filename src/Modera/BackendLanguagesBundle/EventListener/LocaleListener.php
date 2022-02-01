@@ -5,7 +5,7 @@ namespace Modera\BackendLanguagesBundle\EventListener;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Modera\BackendLanguagesBundle\Entity\UserSettings;
@@ -51,9 +51,9 @@ class LocaleListener implements EventSubscriberInterface
     }
 
     /**
-     * @param GetResponseEvent $event
+     * @param RequestEvent $event
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
         if ($event->isMasterRequest() && !$request->attributes->get('_locale')) {

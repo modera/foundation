@@ -4,7 +4,7 @@ namespace Modera\ModuleBundle\Listener;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Modera\ModuleBundle\DependencyInjection\ModeraModuleExtension;
 
@@ -28,9 +28,9 @@ class MaintenanceListener
     }
 
     /**
-     * @param GetResponseEvent $event
+     * @param RequestEvent $event
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         if ($this->isMaintenanceMode()) {
             $request = $event->getRequest();
