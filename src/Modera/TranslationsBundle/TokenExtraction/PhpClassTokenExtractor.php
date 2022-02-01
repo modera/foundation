@@ -400,11 +400,15 @@ class PhpClassTokenExtractor implements ExtractorInterface
 
             if (\T_USE === $token[0]) {
                 $expectedSequence = ['Modera', '\\', 'FoundationBundle', '\\', 'Translation', '\\', 'T'];
-
-                $currentSequence = array_slice($tokens, $currentIndex + 1, count($expectedSequence));
-
-                if (implode('', $expectedSequence) == $this->joinTokenSequence($currentSequence)) {
-                    return true;
+                $expectedLength = [
+                    1,                        // >= PHP 8
+                    count($expectedSequence), // <= PHP 7
+                ];
+                foreach ($expectedLength as $length) {
+                    $currentSequence = array_slice($tokens, $currentIndex + 1, $length);
+                    if (implode('', $expectedSequence) == $this->joinTokenSequence($currentSequence)) {
+                        return true;
+                    }
                 }
             }
         }
