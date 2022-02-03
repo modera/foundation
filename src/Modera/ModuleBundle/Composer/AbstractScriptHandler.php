@@ -30,7 +30,7 @@ abstract class AbstractScriptHandler
 
         $command = $php.' '.$console.' '.$cmd;
 
-        $process = new Process($command, null, null, null, $timeout);
+        $process = Process::fromShellCommandline($command, null, null, null, $timeout);
         $process->run(function ($type, $buffer) {
             echo $buffer;
         });

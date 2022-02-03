@@ -27,7 +27,7 @@ class IndexController extends Controller
 
         $logoUrl = $mgr->findOneByNameOrDie(Bundle::CONFIG_LOGO_URL)->getValue();
 
-        $content = $this->renderView('ModeraDynamicallyConfigurableMJRBundle::logo.css.twig', array(
+        $content = $this->renderView('@ModeraDynamicallyConfigurableMJR/logo.css.twig', array(
             'logo_url' => $resolver->resolve(Bundle::CONFIG_LOGO_URL, $logoUrl),
         ));
 

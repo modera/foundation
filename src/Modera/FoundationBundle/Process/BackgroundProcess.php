@@ -15,7 +15,7 @@ class BackgroundProcess extends Process
      */
     public function __destruct()
     {
-        // overwrite to prevent kill process
+        // overwritten to prevent kill process
     }
 
     /**
@@ -23,11 +23,10 @@ class BackgroundProcess extends Process
      */
     public function start(callable $callback = null, array $env = array())
     {
-        $env = 1 < \func_num_args() ? \func_get_arg(1) : array();
-
+        $commandline = $this->getCommandLine();
         static::prepare($this);
-
-        return parent::start($callback, $env);
+        parent::start($callback, $env);
+        static::overrideCommandLine($this, $commandline);
     }
 
     /**
@@ -36,11 +35,18 @@ class BackgroundProcess extends Process
     public static function prepare(Process $process)
     {
         $commandline = $process->getCommandLine();
-
-        if (substr(strtoupper(PHP_OS), 0, 3) === 'WIN') {
-            $process->setCommandLine('START /b "" ' . $commandline);
+        if ('\\' === \DIRECTORY_SEPARATOR) {
+            $commandline = 'START /b "" ' . $commandline;
         } else {
-            $process->setCommandLine('nohup ' . $commandline . ' >/dev/null 2>&1 & echo $!');
+            $commandline = 'nohup ' . $commandline . ' >/dev/null 2>&1 & echo $!';
         }
+        static::overrideCommandLine($process, $commandline);
+    }
+
+    protected static function overrideCommandLine(Process $process, string $commandline)
+    {
+        $property = new \ReflectionProperty(Process::class, 'commandline');
+        $property->setAccessible(true);
+        $property->setValue($process, $commandline);
     }
 }

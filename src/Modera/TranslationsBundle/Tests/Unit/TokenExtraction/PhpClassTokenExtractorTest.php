@@ -19,8 +19,7 @@ class PhpClassTokenExtractorTest extends \PHPUnit\Framework\TestCase
         $extractor->extract(__DIR__.'/dummy-classes', $catalogue);
 
         $expectedDomains = array(
-            'messages', 'foodomain',
-            'bardomain', 'tcdomain',
+            'messages', 'foodomain', 'bardomain',
             'Error! Token value can be either a literal string or variable reference.',
         );
         sort($expectedDomains);
@@ -33,11 +32,8 @@ class PhpClassTokenExtractorTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($catalogue->has('Some simple token', 'messages'));
         $this->assertTrue($catalogue->has('We got something for ya, %s!', 'foodomain'));
         $this->assertTrue($catalogue->has('Another token', 'bardomain'));
-        $this->assertTrue($catalogue->has('This is "transChoice token"', 'tcdomain'));
         $this->assertTrue($catalogue->has('trans "implode" to variable', 'bardomain'));
-        $this->assertTrue($catalogue->has('transChoice "implode" to variable', 'bardomain'));
         $this->assertTrue($catalogue->has('trans' . PHP_EOL . '"implode"', 'bardomain'));
-        $this->assertTrue($catalogue->has('transChoice' . PHP_EOL . '"implode"', 'bardomain'));
 
         // ---
 
@@ -48,11 +44,8 @@ class PhpClassTokenExtractorTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($catalogue->has('foo: Some simple token', 'messages'));
         $this->assertTrue($catalogue->has('foo: We got something for ya, %s!', 'foodomain'));
         $this->assertTrue($catalogue->has('foo: Another token', 'bardomain'));
-        $this->assertTrue($catalogue->has('foo: This is "transChoice token"', 'tcdomain'));
         $this->assertTrue($catalogue->has('foo: trans "implode" to variable', 'bardomain'));
-        $this->assertTrue($catalogue->has('foo: transChoice "implode" to variable', 'bardomain'));
         $this->assertTrue($catalogue->has('foo: trans' . PHP_EOL . '"implode"', 'bardomain'));
-        $this->assertTrue($catalogue->has('foo: transChoice' . PHP_EOL . '"implode"', 'bardomain'));
     }
 
     public function testExtractMustNotParseFilesWithInvalidUseStmt()

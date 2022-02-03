@@ -15,7 +15,8 @@ use Symfony\Component\Translation\MessageCatalogue;
  *
  * Do not use aliases! For example, this won't be detected ( yet ):
  *    use Modera\FoundationBundle\Translation\T as Translator;
- * 2) In your code use method T::trans() or T::transChoice. Samples:
+ *
+ * 2) In your code use method T::trans(). Samples:
  *
  *    By using string literals:
  *      T::trans('Hello')
@@ -96,7 +97,6 @@ class PhpClassTokenExtractor implements ExtractorInterface
     {
         $sequences = [
             ['T', '::', 'trans'],
-            ['T', '::', 'transChoice'],
         ];
 
         $invocations = array();
@@ -200,12 +200,10 @@ class PhpClassTokenExtractor implements ExtractorInterface
             'domain' => array(),
         );
 
-        // both trans, transChoice first argument is "message":
+        // first argument is "message":
         // trans($id, $parameters, $domain, $locale)
-        // transChoice($id, $number, $parameters, $domain, $locale)
-        // In case of "transChoice" we assume that parameter "$number" is represented by one token followed
-        // by "," -- this gives us index shift of 2
-        $indexShift = 'transChoice' == $invocation['method_name'] ? 2 : 0;
+
+        $indexShift = 0;
 
         if (is_array($tokens[0]) && \T_STRING == $tokens[0][0] && 'implode' == $tokens[0][1]) {
             $indexShift += array_search(')', $tokens, true) + 1;

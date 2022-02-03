@@ -12,11 +12,6 @@ class MockTranslator implements TranslatorInterface
         return array($id, $parameters, $domain, $locale);
     }
 
-    public function transChoice($id, $number, array $parameters = array(), $domain = null, $locale = null)
-    {
-        return array($id, $number, $parameters, $domain, $locale);
-    }
-
     public function setLocale($locale)
     {
     }
@@ -66,17 +61,5 @@ class TTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->assertSame($expectedOutput, T::trans('foo id', array('params'), 'foo domain', 'foo locale'));
-    }
-
-    public function testTransChoice()
-    {
-        $expectedOutput = array(
-            'foo id', 'foo number', array('params'), 'foo domain', 'foo locale',
-        );
-
-        $this->assertSame(
-            $expectedOutput,
-            T::transChoice('foo id', 'foo number', array('params'), 'foo domain', 'foo locale')
-        );
     }
 }

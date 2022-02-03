@@ -45,29 +45,6 @@ class T
     }
 
     /**
-     * @see \Symfony\Contracts\Translation\TranslatorInterface::transChoice
-     *
-     * @param string $id
-     * @param number $number
-     * @param array  $parameters
-     * @param string $domain
-     * @param string $locale
-     *
-     * @return string
-     */
-    public static function transChoice($id, $number, array $parameters = array(), $domain = null, $locale = null)
-    {
-        if (self::$container) {
-            /* @var Translator $translator */
-            $translator = self::$container->get('translator');
-
-            return $translator->transChoice($id, $number, $parameters, $domain, $locale);
-        }
-
-        return $id;
-    }
-
-    /**
      * @deprecated Use native ::class property
      *
      * @return string

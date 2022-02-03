@@ -88,16 +88,16 @@ If you also want to have your bundle's PHP files to be scanned then can use some
 Now if you run `modera:translations:import` tasks then both twig templates and all *.php files located inside the
 `YourBundleName` will be scanned, tokens extracted and finally added to database.
 
-When it comes to working with localization in twig templates there's nothing new, you just use `trans` or `transchoice`
-twig filters provided by Symfony, but situation gets more interesting when you need to localize your php code though.
+When it comes to working with localization in twig templates there's nothing new, you just use `trans` twig filters 
+provided by Symfony, but situation gets more interesting when you need to localize your php code though.
 Natively, you can use `translator` service, but before you can use it you need to inject it to your services and even
 when you injected it Symfony still won't be able to detect and extract tokens from it, to solve this problem we have
 created an implementation of a standard Symfony ExtractorInterface -
 `Modera\TranslationsBundle\TokenExtraction\PhpClassTokenExtractor`. This class is able to statically analyze your PHP
 files and extract tokens from it, to make code analysis more bullet-proof we decided to introduce a helper that
-you should use to translate your messages and designate them as translations tokens - `Modera\TranslationsBundle\Helper\T`.
-This class provides two static methods - `trans` and `transChoice`, their purpose and method signatures are mirrored
-to standard Symfony's `Symfony\Contracts\Translation\TranslatorInterface`. You can use these two methods to translate
+you should use to translate your messages and designate them as translations tokens - `Modera\FoundationBundle\Translation\T`.
+This class provides static method - `trans`, its purpose and method signatures are mirrored
+to standard Symfony's `Symfony\Contracts\Translation\TranslatorInterface`. You can use this method to translate
 your messages without having to import translator service to your services beforehand. You may be wondering how
 these methods work - essentially, when ModeraTranslationsBundle is bootstrapped by Symfony, the bundle will inject
 translator service to `T` class and latter will use it to translate your messages. Probably you already have another

@@ -40,8 +40,8 @@ class MaintenanceListener
                     'message' => 'The server is temporarily down for maintenance.',
                 ), JsonResponse::HTTP_SERVICE_UNAVAILABLE);
             } else {
-                $engine = $this->container->get('templating');
-                $content = $engine->render('ModeraModuleBundle::maintenance.html.twig');
+                $engine = $this->container->get('twig');
+                $content = $engine->render('@ModeraModule/maintenance.html.twig');
                 $response = new Response($content, JsonResponse::HTTP_SERVICE_UNAVAILABLE);
             }
 
