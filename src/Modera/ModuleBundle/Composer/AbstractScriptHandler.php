@@ -30,7 +30,12 @@ abstract class AbstractScriptHandler
 
         $command = $php.' '.$console.' '.$cmd;
 
-        $process = Process::fromShellCommandline($command, null, null, null, $timeout);
+        if (\method_exists(Process::class, 'fromShellCommandline')) {
+            $process = Process::fromShellCommandline($command, null, null, null, $timeout);
+        } else {
+            $process = new Process($command, null, null, null, $timeout);
+        }
+
         $process->run(function ($type, $buffer) {
             echo $buffer;
         });
