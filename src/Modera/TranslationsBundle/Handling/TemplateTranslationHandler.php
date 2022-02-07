@@ -115,9 +115,26 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
                 $fallbackCatalogue = new MessageCatalogue($parts[0]);
                 $this->loader->read($translationsDir, $fallbackCatalogue);
 
+                $intlMessages = array();
+                $fallbackMessages = $fallbackCatalogue->all();
+                foreach ($fallbackMessages as $domain => $messages) {
+                    $arr = array();
+                    foreach ($messages as $token => $translation) {
+                        if ($fallbackCatalogue->defines($token, $domain . MessageCatalogue::INTL_DOMAIN_SUFFIX)) {
+                            if (!isset($intlMessages[$domain . MessageCatalogue::INTL_DOMAIN_SUFFIX])) {
+                                $intlMessages[$domain . MessageCatalogue::INTL_DOMAIN_SUFFIX] = array();
+                            }
+                            $intlMessages[$domain . MessageCatalogue::INTL_DOMAIN_SUFFIX][$token] = $translation;
+                        } else {
+                            $arr[$token] = $translation;
+                        }
+                    }
+                    $fallbackMessages[$domain] = $arr;
+                }
+
                 $mergeOperation = new MergeOperation(
                     $currentCatalogue,
-                    new MessageCatalogue($locale, $fallbackCatalogue->all())
+                    new MessageCatalogue($locale, array_merge($fallbackMessages, $intlMessages))
                 );
                 $currentCatalogue = $mergeOperation->getResult();
             }
@@ -126,6 +143,10 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
                 $messages = $currentCatalogue->all($domain);
                 if (count($messages)) {
                     $extractedCatalogue->add($messages, $domain);
+                }
+                $intlMessages = $currentCatalogue->all($domain . MessageCatalogue::INTL_DOMAIN_SUFFIX);
+                if (count($intlMessages)) {
+                    $extractedCatalogue->add($intlMessages, $domain . MessageCatalogue::INTL_DOMAIN_SUFFIX);
                 }
             }
         }

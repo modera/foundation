@@ -100,7 +100,7 @@ class ImportTranslationsCommand extends Command
                 return 1;
             }
 
-            $databaseCatalogue = new MessageCatalogue($locale);
+            $dbMessages = array();
             foreach ($tokens as $domain => $arr) {
                 foreach ($arr as $token) {
                     if ($token['isObsolete']) {
@@ -111,14 +111,36 @@ class ImportTranslationsCommand extends Command
                         foreach ($token['languageTranslationTokens'] as $ltt) {
                             $lang = $this->findLanguage($languages, $ltt['language']);
                             if ($lang && $lang->getLocale() == $locale) {
-                                $databaseCatalogue->set(
-                                    $token['tokenName'], $ltt['translation'], $token['domain']
-                                );
-
+                                if (!isset($dbMessages[$token['domain']])) {
+                                    $dbMessages[$token['domain']] = array();
+                                }
+                                $dbMessages[$token['domain']][$token['tokenName']] = $ltt['translation'];
                                 break;
                             }
                         }
                     }
+                }
+            }
+
+            $dbObsoleteMessages = array();
+            $databaseCatalogue = new MessageCatalogue($locale);
+            if (count($dbMessages)) {
+                foreach ($dbMessages as $domain => $messages) {
+                    if (MessageCatalogue::INTL_DOMAIN_SUFFIX !== substr($domain, -strlen(MessageCatalogue::INTL_DOMAIN_SUFFIX))) {
+                        if (isset($dbMessages[$domain . MessageCatalogue::INTL_DOMAIN_SUFFIX])) {
+                            $intlMessages = $dbMessages[$domain . MessageCatalogue::INTL_DOMAIN_SUFFIX];
+                            foreach($messages as $tokenName => $translation) {
+                                if (isset($intlMessages[$tokenName])) {
+                                    if (!isset($dbObsoleteMessages[$domain])) {
+                                        $dbObsoleteMessages[$domain] = array();
+                                    }
+                                    $dbObsoleteMessages[$domain][$tokenName] = $translation;
+                                    unset($messages[$tokenName]);
+                                }
+                            }
+                        }
+                    }
+                    $databaseCatalogue->add($messages, $domain);
                 }
             }
 
@@ -127,7 +149,9 @@ class ImportTranslationsCommand extends Command
 
             foreach ($operation->getDomains() as $domain) {
                 $newMessages = $operation->getNewMessages($domain);
-                $obsoleteMessages = !$ignoreObsolete ? $operation->getObsoleteMessages($domain) : [];
+                $obsoleteMessages = !$ignoreObsolete ? array_merge(
+                    $operation->getObsoleteMessages($domain), $dbObsoleteMessages[$domain] ?? []
+                ) : [];
 
                 // if tokenName is same, but translation was changed
                 $updatedMessages = array();
@@ -135,6 +159,29 @@ class ImportTranslationsCommand extends Command
                 $extractedMessages = $extractedCatalogue->all($domain);
 
                 foreach ($extractedMessages as $tokenName => $translation) {
+                    if (MessageCatalogue::INTL_DOMAIN_SUFFIX !== substr($domain, -strlen(MessageCatalogue::INTL_DOMAIN_SUFFIX))) {
+                        if ($extractedCatalogue->defines($tokenName, $domain . MessageCatalogue::INTL_DOMAIN_SUFFIX)) {
+                            if (array_key_exists($tokenName, $newMessages)) {
+                                unset($newMessages[$tokenName]);
+                            } else if (isset($dbMessages[$domain]) && array_key_exists($tokenName, $dbMessages[$domain])) {
+                                if (!$ignoreObsolete && !array_key_exists($tokenName, $obsoleteMessages)) {
+                                    $obsoleteMessages[$tokenName] = $dbMessages[$domain][$tokenName];
+                                }
+                            }
+
+                            continue;
+                        } else {
+                            if (in_array($domain . MessageCatalogue::INTL_DOMAIN_SUFFIX, $operation->getDomains(), true)) {
+                                if (isset($dbMessages[$domain]) && !array_key_exists($tokenName, $dbMessages[$domain])) {
+                                    $intlObsoleteMessages = $operation->getObsoleteMessages($domain . MessageCatalogue::INTL_DOMAIN_SUFFIX);
+                                    if (array_key_exists($tokenName, $intlObsoleteMessages)) {
+                                        $newMessages[$tokenName] = $translation;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     if (!array_key_exists($tokenName, $newMessages) && array_key_exists($tokenName, $allMessages)) {
                         if ($extractedMessages[$tokenName] !== $allMessages[$tokenName]) {
                             $token = $this->findTranslationToken($tokens, $domain, $tokenName);
@@ -143,6 +190,21 @@ class ImportTranslationsCommand extends Command
                                 // if not translated yet
                                 if ($ltt && $ltt['isNew']) {
                                     $updatedMessages[$tokenName] = $translation;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (count($obsoleteMessages)) {
+                    if (MessageCatalogue::INTL_DOMAIN_SUFFIX !== substr($domain, -strlen(MessageCatalogue::INTL_DOMAIN_SUFFIX))) {
+                        if (in_array($domain . MessageCatalogue::INTL_DOMAIN_SUFFIX, $operation->getDomains(), true)) {
+                            $intlObsoleteMessages = $operation->getObsoleteMessages($domain . MessageCatalogue::INTL_DOMAIN_SUFFIX);
+                            if (count($intlObsoleteMessages)) {
+                                foreach ($obsoleteMessages as $tokenName => $translation) {
+                                    if (isset($intlObsoleteMessages[$tokenName])) {
+                                        unset($obsoleteMessages[$tokenName]);
+                                    }
                                 }
                             }
                         }
