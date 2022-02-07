@@ -216,6 +216,10 @@ class PhpClassTokenExtractor implements ExtractorInterface
             $isArrayParameter = strtolower($this->normalizeToken($tokens[$indexShift + 2])) == 'array'
                               && isset($tokens[$indexShift + 3]) && $this->normalizeToken($tokens[$indexShift + 3]) == '(';
 
+            if (!$isArrayParameter) {
+                $isArrayParameter = $this->normalizeToken($tokens[$indexShift + 2]) == '[';
+            }
+
             $isNullParameter = strtolower($this->normalizeToken($tokens[$indexShift + 2])) == 'null';
             $isVariableParameter = \T_VARIABLE == $tokens[$indexShift + 2][0];
 
@@ -223,13 +227,18 @@ class PhpClassTokenExtractor implements ExtractorInterface
                 $depth = 1;
                 $secondArgEndIndex = null;
 
-                for ($i = $indexShift + 4; $i < count($tokens); ++$i) {
+                $j = $this->normalizeToken($tokens[$indexShift + 2]) == '[' ? 3 : 4;
+                for ($i = $indexShift + $j; $i < count($tokens); ++$i) {
                     $value = $this->normalizeToken($tokens[$i]);
 
                     // parameters may be nested
                     if ('(' == $value) {
                         ++$depth;
                     } elseif (')' == $value) {
+                        --$depth;
+                    } elseif ('[' == $value) {
+                        ++$depth;
+                    } elseif (']' == $value) {
                         --$depth;
                     }
 
@@ -240,8 +249,7 @@ class PhpClassTokenExtractor implements ExtractorInterface
                 }
 
                 // token parameters
-                $secondArgumentTokens = array_slice($tokens, $indexShift + 4, $secondArgEndIndex);
-                $args['params'] = $secondArgumentTokens;
+                $args['params'] = array_slice($tokens, $indexShift + $j, $secondArgEndIndex);
 
                 // if $params argument is followed by "," we assume that domain is specified
                 $isDomainArgumentSpecified = isset($tokens[$indexShift + $secondArgEndIndex + 1])

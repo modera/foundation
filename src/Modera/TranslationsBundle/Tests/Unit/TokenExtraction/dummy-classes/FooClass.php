@@ -21,7 +21,9 @@ class FooClass
 
         T::trans('We got something for ya, %s!', array('name' => 'Vassily', 'xxx' => $fn()), 'foodomain');
 
-        T::trans('Another token', null, $barDomain);
+        T::trans('Another token', [], $barDomain);
+
+        T::trans('Another %value%', ['%value%' => 'token'], 'foodomain');
 
         T::trans($message);
 
