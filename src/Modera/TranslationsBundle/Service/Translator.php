@@ -14,25 +14,16 @@ use Modera\TranslationsBundle\Compiler\Adapter\AdapterInterface;
  */
 class Translator extends BaseTranslator implements WarmableInterface
 {
-    const CACHE_KEY = 'modera_translations.catalogue';
+    private AdapterInterface $adapter;
 
-    /**
-     * @var AdapterInterface
-     */
-    private $adapter;
+    private DefaultTranslator $translator;
 
-    /**
-     * @var DefaultTranslator
-     */
-    private $translator;
-
-    /**
-     * @param AdapterInterface $adapter
-     * @param MessageFormatterInterface $formatter
-     * @param DefaultTranslator $translator
-     * @param bool $debug
-     */
-    public function __construct(AdapterInterface $adapter, $formatter, DefaultTranslator $translator, $debug = false)
+    public function __construct(
+        AdapterInterface $adapter,
+        MessageFormatterInterface $formatter,
+        DefaultTranslator $translator,
+        bool $debug = false
+    )
     {
         parent::__construct($translator->getLocale(), $formatter, null, $debug);
 
