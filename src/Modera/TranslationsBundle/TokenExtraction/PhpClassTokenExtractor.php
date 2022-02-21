@@ -450,9 +450,14 @@ class PhpClassTokenExtractor implements ExtractorInterface
             }
 
             $tokenValue = $this->resolveTokenValue($argumentsTokens['token'], $invocation);
-            $domain = count($argumentsTokens['domain']) > 0
-                    ? $this->resolveTokenValue($argumentsTokens['domain'], $invocation)
-                    : 'messages';
+
+            $domain = 'messages';
+            if (count($argumentsTokens['domain']) > 0) {
+                $isNullParameter = strtolower($this->normalizeToken($argumentsTokens['domain'])) == 'null';
+                if (!$isNullParameter) {
+                    $domain = $this->resolveTokenValue($argumentsTokens['domain'], $invocation);
+                }
+            }
 
             $catalog->set($this->prefix.$tokenValue, $tokenValue, $domain);
         }

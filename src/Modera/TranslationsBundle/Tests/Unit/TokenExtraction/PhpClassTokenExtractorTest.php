@@ -18,16 +18,16 @@ class PhpClassTokenExtractorTest extends \PHPUnit\Framework\TestCase
         $catalogue = new MessageCatalogue('en');
         $extractor->extract(__DIR__.'/dummy-classes', $catalogue);
 
-        $expectedDomains = array(
-            'messages', 'foodomain', 'bardomain',
-            'Error! Token value can be either a literal string or variable reference.',
-        );
+        $brokenDomain = 'Error! Token value can be either a literal string or variable reference.';
+        $expectedDomains = array('messages', 'foodomain', 'bardomain', $brokenDomain);
         sort($expectedDomains);
         $actualDomains = $catalogue->getDomains();
         sort($actualDomains);
 
         $this->assertSame($expectedDomains, $actualDomains);
 
+        $this->assertTrue($catalogue->has('Broken domain', $brokenDomain));
+        $this->assertTrue($catalogue->has('Default domain', 'messages'));
         $this->assertTrue($catalogue->has('hello world', 'messages'));
         $this->assertTrue($catalogue->has('Some simple token', 'messages'));
         $this->assertTrue($catalogue->has('We got something for ya, %s!', 'foodomain'));
@@ -41,6 +41,8 @@ class PhpClassTokenExtractorTest extends \PHPUnit\Framework\TestCase
         $extractor->setPrefix('foo: ');
         $extractor->extract(__DIR__.'/dummy-classes', $catalogue);
 
+        $this->assertTrue($catalogue->has('foo: Broken domain', $brokenDomain));
+        $this->assertTrue($catalogue->has('foo: Default domain', 'messages'));
         $this->assertTrue($catalogue->has('foo: hello world', 'messages'));
         $this->assertTrue($catalogue->has('foo: Some simple token', 'messages'));
         $this->assertTrue($catalogue->has('foo: We got something for ya, %s!', 'foodomain'));

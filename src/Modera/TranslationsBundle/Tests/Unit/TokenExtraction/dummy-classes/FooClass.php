@@ -12,6 +12,10 @@ class FooClass
 {
     public function method1()
     {
+        T::trans('Broken domain', array(), rand(100));
+
+        T::trans('Default domain', [], null);
+
         $barDomain = 'bardomain';
 
         T::trans('Some simple token');
@@ -26,8 +30,6 @@ class FooClass
         T::trans('Another %value%', ['%value%' => 'token'], 'foodomain');
 
         T::trans($message);
-
-        T::trans('Broken translation', null, rand(100));
 
         $parameters = array();
         $transImplode = implode(' ', array('trans', '"implode"', 'to', 'variable'));
