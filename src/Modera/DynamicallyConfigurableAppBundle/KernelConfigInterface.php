@@ -16,5 +16,5 @@ interface KernelConfigInterface
     /**
      * @return array
      */
-    public static function read();
+    public static function read(): array;
 }

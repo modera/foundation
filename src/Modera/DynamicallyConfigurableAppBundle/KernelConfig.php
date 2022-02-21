@@ -8,10 +8,7 @@ namespace Modera\DynamicallyConfigurableAppBundle;
  */
 class KernelConfig implements KernelConfigInterface
 {
-    /**
-     * @return string
-     */
-    protected static function getRootDir()
+    protected static function getRootDir(): string
     {
         $refKernel = null;
         try {
@@ -28,10 +25,7 @@ class KernelConfig implements KernelConfigInterface
         return \dirname($refKernel->getFileName());
     }
 
-    /**
-     * @return string
-     */
-    protected static function getKernelJsonPath()
+    protected static function getKernelJsonPath(): string
     {
         return static::getRootDir() . DIRECTORY_SEPARATOR . 'kernel.json';
     }
@@ -50,7 +44,7 @@ class KernelConfig implements KernelConfigInterface
     /**
      * {@inheritdoc}
      */
-    public static function read()
+    public static function read(): array
     {
         $defaultMode = array(
             'env'   => 'prod',

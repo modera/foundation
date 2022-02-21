@@ -88,7 +88,7 @@ class DummyKernelConfig implements KernelConfigInterface
     /**
      * {@inheritdoc}
      */
-    public static function read()
+    public static function read(): array
     {
         return static::$mode;
     }
