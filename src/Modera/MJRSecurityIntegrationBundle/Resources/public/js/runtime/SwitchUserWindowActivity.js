@@ -51,7 +51,7 @@ Ext.define('Modera.mjrsecurityintegration.runtime.SwitchUserWindowActivity', {
                     success: function(response) {
                         var resp = decode(response.responseText);
                         if (resp['success'] && resp['profile']['username'] !== config['userProfile']['username']) {
-                            location.replace('//' + location.hostname + location.pathname);
+                            location.replace('//' + location.host + location.pathname);
                         }
                     },
                     failure: function(response) {
