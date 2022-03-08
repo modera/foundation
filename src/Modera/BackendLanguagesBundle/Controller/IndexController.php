@@ -24,17 +24,27 @@ class IndexController extends Controller
         return '@ModeraBackendLanguages/Index/compile.js.twig';
     }
 
+    protected function getTranslations(string $locale): array
+    {
+        /* @var Translator $translator */
+        $translator = $this->get('translator');
+
+        $messages = array();
+        foreach ($translator->getCatalogue($locale)->all($this->getDomain()) as $token => $translation) {
+            $messages[$token] = $translator->trans($token, array(), $this->getDomain(), $locale);
+        }
+
+        return $messages;
+    }
+
     public function compileAction(Request $request, ?string $locale = null): Response
     {
         if (!$locale) {
             $locale = $request->getLocale();
         }
 
-        /* @var Translator $translator */
-        $translator = $this->get('translator');
-
         $tokenGroups = array();
-        foreach ($translator->getCatalogue($locale)->all($this->getDomain()) as $fullToken => $translation) {
+        foreach ($this->getTranslations($locale) as $fullToken => $translation) {
             $className = explode('.', $fullToken);
             $token = array_pop($className);
             $className = implode('.', $className);
@@ -43,7 +53,7 @@ class IndexController extends Controller
                 $tokenGroups[$className] = array();
             }
 
-            $tokenGroups[$className][$token] = $translator->trans($fullToken, array(), $this->getDomain(), $locale);
+            $tokenGroups[$className][$token] = $translation;
         }
 
         $body = $this->renderView($this->getTemplate(), array(
