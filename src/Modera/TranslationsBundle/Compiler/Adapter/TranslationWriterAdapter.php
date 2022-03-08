@@ -15,33 +15,23 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
  */
 class TranslationWriterAdapter implements AdapterInterface
 {
-    /**
-     * @var TranslationWriter
-     */
-    private $writer;
+    private TranslationWriter $writer;
 
-    /**
-     * @var string
-     */
-    private $translationsDir;
+    private string $translationsDir;
 
-    /**
-     * @var string
-     */
-    private $cacheDir;
+    private string $cacheDir;
 
-    /**
-     * @param TranslationWriter $writer
-     * @param $translationsDir
-     */
-    public function __construct(TranslationWriter $writer, $translationsDir, $cacheDir)
+    public function __construct(TranslationWriter $writer, string $translationsDir, string $cacheDir)
     {
         $this->writer = $writer;
         $this->translationsDir = $translationsDir;
         $this->cacheDir = $cacheDir;
     }
 
-    public function clear()
+    /**
+     * {@inheritdoc}
+     */
+    public function clear(): void
     {
         $fs = new Filesystem();
         if ($fs->exists($this->translationsDir)) {
@@ -54,7 +44,7 @@ class TranslationWriterAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function dump(MessageCatalogueInterface $catalogue)
+    public function dump(MessageCatalogueInterface $catalogue): void
     {
         $outputFormat = 'yml';
 
@@ -100,8 +90,9 @@ class TranslationWriterAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function loadCatalogue($locale)
+    public function loadCatalogue(string $locale): MessageCatalogueInterface
     {
+        // return empty catalogue, as symfony will automatically load from translation files
         return new MessageCatalogue($locale);
     }
 }

@@ -2,22 +2,22 @@
 
 namespace Modera\TranslationsBundle\Compiler\Adapter;
 
-use Doctrine\Common\Cache\Cache;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
- * @deprecated https://github.com/doctrine/cache
  * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2019 Modera Foundation
+ * @copyright 2022 Modera Foundation
  */
-class DoctrineCacheAdapter implements AdapterInterface
+class CacheAdapter implements AdapterInterface
 {
-    const CACHE_KEY = 'modera_translations.doctrine_cache_adapter';
+    const CACHE_KEY = 'modera_translations.cache_adapter';
 
-    private Cache $cache;
+    private AdapterInterface $cache;
 
-    public function __construct(Cache $cache)
+    public function __construct(AdapterInterface $cache)
     {
         $this->cache = $cache;
     }
@@ -27,7 +27,7 @@ class DoctrineCacheAdapter implements AdapterInterface
      */
     public function clear(): void
     {
-        $this->cache->delete(self::CACHE_KEY);
+        $this->cache->deleteItem(self::CACHE_KEY);
     }
 
     /**
@@ -36,11 +36,13 @@ class DoctrineCacheAdapter implements AdapterInterface
     public function dump(MessageCatalogueInterface $catalogue): void
     {
         $catalogues = [];
-        if ($string = $this->cache->fetch(self::CACHE_KEY)) {
+        $item = $this->cache->getItem(self::CACHE_KEY);
+        if ($string = $item->get()) {
             $catalogues = unserialize($string);
         }
         $catalogues[$catalogue->getLocale()] = $catalogue->all();
-        $this->cache->save(self::CACHE_KEY, serialize($catalogues));
+        $item->set(serialize($catalogues));
+        $this->cache->save($item);
     }
 
     /**
@@ -48,7 +50,8 @@ class DoctrineCacheAdapter implements AdapterInterface
      */
     public function loadCatalogue(string $locale): MessageCatalogueInterface
     {
-        if ($string = $this->cache->fetch(self::CACHE_KEY)) {
+        $item = $this->cache->getItem(self::CACHE_KEY);
+        if ($string = $item->get()) {
             $catalogues = unserialize($string);
             if (isset($catalogues[$locale])) {
                 return new MessageCatalogue($locale, $catalogues[$locale]);

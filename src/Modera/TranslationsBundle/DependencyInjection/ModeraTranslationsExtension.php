@@ -53,29 +53,35 @@ class ModeraTranslationsExtension extends Extension implements PrependExtensionI
     public function prepend(ContainerBuilder $container)
     {
         if ($container->hasParameter('modera.translations_dir')) {
-            $value = $container->getParameter('modera.translations_dir');
-            $dir = $container->getParameterBag()->resolveValue($value);
+            if ($container->hasParameter('modera.expose_translations_dir')) {
+                $value = $container->getParameter('modera.expose_translations_dir');
+                $expose = true === $container->getParameterBag()->resolveValue($value);
 
-            $fs = new Filesystem();
-            try {
-                if (!$fs->exists($dir)) {
-                    $fs->mkdir($dir);
-                    $fs->chmod($dir, 0777);
+                if ($expose) {
+                    $value = $container->getParameter('modera.translations_dir');
+                    $dir = $container->getParameterBag()->resolveValue($value);
+
+                    $fs = new Filesystem();
+                    try {
+                        if (!$fs->exists($dir)) {
+                            $fs->mkdir($dir);
+                        }
+                    } catch (IOExceptionInterface $e) {
+                        throw new \RuntimeException(sprintf(
+                            'An error occurred while creating translations directory at %s',
+                            $e->getPath()
+                        ));
+                    }
+
+                    $container->prependExtensionConfig('framework', array(
+                        'translator' => array(
+                            'paths' => array(
+                                $dir,
+                            ),
+                        ),
+                    ));
                 }
-            } catch (IOExceptionInterface $e) {
-                throw new \RuntimeException(sprintf(
-                    'An error occurred while creating translations directory at %s',
-                    $e->getPath()
-                ));
             }
-
-            $container->prependExtensionConfig('framework', array(
-                'translator' => array(
-                    'paths' => array(
-                        $dir,
-                    ),
-                ),
-            ));
         }
     }
 }

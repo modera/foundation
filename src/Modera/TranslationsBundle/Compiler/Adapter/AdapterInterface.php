@@ -13,18 +13,15 @@ interface AdapterInterface
     /**
      * Clear all previous dumped messages
      */
-    public function clear();
+    public function clear(): void;
 
     /**
      * Dump messages
-     *
-     * @param MessageCatalogueInterface $catalogue
      */
-    public function dump(MessageCatalogueInterface $catalogue);
+    public function dump(MessageCatalogueInterface $catalogue): void;
 
     /**
-     * @param string $locale
-     * @return MessageCatalogueInterface
+     * Loads the catalogue by locale.
      */
-    public function loadCatalogue($locale);
+    public function loadCatalogue(string $locale): MessageCatalogueInterface;
 }

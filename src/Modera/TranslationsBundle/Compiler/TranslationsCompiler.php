@@ -17,14 +17,8 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
  */
 class TranslationsCompiler
 {
-    /**
-     * @var KernelInterface
-     */
-    private $kernel;
+    private KernelInterface $kernel;
 
-    /**
-     * @param KernelInterface $kernel
-     */
     public function __construct(KernelInterface $kernel)
     {
         $this->kernel = $kernel;
@@ -35,15 +29,14 @@ class TranslationsCompiler
      * will be detected by Symfony on a next request.
      *
      * @throws \Exception
-     *
-     * @return CompilationResult
      */
-    public function compile()
+    public function compile(bool $onlyTranslated = false): CompilationResult
     {
         $app = $this->createApplication();
 
         $input = new ArrayInput(array(
             'command' => 'modera:translations:compile',
+            '--only-translated' => $onlyTranslated,
             '--no-ansi' => true,
             '-v' => true,
         ));
@@ -56,10 +49,7 @@ class TranslationsCompiler
         return new CompilationResult($compileTranslationsExitCode, $compileOutput->fetch());
     }
 
-    /**
-     * @return Application
-     */
-    private function createApplication()
+    private function createApplication(): Application
     {
         $app = new Application($this->kernel);
         $app->setAutoExit(false);
