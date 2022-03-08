@@ -2,8 +2,8 @@
 
 namespace Modera\TranslationsBundle\Compiler\Adapter;
 
+use Symfony\Component\Cache\Adapter\AdapterInterface as CacheAdapterInterface;
 use Symfony\Contracts\Cache\ItemInterface;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
@@ -15,9 +15,9 @@ class CacheAdapter implements AdapterInterface
 {
     const CACHE_KEY = 'modera_translations.cache_adapter';
 
-    private AdapterInterface $cache;
+    private CacheAdapterInterface $cache;
 
-    public function __construct(AdapterInterface $cache)
+    public function __construct(CacheAdapterInterface $cache)
     {
         $this->cache = $cache;
     }
