@@ -202,7 +202,9 @@ class TranslationsController extends AbstractCrudController
         /* @var TranslationsCompiler $compiler */
         $compiler = $this->get('modera_translations.compiler.translations_compiler');
 
-        $result = $compiler->compile();
+        $onlyTranslated = $this->container->getParameter(ModeraBackendTranslationsToolExtension::CONFIG_KEY . '.compile_only_translated');
+
+        $result = $compiler->compile($onlyTranslated);
 
         if ($result->isSuccessful()) {
             /* @var CompileNeeded $compileNeeded */

@@ -25,6 +25,9 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('import_cmd')
                     ->defaultValue('modera:translations:import')
                 ->end()
+                ->scalarNode('compile_only_translated')
+                    ->defaultValue(false)
+                ->end()
             ->end()
         ;
 
