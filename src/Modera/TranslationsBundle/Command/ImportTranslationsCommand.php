@@ -148,9 +148,13 @@ class ImportTranslationsCommand extends Command
             $operation = new TargetOperation($databaseCatalogue, $extractedCatalogue);
 
             foreach ($operation->getDomains() as $domain) {
-                $newMessages = $operation->getNewMessages($domain);
+                $newMessages = array_filter($operation->getNewMessages($domain), function ($k) {
+                    return !is_int($k);
+                }, ARRAY_FILTER_USE_KEY);
                 $obsoleteMessages = !$ignoreObsolete ? array_merge(
-                    $operation->getObsoleteMessages($domain), $dbObsoleteMessages[$domain] ?? []
+                    array_filter($operation->getObsoleteMessages($domain), function ($k) {
+                        return !is_int($k);
+                    }, ARRAY_FILTER_USE_KEY), $dbObsoleteMessages[$domain] ?? []
                 ) : [];
 
                 // if tokenName is same, but translation was changed

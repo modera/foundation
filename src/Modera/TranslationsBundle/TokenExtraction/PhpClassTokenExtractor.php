@@ -450,6 +450,9 @@ class PhpClassTokenExtractor implements ExtractorInterface
             }
 
             $tokenValue = $this->resolveTokenValue($argumentsTokens['token'], $invocation);
+            if (!$tokenValue) {
+                continue;
+            }
 
             $domain = 'messages';
             if (count($argumentsTokens['domain']) > 0) {
