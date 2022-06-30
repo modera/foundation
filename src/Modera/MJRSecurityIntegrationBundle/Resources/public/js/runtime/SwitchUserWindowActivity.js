@@ -51,7 +51,7 @@ Ext.define('Modera.mjrsecurityintegration.runtime.SwitchUserWindowActivity', {
                     success: function(response) {
                         var resp = decode(response.responseText);
                         if (resp['success'] && resp['profile']['username'] !== config['userProfile']['username']) {
-                            location.replace('//' + location.host + location.pathname);
+                            location.replace(me.resolveRedirectUrl());
                         }
                     },
                     failure: function(response) {
@@ -61,5 +61,10 @@ Ext.define('Modera.mjrsecurityintegration.runtime.SwitchUserWindowActivity', {
                 });
             });
         });
+    },
+
+    // protected
+    resolveRedirectUrl: function() {
+        return '//' + location.host + location.pathname + location.search;
     }
 });
