@@ -21,7 +21,7 @@ class ModeraDynamicallyConfigurableMJRBundle extends Bundle implements Extension
     /**
      * {@inheritdoc}
      */
-    public function getExtensionPointContributions()
+    public function getExtensionPointContributions(): array
     {
         return array(
             'modera_routing.routing_resources_provider' => array(

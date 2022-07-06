@@ -34,7 +34,7 @@ class ModeraBackendLanguagesBundle extends Bundle implements ExtensionPointsAwar
     /**
      * {@inheritdoc}
      */
-    public function getExtensionPointContributions()
+    public function getExtensionPointContributions(): array
     {
         return array(
             'modera_mjr_integration.css_resources_provider' => array(
