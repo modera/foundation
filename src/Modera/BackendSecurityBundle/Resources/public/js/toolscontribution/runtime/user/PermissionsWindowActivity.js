@@ -84,12 +84,11 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PermissionsWi
                     });
 
                     var grid = Ext.create('Modera.backend.security.toolscontribution.view.permission.List', {
-                        width: 800,
                         hasAccess: isAllowed,
                         groupsType: 'users',
                         groupsStore: groupsStore,
                         firstColumnFlex: 2,
-                        store: store,
+                        store: store
                     });
 
                     var windowHeight = 700;
@@ -100,14 +99,18 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PermissionsWi
                     }
 
                     callback(Ext.widget({
+                        extensionPoint: 'permissionsWindow',
                         xtype: 'mfc-modalwindow',
                         layout: 'fit',
                         title: grid.titleText,
                         bodyPadding: '0 0 10',
                         resizable: false,
                         autoScroll: true,
+                        width: 800,
                         height: windowHeight > maxHeight ? maxHeight : windowHeight,
-                        items: grid
+                        items: [
+                            grid
+                        ]
                     }));
                 });
             });
