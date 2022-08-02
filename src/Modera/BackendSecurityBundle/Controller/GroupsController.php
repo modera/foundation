@@ -52,6 +52,8 @@ class GroupsController extends AbstractCrudController
         };
 
         $mapEntity = function (array $params, Group $group, DataMapperInterface $defaultMapper, ContainerInterface $container) {
+            $allowedFieldsToEdit = array('name', 'refName', 'permissions');
+            $params = \array_intersect_key($params, \array_flip($allowedFieldsToEdit));
             $defaultMapper->mapData($params, $group);
 
             /*
@@ -79,7 +81,7 @@ class GroupsController extends AbstractCrudController
                     'create' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
                     'update' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
                     'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
-                    'batchUpdate' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
+                    'batchUpdate' => false,
                 ),
             ),
             'hydration' => array(

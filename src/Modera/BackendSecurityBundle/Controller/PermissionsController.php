@@ -2,7 +2,9 @@
 
 namespace Modera\BackendSecurityBundle\Controller;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\Model\PermissionCategoryInterface;
@@ -26,10 +28,10 @@ class PermissionsController extends AbstractCrudController
             'security' => array(
                 'role' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
                 'actions' => array(
-                    'create' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
-                    'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
+                    'create' => false,
+                    'remove' => false,
                     'update' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
-                    'batchUpdate' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
+                    'batchUpdate' => false,
                 ),
             ),
             'hydration' => array(
@@ -61,6 +63,11 @@ class PermissionsController extends AbstractCrudController
                     'list',
                 ),
             ),
+            'map_data_on_update' => function (array $params, Permission $permission, DataMapperInterface $defaultMapper, ContainerInterface $container) {
+                $allowedFieldsToEdit = array('users', 'groups');
+                $params = \array_intersect_key($params, \array_flip($allowedFieldsToEdit));
+                $defaultMapper->mapData($params, $permission);
+            }
         );
     }
 
