@@ -15,6 +15,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
     plugins: [Ext.create('MFC.HasSelectionAwareComponentsPlugin')],
 
     // l10n
+    personalIdColumnHeaderText: 'Personal ID',
     firstNameColumnHeaderText: 'First name',
     lastNameColumnHeaderText: 'Last name',
     usernameColumnHeaderText: 'Principal',
@@ -62,6 +63,13 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                     width: 160,
                     text: me.lastNameColumnHeaderText,
                     dataIndex: 'lastName',
+                    renderer: me.defaultRenderer()
+                },
+                {
+                    width: 160,
+                    hidden: true,
+                    text: me.personalIdColumnHeaderText,
+                    dataIndex: 'personalId',
                     renderer: me.defaultRenderer()
                 },
                 {

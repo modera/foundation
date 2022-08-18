@@ -117,8 +117,9 @@ class UsersController extends AbstractCrudController
 
                         return array(
                             'id' => $user->getId(),
-                            'username' => $user->getUsername(),
                             'email' => $user->getEmail(),
+                            'username' => $user->getUsername(),
+                            'personalId' => $user->getPersonalId(),
                             'firstName' => $user->getFirstName(),
                             'lastName' => $user->getLastName(),
                             'middleName' => $user->getMiddleName(),
@@ -146,8 +147,9 @@ class UsersController extends AbstractCrudController
 
                         return array(
                             'id' => $user->getId(),
-                            'username' => $user->getUsername(),
                             'email' => $user->getEmail(),
+                            'username' => $user->getUsername(),
+                            'personalId' => $user->getPersonalId(),
                             'firstName' => $user->getFirstName(),
                             'lastName' => $user->getLastName(),
                             'middleName' => $user->getMiddleName(),
@@ -383,9 +385,11 @@ class UsersController extends AbstractCrudController
     {
         $allowedFields = [
             'id',
+            'email',
+            'personalId',
             'firstName',
             'lastName',
-            'email',
+            'middleName',
         ];
 
         if ($this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS)) {

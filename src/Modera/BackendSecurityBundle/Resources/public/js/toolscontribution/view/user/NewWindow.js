@@ -8,6 +8,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.NewWindow', {
     // l10n
     newRecordTitleText: 'Create new user',
     placeHolderText: 'Type here',
+    personalIdLabelText: 'Personal ID',
     firstNameLabelText: 'First name',
     lastNameLabelText: 'Last name',
     usernameLabelText: 'Principal',
@@ -54,6 +55,13 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.NewWindow', {
                         fieldLabel: me.lastNameLabelText,
                         emptyText: me.placeHolderText,
                         tid: 'lastNameField'
+                    },
+                    {
+                        name: 'personalId',
+                        msgTarget: 'under',
+                        fieldLabel: me.personalIdLabelText,
+                        emptyText: me.placeHolderText,
+                        tid: 'personalIdField'
                     },
                     {
                         name: 'username',

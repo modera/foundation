@@ -8,6 +8,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
     // l10n
     editRecordTitleText: 'Edit user',
     placeHolderText: 'Type here',
+    personalIdLabelText: 'Personal ID',
     firstNameLabelText: 'First name',
     lastNameLabelText: 'Last name',
     usernameLabelText: 'Principal',
@@ -36,6 +37,11 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
             {
                 name: 'lastName',
                 fieldLabel: me.lastNameLabelText,
+                emptyText: me.placeHolderText
+            },
+            {
+                name: 'personalId',
+                fieldLabel: me.personalIdLabelText,
                 emptyText: me.placeHolderText
             }
         ];
