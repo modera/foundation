@@ -30,7 +30,10 @@ class JsResourcesProvider implements ContributorInterface
     public function getItems()
     {
         return array(
-            $this->urlGenerator->generate('modera_mjr_cache_aware_class_loader'),
+            array(
+                'order' => PHP_INT_MIN + 10,
+                'resource' => $this->urlGenerator->generate('modera_mjr_cache_aware_class_loader'),
+            ),
         );
     }
 }

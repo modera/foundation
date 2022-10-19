@@ -56,7 +56,12 @@ class JsResourcesProvider implements ContributorInterface
         }
 
         return array(
-            $this->router->generate('modera_backend_languages_extjs_l10n', array('locale' => $locale)),
+            array(
+                'order' => PHP_INT_MIN + 10,
+                'resource' => $this->router->generate('modera_backend_languages_extjs_l10n', array(
+                    'locale' => $locale,
+                )),
+            ),
         );
     }
 }

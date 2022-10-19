@@ -63,13 +63,34 @@ class JsResourcesProvider implements ContributorInterface
         $extjs .= '.js';
 
         return array(
-            $extjs,
-            '//cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js',
-            '//cdnjs.cloudflare.com/ajax/libs/moment.js/' . $this->bundleConfig['moment_js_version'] . '/moment-with-locales.min.js',
-            $this->router->generate('modera_font_awesome_js'),
-            '/bundles/moderamjrintegration/js/orientationchange.js',
-            '/bundles/moderamjrintegration/js/stylesheetsloader.js',
-            '/bundles/moderamjrintegration/js/promisify.js',
+            array(
+                'order' => PHP_INT_MIN + 5,
+                'resource' => '//cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js',
+            ),
+            array(
+                'order' => PHP_INT_MIN + 5,
+                'resource' => '//cdnjs.cloudflare.com/ajax/libs/moment.js/' . $this->bundleConfig['moment_js_version'] . '/moment-with-locales.min.js',
+            ),
+            array(
+                'order' => PHP_INT_MIN + 5,
+                'resource' => $extjs,
+            ),
+            array(
+                'order' => PHP_INT_MIN + 5,
+                'resource' => $this->router->generate('modera_font_awesome_js'),
+            ),
+            array(
+                'order' => PHP_INT_MIN + 5,
+                'resource' => '/bundles/moderamjrintegration/js/orientationchange.js',
+            ),
+            array(
+                'order' => PHP_INT_MIN + 5,
+                'resource' => '/bundles/moderamjrintegration/js/stylesheetsloader.js',
+            ),
+            array(
+                'order' => PHP_INT_MIN + 5,
+                'resource' => '/bundles/moderamjrintegration/js/promisify.js',
+            ),
         );
     }
 }

@@ -28,7 +28,10 @@ class JsResourcesProvider implements ContributorInterface
     public function getItems()
     {
         return array(
-            $this->themeIntegrationConfig['theme_path'].'/build/modera-theme.js',
+            array(
+                'order' => PHP_INT_MIN + 10,
+                'resource' => $this->themeIntegrationConfig['theme_path'].'/build/modera-theme.js',
+            ),
         );
     }
 }
