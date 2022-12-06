@@ -79,6 +79,10 @@
             <argument type="service" id="service_container" />
         </service>
 
+        <service id="Modera\MjrIntegrationBundle\AssetsHandling\AssetsProviderInterface"
+                 alias="modera_mjr_integration.assets_handling.assets_provider"
+        />
+
         <service id="modera_mjr_integration.contributions.steroid_class_mappings_provider"
                  class="Modera\MjrIntegrationBundle\Contributions\SteroidClassMappingsProvider">
 

@@ -2,7 +2,7 @@
 
 namespace Modera\MjrIntegrationBundle\Contributions;
 
-use Modera\MjrIntegrationBundle\AssetsHandling\AssetsProvider;
+use Modera\MjrIntegrationBundle\AssetsHandling\AssetsProviderInterface;
 use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
 use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -44,11 +44,11 @@ class ServiceDefinitionsProvider implements ContributorInterface
             ),
         );
 
-        /* @var AssetsProvider $assetsProvider */
+        /* @var AssetsProviderInterface $assetsProvider */
         $assetsProvider = $this->container->get('modera_mjr_integration.assets_handling.assets_provider');
 
-        $jsAssets = $assetsProvider->getJavascriptAssets(AssetsProvider::TYPE_NON_BLOCKING);
-        $cssAssets = $assetsProvider->getCssAssets(AssetsProvider::TYPE_NON_BLOCKING);
+        $jsAssets = $assetsProvider->getJavascriptAssets(AssetsProviderInterface::TYPE_NON_BLOCKING);
+        $cssAssets = $assetsProvider->getCssAssets(AssetsProviderInterface::TYPE_NON_BLOCKING);
 
         if (count(array_merge($jsAssets, $cssAssets)) > 0) {
             $services = array_merge($services, array(

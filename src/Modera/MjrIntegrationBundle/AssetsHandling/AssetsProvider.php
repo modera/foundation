@@ -32,11 +32,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @author Sergei Lissovski <sergei.lissovski@gmail.com>
  * @copyright 2015 Modera Foundation
  */
-class AssetsProvider
+class AssetsProvider implements AssetsProviderInterface
 {
-    const TYPE_BLOCKING = 'blocking';
-    const TYPE_NON_BLOCKING = 'non_blocking';
-
     /**
      * @var ContributorInterface
      */
@@ -115,21 +112,21 @@ class AssetsProvider
     }
 
     /**
-     * @param $type
+     * @param string $type
      *
      * @return string[]
      */
-    public function getCssAssets($type)
+    public function getCssAssets(string $type): array
     {
         return $this->filterRawAssetsByType($type, $this->cssResourcesProvider->getItems());
     }
 
     /**
-     * @param $type
+     * @param string $type
      *
      * @return string[]
      */
-    public function getJavascriptAssets($type)
+    public function getJavascriptAssets(string $type): array
     {
         return $this->filterRawAssetsByType($type, $this->jsResourcesProvider->getItems());
     }
