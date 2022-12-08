@@ -18,8 +18,14 @@ class JsResourcesProviderTest extends \PHPUnit\Framework\TestCase
         $provider = new JsResourcesProvider($router);
 
         $result = $provider->getItems();
-
         $this->assertTrue(is_array($result));
-        $this->assertTrue(in_array('foo-url', $result));
+        $this->assertCount(1, $result);
+
+        $asset = $result[0];
+        $this->assertTrue(is_array($asset));
+        $this->assertArrayHasKey('order', $asset);
+        $this->assertArrayHasKey('resource', $asset);
+        $this->assertEquals(PHP_INT_MIN + 10, $asset['order']);
+        $this->assertEquals('foo-url', $asset['resource']);
     }
 }
