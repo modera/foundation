@@ -64,10 +64,6 @@ class CompileTranslationsCommand extends Command
             $output->writeln('');
             $output->writeln('Dumping translations:');
             foreach ($catalogues as $locale => $catalogue) {
-                if (!count($catalogue->all())) {
-                    continue;
-                }
-
                 $output->writeln('    <fg=green>' . $locale . '</>');
                 $adapter->dump($catalogue);
             }
@@ -120,13 +116,12 @@ class CompileTranslationsCommand extends Command
         }
 
         $catalogues = array();
+        foreach (array_values($languages) as $locale) {
+            $catalogues[$locale] = new MessageCatalogue($locale);
+        }
+
         foreach ($qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY) as $row) {
             $locale = $languages[$row['language']];
-
-            if (!isset($catalogues[$locale])) {
-                $catalogues[$locale] = new MessageCatalogue($locale);
-            }
-
             /* @var MessageCatalogue $catalogue */
             $catalogue = $catalogues[$locale];
             $catalogue->set($row['tokenName'], $row['translation'], $row['domain']);

@@ -46,6 +46,10 @@ class TranslationWriterAdapter implements AdapterInterface
      */
     public function dump(MessageCatalogueInterface $catalogue): void
     {
+        if (!count($catalogue->all())) {
+            return;
+        }
+
         $outputFormat = 'yml';
 
         // check format
