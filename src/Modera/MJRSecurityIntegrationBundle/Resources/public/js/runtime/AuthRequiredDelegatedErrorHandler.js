@@ -32,10 +32,12 @@ Ext.define('Modera.mjrsecurityintegration.runtime.AuthRequiredDelegatedErrorHand
     },
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    handleServerError: function(error, responseStatusCode, callback) {
+    handleServerError: function(error, response, callback) {
         var me = this;
+
+        var responseStatusCode = Ext.isObject(response) ? response.status : response; // TODO: BC
 
         var isDirect = Ext.isObject(error) && error.hasOwnProperty('type') && 'exception' == error.type && this.exceptionClass == error['class'],
             isNative = Ext.isObject(error) && error.hasOwnProperty('success') && false == error.success && 403 == responseStatusCode,
@@ -68,7 +70,10 @@ Ext.define('Modera.mjrsecurityintegration.runtime.AuthRequiredDelegatedErrorHand
                         {
                             flex: 1,
                             items: {
-                                html: '<div style="padding-top: 2px; !important;"></div><h2 class="text">'+this.errorText+'</h2>'
+                                html: [
+                                    '<div style="padding-top: 2px;"></div>',
+                                    '<h2 class="text">' + this.errorText + '</h2>'
+                                ].join('')
                             }
                         }
                     ],
