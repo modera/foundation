@@ -48,6 +48,10 @@ class CssResourcesProvider implements ContributorInterface
 
         $skinCssUrl = $this->findAndResolve(Bundle::CONFIG_SKIN_CSS);
         if ($skinCssUrl) {
+            $needle = '_TIMESTAMP_';
+            if (\mb_strpos($skinCssUrl, $needle) !== false) {
+                $skinCssUrl = \str_replace($needle, \time(), $skinCssUrl);
+            }
             $items[] = array('order' => PHP_INT_MAX, 'resource' => $skinCssUrl);
         }
 

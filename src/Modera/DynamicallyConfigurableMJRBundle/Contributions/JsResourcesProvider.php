@@ -42,6 +42,10 @@ class JsResourcesProvider implements ContributorInterface
 
         $mjrExtJsUrl = $this->findAndResolve(Bundle::CONFIG_MJR_EXT_JS);
         if ($mjrExtJsUrl) {
+            $needle = '_TIMESTAMP_';
+            if (\mb_strpos($mjrExtJsUrl, $needle) !== false) {
+                $mjrExtJsUrl = \str_replace($needle, \time(), $mjrExtJsUrl);
+            }
             $items[] = array('order' => PHP_INT_MAX, 'resource' => $mjrExtJsUrl);
         }
 
