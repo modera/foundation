@@ -23,9 +23,9 @@ class InitConfigurationEntry
         $this->container = $container;
     }
 
-    public function postLoad(LifecycleEventArgs $event)
+    public function postLoad(LifecycleEventArgs $args)
     {
-        $entity = $event->getEntity();
+        $entity = $args->getEntity();
         if ($entity instanceof ConfigurationEntry) {
             $this->doInit($entity);
         }
