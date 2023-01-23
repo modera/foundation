@@ -16,24 +16,31 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class InitConfigurationEntry
 {
-    private $container;
+    private ContainerInterface $container;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
-    /**
-     * @param LifecycleEventArgs $event
-     */
     public function postLoad(LifecycleEventArgs $event)
     {
         $entity = $event->getEntity();
         if ($entity instanceof ConfigurationEntry) {
-            $entity->init($this->container);
+            $this->doInit($entity);
         }
+    }
+
+    public function postPersist(LifecycleEventArgs $args)
+    {
+        $entity = $args->getEntity();
+        if ($entity instanceof ConfigurationEntry) {
+            $this->doInit($entity);
+        }
+    }
+
+    private function doInit(ConfigurationEntry $entity)
+    {
+        $entity->init($this->container);
     }
 }
