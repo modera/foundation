@@ -3,7 +3,7 @@
 namespace Modera\BackendTranslationsToolBundle\Controller;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -177,9 +177,8 @@ class TranslationsController extends AbstractCrudController
         $app = new Application($this->get('kernel'));
         $app->setAutoExit(false);
 
-        $input = new ArrayInput(array(
-            'command' => $this->container->getParameter(ModeraBackendTranslationsToolExtension::CONFIG_KEY . '.import_cmd'),
-        ));
+        $cmd = $this->container->getParameter(ModeraBackendTranslationsToolExtension::CONFIG_KEY . '.import_cmd');
+        $input = new StringInput($cmd);
         $input->setInteractive(false);
 
         $result = $app->run($input, new NullOutput());
