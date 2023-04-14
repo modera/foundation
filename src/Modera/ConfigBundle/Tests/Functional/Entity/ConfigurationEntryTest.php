@@ -178,6 +178,7 @@ class ConfigurationEntryTest extends FunctionalTestCase
 
         self::$em->persist($ce);
         self::$em->flush();
+        $ce->init($container);
 
         $handler->expects($this->atLeastOnce())
             ->method('onUpdate')

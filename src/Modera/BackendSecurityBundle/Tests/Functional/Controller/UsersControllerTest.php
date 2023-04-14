@@ -206,7 +206,7 @@ class UsersControllerTest extends FunctionalTestCase
 
     public function doSetUp()
     {
-        $token = new UsernamePasswordToken(static::$user, '1234', 'secured_area');
+        $token = new UsernamePasswordToken(static::$user, 'secured_area', static::$user->getRoles());
 
         static::$container->get('security.token_storage')->setToken($token);
     }
