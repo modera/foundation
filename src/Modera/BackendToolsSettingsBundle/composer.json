@@ -6,11 +6,15 @@
         {
             "name": "Sergei Lissovski",
             "email": "sergei.lissovski@modera.org"
+        },
+        {
+            "name": "Sergei Vizel",
+            "email": "sergei.vizel@modera.org"
         }
     ],
     "require": {
         "php": ">=7.4",
-        "modera/foundation-bundle": "^4.0"
+        "modera/foundation-bundle": "^5.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.5"
@@ -20,7 +24,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.x-dev"
+            "dev-master": "5.x-dev"
         }
     }
 }

@@ -3,23 +3,23 @@
     "type": "library",
     "license": "MIT",
     "suggest": {
-        "symfony/mailer": "^4.4|^5.0"
+        "symfony/mailer": "^5.4|^6.0"
     },
     "conflict": {
         "doctrine/orm": ">=3.0",
         "doctrine/persistence": "<1.3",
-        "symfony/mailer": "<4.4"
+        "symfony/mailer": "<5.4"
     },
     "require": {
         "php": ">=7.4",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^2.0",
-        "symfony/intl": "^4.4|^5.0",
-        "symfony/validator": "^4.4|^5.0",
-        "symfony/security-bundle": "^4.4|^5.0",
-        "symfony/framework-bundle": "^4.4|^5.0",
+        "symfony/intl": "^5.4|^6.0",
+        "symfony/validator": "^5.4|^6.0",
+        "symfony/security-bundle": "^5.4|^6.0",
+        "symfony/framework-bundle": "^5.4|^6.0",
         "knplabs/knp-gaufrette-bundle": "^0.7",
-        "sergeil/extjsintegration-bundle": "^2.3|^3.0",
+        "sergeil/extjsintegration-bundle": "^3.0",
         "sergeil/expander-bundle": "^1.2",
         "imagine/imagine": "^1.2",
         "twig/twig": "^2.12|^3.0"
@@ -30,11 +30,11 @@
         "sergeil/aux-bundle": "^1.1",
         "mikey179/vfsstream": "^1.6",
         "modera/tests-runner": "0.x-dev",
-        "symfony/mailer": "^4.4|^5.0",
-        "symfony/twig-bundle": "^4.4|^5.0",
-        "symfony/expression-language": "^4.4|^5.0",
+        "symfony/mailer": "^5.4|^6.0",
+        "symfony/twig-bundle": "^5.4|^6.0",
+        "symfony/expression-language": "^5.4|^6.0",
         "fig/link-util": "^1.0",
-        "symfony/symfony": "^4.4"
+        "symfony/symfony": "^5.4"
     },
     "replace": {
         "modera/activity-logger-bundle": "self.version",
@@ -74,7 +74,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.x-dev"
+            "dev-master": "5.x-dev"
         },
         "modera-monorepo": {
             "require-dev": {

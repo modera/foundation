@@ -6,15 +6,18 @@
     "authors": [
         {
             "name": "Sergei Lissovski",
-            "email": "sergei.lissovski@modera.org",
-            "homepage": "http://sergei.lissovski.org/"
+            "email": "sergei.lissovski@modera.org"
+        },
+        {
+            "name": "Sergei Vizel",
+            "email": "sergei.vizel@modera.org"
         }
     ],
     "require": {
         "php": ">=7.4",
-        "modera/config-bundle": "^4.0",
-        "modera/mjr-integration-bundle": "^4.0",
-        "modera/backend-tools-settings-bundle": "^4.0",
+        "modera/config-bundle": "^5.0",
+        "modera/mjr-integration-bundle": "^5.0",
+        "modera/backend-tools-settings-bundle": "^5.0",
         "sergeil/expander-bundle": "^1.2"
     },
     "require-dev": {
@@ -26,7 +29,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.x-dev"
+            "dev-master": "5.x-dev"
         }
     }
 }

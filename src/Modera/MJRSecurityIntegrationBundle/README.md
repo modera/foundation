@@ -7,7 +7,7 @@ Bundle provides integration layer which is necessary to make MJR to be security 
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/mjr-security-integration-bundle:4.x-dev
+composer require modera/mjr-security-integration-bundle:5.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained

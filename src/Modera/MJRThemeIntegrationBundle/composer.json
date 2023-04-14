@@ -5,20 +5,23 @@
     "authors": [
         {
             "name": "Sergei Lissovski",
-            "email": "sergei.lissovski@modera.org",
-            "homepage": "http://sergei.lissovski.org/"
+            "email": "sergei.lissovski@modera.org"
+        },
+        {
+            "name": "Sergei Vizel",
+            "email": "sergei.vizel@modera.org"
         }
     ],
     "require": {
         "php": ">=7.4",
-        "symfony/framework-bundle": "^4.4|^5.0"
+        "symfony/framework-bundle": "^5.4|^6.0"
     },
     "autoload": {
         "psr-4": { "Modera\\MJRThemeIntegrationBundle\\": "" }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.x-dev"
+            "dev-master": "5.x-dev"
         }
     }
 }

@@ -7,7 +7,7 @@ Bundle configuration properties that allow to dynamically configure how AppKerne
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/dynamically-configurable-app-bundle:4.x-dev
+composer require modera/dynamically-configurable-app-bundle:5.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained

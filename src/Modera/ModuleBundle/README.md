@@ -19,7 +19,7 @@ to your `composer.json` file:
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/module-bundle:4.x-dev
+composer require modera/module-bundle:5.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained

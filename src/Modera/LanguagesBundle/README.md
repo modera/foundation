@@ -9,7 +9,7 @@ entities that your project has.
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/languages-bundle:4.x-dev
+composer require modera/languages-bundle:5.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained

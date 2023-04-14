@@ -10,9 +10,9 @@
     ],
     "require": {
         "php": ">=7.4",
-        "modera/languages-bundle": "^4.0",
-        "modera/mjr-integration-bundle": "^4.0",
-        "modera/backend-security-bundle": "^4.0"
+        "modera/languages-bundle": "^5.0",
+        "modera/mjr-integration-bundle": "^5.0",
+        "modera/backend-security-bundle": "^5.0"
     },
     "require-dev": {
         "phake/phake": "^4.0",
@@ -23,7 +23,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.x-dev"
+            "dev-master": "5.x-dev"
         }
     }
 }

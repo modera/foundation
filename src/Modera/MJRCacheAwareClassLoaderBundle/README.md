@@ -12,7 +12,7 @@ provided ) next time page is loaded pre-cached scripts will be used.
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/mjr-cache-aware-class-loader:4.x-dev
+composer require modera/mjr-cache-aware-class-loader:5.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained

@@ -5,18 +5,21 @@
     "authors": [
         {
             "name": "Sergei Lissovski",
-            "email": "sergei.lissovski@modera.org",
-            "homepage": "http://sergei.lissovski.org/"
+            "email": "sergei.lissovski@modera.org"
+        },
+        {
+            "name": "Sergei Vizel",
+            "email": "sergei.vizel@modera.org"
         }
     ],
     "require": {
         "php": ">=7.4",
-        "symfony/framework-bundle": "^4.4|^5.0"
+        "symfony/framework-bundle": "^5.4|^6.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.5",
         "mikey179/vfsstream": "^1.6",
-        "symfony/twig-bundle": "^4.4|^5.0",
+        "symfony/twig-bundle": "^5.4|^6.0",
         "fig/link-util": "^1.0"
     },
     "autoload": {
@@ -24,7 +27,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.x-dev"
+            "dev-master": "5.x-dev"
         }
     }
 }
