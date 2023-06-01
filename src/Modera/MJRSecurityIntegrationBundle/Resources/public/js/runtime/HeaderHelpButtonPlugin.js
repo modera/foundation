@@ -95,7 +95,7 @@ Ext.define('Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin', {
     },
 
     // private
-    showMenu: function(btn) {
+    generateMenuItems: function() {
         var me = this;
 
         var buttons = [];
@@ -111,12 +111,25 @@ Ext.define('Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin', {
             buttons.push(btn);
         });
 
-        var menu = Ext.widget({
+        return buttons;
+    },
+
+    // private
+    generateMenu: function() {
+        var me = this;
+
+        return {
             xtype: 'menu',
             extensionPoint: 'helpMenuItems',
-            items: buttons
-        });
+            items: me.generateMenuItems()
+        };
+    },
 
+    // private
+    showMenu: function(btn) {
+        var me = this;
+
+        var menu = Ext.widget(me.generateMenu());
         menu.showBy(btn);
     },
 
