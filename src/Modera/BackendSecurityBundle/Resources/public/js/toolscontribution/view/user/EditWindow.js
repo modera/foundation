@@ -4,6 +4,7 @@
 Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
     extend: 'MFC.window.NewAndEditRecordWindow',
     alias: 'widget.modera-backend-security-user-editwindow',
+    tid: 'securityUserEditWindow',
 
     // l10n
     editRecordTitleText: 'Edit user',
@@ -26,21 +27,25 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
             },
             {
                 xtype: 'displayfield',
+                tid: 'displayIdField',
                 fieldLabel: me.userIdLabelText,
                 name: 'displayId'
             },
             {
                 name: 'firstName',
+                tid: 'firstNameField',
                 fieldLabel: me.firstNameLabelText,
                 emptyText: me.placeHolderText
             },
             {
                 name: 'lastName',
+                tid: 'lastNameField',
                 fieldLabel: me.lastNameLabelText,
                 emptyText: me.placeHolderText
             },
             {
                 name: 'personalId',
+                tid: 'personalIdField',
                 fieldLabel: me.personalIdLabelText,
                 emptyText: me.placeHolderText
             }
@@ -49,6 +54,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
         if (!config.onlyProfileInformation) {
             items.push({
                 name: 'username',
+                tid: 'usernameField',
                 fieldLabel: me.usernameLabelText,
                 emptyText: me.placeHolderText
             });
@@ -56,6 +62,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
 
         items.push({
             name: 'email',
+            tid: 'emailField',
             fieldLabel: me.emailLabelText,
             emptyText: me.placeHolderText
         });
