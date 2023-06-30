@@ -56,11 +56,13 @@
         }
     });
 
-    Ext.application('{{ config.app_name }}.Application');
-
-    Ext.onReady(function() {
-        Ext.get('mjr-preloader').remove();
+    Ext.require('{{ config.app_name }}.Application', function() {
+        Ext.ClassManager.get('{{ config.app_name }}.Application').onReady = function(application) {
+            Ext.get('mjr-preloader').remove();
+        };
+        Ext.application('{{ config.app_name }}.Application');
     });
+
 </script>
 
 </body>

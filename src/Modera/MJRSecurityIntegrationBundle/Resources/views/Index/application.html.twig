@@ -7,13 +7,30 @@ Ext.define('{{ config.app_name }}.Application', {
         'MF.Util',
         'MF.runtime.applications.authenticationaware.controller.Workbench'
     ],
-{% if non_blocking_resources.css|length > 0 or  non_blocking_resources.js|length > 0 %}
+
+    statics: {
+        // internal
+        onReady: Ext.emptyFn,
+    },
 
     // override
     doLaunch: function(launch) {
         var me = this;
 
+        if (window['MFE'] && MFE.hasOwnProperty('doLaunch')) {
+            var defaultLaunch = launch;
+            launch = function(cb) {
+                MFE.doLaunch(function() {
+                    defaultLaunch(cb);
+                });
+            };
+        }
+
         launch(function(viewport) {
+            Ext.ClassManager.get(me.$className).onReady(me);
+
+            {% if non_blocking_resources.css|length > 0 or non_blocking_resources.js|length > 0 %}
+
             var c = me.getContainer();
 
             var loaded = false;
@@ -38,9 +55,10 @@ Ext.define('{{ config.app_name }}.Application', {
                     }
                 }, 50);
             });
+            {% endif %}
+
         });
     },
-{% endif %}
 
     // override
     modifyContainerServiceDefinitions: function(services) {
