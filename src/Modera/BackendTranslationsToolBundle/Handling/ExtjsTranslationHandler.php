@@ -11,17 +11,11 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
  */
 class ExtjsTranslationHandler extends TemplateTranslationHandler
 {
-    const SOURCE_NAME = 'extjs';
+    public const SOURCE_NAME = 'extjs';
 
-    /**
-     * @var string
-     */
-    protected $resourcesDirectory;
+    protected ?string $resourcesDirectory = null;
 
-    /**
-     * @param string $resourcesDirectory
-     */
-    public function setResourcesDirectory($resourcesDirectory)
+    public function setResourcesDirectory(?string $resourcesDirectory)
     {
         $this->resourcesDirectory = $resourcesDirectory;
     }
@@ -29,7 +23,7 @@ class ExtjsTranslationHandler extends TemplateTranslationHandler
     /**
      * {@inheritdoc}
      */
-    protected function resolveResourcesDirectory(BundleInterface $bundle)
+    protected function resolveResourcesDirectory(BundleInterface $bundle): string
     {
         return $this->resourcesDirectory ?: $bundle->getPath() . '/Resources/public/js/';
     }
