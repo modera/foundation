@@ -15,6 +15,8 @@ class ExtjsClassesExtractor implements ExtractorInterface
     private $prefix;
     private $pathProvider;
 
+    public const DOMAIN = 'extjs';
+
     public function __construct(FileProviderInterface $pathProvider = null)
     {
         $this->pathProvider = null === $pathProvider ? new ExtjsClassesProvider() : $pathProvider;
@@ -43,7 +45,7 @@ class ExtjsClassesExtractor implements ExtractorInterface
     {
         foreach ($this->pathProvider->getFiles($directory) as $filename) {
             foreach ($this->extractTokens($filename) as $token=>$translation) {
-                $catalogue->set($token, $this->prefix.$translation, 'extjs');
+                $catalogue->set($token, $this->prefix.$translation, static::DOMAIN);
             }
         }
     }
