@@ -29,7 +29,7 @@ class UserSettings
     private $user;
 
     /**
-     * @var Language
+     * @var Language|null
      * @ORM\ManyToOne(targetEntity="Modera\LanguagesBundle\Entity\Language")
      */
     private $language;
@@ -74,7 +74,7 @@ class UserSettings
     }
 
     /**
-     * @return Language
+     * @return Language|null
      */
     public function getLanguage()
     {
@@ -82,7 +82,7 @@ class UserSettings
     }
 
     /**
-     * @param Language $language
+     * @param Language|null $language
      */
     public function setLanguage(Language $language = null)
     {
