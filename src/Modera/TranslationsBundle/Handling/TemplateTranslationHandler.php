@@ -4,12 +4,13 @@ namespace Modera\TranslationsBundle\Handling;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
-use Symfony\Component\Translation\Reader\TranslationReader;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
+use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\Translation\MessageCatalogueInterface;
+use Symfony\Component\Translation\Reader\TranslationReader;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -17,41 +18,22 @@ use Symfony\Component\Translation\Extractor\ExtractorInterface;
  */
 class TemplateTranslationHandler implements TranslationHandlerInterface
 {
-    const SOURCE_NAME = 'template';
+    public const SOURCE_NAME = 'template';
 
-    /**
-     * @var string
-     */
-    protected $bundle;
+    protected string $bundle;
 
-    /**
-     * @var KernelInterface
-     */
-    protected $kernel;
+    protected KernelInterface $kernel;
 
-    /**
-     * @var ExtractorInterface
-     */
-    protected $extractor;
+    protected ExtractorInterface $extractor;
 
-    /**
-     * @var TranslationReader
-     */
-    protected $loader;
+    protected TranslationReader $loader;
 
-    /**
-     * @param KernelInterface $kernel
-     * @param TranslationReader $loader
-     * @param ExtractorInterface $extractor
-     * @param string $bundle
-     */
     public function __construct(
         KernelInterface $kernel,
         TranslationReader $loader,
         ExtractorInterface $extractor,
-        $bundle
-    )
-    {
+        string $bundle
+    ) {
         $this->kernel = $kernel;
         $this->loader = $loader;
         $this->extractor = $extractor;
@@ -61,7 +43,7 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function getBundleName()
+    public function getBundleName(): string
     {
         return $this->bundle;
     }
@@ -69,7 +51,7 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function getStrategies()
+    public function getStrategies(): array
     {
         return array(static::STRATEGY_SOURCE_TREE);
     }
@@ -77,7 +59,7 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function getSources()
+    public function getSources(): array
     {
         return array(static::SOURCE_NAME);
     }
@@ -85,10 +67,10 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function extract($source, $locale)
+    public function extract(string $source, string $locale): ?MessageCatalogueInterface
     {
         if (!$this->isSourceAvailable($source)) {
-            return;
+            return null;
         }
 
         $fs = new Filesystem();
@@ -154,23 +136,13 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
         return $extractedCatalogue;
     }
 
-    /**
-     * @param string $source
-     *
-     * @return bool
-     */
-    protected function isSourceAvailable($source)
+    protected function isSourceAvailable(string $source): bool
     {
-        return static::SOURCE_NAME == $source;
+        return static::SOURCE_NAME === $source;
     }
 
-    /**
-     * @param BundleInterface $bundle
-     *
-     * @return string
-     */
-    protected function resolveResourcesDirectory(BundleInterface $bundle)
+    protected function resolveResourcesDirectory(BundleInterface $bundle): string
     {
-        return $bundle->getPath().'/Resources/views/';
+        return $bundle->getPath() . '/Resources/views/';
     }
 }

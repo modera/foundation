@@ -4,6 +4,7 @@ namespace Modera\TranslationsBundle\Tests\Unit\Service;
 
 use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
 use Modera\TranslationsBundle\Service\TranslationHandlersChain;
+use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -29,30 +30,30 @@ class TranslationHandlersChainTest extends \PHPUnit\Framework\TestCase
 
 class DummyHandler implements TranslationHandlerInterface
 {
-    private $bundle;
+    private string $bundle;
 
-    public function __construct($bundle)
+    public function __construct(string $bundle)
     {
         $this->bundle = $bundle;
     }
 
-    public function getBundleName()
+    public function getBundleName(): string
     {
         return $this->bundle;
     }
 
-    public function getStrategies()
+    public function getStrategies(): array
     {
         return array(static::STRATEGY_SOURCE_TREE);
     }
 
-    public function getSources()
+    public function getSources(): array
     {
         return array('test');
     }
 
-    public function extract($source, $locale)
+    public function extract(string $source, string $locale): ?MessageCatalogueInterface
     {
-        return;
+        return null;
     }
 }

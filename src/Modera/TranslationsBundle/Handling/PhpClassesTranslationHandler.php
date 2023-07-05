@@ -10,12 +10,12 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
  */
 class PhpClassesTranslationHandler extends TemplateTranslationHandler
 {
-    const SOURCE_NAME = 'php-classes';
+    public const SOURCE_NAME = 'php-classes';
 
     /**
      * {@inheritdoc}
      */
-    protected function resolveResourcesDirectory(BundleInterface $bundle)
+    protected function resolveResourcesDirectory(BundleInterface $bundle): string
     {
         return $bundle->getPath();
     }
