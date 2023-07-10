@@ -37,8 +37,21 @@
             <tag name="kernel.locale_aware" />
         </service>
 
+        <service id="modera_translations.token_extraction.json_file_extractor"
+                 class="Modera\TranslationsBundle\TokenExtraction\JsonFileExtractor">
+        </service>
+
         <service id="modera_translations.token_extraction.php_class_token_extraction"
                  class="Modera\TranslationsBundle\TokenExtraction\PhpClassTokenExtractor">
+        </service>
+
+        <service id="modera_translations.handling.json_file_translation_handler"
+                 class="Modera\TranslationsBundle\Handling\ResourcesTranslationHandler"
+                 abstract="true"
+                 public="false">
+
+            <argument type="service" id="modera_translations.token_extraction.json_file_extractor" />
+            <argument>json-file</argument>
         </service>
 
         <service id="modera_translations.handling.php_classes_translation_handler"
