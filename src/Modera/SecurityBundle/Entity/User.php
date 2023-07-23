@@ -3,6 +3,7 @@
 namespace Modera\SecurityBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface as SymfonyUserInterface;
@@ -598,7 +599,7 @@ class User implements \Serializable, UserInterface, PreferencesAwareUserInterfac
     }
 
     /**
-     * @return Group[]
+     * @return Group[]|Collection
      */
     public function getGroups()
     {
