@@ -25,8 +25,10 @@
     }
 
     function promisifyAction(action) {
-        return promisify(function(payload, callback) {
-            action(payload, function(result, event, success, options) {
+        return promisify(function() {
+            var args = [].slice.call(arguments);
+            var callback = args.pop();
+            args.push(function(result, event, success, options) {
                 callback(null, Ext.apply(function() {
                     if ('exception' === event.type) {
                         var error = new Error(event['message'] || 'Undefined exception.');
@@ -58,6 +60,7 @@
                     options: options
                 }));
             });
+            action.apply(this, args);
         });
     }
 
@@ -68,7 +71,7 @@
                     var promisified = promisifyAction(action);
                     actions[name] = Ext.apply(function() {
                         var args = [].slice.call(arguments);
-                        if (1 === args.length) {
+                        if (0 === args.length || !Ext.isFunction(args[args.length - 1])) {
                             return promisified.apply(this, args);
                         }
                         action.apply(this, args);
