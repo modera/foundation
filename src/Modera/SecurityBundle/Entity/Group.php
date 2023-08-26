@@ -4,6 +4,7 @@ namespace Modera\SecurityBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -51,7 +52,7 @@ class Group
     private $refName;
 
     /**
-     * @var Permission[]
+     * @var Permission[]|Collection
      *
      * @ORM\ManyToMany(targetEntity="Permission", mappedBy="groups", cascade={"persist"})
      */
@@ -154,7 +155,7 @@ class Group
     }
 
     /**
-     * @return Permission[]
+     * @return Permission[]|Collection
      */
     public function getPermissions()
     {
