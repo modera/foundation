@@ -16,7 +16,7 @@ class OperationResult
 
     /**
      * @param string $entityClass
-     * @param string $id
+     * @param string|int $id
      * @param string $operation
      */
     public function reportEntity($entityClass, $id, $operation)
@@ -24,7 +24,7 @@ class OperationResult
         $this->entries[] = array(
             'entity_class' => $entityClass,
             'operation' => $operation,
-            'id' => $id,
+            'id' => strval($id),
         );
     }
 
