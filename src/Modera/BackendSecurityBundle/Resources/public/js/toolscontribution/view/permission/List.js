@@ -18,7 +18,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.permission.List', {
         var me = this;
 
         var defaults = {
-            tid: 'permissionsOverviewView',
+            tid: 'regularPermissionsGrid',
             frame: true,
             rounded: true,
             columnLines: true,

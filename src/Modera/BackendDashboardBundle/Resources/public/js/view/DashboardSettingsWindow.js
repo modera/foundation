@@ -46,7 +46,7 @@ Ext.define('Modera.backend.dashboard.view.DashboardSettingsWindow', {
                     items: [
                         {
                             itemId: 'landingSection',
-                            tid: 'landingSection',
+                            tid: 'landingSectionCombobox',
                             xtype: 'combo',
                             editable: false,
                             labelWidth: 150,

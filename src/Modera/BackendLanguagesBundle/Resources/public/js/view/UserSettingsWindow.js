@@ -40,7 +40,7 @@ Ext.define('Modera.backend.languages.view.UserSettingsWindow', {
                     {
                         itemId: 'languages',
                         xtype: 'combo',
-                        tid: 'languageCombo',
+                        tid: 'languageCombobox',
                         name: 'language',
                         editable: false,
                         store: Ext.create('Ext.data.Store', {

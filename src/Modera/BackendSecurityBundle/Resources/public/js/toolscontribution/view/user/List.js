@@ -165,7 +165,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                                 role: 'ROLE_MANAGE_USER_ACCOUNTS',
                                 strategy: 'hide'
                             },
-                            tid: 'newuserbtn'
+                            tid: 'newUserBtn'
                         },
                         '->',
                         {
@@ -253,7 +253,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                                 role: 'ROLE_MANAGE_USER_PROFILES',
                                 strategy: 'hide'
                             },
-                            tid: 'modifygroupsbtn'
+                            tid: 'modifyGroupsBtn'
                         },
                         {
                             hidden: config.hideViewAwareComponents || false,
@@ -277,7 +277,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                                 role: 'ROLE_MANAGE_USER_PROFILES',
                                 strategy: 'hide'
                             },
-                            tid: 'changepasswordbtn'
+                            tid: 'changePasswordBtn'
                         }
                     ]
                 },

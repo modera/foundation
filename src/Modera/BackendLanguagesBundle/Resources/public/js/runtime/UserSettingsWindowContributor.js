@@ -57,7 +57,7 @@ Ext.define('Modera.backend.languages.runtime.UserSettingsWindowContributor', {
             render: function(menu) {
                 menu.add({
                     text: me.editBtnText,
-                    tid: 'languagePreference',
+                    tid: 'languagePreferenceBtn',
                     contributedBy: me,
                     handler: callback,
                     scope: me

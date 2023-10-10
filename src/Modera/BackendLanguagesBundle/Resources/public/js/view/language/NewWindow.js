@@ -46,7 +46,7 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
                     {
                         name: 'locale',
                         xtype: 'combo',
-                        tid: 'languageCombo',
+                        tid: 'languageCombobox',
                         emptyText: me.placeHolderText,
                         store: Ext.create('Modera.backend.languages.store.Locales', {
                             autoLoad: true,
@@ -75,7 +75,7 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
                                 name: 'isEnabled',
                                 xtype: 'checkboxfield',
                                 boxLabel: me.activeLabelText,
-                                tid: 'isActive',
+                                tid: 'isActiveCheckbox',
                                 labelSeparator: '',
                                 inputValue: true,
                                 uncheckedValue: false
@@ -84,7 +84,7 @@ Ext.define('Modera.backend.languages.view.language.NewWindow', {
                                 flex: 1,
                                 name: 'isDefault',
                                 xtype: 'checkboxfield',
-                                tid: 'isDefault',
+                                tid: 'isDefaultCheckbox',
                                 boxLabel: me.defaultLabelText,
                                 labelSeparator: '',
                                 inputValue: true,

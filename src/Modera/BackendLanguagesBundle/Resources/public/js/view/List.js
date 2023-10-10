@@ -228,7 +228,7 @@ Ext.define('Modera.backend.languages.view.List', {
                     {
                         name: 'locale',
                         xtype: 'combo',
-                        tid: 'regionCombo',
+                        tid: 'regionCombobox',
                         labelAlign: 'top',
                         fieldLabel: me.regionalSettingsLabelText,
                         value: locale,
