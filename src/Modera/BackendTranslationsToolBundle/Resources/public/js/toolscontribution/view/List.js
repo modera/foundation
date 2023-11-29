@@ -88,7 +88,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                 //height: 30,
                 flex: 1,
                 value: filterValue,
-                tid: 'filterInput'
+                tid: 'filterField'
             });
         }
 
@@ -172,7 +172,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                                     tid: 'compileBtn'
                                 }
                             ],
-                            tid: 'translationsChangedNotification'
+                            tid: 'translationsChangedNotificationMessage'
                         },
                         '->'
                     ]
@@ -209,7 +209,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.List', {
                             //selectionAware: true,
                             //multipleSelectionSupported:true,
                             disabled: true,
-                            tid: 'deleteTranslationToken'
+                            tid: 'deleteTranslationTokenBtn'
                         },
                         '->'
                     ]

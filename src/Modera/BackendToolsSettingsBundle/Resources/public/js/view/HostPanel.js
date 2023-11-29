@@ -57,7 +57,7 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
                 split: true,
                 items: [
                     {
-                        tid: 'settingMenu',
+                        tid: 'settingMenuGrid',
                         itemId: 'sectionsGrid',
                         width: 200,
                         xtype: 'grid',

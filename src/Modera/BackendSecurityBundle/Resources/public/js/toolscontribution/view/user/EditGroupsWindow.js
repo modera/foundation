@@ -76,7 +76,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
                                     }
                                 },
                                 flex: 1,
-                                tid: 'availablegroups'
+                                tid: 'availableGroupsGrid'
                             },
                             {
                                 width: 5
@@ -89,7 +89,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
                                         itemId: 'backBtn',
                                         xtype: 'button',
                                         iconCls: 'mfc-icon-back-16',
-                                        tid: 'movetoleftbtn'
+                                        tid: 'moveToLeftBtn'
                                     },
                                     {
                                         height: 5
@@ -98,7 +98,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
                                         itemId: 'forwardBtn',
                                         xtype: 'button',
                                         iconCls: 'mfc-icon-forward-16',
-                                        tid: 'movetorightbtn'
+                                        tid: 'moveToRightBtn'
                                     }
                                 ]
                             },
@@ -135,7 +135,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditGroupsWindow
                                     }
                                 },
                                 flex: 1,
-                                tid: 'assignedGroups'
+                                tid: 'assignedGroupsGrid'
                             }
                         ]
                     }

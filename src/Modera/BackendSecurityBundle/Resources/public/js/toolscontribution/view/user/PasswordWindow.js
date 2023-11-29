@@ -66,7 +66,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                             me.fireEvent('saveandclose', me);
                         }
                     },
-                    tid: 'saveandclosebtn'
+                    tid: 'saveAndCloseBtn'
                 }
             ],
             items: {
@@ -123,7 +123,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                                         fieldLabel: me.passwordLabelText,
                                         emptyText: me.placeHolderText,
                                         inputType: 'password',
-                                        tid: 'passwordfield',
+                                        tid: 'passwordField',
                                         msgTarget: 'under',
                                         validateOnBlur: false,
                                         listeners: {
@@ -141,7 +141,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
                                         fieldLabel: me.repeatPasswordLabelText,
                                         emptyText: me.placeHolderText,
                                         inputType: 'password',
-                                        tid: 'passwordagainfield',
+                                        tid: 'passwordAgainField',
                                         msgTarget: 'under',
                                         validateOnBlur: false,
                                         submitValue: false,

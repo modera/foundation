@@ -40,7 +40,7 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PasswordWindo
         lookup[query] =  {
             render: function(menu) {
                 menu.add({
-                    tid: 'changepasswordbtn',
+                    tid: 'changePasswordBtn',
                     text: me.changePasswordBtnText,
                     contributedBy: me,
                     handler: callback,

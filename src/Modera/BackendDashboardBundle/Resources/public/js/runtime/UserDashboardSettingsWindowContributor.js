@@ -43,7 +43,7 @@ Ext.define('Modera.backend.dashboard.runtime.UserDashboardSettingsWindowContribu
                     contributedBy: me,
                     handler: callback,
                     scope: me,
-                    tid: 'landingViewSettings'
+                    tid: 'landingViewSettingsBtn'
                 })
             }
         };

@@ -88,7 +88,7 @@ Ext.define('Modera.backend.translationstool.toolscontribution.view.EditTranslati
                         emptyText: me.placeHolderText,
                         enterIsSpecial: true,
                         enableKeyEvents: true,
-                        tid: 'translationInput'
+                        tid: 'translationField'
                     }
                 ]
             }

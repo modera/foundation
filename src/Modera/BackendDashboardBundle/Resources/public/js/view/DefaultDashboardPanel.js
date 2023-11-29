@@ -4,7 +4,7 @@
 Ext.define('Modera.backend.dashboard.view.DefaultDashboardPanel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.modera-backdashboard-dashboardpanel-default',
-    tid: 'defaultDashboard',
+    tid: 'defaultDashboardPanel',
 
     requires: [
         'Ext.data.Store'
