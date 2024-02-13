@@ -1,27 +1,24 @@
-Ext.override(Ext.Loader, {
-    getPath: function(className) {
-        var path = '',
-            paths = Ext.Loader.config.paths,
-            prefix = Ext.Loader.getPrefix(className);
+(function(Loader) {
 
-        if (prefix.length > 0) {
-            if (prefix === className) {
-                return paths[prefix];
-            }
+    Loader.version = '{{ version }}';
+    Loader.resolveVersion = function(className) {
+        var prefix = Loader.getPrefix(className);
+        var versions = Loader.getConfig('versions') || {};
+        return versions[prefix] || Loader.version;
+    };
 
-            path = paths[prefix];
-            className = className.substring(prefix.length + 1);
+    Loader.resolvePath = Loader.getPath;
+    Loader.getPath = function(className) {
+        var disableCaching = Loader.getConfig('disableCaching');
+        var path = Loader.resolvePath(className);
+
+        if (!disableCaching && Ext.String.endsWith(path, '.js')) {
+            // these paths won't look nice but will do the trick - urls will contain version number and when
+            // a new version of the product is deployed the caches will be invalidated by a browser
+            path += '?v=' + Loader.resolveVersion(className);
         }
 
-        if (path.length > 0) {
-            path += '/';
-        }
+        return path;
+    };
 
-        var slashDotSlashRe = /\/\.\//g,
-            dotRe = /\./g;
-
-        // these paths won't look nice but will do the trick - urls will contain version number and when
-        // a new version of the product is deployed the caches will be invalidated by a browser
-        return path.replace(slashDotSlashRe, '/') + className.replace(dotRe, "/") + '.js?v=' + '{{ version }}';
-    }
-});
+})(Ext.Loader);
