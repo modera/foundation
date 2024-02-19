@@ -32,6 +32,7 @@
                 callback(null, Ext.apply(function() {
                     if ('exception' === event.type) {
                         var error = new Error(event['message'] || 'Undefined exception.');
+                        error.type = 'EXCEPTION';
                         var keys = Object.getOwnPropertyNames(error);
                         Ext.Object.each(event, function(key, value) {
                             if (event.hasOwnProperty(key) && -1 === keys.indexOf(key)) {
