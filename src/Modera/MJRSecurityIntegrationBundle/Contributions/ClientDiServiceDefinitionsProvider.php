@@ -2,7 +2,7 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * Provides service definitions for client-side dependency injection container.
@@ -13,35 +13,33 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 class ClientDiServiceDefinitionsProvider implements ContributorInterface
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    private $securityConfig = array();
+    private array $securityConfig;
 
     /**
-     * @param array $securityConfig
+     * @param array<string, mixed> $securityConfig
      */
-    public function __construct(array $securityConfig = array())
+    public function __construct(array $securityConfig = [])
     {
         $this->securityConfig = $securityConfig;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (isset($this->securityConfig['switch_user']) && $this->securityConfig['switch_user']) {
-            $role = $this->securityConfig['switch_user']['role'];
+            /** @var array{'role': string} $switchUser */
+            $switchUser = $this->securityConfig['switch_user'];
 
-            return array(
-                'modera_mjr_security_integration.user_settings_contributor' => array(
+            return [
+                'modera_mjr_security_integration.user_settings_contributor' => [
                     'className' => 'Modera.mjrsecurityintegration.runtime.UserSettingsContributor',
-                    'args' => ['@application', $role],
+                    'args' => ['@application', $switchUser['role']],
                     'tags' => ['shared_activities_provider'],
-                ),
-            );
+                ],
+            ];
         }
 
-        return array();
+        return [];
     }
 }

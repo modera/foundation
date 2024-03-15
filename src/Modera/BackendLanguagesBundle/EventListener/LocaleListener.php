@@ -2,14 +2,14 @@
 
 namespace Modera\BackendLanguagesBundle\EventListener;
 
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\HttpKernel\KernelEvents;
+use Doctrine\ORM\EntityManagerInterface;
+use Modera\BackendLanguagesBundle\Entity\UserSettings;
+use Modera\LanguagesBundle\Entity\Language;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Modera\BackendLanguagesBundle\Entity\UserSettings;
-use Modera\LanguagesBundle\Entity\Language;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -17,56 +17,35 @@ use Modera\LanguagesBundle\Entity\Language;
  */
 class LocaleListener implements EventSubscriberInterface
 {
-    const LOCALE = 'LOCALE';
+    private const LOCALE = 'LOCALE';
 
-    /**
-     * @var EntityManager
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var string
-     */
-    private $defaultLocale;
+    private string $defaultLocale;
 
-    /**
-     * @var string
-     */
-    private $isAuthenticatedRoute;
+    private string $isAuthenticatedRoute;
 
-    /**
-     * @param EntityManager $em
-     * @param string defaultLocale
-     * @param string $isAuthenticatedRoute
-     */
     public function __construct(
-        EntityManager $em,
-        $defaultLocale = 'en',
-        $isAuthenticatedRoute = 'modera_mjr_security_integration.index.is_authenticated'
-    )
-    {
+        EntityManagerInterface $em,
+        string $defaultLocale = 'en',
+        string $isAuthenticatedRoute = 'modera_mjr_security_integration.index.is_authenticated'
+    ) {
         $this->em = $em;
         $this->defaultLocale = $defaultLocale;
         $this->isAuthenticatedRoute = $isAuthenticatedRoute;
     }
 
-    /**
-     * @param RequestEvent $event
-     */
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-        if ($event->isMasterRequest() && !$request->attributes->get('_locale')) {
+        if ($event->isMainRequest() && !$request->attributes->get('_locale')) {
             if ($locale = $request->cookies->get(self::LOCALE)) {
                 $request->attributes->set('_locale', $locale);
             }
         }
     }
 
-    /**
-     * @param ResponseEvent $event
-     */
-    public function onKernelResponse(ResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event): void
     {
         $request = $event->getRequest();
         $response = $event->getResponse();
@@ -77,40 +56,43 @@ class LocaleListener implements EventSubscriberInterface
 
         if ($this->isAuthenticatedRoute === $request->attributes->get('_route')) {
             if ($response instanceof JsonResponse) {
-                $content = json_decode($response->getContent(), true);
-                if ($content['success']) {
+                $content = \json_decode($response->getContent() ?: '', true);
+                if (\is_array($content) && $content['success']) {
                     $locale = null;
 
-                    /* @var UserSettings $settings */
-                    $settings = $this->em->getRepository(UserSettings::class)->findOneBy(array(
+                    /** @var ?UserSettings $settings */
+                    $settings = $this->em->getRepository(UserSettings::class)->findOneBy([
                         'user' => $content['profile']['id'],
-                    ));
+                    ]);
                     if ($settings && $settings->getLanguage() && $settings->getLanguage()->isEnabled()) {
                         $locale = $settings->getLanguage()->getLocale();
                     }
 
                     if (!$locale) {
-                        /* @var Language $defaultLanguage */
-                        $defaultLanguage = $this->em->getRepository(Language::class)->findOneBy(array(
+                        /** @var ?Language $defaultLanguage */
+                        $defaultLanguage = $this->em->getRepository(Language::class)->findOneBy([
                             'isDefault' => true,
-                        ));
+                        ]);
                         if ($defaultLanguage) {
                             $locale = $defaultLanguage->getLocale();
                         }
                     }
 
-                    $response->headers->set('set-cookie', self::LOCALE . '=' . ($locale ?: $this->defaultLocale));
+                    $response->headers->set('set-cookie', self::LOCALE.'='.($locale ?: $this->defaultLocale));
                 }
             }
         }
     }
 
-    public static function getSubscribedEvents()
+    /**
+     * @return array<string, mixed>
+     */
+    public static function getSubscribedEvents(): array
     {
-        return array(
+        return [
             // must be registered before the default Locale listener
-            KernelEvents::REQUEST => array(array('onKernelRequest', 90)),
-            KernelEvents::RESPONSE => array(array('onKernelResponse', 90)),
-        );
+            KernelEvents::REQUEST => [['onKernelRequest', 90]],
+            KernelEvents::RESPONSE => [['onKernelResponse', 90]],
+        ];
     }
 }

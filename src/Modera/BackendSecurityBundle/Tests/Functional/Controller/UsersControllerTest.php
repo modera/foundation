@@ -33,13 +33,13 @@ class UsersControllerTest extends FunctionalTestCase
     /**
      * {@inheritdoc}
      */
-    public static function doSetUpBeforeClass()
+    public static function doSetUpBeforeClass(): void
     {
         static::$schemaTool = new SchemaTool(static::$em);
         static::$schemaTool->dropSchema(static::getTablesMetadata());
         static::$schemaTool->createSchema(static::getTablesMetadata());
 
-        static::$encoder = static::$container->get('modera_backend_security.test.encoder_factory');
+        static::$encoder = static::getContainer()->get('modera_backend_security.test.encoder_factory');
 
         static::$user = new User();
         static::$user->setEmail('test@test.com');
@@ -204,11 +204,11 @@ class UsersControllerTest extends FunctionalTestCase
         $this->assertEquals($params['record']['username'], $userFromDb->getUsername());
     }
 
-    public function doSetUp()
+    public function doSetUp(): void
     {
         $token = new UsernamePasswordToken(static::$user, 'secured_area', static::$user->getRoles());
 
-        static::$container->get('security.token_storage')->setToken($token);
+        static::getContainer()->get('security.token_storage')->setToken($token);
     }
 
     /**
@@ -217,7 +217,7 @@ class UsersControllerTest extends FunctionalTestCase
     private function getController()
     {
         $controller = new UsersController();
-        $controller->setContainer(static::$container);
+        $controller->setContainer(static::getContainer());
 
         return $controller;
     }
@@ -250,7 +250,7 @@ class UsersControllerTest extends FunctionalTestCase
     /**
      * {@inheritdoc}
      */
-    protected static function getIsolationLevel()
+    protected static function getIsolationLevel(): string
     {
         return self::IM_CLASS;
     }

@@ -3,7 +3,7 @@
 namespace Modera\BackendSecurityBundle\Contributions;
 
 use Modera\BackendSecurityBundle\Section\SectionInterface;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 
 /**
@@ -15,63 +15,51 @@ use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterface
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    private $semanticConfig = array();
+    private array $semanticConfig;
+
+    private ContributorInterface $sectionsProvider;
 
     /**
-     * @var ContributorInterface
+     * @param array<string, mixed> $semanticConfig
      */
-    private $sectionsProvider;
-
-    /**
-     * @param ContributorInterface $sectionsProvider
-     * @param array $semanticConfig
-     */
-    public function __construct(ContributorInterface $sectionsProvider, array $semanticConfig = array())
+    public function __construct(ContributorInterface $sectionsProvider, array $semanticConfig = [])
     {
-        $this->semanticConfig = $semanticConfig;
         $this->sectionsProvider = $sectionsProvider;
+        $this->semanticConfig = $semanticConfig;
     }
 
-    /**
-     * @param array $currentConfig
-     *
-     * @return array
-     */
-    public function merge(array $currentConfig)
+    public function merge(array $existingConfig): array
     {
-        $currentConfig = array_merge($currentConfig, array(
-            'modera_backend_security' => array(
-                'hideDeleteUserFunctionality' => $this->semanticConfig['hide_delete_user_functionality'],
-                'sections' => array()
-            ),
-        ));
+        $existingConfig = \array_merge($existingConfig, [
+            'modera_backend_security' => [
+                'hideDeleteUserFunctionality' => (bool) $this->semanticConfig['hide_delete_user_functionality'],
+                'sections' => [],
+            ],
+        ]);
 
-        foreach($this->sectionsProvider->getItems() as $section) {
+        foreach ($this->sectionsProvider->getItems() as $section) {
             if ($section instanceof SectionInterface) {
-                $currentConfig['modera_backend_security']['sections'][] = array(
-                    'sectionConfig' => array(
+                $existingConfig['modera_backend_security']['sections'][] = [
+                    'sectionConfig' => [
                         'name' => $section->getId(),
                         'uiClass' => $section->getUiClass(),
-                    ),
-                    'menuConfig' => array(
+                    ],
+                    'menuConfig' => [
                         'itemId' => $section->getId(),
                         'text' => $section->getTitle(),
                         'glyph' => $section->getGlyphIcon(),
-                    )
-                );
+                    ],
+                ];
             }
         }
 
-        return $currentConfig;
+        return $existingConfig;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array($this);
+        return [$this];
     }
 }

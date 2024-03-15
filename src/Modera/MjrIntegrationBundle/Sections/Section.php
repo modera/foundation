@@ -10,42 +10,36 @@ namespace Modera\MjrIntegrationBundle\Sections;
  */
 class Section implements SectionInterface
 {
-    private $id;
-    private $controller;
-    private $metadata;
+    private string $id;
+
+    private string $controller;
 
     /**
-     * @param string $id
-     * @param string $controller
-     * @param array  $metadata
+     * @var mixed[]
      */
-    public function __construct($id, $controller, array $metadata = array())
+    private array $metadata;
+
+    /**
+     * @param mixed[] $metadata
+     */
+    public function __construct(string $id, string $controller, array $metadata = [])
     {
         $this->id = $id;
         $this->controller = $controller;
         $this->metadata = $metadata;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getController()
+    public function getController(): string
     {
         return $this->controller;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMetadata()
+    public function getMetadata(): array
     {
         return $this->metadata;
     }

@@ -17,7 +17,7 @@ class ModeraFileUploaderExtensionTest extends FunctionalTestCase
     /* @var ContainerBuilder */
     private $cb;
 
-    public function doSetUp()
+    public function doSetUp(): void
     {
         $this->ext = new ModeraFileUploaderExtension();
         $this->cb = new ContainerBuilder();

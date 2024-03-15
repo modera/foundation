@@ -12,10 +12,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('modera_mjr_integration');
         $rootNode = $treeBuilder->getRootNode();
@@ -74,13 +71,13 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue(null)
                 ->end()
                 ->arrayNode('viewport_factory_config')
-                    ->defaultValue(array(
+                    ->defaultValue([
                         // 'interactionDelays' => array(
                         //     'default' => 500,
                         //     'login' => 1500,
                         //     'logout' => 2000,
                         // ),
-                    ))
+                    ])
                     ->prototype('variable')->end()
                 ->end()
                 ->scalarNode('server_config_provider_service')

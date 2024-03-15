@@ -11,14 +11,14 @@ use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
 class TranslationHandlersChain
 {
     /**
-     * @var array
+     * @var TranslationHandlerInterface[]
      */
-    private $handlers = array();
+    private array $handlers = [];
 
     /**
      * @param TranslationHandlerInterface $handler
      */
-    public function addHandler($handler)
+    public function addHandler($handler): void
     {
         if ($handler instanceof TranslationHandlerInterface) {
             $this->handlers[] = $handler;
@@ -28,7 +28,7 @@ class TranslationHandlersChain
     /**
      * @return TranslationHandlerInterface[]
      */
-    public function getHandlers()
+    public function getHandlers(): array
     {
         return $this->handlers;
     }

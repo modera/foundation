@@ -2,10 +2,11 @@
 
 namespace Modera\BackendLanguagesBundle\Controller;
 
-use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
-use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
 use Modera\LanguagesBundle\Entity\Language;
+use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
+use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -13,49 +14,49 @@ use Modera\LanguagesBundle\Entity\Language;
  */
 class LanguagesController extends AbstractCrudController
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getConfig(): array
     {
-        return array(
+        return [
             'entity' => Language::class,
-            'security' => array(
+            'security' => [
                 'role' => ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER,
-                'actions' => array(
+                'actions' => [
                     'create' => ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS,
                     'update' => ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS,
                     'remove' => ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS,
                     'batchUpdate' => ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS,
-                ),
-            ),
-            'hydration' => array(
-                'groups' => array(
+                ],
+            ],
+            'hydration' => [
+                'groups' => [
                     'list' => function (Language $entity) {
-                        return array(
+                        return [
                             'id' => $entity->getId(),
                             'name' => $entity->getName($this->getDisplayLocale()),
                             'locale' => $entity->getLocale(),
                             'isEnabled' => $entity->isEnabled(),
                             'isDefault' => $entity->isDefault(),
-                        );
+                        ];
                     },
                     'remove' => function (Language $entity) {
-                        return array(
+                        return [
                             'key' => $entity->getLocale(),
-                        );
+                        ];
                     },
-                ),
-                'profiles' => array(
+                ],
+                'profiles' => [
                     'list', 'remove',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     private function getDisplayLocale(): string
     {
-        $request = $this->get('request_stack')->getCurrentRequest();
-        return $request->getLocale();
+        /** @var RequestStack $rs */
+        $rs = $this->container->get('request_stack');
+        $request = $rs->getCurrentRequest();
+
+        return $request ? $request->getLocale() : 'en';
     }
 }

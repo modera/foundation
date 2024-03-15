@@ -8,20 +8,25 @@ namespace Modera\BackendToolsSettingsBundle\Section;
  */
 class StandardSection implements SectionInterface
 {
-    private $id;
-    private $name;
-    private $activityClass;
-    private $glyph;
-    private $meta;
+    private string $id;
+    private string $name;
+    private string $activityClass;
+    private ?string $glyph;
+    /**
+     * @var array<mixed>
+     */
+    private array $meta;
 
     /**
-     * @param string $id
-     * @param string $name
-     * @param string $activityClass
-     * @param array  $meta
+     * @param array<mixed> $meta
      */
-    public function __construct($id, $name, $activityClass, $glyph = null, array $meta = array())
-    {
+    public function __construct(
+        string $id,
+        string $name,
+        string $activityClass,
+        ?string $glyph = null,
+        array $meta = []
+    ) {
         $this->id = $id;
         $this->name = $name;
         $this->activityClass = $activityClass;
@@ -29,42 +34,27 @@ class StandardSection implements SectionInterface
         $this->meta = $meta;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getActivityClass()
+    public function getActivityClass(): string
     {
         return $this->activityClass;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getGlyph()
+    public function getGlyph(): ?string
     {
         return $this->glyph;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMeta()
+    public function getMeta(): array
     {
         return $this->meta;
     }

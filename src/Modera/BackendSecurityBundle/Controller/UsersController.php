@@ -2,25 +2,25 @@
 
 namespace Modera\BackendSecurityBundle\Controller;
 
+use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
+use Modera\FoundationBundle\Translation\T;
+use Modera\SecurityBundle\Entity\User;
+use Modera\SecurityBundle\ModeraSecurityBundle;
+use Modera\SecurityBundle\PasswordStrength\BadPasswordException;
+use Modera\SecurityBundle\PasswordStrength\PasswordManager;
+use Modera\SecurityBundle\Service\UserService;
+use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
+use Modera\ServerCrudBundle\Hydration\HydrationProfile;
+use Modera\ServerCrudBundle\Persistence\OperationResult;
+use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
+use Modera\ServerCrudBundle\QueryBuilder\Parsing\Filter;
+use Modera\ServerCrudBundle\QueryBuilder\Parsing\Filters;
+use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
+use Modera\ServerCrudBundle\Validation\ValidationResult;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filter;
-use Sli\ExtJsIntegrationBundle\QueryBuilder\Parsing\Filters;
-use Modera\FoundationBundle\Translation\T;
-use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
-use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
-use Modera\ServerCrudBundle\Controller\AbstractCrudController;
-use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
-use Modera\ServerCrudBundle\Validation\ValidationResult;
-use Modera\ServerCrudBundle\Persistence\OperationResult;
-use Modera\ServerCrudBundle\Hydration\HydrationProfile;
-use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
-use Modera\SecurityBundle\PasswordStrength\BadPasswordException;
-use Modera\SecurityBundle\PasswordStrength\PasswordManager;
-use Modera\SecurityBundle\ModeraSecurityBundle;
-use Modera\SecurityBundle\Service\UserService;
-use Modera\SecurityBundle\Entity\User;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -30,10 +30,10 @@ class UsersController extends AbstractCrudController
 {
     public function getConfig(): array
     {
-        return array(
+        return [
             'entity' => User::class,
-            'security' => array(
-                'actions' => array(
+            'security' => [
+                'actions' => [
                     'create' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS,
                     'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS,
                     'update' => function (AuthorizationCheckerInterface $ac, array $params) {
@@ -51,11 +51,11 @@ class UsersController extends AbstractCrudController
                         } else {
                             // irrespectively of what privileges user has we will always allow him to edit his
                             // own profile data
-                            return (
+                            return
                                 isset($params['record']['id'])
                                 && ($user = $this->getUser()) instanceof User
                                 && $user->getId() == $params['record']['id']
-                            );
+                            ;
                         }
                     },
                     'batchUpdate' => function (AuthorizationCheckerInterface $ac, array $params) {
@@ -77,12 +77,12 @@ class UsersController extends AbstractCrudController
 
                         return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
                     },
-                    'get' => function(AuthorizationCheckerInterface $ac, array $params) {
+                    'get' => function (AuthorizationCheckerInterface $ac, array $params) {
                         $userId = null;
                         if (isset($params['filter'])) {
                             foreach (new Filters($params['filter']) as $filter) {
-                                /* @var Filter $filter */
-                                if ($filter->getProperty() == 'id' && $filter->getComparator() == Filter::COMPARATOR_EQUAL) {
+                                /** @var Filter $filter */
+                                if ('id' === $filter->getProperty() && Filter::COMPARATOR_EQUAL === $filter->getComparator()) {
                                     $userId = $filter->getValue();
                                 }
                             }
@@ -90,32 +90,32 @@ class UsersController extends AbstractCrudController
 
                         // editing own profile
                         if (null !== $userId) {
-                            if (($loggedInUser = $this->getUser()) && $loggedInUser->getId() == $userId) {
+                            if (($loggedInUser = $this->getUser()) instanceof User && $loggedInUser->getId() == $userId) {
                                 return true;
                             }
                         }
 
-                        return (
+                        return
                             $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS)
                             || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
                             || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
-                        );
+                        ;
                     },
                     'list' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
-                ),
-            ),
-            'hydration' => array(
-                'groups' => array(
+                ],
+            ],
+            'hydration' => [
+                'groups' => [
                     'main-form' => function (User $user) {
-                        $meta = array();
+                        $meta = [];
                         if (
-                            $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES) ||
-                            $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
+                            $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                            || $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
                         ) {
                             $meta = $user->getMeta();
                         }
 
-                        return array(
+                        return [
                             'id' => $user->getId(),
                             'email' => $user->getEmail(),
                             'username' => $user->getUsername(),
@@ -124,28 +124,28 @@ class UsersController extends AbstractCrudController
                             'lastName' => $user->getLastName(),
                             'middleName' => $user->getMiddleName(),
                             'meta' => $meta,
-                        );
+                        ];
                     },
                     'list' => function (User $user) {
-                        $groups = array();
+                        $groups = [];
                         foreach ($user->getGroups() as $group) {
                             $groups[] = $group->getName();
                         }
 
-                        $permissions = array();
+                        $permissions = [];
                         foreach ($user->getPermissions() as $permission) {
                             $permissions[] = $permission->getName();
                         }
 
-                        $meta = array();
+                        $meta = [];
                         if (
-                            $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES) ||
-                            $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
+                            $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                            || $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
                         ) {
                             $meta = $user->getMeta();
                         }
 
-                        return array(
+                        return [
                             'id' => $user->getId(),
                             'email' => $user->getEmail(),
                             'username' => $user->getUsername(),
@@ -159,20 +159,20 @@ class UsersController extends AbstractCrudController
                             'groups' => $groups,
                             'permissions' => $permissions,
                             'meta' => $meta,
-                        );
+                        ];
                     },
                     'compact-list' => function (User $user) {
-                        $groups = array();
+                        $groups = [];
                         foreach ($user->getGroups() as $group) {
                             $groups[] = $group->getId();
                         }
 
-                        $permissions = array();
+                        $permissions = [];
                         foreach ($user->getPermissions() as $permission) {
                             $permissions[] = $permission->getId();
                         }
 
-                        return array(
+                        return [
                             'id' => $user->getId(),
                             'username' => $user->getUsername(),
                             'fullname' => $user->getFullName(),
@@ -180,18 +180,18 @@ class UsersController extends AbstractCrudController
                             'state' => $user->getState(),
                             'groups' => $groups,
                             'permissions' => $permissions,
-                        );
+                        ];
                     },
                     'delete-user' => ['username'],
-                ),
-                'profiles' => array(
+                ],
+                'profiles' => [
                     'list',
                     'delete-user',
                     'main-form',
                     'compact-list',
-                    'modera-backend-security-group-groupusers' => HydrationProfile::create(false)->useGroups(array('compact-list')),
-                ),
-            ),
+                    'modera-backend-security-group-groupusers' => HydrationProfile::create(false)->useGroups(['compact-list']),
+                ],
+            ],
             'map_data_on_create' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) {
                 $defaultMapper->mapData($params, $user);
 
@@ -202,17 +202,17 @@ class UsersController extends AbstractCrudController
                 }
 
                 try {
-                    if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
+                    if (isset($params['sendPassword']) && '' != $params['sendPassword']) {
                         $this->getPasswordManager()->encodeAndSetPasswordAndThenEmailIt($user, $plainPassword);
                     } else {
                         $this->getPasswordManager()->encodeAndSetPassword($user, $plainPassword);
                     }
                 } catch (BadPasswordException $e) {
-                    throw new BadPasswordException($e->getErrors()[0], null, $e);
+                    throw new BadPasswordException($e->getErrors()[0], 0, $e);
                 }
             },
             'map_data_on_update' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) {
-                $ignoreMapping = [ 'active', 'plainPassword', 'sendPassword' ];
+                $ignoreMapping = ['active', 'plainPassword', 'sendPassword'];
                 $params = \array_intersect_key($params, \array_flip($this->getAllowedFieldsToEdit($user)));
                 $params = \array_diff_key($params, \array_flip($ignoreMapping));
                 $defaultMapper->mapData($params, $user);
@@ -223,34 +223,34 @@ class UsersController extends AbstractCrudController
                 if (isset($params['active'])) {
                     if ($params['active']) {
                         $this->getUserService()->enable($user);
-                        $activityMsg = T::trans('Profile enabled for user "%user%".', array('%user%' => $user->getUsername()));
-                        $activityContext = array(
+                        $activityMsg = T::trans('Profile enabled for user "%user%".', ['%user%' => $user->getUsername()]);
+                        $activityContext = [
                             'type' => 'user.profile_enabled',
-                            'author' => $this->getUser()->getId(),
-                        );
+                            'author' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
+                        ];
                     } else {
                         $this->getUserService()->disable($user);
-                        $activityMsg = T::trans('Profile disabled for user "%user%".', array('%user%' => $user->getUsername()));
-                        $activityContext = array(
+                        $activityMsg = T::trans('Profile disabled for user "%user%".', ['%user%' => $user->getUsername()]);
+                        $activityContext = [
                             'type' => 'user.profile_disabled',
-                            'author' => $this->getUser()->getId(),
-                        );
+                            'author' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
+                        ];
                     }
                     $this->getActivityManager()->info($activityMsg, $activityContext);
-                } else if (isset($params['plainPassword']) && $params['plainPassword']) {
+                } elseif (isset($params['plainPassword']) && $params['plainPassword']) {
                     // Password encoding and setting is done in "updated_entity_validator"
-                    $activityMsg = T::trans('Password has been changed for user "%user%".', array('%user%' => $user->getUsername()));
-                    $activityContext = array(
+                    $activityMsg = T::trans('Password has been changed for user "%user%".', ['%user%' => $user->getUsername()]);
+                    $activityContext = [
                         'type' => 'user.password_changed',
-                        'author' => $this->getUser()->getId(),
-                    );
+                        'author' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
+                    ];
                     $this->getActivityManager()->info($activityMsg, $activityContext);
                 } else {
-                    $activityMsg = T::trans('Profile data is changed for user "%user%".', array('%user%' => $user->getUsername()));
-                    $activityContext = array(
+                    $activityMsg = T::trans('Profile data is changed for user "%user%".', ['%user%' => $user->getUsername()]);
+                    $activityContext = [
                         'type' => 'user.profile_updated',
-                        'author' => $this->getUser()->getId(),
-                    );
+                        'author' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
+                    ];
                     $this->getActivityManager()->info($activityMsg, $activityContext);
                 }
 
@@ -260,6 +260,7 @@ class UsersController extends AbstractCrudController
                 if (!isset($params['record'])) {
                     $result = new ValidationResult();
                     $result->addGeneralError('Bad request.');
+
                     return $result;
                 }
 
@@ -277,14 +278,18 @@ class UsersController extends AbstractCrudController
                 if (isset($params['plainPassword']) && $params['plainPassword']) {
                     // We are force to do it here because we have no access to validation in "map_data_on_update"
                     try {
-                        if (($loggedInUser = $this->getUser()) && $loggedInUser->getId() !== $user->getId() && $this->getUserService()->isRootUser($user)) {
+                        if (
+                            ($loggedInUser = $this->getUser()) instanceof User
+                            && $loggedInUser->getId() !== $user->getId()
+                            && $this->getUserService()->isRootUser($user)
+                        ) {
                             $message = T::trans('Unable to change password for ROOT user.');
                             $e = new BadPasswordException($message);
                             $e->setErrors([$message]);
                             throw $e;
                         }
 
-                        if (isset($params['sendPassword']) && $params['sendPassword'] != '') {
+                        if (isset($params['sendPassword']) && '' !== $params['sendPassword']) {
                             $this->getPasswordManager()->encodeAndSetPasswordAndThenEmailIt($user, $params['plainPassword']);
                         } else {
                             $this->getPasswordManager()->encodeAndSetPassword($user, $params['plainPassword']);
@@ -299,30 +304,38 @@ class UsersController extends AbstractCrudController
             'remove_entities_handler' => function ($entities, $params, $defaultHandler, ContainerInterface $container) {
                 $operationResult = new OperationResult();
 
+                /** @var User[] $entities */
                 foreach ($entities as $entity) {
-                    /* @var User $entity*/
                     $this->getUserService()->remove($entity);
-                    $operationResult->reportEntity(User::class, $entity->getId(), OperationResult::TYPE_ENTITY_REMOVED);
+                    $operationResult->reportEntity(
+                        User::class,
+                        $entity->getId() ?? 0,
+                        OperationResult::TYPE_ENTITY_REMOVED
+                    );
                 }
 
                 return $operationResult;
             },
-        );
+        ];
     }
 
     /**
      * @Remote
+     *
+     * @param array<mixed> $params
+     *
+     * @return array<mixed>
      */
     public function generatePasswordAction(array $params): array
     {
-        /* @var User $authenticatedUser */
+        /** @var User $authenticatedUser */
         $authenticatedUser = $this->getUser();
 
         $targetUser = null;
         if (isset($params['userId'])) {
-            /* @var User $requestedUser */
+            /** @var ?User $requestedUser */
             $requestedUser = $this
-                ->getDoctrine()
+                ->em()
                 ->getRepository(User::class)
                 ->find($params['userId'])
             ;
@@ -340,47 +353,67 @@ class UsersController extends AbstractCrudController
             $targetUser = $authenticatedUser;
         }
 
-        return array(
+        return [
             'success' => true,
-            'result' => array(
+            'result' => [
                 'plainPassword' => $this->getPasswordManager()->generatePassword($targetUser),
-            ),
-        );
+            ],
+        ];
     }
 
     /**
      * @Remote
+     *
+     * @param array<mixed> $params
+     *
+     * @return array<mixed>
      */
     public function isPasswordRotationNeededAction(array $params): array
     {
         $isRotationNeeded = false;
-        if (!$this->isGranted('ROLE_PREVIOUS_ADMIN') && !$this->isGranted(ModeraSecurityBundle::ROLE_ROOT_USER)) {
-            $isRotationNeeded = $this->getPasswordManager()->isItTimeToRotatePassword($this->getUser());
+        if (
+            ($user = $this->getUser()) instanceof User
+            && !$this->isGranted('ROLE_PREVIOUS_ADMIN')
+            && !$this->isGranted(ModeraSecurityBundle::ROLE_ROOT_USER)
+        ) {
+            $isRotationNeeded = $this->getPasswordManager()->isItTimeToRotatePassword($user);
         }
 
-        return array(
+        return [
             'success' => true,
-            'result' => array(
+            'result' => [
                 'isRotationNeeded' => $isRotationNeeded,
-            ),
-        );
+            ],
+        ];
     }
 
     private function getPasswordManager(): PasswordManager
     {
-        return $this->get('modera_security.password_strength.password_manager');
+        /** @var PasswordManager $passwordManager */
+        $passwordManager = $this->container->get('modera_security.password_strength.password_manager');
+
+        return $passwordManager;
     }
 
     private function getUserService(): UserService
     {
-        return $this->get('modera_security.service.user_service');
+        /** @var UserService $userService */
+        $userService = $this->container->get('modera_security.service.user_service');
+
+        return $userService;
     }
 
     private function getActivityManager(): LoggerInterface
     {
-        return $this->get('modera_activity_logger.manager.activity_manager');
+        /** @var LoggerInterface $activityManager */
+        $activityManager = $this->container->get('modera_activity_logger.manager.activity_manager');
+
+        return $activityManager;
     }
 
+    /**
+     * @return string[]
+     */
     private function getAllowedFieldsToEdit(User $user): array
     {
         $allowedFields = [
@@ -406,7 +439,10 @@ class UsersController extends AbstractCrudController
                 'active',
                 'groups',
             ]);
-        } else if (($loggedInUser = $this->getUser()) && $loggedInUser->getId() === $user->getId()) {
+        } elseif (
+            ($loggedInUser = $this->getUser()) instanceof User
+            && $loggedInUser->getId() === $user->getId()
+        ) {
             $allowedFields = array_merge($allowedFields, [
                 'plainPassword',
             ]);

@@ -2,14 +2,14 @@
 
 namespace Modera\BackendLanguagesBundle\Contributions;
 
-use Doctrine\ORM\EntityManager;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Modera\BackendLanguagesBundle\Entity\UserSettings;
-use Modera\LanguagesBundle\Helper\LocaleHelper;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\LanguagesBundle\Entity\Language;
+use Modera\LanguagesBundle\Helper\LocaleHelper;
+use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 use Modera\SecurityBundle\Entity\User;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -17,88 +17,66 @@ use Modera\SecurityBundle\Entity\User;
  */
 class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterface
 {
-    /**
-     * @var EntityManager
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
+    private TokenStorageInterface $tokenStorage;
 
-    /**
-     * @var string
-     */
-    private $locale;
+    private string $locale;
 
-    /**
-     * @param EntityManager         $em
-     * @param TokenStorageInterface $tokenStorage,
-     * @param string                $locale,
-     */
-    public function __construct(EntityManager $em, TokenStorageInterface $tokenStorage, $locale = 'en')
+    public function __construct(EntityManagerInterface $em, TokenStorageInterface $tokenStorage, string $locale = 'en')
     {
         $this->em = $em;
         $this->tokenStorage = $tokenStorage;
         $this->locale = $locale;
     }
 
-    /**
-     * @param array $currentConfig
-     *
-     * @return array
-     */
-    public function merge(array $currentConfig)
+    public function merge(array $existingConfig): array
     {
         $locale = null;
-        $languages = array();
+        $languages = [];
 
         $token = $this->tokenStorage->getToken();
         if ($token && $token->getUser() instanceof User) {
-            /* @var UserSettings $settings */
-            $settings = $this->em->getRepository(UserSettings::class)->findOneBy(array('user' => $token->getUser()->getId()));
+            /** @var ?UserSettings $settings */
+            $settings = $this->em->getRepository(UserSettings::class)->findOneBy(['user' => $token->getUser()->getId()]);
             if ($settings && $settings->getLanguage() && $settings->getLanguage()->isEnabled()) {
                 $locale = $settings->getLanguage()->getLocale();
             }
 
             if (!$locale) {
-                /* @var Language $defaultLanguage */
-                $defaultLanguage = $this->em->getRepository(Language::class)->findOneBy(array(
+                /** @var ?Language $defaultLanguage */
+                $defaultLanguage = $this->em->getRepository(Language::class)->findOneBy([
                     'isDefault' => true,
-                ));
+                ]);
                 if ($defaultLanguage) {
                     $locale = $defaultLanguage->getLocale();
                 }
             }
         }
 
-        /* @var Language[] $dbLanguages */
-        $dbLanguages = $this->em->getRepository(Language::class)->findBy(array('isEnabled' => true));
+        /** @var Language[] $dbLanguages */
+        $dbLanguages = $this->em->getRepository(Language::class)->findBy(['isEnabled' => true]);
         foreach ($dbLanguages as $dbLanguage) {
-            $languages[] = array(
+            $languages[] = [
                 'id' => $dbLanguage->getId(),
                 'name' => $dbLanguage->getName($locale ?: $this->locale),
                 'locale' => $dbLanguage->getLocale(),
                 'direction' => LocaleHelper::getDirection($dbLanguage->getLocale()),
                 'default' => $dbLanguage->isDefault(),
-            );
+            ];
         }
 
-        return array_merge($currentConfig, array(
-            'modera_backend_languages' => array(
+        return \array_merge($existingConfig, [
+            'modera_backend_languages' => [
                 'languages' => $languages,
                 'locale' => $locale ?: $this->locale,
                 'direction' => LocaleHelper::getDirection($locale ?: $this->locale),
-            ),
-        ));
+            ],
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array($this);
+        return [$this];
     }
 }

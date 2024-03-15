@@ -2,7 +2,7 @@
 
 namespace Modera\BackendConfigUtilsBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -11,22 +11,18 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 class ClassLoaderMappingsProvider implements ContributorInterface
 {
     /**
-     * @var string[]
+     * @var array<string, string>
      */
-    private $items;
+    private ?array $items = null;
 
-    public function __construct()
+    public function getItems(): array
     {
-        $this->items = array(
-            'Modera.backend.configutils' => '/bundles/moderabackendconfigutils/js',
-        );
-    }
+        if (!$this->items) {
+            $this->items = [
+                'Modera.backend.configutils' => '/bundles/moderabackendconfigutils/js',
+            ];
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
-    {
         return $this->items;
     }
 }

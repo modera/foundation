@@ -10,27 +10,18 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  */
 class AsIsHandler implements HandlerInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getReadableValue(ConfigurationEntry $entry)
     {
         return $entry->getDenormalizedValue();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getValue(ConfigurationEntry $entry)
     {
         return $entry->getDenormalizedValue();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function convertToStorageValue($object, ConfigurationEntry $entry)
+    public function convertToStorageValue($value, ConfigurationEntry $entry)
     {
-        return $object;
+        return $value;
     }
 }

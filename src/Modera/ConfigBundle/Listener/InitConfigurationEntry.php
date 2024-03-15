@@ -23,7 +23,7 @@ class InitConfigurationEntry
         $this->container = $container;
     }
 
-    public function postLoad(LifecycleEventArgs $args)
+    public function postLoad(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
         if ($entity instanceof ConfigurationEntry) {
@@ -31,7 +31,7 @@ class InitConfigurationEntry
         }
     }
 
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
         if ($entity instanceof ConfigurationEntry) {
@@ -39,7 +39,7 @@ class InitConfigurationEntry
         }
     }
 
-    private function doInit(ConfigurationEntry $entity)
+    private function doInit(ConfigurationEntry $entity): void
     {
         $entity->init($this->container);
     }

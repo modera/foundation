@@ -8,9 +8,5 @@ namespace Modera\BackendLanguagesBundle\Service;
  */
 interface SanitizeInterface
 {
-    /**
-     * @param string $content
-     * @return string
-     */
-    public function sanitizeHtml($content);
+    public function sanitizeHtml(string $content): string;
 }

@@ -4,7 +4,6 @@ namespace Modera\FoundationBundle\Translation;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Translation\Translator;
 
 /**
  * You can use this helper to translate messages right from you PHP classes. When this helper is used
@@ -18,24 +17,20 @@ class T
     /**
      * Property is going to be dynamically inject by \Modera\TranslationsBundle\ModeraTranslationsBundle::boot() method.
      *
-     * @var ContainerInterface
+     * @var ?ContainerInterface
      */
+    // @phpstan-ignore-next-line
     private static $container;
 
     /**
      * @see \Symfony\Contracts\Translation\TranslatorInterface::trans
      *
-     * @param string $id
-     * @param array  $parameters
-     * @param string $domain
-     * @param string $locale
-     *
-     * @return string
+     * @param array<string, mixed> $parameters
      */
-    public static function trans($id, array $parameters = array(), $domain = null, $locale = null)
+    public static function trans(string $id, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
         if (self::$container) {
-            /* @var TranslatorInterface $translator */
+            /** @var TranslatorInterface $translator */
             $translator = self::$container->get('translator');
 
             return $translator->trans($id, $parameters, $domain, $locale);
@@ -46,16 +41,14 @@ class T
 
     /**
      * @deprecated Use native ::class property
-     *
-     * @return string
      */
-    public static function clazz()
+    public static function clazz(): string
     {
-        @trigger_error(sprintf(
+        @\trigger_error(\sprintf(
             'The "%s()" method is deprecated. Use native ::class property.',
             __METHOD__
         ), \E_USER_DEPRECATED);
 
-        return get_called_class();
+        return \get_called_class();
     }
 }

@@ -14,10 +14,7 @@ use Modera\SecurityBundle\Entity\User;
  */
 class SettingsEntityManagingListener
 {
-    /**
-     * @param OnFlushEventArgs $event
-     */
-    public function onFlush(OnFlushEventArgs $event)
+    public function onFlush(OnFlushEventArgs $event): void
     {
         $em = $event->getEntityManager();
         $uow = $em->getUnitOfWork();
@@ -41,12 +38,12 @@ class SettingsEntityManagingListener
 
         foreach ($uow->getScheduledEntityDeletions() as $entity) {
             if ($entity instanceof User) {
-                $query = $em->createQuery(sprintf('DELETE FROM %s us WHERE us.user = ?0', UserSettings::class));
-                $query->execute(array($entity));
+                $query = $em->createQuery(\sprintf('DELETE FROM %s us WHERE us.user = ?0', UserSettings::class));
+                $query->execute([$entity]);
             }
             if ($entity instanceof Group) {
-                $query = $em->createQuery(sprintf('DELETE FROM %s us WHERE us.group = ?0', GroupSettings::class));
-                $query->execute(array($entity));
+                $query = $em->createQuery(\sprintf('DELETE FROM %s us WHERE us.group = ?0', GroupSettings::class));
+                $query->execute([$entity]);
             }
         }
     }

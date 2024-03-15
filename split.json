@@ -14,6 +14,7 @@
         "src/Modera/DirectBundle": "git@github.com:modera/ModeraDirectBundle.git",
         "src/Modera/DynamicallyConfigurableAppBundle": "git@github.com:modera/ModeraDynamicallyConfigurableAppBundle.git",
         "src/Modera/DynamicallyConfigurableMJRBundle": "git@github.com:modera/ModeraDynamicallyConfigurableMJRBundle.git",
+        "src/Modera/ExpanderBundle": "git@github.com:modera/ModeraExpanderBundle.git",
         "src/Modera/FileRepositoryBundle": "git@github.com:modera/ModeraFileRepositoryBundle.git",
         "src/Modera/FileUploaderBundle": "git@github.com:modera/ModeraFileUploaderBundle.git",
         "src/Modera/FoundationBundle": "git@github.com:modera/ModeraFoundationBundle.git",

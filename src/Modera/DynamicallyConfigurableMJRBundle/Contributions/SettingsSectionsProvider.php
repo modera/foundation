@@ -2,11 +2,11 @@
 
 namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
 use Modera\BackendToolsSettingsBundle\Section\StandardSection;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * @internal Since 2.56.0
@@ -16,36 +16,33 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class SettingsSectionsProvider implements ContributorInterface
 {
-    private $items;
-
-    private $authorizationChecker;
-
     /**
-     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @var ?StandardSection[]
      */
+    private ?array $items = null;
+
+    private AuthorizationCheckerInterface $authorizationChecker;
+
     public function __construct(AuthorizationCheckerInterface $authorizationChecker)
     {
         $this->authorizationChecker = $authorizationChecker;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (!$this->items) {
-            $this->items = array();
+            $this->items = [];
             if ($this->authorizationChecker->isGranted(ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS)) {
                 $this->items[] = new StandardSection(
                     'general',
                     'General',
                     'Modera.backend.dcmjr.runtime.GeneralSiteSettingsActivity',
                     FontAwesome::resolve('cog', 'fas'),
-                    array(
-                        'activationParams' => array(
+                    [
+                        'activationParams' => [
                             'category' => 'general',
-                        ),
-                    )
+                        ],
+                    ]
                 );
             }
         }

@@ -2,12 +2,12 @@
 
 namespace Modera\BackendTranslationsToolBundle\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Modera\BackendTranslationsToolBundle\Cache\CompileNeeded;
+use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
-use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
-use Modera\BackendTranslationsToolBundle\Cache\CompileNeeded;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -15,39 +15,36 @@ use Modera\BackendTranslationsToolBundle\Cache\CompileNeeded;
  */
 class LanguageTranslationsController extends AbstractCrudController
 {
-    /**
-     * @return array
-     */
-    public function getConfig()
+    public function getConfig(): array
     {
-        return array(
+        return [
             'entity' => LanguageTranslationToken::class,
-            'security' => array(
+            'security' => [
                 'role' => ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION,
-            ),
-            'hydration' => array(
-                'groups' => array(
+            ],
+            'hydration' => [
+                'groups' => [
                     'main-form' => function (LanguageTranslationToken $ltt) {
-                        return array(
+                        return [
                             'id' => $ltt->getId(),
                             'translation' => $ltt->getTranslation(),
-                            'languageName' => $ltt->getLanguage()->getName(),
-                            'domainName' => $ltt->getTranslationToken()->getDomain(),
-                            'tokenName' => $ltt->getTranslationToken()->getTokenName(),
-                        );
+                            'languageName' => $ltt->getLanguage() ? $ltt->getLanguage()->getName() : null,
+                            'domainName' => $ltt->getTranslationToken() ? $ltt->getTranslationToken()->getDomain() : null,
+                            'tokenName' => $ltt->getTranslationToken() ? $ltt->getTranslationToken()->getTokenName() : null,
+                        ];
                     },
-                ),
-                'profiles' => array(
+                ],
+                'profiles' => [
                     'main-form',
-                ),
-            ),
+                ],
+            ],
             'map_data_on_update' => function (array $params, LanguageTranslationToken $entity, DataMapperInterface $defaultMapper, ContainerInterface $container) {
                 $defaultMapper->mapData($params, $entity);
 
-                /* @var CompileNeeded $compileNeeded */
+                /** @var CompileNeeded $compileNeeded */
                 $compileNeeded = $container->get('modera_backend_translations_tool.cache.compile_needed');
                 $compileNeeded->set(true);
             },
-        );
+        ];
     }
 }

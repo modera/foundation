@@ -13,18 +13,15 @@ use Symfony\Component\DependencyInjection\Definition;
  */
 class MenuItemContributorCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $config = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
 
-        $def = new Definition(ConfigMenuItemsProvider::class, array($config));
+        $def = new Definition(ConfigMenuItemsProvider::class, [$config]);
         $def->addTag('modera_mjr_integration.menu.menu_items_provider');
 
-        $container->addDefinitions(array(
+        $container->addDefinitions([
             'modera_mjr_integration.contributions.menu_items_provider' => $def,
-        ));
+        ]);
     }
 }

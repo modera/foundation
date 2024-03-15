@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -e
+
+SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+WORKDIR="$(dirname $SCRIPT_DIR)"
+
+if [ ! -d "${WORKDIR}/vendor" ]; then
+    composer --working-dir=${WORKDIR} install
+fi
+
+${WORKDIR}/vendor/bin/phpstan \
+    analyse \
+        -c ${WORKDIR}/phpstan.neon \
+        $@

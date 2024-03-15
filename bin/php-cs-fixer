@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e
+
+SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+WORKDIR="$(dirname $SCRIPT_DIR)"
+
+JSON=$(composer global show --format=json --no-interaction --available friendsofphp/php-cs-fixer 2>/dev/null)
+LATEST=$( echo ${JSON} | grep -o '"versions": \[ "[^"]*' | grep -o '[^"]*$' )
+
+VERSION=""
+if [ -d "${WORKDIR}/tools/php-cs-fixer" ]; then
+    JSON=$(composer --working-dir="${WORKDIR}/tools/php-cs-fixer" show --format=json --no-interaction friendsofphp/php-cs-fixer 2>/dev/null)
+    VERSION=$( echo ${JSON} | grep -o '"versions": \[ "[^"]*' | grep -o '[^"]*$' )
+fi
+
+if [ "${LATEST}" != "${VERSION}" ]; then
+    mkdir -p "${WORKDIR}/tools/php-cs-fixer"
+    composer require --no-interaction --working-dir="${WORKDIR}/tools/php-cs-fixer" friendsofphp/php-cs-fixer:${LATEST}
+fi
+
+${WORKDIR}/tools/php-cs-fixer/vendor/bin/php-cs-fixer $@

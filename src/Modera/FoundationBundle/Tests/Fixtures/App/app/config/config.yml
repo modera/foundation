@@ -1,4 +1,5 @@
 framework:
+    test: true
     secret:          Hell yeah!
     csrf_protection: true
     session:         ~

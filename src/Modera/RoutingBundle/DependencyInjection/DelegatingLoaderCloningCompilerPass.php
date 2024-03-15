@@ -11,10 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class DelegatingLoaderCloningCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         /*
          * Since Symfony 2.7 \Symfony\Bundle\FrameworkBundle\Routing\DelegatingLoader::load method
@@ -23,7 +20,8 @@ class DelegatingLoaderCloningCompilerPass implements CompilerPassInterface
          * in \Modera\RoutingBundle\Routing\Loader
          */
         $container->setDefinition(
-            'modera_routing.symfony_delegating_loader', clone $container->getDefinition('routing.loader')
+            'modera_routing.symfony_delegating_loader',
+            clone $container->getDefinition('routing.loader')
         );
     }
 }

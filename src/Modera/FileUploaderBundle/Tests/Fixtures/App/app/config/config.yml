@@ -17,6 +17,8 @@ security:
           anonymous: ~
 
 framework:
+    test: true
+    annotations: ~
     validation: ~
     secret:          Hell yeah!
     csrf_protection: true

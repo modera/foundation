@@ -2,11 +2,11 @@
 
 namespace Modera\TranslationsBundle\Service;
 
-use Symfony\Component\Translation\Translator as BaseTranslator;
+use Modera\TranslationsBundle\Compiler\Adapter\AdapterInterface;
+use Symfony\Bundle\FrameworkBundle\Translation\Translator as DefaultTranslator;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 use Symfony\Component\Translation\Formatter\MessageFormatterInterface;
-use Symfony\Bundle\FrameworkBundle\Translation\Translator as DefaultTranslator;
-use Modera\TranslationsBundle\Compiler\Adapter\AdapterInterface;
+use Symfony\Component\Translation\Translator as BaseTranslator;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -23,8 +23,7 @@ class Translator extends BaseTranslator implements WarmableInterface
         MessageFormatterInterface $formatter,
         DefaultTranslator $translator,
         bool $debug = false
-    )
-    {
+    ) {
         parent::__construct($translator->getLocale(), $formatter, null, $debug);
 
         $this->setFallbackLocales($translator->getFallbackLocales());
@@ -33,10 +32,7 @@ class Translator extends BaseTranslator implements WarmableInterface
         $this->translator = $translator;
     }
 
-    /**
-     * @param string $locale
-     */
-    protected function loadCatalogue($locale)
+    protected function loadCatalogue(string $locale): void
     {
         $catalogue = $this->translator->getCatalogue($locale);
         $catalogue->addCatalogue($this->adapter->loadCatalogue($locale));
@@ -44,12 +40,11 @@ class Translator extends BaseTranslator implements WarmableInterface
         $this->catalogues[$locale] = $catalogue;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function warmUp($cacheDir)
+    public function warmUp(string $cacheDir): array
     {
-        $this->translator->warmUp($cacheDir);
+        $arr = $this->translator->warmUp($cacheDir);
         $this->catalogues = [];
+
+        return $arr;
     }
 }

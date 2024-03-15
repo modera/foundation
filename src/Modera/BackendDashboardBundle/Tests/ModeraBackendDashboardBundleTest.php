@@ -3,7 +3,7 @@
 namespace Modera\BackendDashboardBundle\Tests;
 
 use Modera\BackendDashboardBundle\ModeraBackendDashboardBundle;
-use Sli\ExpanderBundle\DependencyInjection\CompositeContributorsProviderCompilerPass;
+use Modera\ExpanderBundle\DependencyInjection\CompositeContributorsProviderCompilerPass;
 
 /**
  * @copyright 2013 Modera Foundation
@@ -21,9 +21,9 @@ class ModeraBackendDashboardBundleTest extends \PHPUnit\Framework\TestCase
 
         \Phake::verify($containerBuilder)->addCompilerPass(\Phake::capture($pass));
 
-        $this->assertInstanceOf('Sli\ExpanderBundle\DependencyInjection\CompositeContributorsProviderCompilerPass', $pass);
+        $this->assertInstanceOf('Modera\ExpanderBundle\DependencyInjection\CompositeContributorsProviderCompilerPass', $pass);
 
-        /* @var CompositeContributorsProviderCompilerPass $pass */
+        /** @var CompositeContributorsProviderCompilerPass $pass */
 
         $this->assertEquals('modera_backend_dashboard.dashboard_provider', $pass->getProviderServiceId());
         $this->assertEquals('modera_backend_dashboard.dashboard_provider', $pass->getContributorServiceTagName());

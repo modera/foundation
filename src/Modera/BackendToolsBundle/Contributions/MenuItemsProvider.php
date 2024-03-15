@@ -3,12 +3,12 @@
 namespace Modera\BackendToolsBundle\Contributions;
 
 use Modera\BackendToolsBundle\ModeraBackendToolsBundle;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\FoundationBundle\Translation\T;
 use Modera\MjrIntegrationBundle\Menu\MenuItem;
 use Modera\MjrIntegrationBundle\Menu\MenuItemInterface;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Modera\FoundationBundle\Translation\T;
 
 /**
  * Contributes js-runtime menu items.
@@ -18,44 +18,44 @@ use Modera\FoundationBundle\Translation\T;
  */
 class MenuItemsProvider implements ContributorInterface
 {
-    private $authorizationChecker;
+    private AuthorizationCheckerInterface $authorizationChecker;
 
-    private $sectionsProvider;
+    private ContributorInterface $sectionsProvider;
 
-    private $tabOrder;
-
-    private $items;
+    private int $tabOrder;
 
     /**
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param ContributorInterface          $sectionsProvider
-     * @param int                           $tabOrder
+     * @var MenuItem[]
      */
+    private ?array $items = null;
+
     public function __construct(
         AuthorizationCheckerInterface $authorizationChecker,
         ContributorInterface $sectionsProvider,
-        $tabOrder
-    )
-    {
+        int $tabOrder
+    ) {
         $this->authorizationChecker = $authorizationChecker;
         $this->sectionsProvider = $sectionsProvider;
         $this->tabOrder = $tabOrder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (!$this->items) {
             $this->items = [];
 
             if ($this->authorizationChecker->isGranted(ModeraBackendToolsBundle::ROLE_ACCESS_TOOLS_SECTION)) {
-                if (count($this->sectionsProvider->getItems())) {
-                    $this->items[] = new MenuItem(T::trans('Tools'), 'Modera.backend.tools.runtime.Section', 'tools', array(
-                        MenuItemInterface::META_NAMESPACE => 'Modera.backend.tools',
-                        MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackendtools/js',
-                    ), FontAwesome::resolve('wrench', 'fas'));
+                if (\count($this->sectionsProvider->getItems())) {
+                    $this->items[] = new MenuItem(
+                        T::trans('Tools'),
+                        'Modera.backend.tools.runtime.Section',
+                        'tools',
+                        [
+                            MenuItemInterface::META_NAMESPACE => 'Modera.backend.tools',
+                            MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackendtools/js',
+                        ],
+                        FontAwesome::resolve('wrench', 'fas')
+                    );
                 }
             }
         }
@@ -65,10 +65,8 @@ class MenuItemsProvider implements ContributorInterface
 
     /**
      * Return tab order.
-     *
-     * @return int
      */
-    public function getOrder()
+    public function getOrder(): int
     {
         return $this->tabOrder;
     }

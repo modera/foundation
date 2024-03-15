@@ -3,9 +3,9 @@
 namespace Modera\BackendSecurityBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
@@ -15,12 +15,9 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  */
 class ModeraBackendSecurityExtension extends Extension implements PrependExtensionInterface
 {
-    const CONFIG_KEY = 'modera_backend_security.config';
+    public const CONFIG_KEY = 'modera_backend_security.config';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
@@ -36,7 +33,10 @@ class ModeraBackendSecurityExtension extends Extension implements PrependExtensi
         }
     }
 
-    private function injectConfigIntoContainer(array $config, ContainerBuilder $container)
+    /**
+     * @param array<string, array<mixed>|bool|string|int|float|null> $config
+     */
+    private function injectConfigIntoContainer(array $config, ContainerBuilder $container): void
     {
         $container->setParameter(self::CONFIG_KEY, $config);
         foreach ($config as $key => $value) {
@@ -44,19 +44,16 @@ class ModeraBackendSecurityExtension extends Extension implements PrependExtensi
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         if (\interface_exists('Symfony\Component\Mailer\MailerInterface')) {
-            $container->prependExtensionConfig('modera_security', array(
-                'password_strength' => array(
-                    'mail' => array(
+            $container->prependExtensionConfig('modera_security', [
+                'password_strength' => [
+                    'mail' => [
                         'service' => 'modera_backend_security.password_strength.mail.default_mail_service',
-                    ),
-                ),
-            ));
+                    ],
+                ],
+            ]);
         }
     }
 }

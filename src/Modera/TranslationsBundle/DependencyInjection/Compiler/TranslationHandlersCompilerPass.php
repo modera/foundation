@@ -2,8 +2,8 @@
 
 namespace Modera\TranslationsBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -12,10 +12,7 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class TranslationHandlersCompilerPass implements CompilerPassInterface
 {
-    /**
-     * @param ContainerBuilder $container
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition('modera_translations.service.translation_handlers_chain')) {
             return;
@@ -31,7 +28,7 @@ class TranslationHandlersCompilerPass implements CompilerPassInterface
         foreach ($taggedServices as $id => $attributes) {
             $definition->addMethodCall(
                 'addHandler',
-                array(new Reference($id))
+                [new Reference($id)]
             );
         }
     }

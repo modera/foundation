@@ -3,9 +3,9 @@
 namespace Modera\BackendToolsBundle\Controller;
 
 use Modera\BackendToolsBundle\Section\Section;
-use Modera\FoundationBundle\Controller\AbstractBaseController;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\DirectBundle\Annotation\Remote;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\FoundationBundle\Controller\AbstractBaseController;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -16,19 +16,19 @@ class DefaultController extends AbstractBaseController
     /**
      * @Remote
      *
-     * @param array $params
+     * @param array<mixed> $params
      *
-     * @return array
+     * @return array<mixed>
      */
-    public function getSectionsAction(array $params)
+    public function getSectionsAction(array $params): array
     {
-        /* @var ContributorInterface $sectionsProvider */
-        $sectionsProvider = $this->get('modera_backend_tools.sections_provider');
+        /** @var ContributorInterface $sectionsProvider */
+        $sectionsProvider = $this->container->get('modera_backend_tools.sections_provider');
 
-        $result = array();
+        $result = [];
+        /** @var Section $section */
         foreach ($sectionsProvider->getItems() as $section) {
-            /* @var Section $section */
-            $result[] = array(
+            $result[] = [
                 'name' => $section->getName(),
                 'glyph' => $section->getGlyph(),
                 'iconSrc' => $section->getIconSrc(),
@@ -36,7 +36,7 @@ class DefaultController extends AbstractBaseController
                 'description' => $section->getDescription(),
                 'section' => $section->getSection(),
                 'activationParams' => $section->getSectionActivationParams(),
-            );
+            ];
         }
 
         return $result;

@@ -53,49 +53,31 @@ class SimpleDashboard implements DashboardInterface
         $this->icon = $icon;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getName()
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getDescription()
     {
         return $this->description;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getIcon()
     {
         return $this->icon;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getUiClass()
     {
         return $this->uiClass;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getLabel()
     {
         return $this->label;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isAllowed(ContainerInterface $container)
     {
         return true; // whatever

@@ -3,13 +3,13 @@
 namespace Modera\LanguagesBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Helper\Table;
+use Modera\LanguagesBundle\DependencyInjection\ModeraLanguagesExtension;
+use Modera\LanguagesBundle\Entity\Language;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Modera\LanguagesBundle\DependencyInjection\ModeraLanguagesExtension;
-use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * From config to database.
@@ -31,7 +31,7 @@ class SyncLanguagesCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('modera:languages:config-sync')
@@ -39,25 +39,25 @@ class SyncLanguagesCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $languages = $this->getConfigLanguages();
         $dbLanguages = $this->em->getRepository(Language::class)->findAll();
 
-        $updated = array();
-        $tableRows = array();
-        if (count($dbLanguages)) {
-            /* @var Language $dbLanguage */
+        $updated = [];
+        $tableRows = [];
+        if (\count($dbLanguages)) {
+            /** @var Language $dbLanguage */
             foreach ($dbLanguages as $dbLanguage) {
                 $language = null;
                 foreach ($languages as $_language) {
-                    if ($_language['locale'] == $dbLanguage->getLocale()) {
+                    if ($_language['locale'] === $dbLanguage->getLocale()) {
                         $language = $_language;
                         break;
                     }
                 }
 
-                if (is_array($language)) {
+                if (\is_array($language)) {
                     $updated[] = $language['locale'];
                     $dbLanguage->setEnabled($language['is_enabled'] ? true : false);
                 } else {
@@ -69,7 +69,7 @@ class SyncLanguagesCommand extends Command
         }
 
         foreach ($languages as $language) {
-            if (!in_array($language['locale'], $updated)) {
+            if (!\in_array($language['locale'], $updated)) {
                 $dbLanguage = new Language();
                 $dbLanguage->setLocale($language['locale']);
                 $dbLanguage->setEnabled($language['is_enabled'] ? true : false);
@@ -79,34 +79,35 @@ class SyncLanguagesCommand extends Command
         }
 
         $this->em->flush();
-        
+
         $table = new Table($output);
-        $table->setHeaders(array('locale', 'name', 'enabled'));
+        $table->setHeaders(['locale', 'name', 'enabled']);
         $table->setRows($tableRows);
-        $table->render($output);
+        $table->render();
 
         return 0;
     }
 
     /**
-     * @return array
+     * @return array<int, array{'locale': string, 'is_enabled': bool}>
      */
-    protected function getConfigLanguages()
+    protected function getConfigLanguages(): array
     {
-        return $this->params->get(ModeraLanguagesExtension::CONFIG_KEY);
+        /** @var array<int, array{'locale': string, 'is_enabled': bool}> $languages */
+        $languages = $this->params->get(ModeraLanguagesExtension::CONFIG_KEY);
+
+        return $languages;
     }
 
     /**
-     * @param Language $dbLanguage
-     *
-     * @return array
+     * @return mixed[]
      */
-    private function tableRow(Language $dbLanguage)
+    private function tableRow(Language $dbLanguage): array
     {
-        return array(
+        return [
             $dbLanguage->getLocale(),
             $dbLanguage->getName(),
             $dbLanguage->isEnabled(),
-        );
+        ];
     }
 }

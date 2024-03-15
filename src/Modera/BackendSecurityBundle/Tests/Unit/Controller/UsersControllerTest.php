@@ -2,13 +2,13 @@
 
 namespace Modera\BackendSecurityBundle\Tests\Unit\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Modera\BackendSecurityBundle\Controller\UsersController;
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\Entity\User;
 use Modera\SecurityBundle\PasswordStrength\PasswordGenerator;
 use Modera\SecurityBundle\PasswordStrength\PasswordManager;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -66,11 +66,12 @@ class UsersControllerTest extends \PHPUnit\Framework\TestCase
             ->get('modera_security.password_strength.password_manager')
             ->thenReturn($passwordManager)
         ;
-        
+
         \Phake::when($containerMock)
             ->has('security.token_storage')
             ->thenReturn(true)
         ;
+
         \Phake::when($containerMock)
             ->get('security.token_storage')
             ->thenReturn($tokenStorageMock)
@@ -146,18 +147,18 @@ class UsersControllerTest extends \PHPUnit\Framework\TestCase
             ->thenReturn($anotherUser)
         ;
 
-        $doctrineMock = \Phake::mock(ManagerRegistry::class);
+        $doctrineMock = \Phake::mock(EntityManagerInterface::class);
         \Phake::when($doctrineMock)
             ->getRepository(User::class)
             ->thenReturn($userRepositoryMock)
         ;
 
         \Phake::when($containerMock)
-            ->has('doctrine')
+            ->has('doctrine.orm.entity_manager')
             ->thenReturn(true)
         ;
         \Phake::when($containerMock)
-            ->get('doctrine')
+            ->get('doctrine.orm.entity_manager')
             ->thenReturn($doctrineMock)
         ;
 

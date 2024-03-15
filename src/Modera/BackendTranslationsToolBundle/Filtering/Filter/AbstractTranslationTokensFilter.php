@@ -2,12 +2,12 @@
 
 namespace Modera\BackendTranslationsToolBundle\Filtering\Filter;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
 use Modera\ServerCrudBundle\DependencyInjection\ModeraServerCrudExtension;
 use Modera\ServerCrudBundle\Exceptions\BadConfigException;
 use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
-use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
 use Modera\TranslationsBundle\Entity\TranslationToken;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -15,25 +15,19 @@ use Modera\TranslationsBundle\Entity\TranslationToken;
  */
 abstract class AbstractTranslationTokensFilter implements FilterInterface
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
+    protected ContainerInterface $container;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
-    /**
-     * @return PersistenceHandlerInterface
-     */
-    protected function getPersistenceHandler()
+    protected function getPersistenceHandler(): PersistenceHandlerInterface
     {
         $config = $this->container->getParameter(ModeraServerCrudExtension::CONFIG_KEY);
+        if (!\is_array($config)) {
+            $config = [];
+        }
 
         $serviceId = 'modera_server_crud.persistence.doctrine_registry_handler';
         if (isset($config[$serviceType = 'persistence_handler'])) {
@@ -41,58 +35,44 @@ abstract class AbstractTranslationTokensFilter implements FilterInterface
         }
 
         try {
-            return $this->container->get($serviceId);
+            /** @var PersistenceHandlerInterface $service */
+            $service = $this->container->get($serviceId);
+
+            return $service;
         } catch (\Exception $e) {
             throw BadConfigException::create($serviceType, $config, $e);
         }
     }
 
-    /**
-     * @return \Doctrine\ORM\EntityManager
-     */
-    protected function em()
+    public function getCount(array $params): int
     {
-        return $this->container->get('doctrine.orm.entity_manager');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCount(array $params)
-    {
-        if (isset($params['filter']) && !is_array($params['filter'])) {
-            $params['filter'] = array();
+        if (isset($params['filter']) && !\is_array($params['filter'])) {
+            $params['filter'] = [];
         }
 
         return $this->getPersistenceHandler()->getCount(TranslationToken::class, $params);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getResult(array $params)
+    public function getResult(array $params): array
     {
-        if (isset($params['filter']) && !is_array($params['filter'])) {
-            $params['filter'] = array();
+        if (isset($params['filter']) && !\is_array($params['filter'])) {
+            $params['filter'] = [];
         }
 
         $total = $this->getCount($params);
-        $entities = array();
+        $entities = [];
         if ($total > 0) {
             $entities = $this->getPersistenceHandler()->query(TranslationToken::class, $params);
         }
 
-        return array(
+        return [
             'success' => true,
             'items' => $entities,
             'total' => $total,
-        );
+        ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isAllowed()
+    public function isAllowed(): bool
     {
         return true;
     }

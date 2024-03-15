@@ -14,13 +14,13 @@ use Modera\TranslationsBundle\Tests\Functional\AbstractFunctionalTestCase;
 class ImportTranslationsCommandTest extends AbstractFunctionalTestCase
 {
     // override
-    public static function doSetUpBeforeClass()
+    public static function doSetUpBeforeClass(): void
     {
         self::setUpDatabase();
     }
 
     // override
-    public static function doTearDownAfterClass()
+    public static function doTearDownAfterClass(): void
     {
         self::dropDatabase();
     }

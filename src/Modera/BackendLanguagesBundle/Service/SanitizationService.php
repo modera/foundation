@@ -8,10 +8,7 @@ namespace Modera\BackendLanguagesBundle\Service;
  */
 class SanitizationService implements SanitizeInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function sanitizeHtml($content)
+    public function sanitizeHtml(string $content): string
     {
         return $content;
     }

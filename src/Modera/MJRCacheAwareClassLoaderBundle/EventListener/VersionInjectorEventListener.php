@@ -17,20 +17,17 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
  */
 class VersionInjectorEventListener
 {
-    const HEADER_NAME = 'X-Modera-Version';
+    public const HEADER_NAME = 'X-Modera-Version';
+
+    private VersionResolverInterface $versionResolver;
 
     /**
-     * @var VersionResolverInterface
+     * @var array{'listener_response_paths': string[]}
      */
-    private $versionResolver;
+    private array $semanticConfig;
 
     /**
-     * @var array
-     */
-    private $semanticConfig;
-
-    /**
-     * @param VersionResolverInterface $versionResolver
+     * @param array{'listener_response_paths': string[]} $semanticConfig
      */
     public function __construct(VersionResolverInterface $versionResolver, array $semanticConfig)
     {
@@ -38,13 +35,10 @@ class VersionInjectorEventListener
         $this->semanticConfig = $semanticConfig;
     }
 
-    /**
-     * @param ResponseEvent $event
-     */
-    public function onKernelResponse(ResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event): void
     {
         foreach ($this->semanticConfig['listener_response_paths'] as $path) {
-            if (preg_match("@$path@", $event->getRequest()->getPathInfo())) {
+            if (\preg_match("@$path@", $event->getRequest()->getPathInfo())) {
                 $event->getResponse()->headers->set(self::HEADER_NAME, $this->versionResolver->resolve());
 
                 return;

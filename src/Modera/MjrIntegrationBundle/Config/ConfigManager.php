@@ -2,7 +2,7 @@
 
 namespace Modera\MjrIntegrationBundle\Config;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * Service is responsible for providing configuration used by JavaScript runtime.
@@ -12,22 +12,21 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class ConfigManager
 {
-    private $provider;
+    private ContributorInterface $provider;
 
-    /**
-     * @param ContributorInterface $provider
-     */
     public function __construct(ContributorInterface $provider)
     {
         $this->provider = $provider;
     }
 
     /**
-     * @return array Config which will be used by client-side js runtime to configure its state
+     * Config which will be used by client-side js runtime to configure its state.
+     *
+     * @return array<mixed>
      */
-    public function getConfig()
+    public function getConfig(): array
     {
-        $result = array();
+        $result = [];
         foreach ($this->provider->getItems() as $merger) {
             if (!($merger instanceof ConfigMergerInterface)) {
                 throw new \RuntimeException();

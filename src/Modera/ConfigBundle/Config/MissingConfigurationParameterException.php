@@ -13,38 +13,25 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  */
 class MissingConfigurationParameterException extends \RuntimeException
 {
-    /**
-     * @var string
-     */
-    private $parameter;
+    private ?string $parameter = null;
 
-    /**
-     * @param string $parameter
-     */
-    public function setParameter($parameter)
+    public function setParameter(string $parameter): void
     {
         $this->parameter = $parameter;
     }
 
-    /**
-     * @return string
-     */
-    public function getParameter()
+    public function getParameter(): ?string
     {
         return $this->parameter;
     }
 
-    /**
-     * @param \Modera\ConfigBundle\Entity\ConfigurationEntry $entry
-     * @param string                                         $parameter
-     *
-     * @return MissingConfigurationParameterException
-     */
-    public static function create(ConfigurationEntry $entry, $parameter)
+    public static function create(ConfigurationEntry $entry, string $parameter): self
     {
-        $me = new self(sprintf(
+        $me = new self(\sprintf(
             '%s::getServerHandlerConfig(): configuration property "%s" for ConfigurationEntry with id "%s" is not provided!',
-            get_class($entry), $parameter, $entry->getId()
+            \get_class($entry),
+            $parameter,
+            $entry->getId()
         ));
         $me->setParameter($parameter);
 

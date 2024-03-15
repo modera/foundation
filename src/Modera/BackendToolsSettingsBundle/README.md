@@ -45,24 +45,21 @@ namespace MyCompany\BlogBundle\Contributions;
 
 use Modera\BackendToolsSettingsBundle\Section\StandardSection;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class SettingsSectionsProvider implements ContributorInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
+        return [
             new StandardSection(
                 'blog',
                 'Blog',
                 'Modera.backend.configutils.runtime.SettingsListActivity',
                 FontAwesome::resolve('cog', 'fas'),
-                array('category' => 'blog')
+                ['category' => 'blog']
             )
-        );
+        ];
     }
 }
 ```

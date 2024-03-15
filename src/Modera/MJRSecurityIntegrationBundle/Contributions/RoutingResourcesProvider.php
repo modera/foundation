@@ -2,7 +2,7 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -10,13 +10,10 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class RoutingResourcesProvider implements ContributorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
+        return [
             '@ModeraMJRSecurityIntegrationBundle/Resources/config/routing.yml',
-        );
+        ];
     }
 }

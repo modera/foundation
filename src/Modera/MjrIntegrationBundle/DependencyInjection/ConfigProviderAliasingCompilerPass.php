@@ -13,11 +13,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class ConfigProviderAliasingCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
+        /** @var array{'main_config_provider': string} $semanticConfig */
         $semanticConfig = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
 
         $container

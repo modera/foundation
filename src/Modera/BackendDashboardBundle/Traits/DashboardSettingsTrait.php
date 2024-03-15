@@ -14,29 +14,29 @@ trait DashboardSettingsTrait
      * Returned array must contain "hasAccess" key which contains ID of dashboard that associated with this
      * Trait entity has access to (user/users group).
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    abstract public function getDashboardSettings();
+    abstract public function getDashboardSettings(): array;
 
-    /**
-     * @param string $dashboardId
-     *
-     * @return bool
-     */
-    public function hasAccessToDashboard($dashboardId)
+    public function hasAccessToDashboard(string $dashboardId): bool
     {
-        $bs = $this->getDashboardSettings();
+        $settings = $this->getDashboardSettings();
 
-        return isset($bs['hasAccess']) && is_array($bs['hasAccess']) && in_array($dashboardId, $bs['hasAccess']);
+        if (isset($settings['hasAccess']) && is_array($settings['hasAccess'])) {
+            return in_array($dashboardId, $settings['hasAccess']);
+        }
+
+        return false;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getDefaultDashboardId()
+    public function getDefaultDashboardId(): ?string
     {
-        $bs = $this->getDashboardSettings();
+        $settings = $this->getDashboardSettings();
 
-        return isset($bs['defaultDashboard']) ? $bs['defaultDashboard'] : null;
+        if (isset($settings['defaultDashboard']) && is_string($settings['defaultDashboard'])) {
+            return $settings['defaultDashboard'] ?: null;
+        }
+
+        return null;
     }
 }

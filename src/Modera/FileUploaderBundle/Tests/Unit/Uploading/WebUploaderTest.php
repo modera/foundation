@@ -3,7 +3,8 @@
 namespace Modera\FileUploaderBundle\Tests\Uploading;
 
 use Modera\FileUploaderBundle\Uploading\WebUploader;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -21,17 +22,17 @@ class WebUploaderTest extends \PHPUnit\Framework\TestCase
         $request = \Phake::mock('Symfony\Component\HttpFoundation\Request');
 
         \Phake::when($gateway)->isResponsible($request)->thenReturn(true);
-        \Phake::when($gateway)->upload($request)->thenReturn('foobar');
+        \Phake::when($gateway)->upload($request)->thenReturn(new Response('foobar'));
 
         $wu = new WebUploader($provider);
 
-        $result = $wu->upload($request);
+        $response = $wu->upload($request);
 
         \Phake::inOrder(
             \Phake::verify($provider)->getItems(),
             \Phake::verify($gateway)->isResponsible($request),
             \Phake::verify($gateway)->upload($request)
         );
-        $this->assertEquals('foobar', $result);
+        $this->assertEquals('foobar', $response->getContent());
     }
 }

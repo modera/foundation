@@ -2,8 +2,8 @@
 
 namespace Modera\ConfigBundle\Config;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
-use Doctrine\ORM\EntityManager;
 
 /**
  * Allows to store/retrieve entities for {@class ConfigurationEntry}. In order this class to work,
@@ -19,69 +19,63 @@ use Doctrine\ORM\EntityManager;
  */
 class EntityRepositoryHandler implements HandlerInterface
 {
-    private $em;
+    private EntityManagerInterface $em;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
 
+    /**
+     * @return class-string
+     */
     private function getEntityFqcn(ConfigurationEntry $entry)
     {
         $cfg = $entry->getServerHandlerConfig();
-        if (!isset($cfg['entityFqcn'])) {
+        if (!\is_string($cfg['entityFqcn'] ?? null)) {
             throw MissingConfigurationParameterException::create($entry, 'entityFqcn');
         }
 
-        return $cfg['entityFqcn'];
+        /** @var class-string $className */
+        $className = $cfg['entityFqcn'];
+
+        return $className;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getReadableValue(ConfigurationEntry $entry)
     {
         $cfg = $entry->getServerHandlerConfig();
         if (!isset($cfg['toStringMethodName'])) {
             throw MissingConfigurationParameterException::create($entry, 'toStringMethodName');
         }
-        $entity = $this->em->find($this->getEntityFqcn($entry), $entry->getDenormalizedValue());
+        /** @var int|string $id */
+        $id = $entry->getDenormalizedValue();
+        $entity = $this->em->getRepository($this->getEntityFqcn($entry))->find($id);
         if (!$entity) {
-            throw new \RuntimeException(sprintf(
-                'Unable to find entity "%s" with id "%s"',
-                $this->getEntityFqcn($entry), $entry->getDenormalizedValue()
-            ));
+            throw new \RuntimeException(\sprintf('Unable to find entity "%s" with id "%s"', $this->getEntityFqcn($entry), $id));
         }
 
         return $entity->{$cfg['toStringMethodName']}();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getValue(ConfigurationEntry $entry)
     {
-        return $this->em->find($this->getEntityFqcn($entry), $entry->getDenormalizedValue());
+        return $this->em->getRepository($this->getEntityFqcn($entry))->find($entry->getDenormalizedValue());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function convertToStorageValue($object, ConfigurationEntry $entry)
+    public function convertToStorageValue($value, ConfigurationEntry $entry)
     {
-        if (!is_a($object, $this->getEntityFqcn($entry))) {
-            throw new \RuntimeException(sprintf(
-                "Only instances of '%s' class can be persisted for configuration property '%s'.",
-                $this->getEntityFqcn($entry), $entry->getName()
-            ));
+        /** @var object $value */
+        if (!\is_a($value, $this->getEntityFqcn($entry))) {
+            throw new \RuntimeException(\sprintf("Only instances of '%s' class can be persisted for configuration property '%s'.", $this->getEntityFqcn($entry), $entry->getName()));
         }
 
         $cfg = $entry->getServerHandlerConfig();
-        $methodName = isset($cfg['clientValueMethodName']) ? $cfg['clientValueMethodName'] : 'getId';
-        if (!in_array($methodName, get_class_methods(get_class($object)))) {
-            throw new \RuntimeException(sprintf("%s must have $methodName() method!", get_class($object)));
+        $methodName = \is_string($cfg['clientValueMethodName'] ?? null) ? $cfg['clientValueMethodName'] : 'getId';
+        if (!\in_array($methodName, \get_class_methods(\get_class($value)))) {
+            throw new \RuntimeException(\sprintf("%s must have $methodName() method!", \get_class($value)));
         }
 
-        return $object->$methodName();
+        return $value->$methodName();
     }
 }

@@ -8,56 +8,44 @@ namespace Modera\BackendTranslationsToolBundle\Filtering\Filter;
  */
 class NewTranslationTokensFilter extends AbstractTranslationTokensFilter
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
+    public function getId(): string
     {
         return 'new';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'New';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCount(array $params)
+    public function getCount(array $params): int
     {
-        if (!isset($params['filter'])) {
-            $params['filter'] = array();
+        if (!isset($params['filter']) || !\is_array($params['filter'])) {
+            $params['filter'] = [];
         }
-        $params['filter'] = array_merge($this->getFilter(), $params['filter']);
+        $params['filter'] = \array_merge($this->getFilter(), $params['filter']);
 
         return parent::getCount($params);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getResult(array $params)
+    public function getResult(array $params): array
     {
-        if (!isset($params['filter'])) {
-            $params['filter'] = array();
+        if (!isset($params['filter']) || !\is_array($params['filter'])) {
+            $params['filter'] = [];
         }
-        $params['filter'] = array_merge($this->getFilter(), $params['filter']);
+        $params['filter'] = \array_merge($this->getFilter(), $params['filter']);
 
         return parent::getResult($params);
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    private function getFilter()
+    private function getFilter(): array
     {
-        return array(
+        return [
             ['property' => 'isObsolete', 'value' => 'eq:false'],
             ['property' => 'languageTranslationTokens.isNew', 'value' => 'eq:true'],
-        );
+        ];
     }
 }

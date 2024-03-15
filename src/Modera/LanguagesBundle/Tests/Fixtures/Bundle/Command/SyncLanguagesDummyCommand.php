@@ -15,7 +15,7 @@ class SyncLanguagesDummyCommand extends SyncLanguagesCommand
 {
     private $dummyInput;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('modera:languages:config-sync-dummy')
@@ -23,16 +23,13 @@ class SyncLanguagesDummyCommand extends SyncLanguagesCommand
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->dummyInput = $input;
         return parent::execute($input, $output);
     }
 
-    /**
-     * @return array
-     */
-    protected function getConfigLanguages()
+    protected function getConfigLanguages(): array
     {
         $config = $this->dummyInput->getArgument('config');
 

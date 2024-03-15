@@ -40,33 +40,21 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
         $this->bundle = $bundle;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBundleName(): string
     {
         return $this->bundle;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getStrategies(): array
     {
-        return array(static::STRATEGY_SOURCE_TREE);
+        return [static::STRATEGY_SOURCE_TREE];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSources(): array
     {
-        return array(static::SOURCE_NAME);
+        return [static::SOURCE_NAME];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function extract(string $source, string $locale): ?MessageCatalogueInterface
     {
         if (!$this->isSourceAvailable($source)) {
@@ -75,7 +63,7 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
 
         $fs = new Filesystem();
 
-        /* @var Bundle $foundBundle */
+        /** @var Bundle $foundBundle */
         $foundBundle = $this->kernel->getBundle($this->bundle);
 
         // load any messages from templates
@@ -92,21 +80,21 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
             $this->loader->read($translationsDir, $currentCatalogue);
 
             // load fallback translations
-            $parts = explode('_', $locale);
-            if (count($parts) > 1) {
+            $parts = \explode('_', $locale);
+            if (\count($parts) > 1) {
                 $fallbackCatalogue = new MessageCatalogue($parts[0]);
                 $this->loader->read($translationsDir, $fallbackCatalogue);
 
-                $intlMessages = array();
+                $intlMessages = [];
                 $fallbackMessages = $fallbackCatalogue->all();
                 foreach ($fallbackMessages as $domain => $messages) {
-                    $arr = array();
+                    $arr = [];
                     foreach ($messages as $token => $translation) {
-                        if ($fallbackCatalogue->defines($token, $domain . MessageCatalogue::INTL_DOMAIN_SUFFIX)) {
-                            if (!isset($intlMessages[$domain . MessageCatalogue::INTL_DOMAIN_SUFFIX])) {
-                                $intlMessages[$domain . MessageCatalogue::INTL_DOMAIN_SUFFIX] = array();
+                        if ($fallbackCatalogue->defines($token, $domain.MessageCatalogue::INTL_DOMAIN_SUFFIX)) {
+                            if (!isset($intlMessages[$domain.MessageCatalogue::INTL_DOMAIN_SUFFIX])) {
+                                $intlMessages[$domain.MessageCatalogue::INTL_DOMAIN_SUFFIX] = [];
                             }
-                            $intlMessages[$domain . MessageCatalogue::INTL_DOMAIN_SUFFIX][$token] = $translation;
+                            $intlMessages[$domain.MessageCatalogue::INTL_DOMAIN_SUFFIX][$token] = $translation;
                         } else {
                             $arr[$token] = $translation;
                         }
@@ -116,19 +104,19 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
 
                 $mergeOperation = new MergeOperation(
                     $currentCatalogue,
-                    new MessageCatalogue($locale, array_merge($fallbackMessages, $intlMessages))
+                    new MessageCatalogue($locale, \array_merge($fallbackMessages, $intlMessages))
                 );
                 $currentCatalogue = $mergeOperation->getResult();
             }
 
             foreach ($extractedCatalogue->getDomains() as $domain) {
                 $messages = $currentCatalogue->all($domain);
-                if (count($messages)) {
+                if (\count($messages)) {
                     $extractedCatalogue->add($messages, $domain);
                 }
-                $intlMessages = $currentCatalogue->all($domain . MessageCatalogue::INTL_DOMAIN_SUFFIX);
-                if (count($intlMessages)) {
-                    $extractedCatalogue->add($intlMessages, $domain . MessageCatalogue::INTL_DOMAIN_SUFFIX);
+                $intlMessages = $currentCatalogue->all($domain.MessageCatalogue::INTL_DOMAIN_SUFFIX);
+                if (\count($intlMessages)) {
+                    $extractedCatalogue->add($intlMessages, $domain.MessageCatalogue::INTL_DOMAIN_SUFFIX);
                 }
             }
         }
@@ -143,6 +131,6 @@ class TemplateTranslationHandler implements TranslationHandlerInterface
 
     protected function resolveResourcesDirectory(BundleInterface $bundle): string
     {
-        return $bundle->getPath() . '/Resources/views/';
+        return $bundle->getPath().'/Resources/views/';
     }
 }

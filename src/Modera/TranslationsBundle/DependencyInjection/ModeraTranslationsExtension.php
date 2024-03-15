@@ -3,12 +3,12 @@
 namespace Modera\TranslationsBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -17,10 +17,7 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
  */
 class ModeraTranslationsExtension extends Extension implements PrependExtensionInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
@@ -28,18 +25,20 @@ class ModeraTranslationsExtension extends Extension implements PrependExtensionI
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        if (class_exists('Symfony\Component\Console\Application')) {
+        if (\class_exists('Symfony\Component\Console\Application')) {
             try {
                 $loader->load('console.xml');
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
 
+        /** @var string $projectDir */
         $projectDir = $container->getParameter('kernel.project_dir');
 
-        $translationsDir = join(DIRECTORY_SEPARATOR, [ $projectDir, 'app', 'Resources', 'translations' ]);
+        $translationsDir = \join(\DIRECTORY_SEPARATOR, [$projectDir, 'app', 'Resources', 'translations']);
         if ($container->hasParameter('modera.translations_dir')) {
             $translationsDir = $container->getParameter('modera.translations_dir');
-        } else if ($container->hasParameter('translator.default_path')) {
+        } elseif ($container->hasParameter('translator.default_path')) {
             $translationsDir = $container->getParameter('translator.default_path');
         }
 
@@ -47,10 +46,7 @@ class ModeraTranslationsExtension extends Extension implements PrependExtensionI
         $translationWriterAdapter->replaceArgument(1, $container->getParameterBag()->resolveValue($translationsDir));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         if ($container->hasParameter('modera.translations_dir')) {
             if ($container->hasParameter('modera.expose_translations_dir')) {
@@ -67,19 +63,16 @@ class ModeraTranslationsExtension extends Extension implements PrependExtensionI
                             $fs->mkdir($dir);
                         }
                     } catch (IOExceptionInterface $e) {
-                        throw new \RuntimeException(sprintf(
-                            'An error occurred while creating translations directory at %s',
-                            $e->getPath()
-                        ));
+                        throw new \RuntimeException(\sprintf('An error occurred while creating translations directory at %s', $e->getPath()));
                     }
 
-                    $container->prependExtensionConfig('framework', array(
-                        'translator' => array(
-                            'paths' => array(
+                    $container->prependExtensionConfig('framework', [
+                        'translator' => [
+                            'paths' => [
                                 $dir,
-                            ),
-                        ),
-                    ));
+                            ],
+                        ],
+                    ]);
                 }
             }
         }

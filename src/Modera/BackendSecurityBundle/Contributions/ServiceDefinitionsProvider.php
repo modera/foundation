@@ -2,7 +2,7 @@
 
 namespace Modera\BackendSecurityBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @internal
@@ -12,17 +12,14 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class ServiceDefinitionsProvider implements ContributorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            'modera_backend_security.password_rotation_plugin' => array(
+        return [
+            'modera_backend_security.password_rotation_plugin' => [
                 'className' => 'Modera.backend.security.passwordrotation.PasswordRotationPlugin',
                 'args' => ['@workbench'],
                 'tags' => ['runtime_plugin'],
-            ),
-        );
+            ],
+        ];
     }
 }

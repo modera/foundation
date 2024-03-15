@@ -21,10 +21,11 @@ class ModeraLanguagesDummyExtension extends Extension
     {
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
-        if (class_exists('Symfony\Component\Console\Application')) {
+        if (\class_exists('Symfony\Component\Console\Application')) {
             try {
                 $loader->load('console.xml');
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
     }
 }

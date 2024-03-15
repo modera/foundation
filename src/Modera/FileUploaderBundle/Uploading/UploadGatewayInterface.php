@@ -3,6 +3,7 @@
 namespace Modera\FileUploaderBundle\Uploading;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -10,13 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface UploadGatewayInterface
 {
-    /**
-     * @param Request $request
-     */
-    public function isResponsible(Request $request);
+    public function isResponsible(Request $request): bool;
 
-    /**
-     * @param Request $request
-     */
-    public function upload(Request $request);
+    public function upload(Request $request): ?Response;
 }

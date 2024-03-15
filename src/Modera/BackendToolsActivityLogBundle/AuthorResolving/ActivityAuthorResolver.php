@@ -4,8 +4,8 @@ namespace Modera\BackendToolsActivityLogBundle\AuthorResolving;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\ActivityLoggerBundle\Model\ActivityInterface;
-use Modera\SecurityBundle\Entity\User;
 use Modera\FoundationBundle\Translation\T;
+use Modera\SecurityBundle\Entity\User;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -13,46 +13,41 @@ use Modera\FoundationBundle\Translation\T;
  */
 class ActivityAuthorResolver
 {
-    private $om;
+    private EntityManagerInterface $em;
 
-    /**
-     * @param EntityManagerInterface $om
-     */
-    public function __construct(EntityManagerInterface $om)
+    public function __construct(EntityManagerInterface $em)
     {
-        $this->om = $om;
+        $this->em = $em;
     }
 
     /**
-     * @param ActivityInterface $activity
-     *
-     * @return array
+     * @return array<mixed>
      */
-    public function resolve(ActivityInterface $activity)
+    public function resolve(ActivityInterface $activity): array
     {
-        $isId = preg_match('/^[0-9]+$/', $activity->getAuthor());
+        $isId = \preg_match('/^[0-9]+$/', $activity->getAuthor());
 
         if ($isId) {
-            /* @var User $user */
-            $user = $this->om->find(User::class, $activity->getAuthor());
+            /** @var ?User $user */
+            $user = $this->em->find(User::class, $activity->getAuthor());
             if ($user) {
-                return array(
+                return [
                     'id' => $user->getId(),
                     'isUser' => true,
                     'fullName' => $user->getFullName(),
                     'username' => $user->getUsername(),
-                );
+                ];
             } else {
-                return array(
+                return [
                     'isUser' => false,
                     'identity' => $activity->getAuthor(),
-                );
+                ];
             }
         } else {
-            return array(
+            return [
                 'isUser' => false,
                 'identity' => $activity->getAuthor() ? $activity->getAuthor() : T::trans('Unknown'),
-            );
+            ];
         }
     }
 }

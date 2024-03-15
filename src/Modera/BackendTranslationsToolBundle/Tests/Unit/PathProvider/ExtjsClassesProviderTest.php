@@ -6,7 +6,7 @@ use Modera\BackendTranslationsToolBundle\FileProvider\ExtjsClassesProvider;
 
 /**
  * @author Sergei Lissovski <sergei.lissovski@modera.net>
- */ 
+ */
 class ExtjsClassesProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetFiles()

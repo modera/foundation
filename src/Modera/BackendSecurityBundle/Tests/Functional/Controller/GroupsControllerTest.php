@@ -37,13 +37,13 @@ class GroupsControllerTest extends FunctionalTestCase
     /**
      * {@inheritdoc}
      */
-    public static function doSetUpBeforeClass()
+    public static function doSetUpBeforeClass(): void
     {
         static::$schemaTool = new SchemaTool(static::$em);
         static::$schemaTool->dropSchema(static::getTablesMetadata());
         static::$schemaTool->createSchema(static::getTablesMetadata());
 
-        static::$encoder = static::$container->get('modera_backend_security.test.encoder_factory');
+        static::$encoder = static::getContainer()->get('modera_backend_security.test.encoder_factory');
 
         static::$user = new User();
         static::$user->setEmail('test@test.com');
@@ -95,20 +95,20 @@ class GroupsControllerTest extends FunctionalTestCase
         static::$em->flush();
 
         static::$controller = new GroupsController();
-        static::$controller->setContainer(static::$container);
+        static::$controller->setContainer(static::getContainer());
     }
 
-    public function doSetUp()
+    public function doSetUp(): void
     {
         $token = new UsernamePasswordToken(static::$user, 'secured_area', static::$user->getRoles());
 
-        static::$container->get('security.token_storage')->setToken($token);
+        static::getContainer()->get('security.token_storage')->setToken($token);
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function doTearDownAfterClass()
+    public static function doTearDownAfterClass(): void
     {
         static::$schemaTool->dropSchema(static::getTablesMetadata());
     }
@@ -320,7 +320,7 @@ class GroupsControllerTest extends FunctionalTestCase
     /**
      * {@inheritdoc}
      */
-    protected static function getIsolationLevel()
+    protected static function getIsolationLevel(): string
     {
         return self::IM_CLASS;
     }

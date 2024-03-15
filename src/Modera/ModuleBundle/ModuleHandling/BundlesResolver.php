@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
  * that a bundle would provide some additional bundles into the system.
  *
  * @experimental
+ *
  * @private
  *
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -20,18 +21,18 @@ class BundlesResolver
 {
     /**
      * @param BundleInterface[] $bundles
-     * @param KernelInterface   $kernel
      *
      * @return BundleInterface[]
      */
-    private function doResolve(array $bundles, KernelInterface $kernel)
+    private function doResolve(array $bundles, KernelInterface $kernel): array
     {
         $resolvedBundles = [];
 
         foreach ($bundles as $bundle) {
             if ($bundle instanceof ModuleBundleInterface) {
-                $resolvedBundles = array_merge(
-                    $resolvedBundles, $this->doResolve($bundle->getBundles($kernel), $kernel)
+                $resolvedBundles = \array_merge(
+                    $resolvedBundles,
+                    $this->doResolve($bundle->getBundles($kernel), $kernel)
                 );
             }
 
@@ -43,21 +44,20 @@ class BundlesResolver
 
     /**
      * @param BundleInterface[] $moduleBundles
-     * @param KernelInterface   $kernel
      *
      * @return BundleInterface[]
      */
-    public function resolve(array $moduleBundles, KernelInterface $kernel)
+    public function resolve(array $moduleBundles, KernelInterface $kernel): array
     {
         $resolvedBundles = $this->doResolve($moduleBundles, $kernel);
 
-        $uniqueBundles = array();
+        $uniqueBundles = [];
         foreach ($resolvedBundles as $bundle) {
             if (!isset($uniqueBundles[$bundle->getName()])) {
                 $uniqueBundles[$bundle->getName()] = $bundle;
             }
         }
 
-        return array_values($uniqueBundles);
+        return \array_values($uniqueBundles);
     }
 }

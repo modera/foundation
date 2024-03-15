@@ -2,14 +2,17 @@
 
 namespace Modera\TranslationsBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
-use Doctrine\Common\Collections\ArrayCollection;
 use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * @ORM\Entity
+ *
  * @ORM\Table(name="modera_translations_translationtoken", uniqueConstraints={
+ *
  *     @UniqueConstraint(name="domain_token_name", columns={"domain", "tokenName"}, options={"lengths": {255, 767}})
  * })
  *
@@ -19,53 +22,45 @@ use Modera\LanguagesBundle\Entity\Language;
 class TranslationToken
 {
     /**
-     * @var int
      * @ORM\Column(type="integer")
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=255, nullable=false)
      */
-    private $domain;
+    private ?string $domain = null;
 
     /**
-     * @var string
      * @ORM\Column(type="text", nullable=false, options={"collation":"utf8_bin"})
      */
-    private $tokenName;
+    private ?string $tokenName = null;
 
     /**
      * Marks that given token doesn't anymore exists in a source it has been extracted from. For example,
      * initially a token has been imported from a template, but this template has been deleted since then.
      *
-     * @var bool
      * @ORM\Column(type="boolean", nullable=false)
      */
-    private $isObsolete = false;
+    private bool $isObsolete = false;
 
     /**
-     * @var ArrayCollection
+     * @var Collection<int, LanguageTranslationToken>
+     *
      * @ORM\OneToMany(targetEntity="LanguageTranslationToken", mappedBy="translationToken", cascade={"persist", "remove"})
      */
-    private $languageTranslationTokens;
+    private Collection $languageTranslationTokens;
 
     public function __construct()
     {
         $this->languageTranslationTokens = new ArrayCollection();
     }
 
-    /**
-     * @since 2.55.0
-     *
-     * @param Language $language
-     *
-     * @return LanguageTranslationToken
-     */
-    public function createLanguageToken(Language $language)
+    public function createLanguageToken(Language $language): LanguageTranslationToken
     {
         $languageToken = new LanguageTranslationToken();
         $languageToken->setLanguage($language);
@@ -77,61 +72,40 @@ class TranslationToken
 
     /**
      * @deprecated Use native ::class property
-     *
-     * @return string
      */
-    public static function clazz()
+    public static function clazz(): string
     {
-        @trigger_error(sprintf(
+        @\trigger_error(\sprintf(
             'The "%s()" method is deprecated. Use native ::class property.',
             __METHOD__
         ), \E_USER_DEPRECATED);
 
-        return get_called_class();
+        return \get_called_class();
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getDomain()
+    public function getDomain(): ?string
     {
         return $this->domain;
     }
 
-    /**
-     * @param string $domain
-     *
-     * @return TranslationToken
-     */
-    public function setDomain($domain)
+    public function setDomain(string $domain): self
     {
         $this->domain = $domain;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTokenName()
+    public function getTokenName(): ?string
     {
         return $this->tokenName;
     }
 
-    /**
-     * @param string $tokenName
-     *
-     * @return TranslationToken
-     */
-    public function setTokenName($tokenName)
+    public function setTokenName(string $tokenName): self
     {
         $this->tokenName = $tokenName;
 
@@ -140,40 +114,25 @@ class TranslationToken
 
     /**
      * For ModeraServerCrudBundle.
-     *
-     * @return bool
      */
-    public function getIsObsolete()
+    public function getIsObsolete(): bool
+    {
+        return $this->isObsolete();
+    }
+
+    public function isObsolete(): bool
     {
         return $this->isObsolete;
     }
 
-    /**
-     * @return bool
-     */
-    public function isObsolete()
-    {
-        return $this->isObsolete;
-    }
-
-    /**
-     * @param bool $isObsolete
-     *
-     * @return TranslationToken
-     */
-    public function setObsolete($isObsolete)
+    public function setObsolete(bool $isObsolete): self
     {
         $this->isObsolete = $isObsolete;
 
         return $this;
     }
 
-    /**
-     * @param LanguageTranslationToken $languageTranslationToken
-     *
-     * @return TranslationToken
-     */
-    public function addLanguageTranslationToken(LanguageTranslationToken $languageTranslationToken)
+    public function addLanguageTranslationToken(LanguageTranslationToken $languageTranslationToken): self
     {
         if (!$this->languageTranslationTokens->contains($languageTranslationToken)) {
             $languageTranslationToken->setTranslationToken($this);
@@ -184,19 +143,17 @@ class TranslationToken
     }
 
     /**
-     * @return LanguageTranslationToken[]
+     * @return Collection<int, LanguageTranslationToken>
      */
-    public function getLanguageTranslationTokens()
+    public function getLanguageTranslationTokens(): Collection
     {
         return $this->languageTranslationTokens;
     }
 
     /**
-     * @param LanguageTranslationToken[] $languageTranslationTokens
-     *
-     * @return TranslationToken
+     * @param Collection<int, LanguageTranslationToken> $languageTranslationTokens
      */
-    public function setLanguageTranslationTokens(ArrayCollection $languageTranslationTokens)
+    public function setLanguageTranslationTokens(Collection $languageTranslationTokens): self
     {
         $this->languageTranslationTokens = $languageTranslationTokens;
 

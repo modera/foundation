@@ -2,10 +2,10 @@
 
 namespace Modera\BackendLanguagesBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Modera\ExpanderBundle\Contributing\ExtensionPointsAwareBundleInterface;
+use Modera\ExpanderBundle\Ext\ExtensionPoint;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Sli\ExpanderBundle\Contributing\ExtensionPointsAwareBundleInterface;
-use Sli\ExpanderBundle\Ext\ExtensionPoint;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -13,10 +13,7 @@ use Sli\ExpanderBundle\Ext\ExtensionPoint;
  */
 class ModeraBackendLanguagesBundle extends Bundle implements ExtensionPointsAwareBundleInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $localesExtensionPoint = new ExtensionPoint('modera_backend_languages.locales');
         $localesExtensionPoint->setDescription(
@@ -32,14 +29,14 @@ class ModeraBackendLanguagesBundle extends Bundle implements ExtensionPointsAwar
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<string, mixed>
      */
     public function getExtensionPointContributions(): array
     {
-        return array(
-            'modera_mjr_integration.css_resources_provider' => array(
+        return [
+            'modera_mjr_integration.css_resources_provider' => [
                 '/bundles/moderabackendlanguages/css/styles.css',
-            ),
-        );
+            ],
+        ];
     }
 }

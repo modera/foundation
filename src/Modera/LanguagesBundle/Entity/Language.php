@@ -3,13 +3,15 @@
 namespace Modera\LanguagesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Intl\Locales;
 use Symfony\Component\Intl\Countries;
 use Symfony\Component\Intl\Exception\MissingResourceException;
+use Symfony\Component\Intl\Locales;
 
 /**
  * @ORM\Entity
+ *
  * @ORM\Table(name="modera_languages_language", uniqueConstraints={
+ *
  *     @ORM\UniqueConstraint(name="locale", columns={"locale"})
  * })
  *
@@ -19,83 +21,77 @@ use Symfony\Component\Intl\Exception\MissingResourceException;
 class Language
 {
     /**
-     * @var int
      * @ORM\Column(type="integer")
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", nullable=false)
      */
-    private $locale;
+    private ?string $locale = null;
 
     /**
-     * @var bool
      * @ORM\Column(type="boolean", nullable=false)
      */
-    private $isEnabled = false;
+    private bool $isEnabled = false;
 
     /**
-     * @var bool
      * @ORM\Column(type="boolean", nullable=false)
      */
-    private $isDefault = false;
+    private bool $isDefault = false;
 
     /**
      * @deprecated Use native ::class property
-     *
-     * @return string
      */
-    public static function clazz()
+    public static function clazz(): string
     {
-        @trigger_error(sprintf(
+        @\trigger_error(\sprintf(
             'The "%s()" method is deprecated. Use native ::class property.',
             __METHOD__
         ), \E_USER_DEPRECATED);
 
-        return get_called_class();
+        return \get_called_class();
     }
 
     /**
      * Returns the name of a locale.
-     *
-     * @param string      $locale
-     * @param null|string $displayLocale
-     *
-     * @return string
      */
-    public static function getLocaleName($locale, $displayLocale = null)
+    public static function getLocaleName(string $locale, ?string $displayLocale = null): string
     {
         $str = null;
         try {
             $str = Locales::getName($locale, $displayLocale ?: $locale);
-        } catch (MissingResourceException $e) {}
+        } catch (MissingResourceException $e) {
+        }
 
         if (!$str) {
-            $parts = explode('_', $locale);
-            if (count($parts) > 1) {
-                $code = array_pop($parts);
+            $parts = \explode('_', $locale);
+            if (\count($parts) > 1) {
+                $code = \array_pop($parts);
                 $country = $code;
                 try {
                     $country = Countries::getName($code, $displayLocale ?: $parts[0]);
-                } catch (MissingResourceException $e) {}
-                while (count($parts) && !$str) {
-                    $value = implode('_', $parts);
+                } catch (MissingResourceException $e) {
+                }
+                while (\count($parts) && !$str) {
+                    $value = \implode('_', $parts);
                     $str = null;
                     try {
                         $str = Locales::getName($value, $displayLocale ?: $value);
-                    } catch (MissingResourceException $e) {}
-                    array_pop($parts);
+                    } catch (MissingResourceException $e) {
+                    }
+                    \array_pop($parts);
                 }
 
                 if ($str) {
-                    if (')' === substr($str, -1)) {
-                        $str = substr($str, 0, -1) . ', ' . $country . ')';
+                    if (')' === \substr($str, -1)) {
+                        $str = \substr($str, 0, -1).', '.$country.')';
                     } else {
-                        $str .= ' (' . $country . ')';
+                        $str .= ' ('.$country.')';
                     }
                 }
             }
@@ -104,67 +100,48 @@ class Language
         $enc = 'utf-8';
         $name = $str ?: $locale;
 
-        return mb_strtoupper(mb_substr($name, 0, 1, $enc), $enc).mb_substr($name, 1, mb_strlen($name, $enc), $enc);
+        return \mb_strtoupper(\mb_substr($name, 0, 1, $enc), $enc).\mb_substr($name, 1, \mb_strlen($name, $enc), $enc);
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param null|string $displayLocale
-     * @return string
-     */
-    public function getName($displayLocale = null)
+    public function getName(?string $displayLocale = null): string
     {
-        return static::getLocaleName($this->locale, $displayLocale);
+        return static::getLocaleName($this->getLocale(), $displayLocale);
     }
 
-    /**
-     * @return string
-     */
-    public function getLocale()
+    public function getLocale(): string
     {
-        return $this->locale;
+        return $this->locale ?: 'en';
     }
 
-    /**
-     * @param string $locale
-     */
-    public function setLocale($locale)
+    public function setLocale(string $locale): void
     {
         $this->locale = $locale;
     }
 
     /**
      * For ModeraServerCrudBundle.
-     *
-     * @return bool
      */
-    public function getIsEnabled()
+    public function getIsEnabled(): bool
     {
         return $this->isEnabled();
     }
 
-    /**
-     * @return bool
-     */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->isEnabled;
     }
 
     /**
-     * @deprecated  Since v3.1.0, use Language::isEnabled() method.
-     * @return bool
+     * @deprecated Since v3.1.0, use Language::isEnabled() method.
      */
-    public function getEnabled()
+    public function getEnabled(): bool
     {
-        @trigger_error(sprintf(
+        @\trigger_error(sprintf(
             'The "%s()" method is deprecated. Use Language::isEnabled() method.',
             __METHOD__
         ), \E_USER_DEPRECATED);
@@ -172,36 +149,25 @@ class Language
         return $this->isEnabled;
     }
 
-    /**
-     * @param bool $status
-     */
-    public function setEnabled($status)
+    public function setEnabled(bool $status): void
     {
         $this->isEnabled = $status;
     }
 
     /**
      * For ModeraServerCrudBundle.
-     *
-     * @return bool
      */
-    public function getIsDefault()
+    public function getIsDefault(): bool
     {
         return $this->isDefault();
     }
 
-    /**
-     * @return bool
-     */
-    public function isDefault()
+    public function isDefault(): bool
     {
         return $this->isDefault;
     }
 
-    /**
-     * @param bool $status
-     */
-    public function setDefault($status)
+    public function setDefault(bool $status): void
     {
         $this->isDefault = $status;
     }

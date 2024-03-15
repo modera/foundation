@@ -14,10 +14,10 @@
     ],
     "require": {
         "php": ">=7.4",
-        "modera/server-crud-bundle": "^5.0",
         "modera/backend-tools-bundle": "^5.0",
+        "modera/expander-bundle": "^5.0",
         "modera/foundation-bundle": "^5.0",
-        "sergeil/expander-bundle": "^1.2"
+        "modera/server-crud-bundle": "^5.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.5"

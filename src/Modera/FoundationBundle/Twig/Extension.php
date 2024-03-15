@@ -2,8 +2,8 @@
 
 namespace Modera\FoundationBundle\Twig;
 
-use Twig\TwigFilter;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 
 /**
  * Base twig extensions used throughout the foundation.
@@ -20,15 +20,12 @@ final class Extension extends AbstractExtension
         $this->publicDir = $publicDir;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFilters()
+    public function getFilters(): array
     {
-        return array(
-            new TwigFilter('mf_prepend_every_line', array($this, 'filter_prepend_every_line')),
-            new TwigFilter('mf_modification_time', array($this, 'filter_modification_time')), // internal!
-        );
+        return [
+            new TwigFilter('mf_prepend_every_line', [$this, 'filter_prepend_every_line']),
+            new TwigFilter('mf_modification_time', [$this, 'filter_modification_time']), // internal!
+        ];
     }
 
     /**
@@ -37,21 +34,19 @@ final class Extension extends AbstractExtension
      * Do not use this method! It is a temporary solution which is going to be removed at some point when high-level
      * API for managing assets is added to the platform.
      *
-     * @param string $webPath  If URL is given then we won't check modification time
-     *
-     * @return string
+     * If URL is given then we won't check modification time.
      */
-    public function filter_modification_time($webPath)
+    public function filter_modification_time(string $webPath): string
     {
-        $assumedLocalPath = $this->publicDir . '/' . $webPath;
+        $assumedLocalPath = $this->publicDir.'/'.$webPath;
 
-        if (@file_exists($assumedLocalPath)) {
-            $mtime = filemtime($assumedLocalPath);
+        if (@\file_exists($assumedLocalPath)) {
+            $time = (string) (\filemtime($assumedLocalPath) ?: \time());
 
             // If server uses "expiration caching model" and we were unable to retrieve file's modification time
             // then every time filename is generated we are going to use current time to invalidate cache,
             // taking a safe side here
-            return $webPath.'?'.(false === $mtime ? time() : $mtime);
+            return $webPath.'?'.$time;
         }
 
         return $webPath;
@@ -59,26 +54,19 @@ final class Extension extends AbstractExtension
 
     /**
      * Prepends every line of given $input with $prefix $multiplier-times.
-     *
-     * @param string $input
-     * @param string $multiplier
-     * @param string $prefix
-     * @param bool   $skipFirstLine
-     *
-     * @return string
      */
-    public function filter_prepend_every_line($input, $multiplier, $prefix = ' ', $skipFirstLine = false)
+    public function filter_prepend_every_line(string $input, int $multiplier, string $prefix = ' ', bool $skipFirstLine = false): string
     {
-        $output = explode("\n", $input);
+        $output = \explode("\n", $input);
 
         foreach ($output as $i => &$line) {
             if ($skipFirstLine && 0 === $i) {
                 continue;
             }
 
-            $line = str_repeat($prefix, $multiplier).$line;
+            $line = \str_repeat($prefix, $multiplier).$line;
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 }

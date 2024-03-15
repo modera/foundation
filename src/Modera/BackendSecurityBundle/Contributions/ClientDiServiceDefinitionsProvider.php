@@ -2,7 +2,7 @@
 
 namespace Modera\BackendSecurityBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @internal
@@ -12,22 +12,19 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class ClientDiServiceDefinitionsProvider implements ContributorInterface
 {
-    /**
-     * @return array
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            'modera_backend_security.user.edit_window_contributor' => array(
+        return [
+            'modera_backend_security.user.edit_window_contributor' => [
                 'className' => 'Modera.backend.security.toolscontribution.runtime.user.EditWindowContributor',
                 'args' => ['@application'],
                 'tags' => ['shared_activities_provider'],
-            ),
-            'modera_backend_security.user.password_window_contributor' => array(
+            ],
+            'modera_backend_security.user.password_window_contributor' => [
                 'className' => 'Modera.backend.security.toolscontribution.runtime.user.PasswordWindowContributor',
                 'args' => ['@application'],
                 'tags' => ['shared_activities_provider'],
-            )
-        );
+            ],
+        ];
     }
 }

@@ -15,16 +15,13 @@ class ExtjsTranslationHandler extends TemplateTranslationHandler
 
     protected ?string $resourcesDirectory = null;
 
-    public function setResourcesDirectory(?string $resourcesDirectory)
+    public function setResourcesDirectory(?string $resourcesDirectory): void
     {
         $this->resourcesDirectory = $resourcesDirectory;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function resolveResourcesDirectory(BundleInterface $bundle): string
     {
-        return $this->resourcesDirectory ?: $bundle->getPath() . '/Resources/public/js/';
+        return $this->resourcesDirectory ?: $bundle->getPath().'/Resources/public/js/';
     }
 }

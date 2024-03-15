@@ -2,11 +2,13 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
-use Modera\SecurityBundle\Service\UserService;
 use Modera\SecurityBundle\Entity\User;
+use Modera\SecurityBundle\Entity\UserInterface;
+use Modera\SecurityBundle\Service\UserService;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -14,34 +16,34 @@ use Modera\SecurityBundle\Entity\User;
  */
 trait BackendUsersTrait
 {
-    /**
-     * @param string $prefix
-     * @return QueryBuilder
-     */
-    protected function createQueryBuilder($prefix = '')
+    protected function createQueryBuilder(string $prefix = ''): QueryBuilder
     {
-        /* @var UserService $userService */
-        $userService = $this->get('modera_security.service.user_service');
+        /** @var EntityManagerInterface $em */
+        $em = $this->container->get('doctrine.orm.entity_manager');
 
+        /** @var UserService $userService */
+        $userService = $this->container->get('modera_security.service.user_service');
+
+        /** @var UserInterface $user */
         $user = $this->getUser();
         $rootUser = $userService->getRootUser();
 
-        $qb = $this->em()->createQueryBuilder();
+        $qb = $em->createQueryBuilder();
         $qb
-            ->from(User::class, $prefix . 'u')
-            ->leftJoin($prefix . 'u.permissions', $prefix . 'up')
-            ->leftJoin($prefix . 'u.groups', $prefix . 'g')
-            ->leftJoin($prefix . 'g.permissions', $prefix . 'gp')
+            ->from(User::class, $prefix.'u')
+            ->leftJoin($prefix.'u.permissions', $prefix.'up')
+            ->leftJoin($prefix.'u.groups', $prefix.'g')
+            ->leftJoin($prefix.'g.permissions', $prefix.'gp')
             ->where(
-                $qb->expr()->eq($prefix . 'u.isActive', ':' . $prefix . 'isActive')
+                $qb->expr()->eq($prefix.'u.isActive', ':'.$prefix.'isActive')
             )
             ->andWhere(
-                $qb->expr()->notIn($prefix . 'u.id', [ $user->getId(), $rootUser->getId() ])
+                $qb->expr()->notIn($prefix.'u.id', [$user->getId(), $rootUser->getId()])
             )
             ->andWhere(
                 $qb->expr()->orX(
-                    $qb->expr()->in($prefix . 'up.roleName', ':' . $prefix . 'roleName'),
-                    $qb->expr()->in($prefix . 'gp.roleName', ':' . $prefix . 'roleName')
+                    $qb->expr()->in($prefix.'up.roleName', ':'.$prefix.'roleName'),
+                    $qb->expr()->in($prefix.'gp.roleName', ':'.$prefix.'roleName')
                 )
             )
         ;
@@ -50,16 +52,15 @@ trait BackendUsersTrait
     }
 
     /**
-     * @param array $params
-     * @return Query
+     * @param array<string, mixed> $params
      */
-    protected function createQuery(array $params)
+    protected function createQuery(array $params): Query
     {
-        $select = implode(', ', array(
+        $select = \implode(', ', [
             'partial u.{id, firstName, lastName, username}',
             'partial up.{id, name}',
             'partial g.{id, name}',
-        ));
+        ]);
 
         $qb = $this->createQueryBuilder()
             ->select(isset($params['select']) ? $params['select'] : $select)
@@ -67,7 +68,8 @@ trait BackendUsersTrait
             ->setParameter('roleName', ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER)
         ;
 
-        if (isset($params['filter'])) {
+        if (\is_array($params['filter'] ?? null)) {
+            /** @var array{'property': string, 'value': string} $filter */
             foreach ($params['filter'] as $filter) {
                 if ('name' === $filter['property']) {
                     $qb->andWhere(
@@ -76,18 +78,21 @@ trait BackendUsersTrait
                             $qb->expr()->like('u.firstName', ':name'),
                             $qb->expr()->like('u.lastName', ':name')
                         )
-                    )->setParameter('name', '%' . $filter['value'] . '%');
+                    )->setParameter('name', '%'.$filter['value'].'%');
                 }
             }
         }
 
-        if (isset($params['sort'])) {
+        if (\is_array($params['sort'] ?? null)) {
+            /** @var array{'property': string, 'direction': string} $sort */
             foreach ($params['sort'] as $sort) {
-                $qb->orderBy('u.' . $sort['property'], $sort['direction']);
+                $qb->orderBy('u.'.$sort['property'], $sort['direction']);
             }
         }
 
+        /** @var int $start */
         $start = isset($params['start']) ? $params['start'] : 0;
+        /** @var int $limit */
         $limit = isset($params['limit']) ? $params['limit'] : 25;
         $qb->setFirstResult($start)->setMaxResults($limit);
 

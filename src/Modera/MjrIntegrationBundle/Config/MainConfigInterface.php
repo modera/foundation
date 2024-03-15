@@ -13,22 +13,16 @@ interface MainConfigInterface
 {
     /**
      * Method must return a site name that will be displayed in a header.
-     *
-     * @return string
      */
-    public function getTitle();
+    public function getTitle(): ?string;
 
     /**
      * Method must return a URL that user will be redirected if he clicks on "siteTitle".
-     *
-     * @return string
      */
-    public function getUrl();
+    public function getUrl(): ?string;
 
     /**
      * A section "alias" that should be loaded by default when user opens backend.
-     *
-     * @return string
      */
-    public function getHomeSection();
+    public function getHomeSection(): ?string;
 }

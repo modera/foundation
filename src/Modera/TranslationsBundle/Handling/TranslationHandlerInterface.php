@@ -15,8 +15,14 @@ interface TranslationHandlerInterface
 
     public function getBundleName(): string;
 
+    /**
+     * @return string[]
+     */
     public function getStrategies(): array;
 
+    /**
+     * @return string[]
+     */
     public function getSources(): array;
 
     /**

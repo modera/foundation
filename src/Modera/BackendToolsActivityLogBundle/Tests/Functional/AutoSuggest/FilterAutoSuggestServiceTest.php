@@ -7,20 +7,17 @@ use Modera\BackendToolsActivityLogBundle\AutoSuggest\FilterAutoSuggestService;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Modera\SecurityBundle\Entity\User;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
-class FilterAutoSuggestServiceTest //extends FunctionalTestCase
+// TODO: incomplete test
+abstract class FilterAutoSuggestServiceTest extends FunctionalTestCase
 {
     /**
      * @var FilterAutoSuggestService
      */
     private $s;
 
-    public function doSetUp()
+    public function doSetUp(): void
     {
-        $this->s = self::$container->get('modera_backend_tools_activity_log.auto_suggest.filter_auto_suggest_service');
+        $this->s = self::getContainer()->get('modera_backend_tools_activity_log.auto_suggest.filter_auto_suggest_service');
     }
 
     public function testServiceExists()
@@ -49,15 +46,15 @@ class FilterAutoSuggestServiceTest //extends FunctionalTestCase
 
         $result = $this->s->suggest('user', 'ate');
 
-//        $this->assertTrue(is_array($result));
-//        $this->assertEquals(0, count($result));
+        //$this->assertTrue(is_array($result));
+        //$this->assertEquals(0, count($result));
 
-//        /* @var ActivityManagerInterface $activityMgr */
-//        $activityMgr = self::$container->get('modera_activity_logger.manager.activity_manager');
-//        $activityMgr->info('some message', array(
-//            'type' => 'dat_foox_type',
-//            'author' => $u->getId()
-//        ));
+        ///* @var ActivityManagerInterface $activityMgr */
+        //$activityMgr = self::getContainer()->get('modera_activity_logger.manager.activity_manager');
+        //$activityMgr->info('some message', array(
+        //    'type' => 'dat_foox_type',
+        //    'author' => $u->getId()
+        //));
 
         $this->assertTrue(is_array($result));
         $this->assertEquals(1, count($result));
@@ -71,7 +68,7 @@ class FilterAutoSuggestServiceTest //extends FunctionalTestCase
     public function testSuggestEvent()
     {
         /* @var ActivityManagerInterface $activityMgr */
-        $activityMgr = self::$container->get('modera_activity_logger.manager.activity_manager');
+        $activityMgr = self::getContainer()->get('modera_activity_logger.manager.activity_manager');
         $activityMgr->info('some message', array(
             'type' => 'dat_foox_type',
         ));

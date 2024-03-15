@@ -2,9 +2,8 @@
 
 namespace Modera\MJRCacheAwareClassLoaderBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Contributes a javascript link to dynamically generated extjs-class-loader overriding logic.
@@ -14,26 +13,20 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class JsResourcesProvider implements ContributorInterface
 {
-    private $urlGenerator;
+    private UrlGeneratorInterface $urlGenerator;
 
-    /**
-     * @param RouterInterface $router
-     */
     public function __construct(UrlGeneratorInterface $router)
     {
         $this->urlGenerator = $router;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            array(
+        return [
+            [
                 'order' => PHP_INT_MIN + 10,
                 'resource' => $this->urlGenerator->generate('modera_mjr_cache_aware_class_loader'),
-            ),
-        );
+            ],
+        ];
     }
 }

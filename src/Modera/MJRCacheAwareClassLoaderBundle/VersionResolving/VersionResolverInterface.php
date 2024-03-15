@@ -12,8 +12,6 @@ interface VersionResolverInterface
 {
     /**
      * Method must return installed MF version.
-     *
-     * @return string|number
      */
-    public function resolve();
+    public function resolve(): string;
 }

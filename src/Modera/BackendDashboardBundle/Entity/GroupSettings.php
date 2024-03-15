@@ -2,9 +2,9 @@
 
 namespace Modera\BackendDashboardBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Modera\BackendDashboardBundle\Traits\DashboardSettingsTrait;
 use Modera\SecurityBundle\Entity\Group;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @internal
@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @copyright 2014 Modera Foundation
  *
  * @ORM\Entity
+ *
  * @ORM\Table(name="modera_dashboard_groupdashboardsettings")
  */
 class GroupSettings implements SettingsEntityInterface
@@ -20,87 +21,69 @@ class GroupSettings implements SettingsEntityInterface
     use DashboardSettingsTrait;
 
     /**
-     * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @var Group
      *
-     * @Orm\OneToOne(targetEntity="Modera\SecurityBundle\Entity\Group")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @ORM\Column(type="integer")
      */
-    private $group;
+    private ?int $id = null;
 
     /**
-     * @ORM\Column(type="array")
+     * @ORM\OneToOne(targetEntity="Modera\SecurityBundle\Entity\Group")
      */
-    private $dashboardSettings = array(
+    private ?Group $group = null;
+
+    /**
+     * @var array<string, mixed>
+     *
+     * @ORM\Column(type="json")
+     */
+    private $dashboardSettings = [
         'defaultDashboard' => null,
         'hasAccess' => [], // contains "names" of dashboard given group will have access to
-    );
+    ];
 
     /**
      * @deprecated Use native ::class property
-     *
-     * @return string
      */
-    public static function clazz()
+    public static function clazz(): string
     {
-        @trigger_error(sprintf(
+        @\trigger_error(\sprintf(
             'The "%s()" method is deprecated. Use native ::class property.',
             __METHOD__
         ), \E_USER_DEPRECATED);
 
-        return get_called_class();
+        return \get_called_class();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setDashboardSettings(array $dashboardSettings)
+    public function setDashboardSettings(array $settings): void
     {
-        $this->dashboardSettings = $dashboardSettings;
+        $this->dashboardSettings = $settings;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDashboardSettings()
+    public function getDashboardSettings(): array
     {
         return $this->dashboardSettings;
     }
 
-    /**
-     * @param \Modera\SecurityBundle\Entity\Group $group
-     */
-    public function setGroup($group)
+    public function setGroup(Group $group): void
     {
         $this->group = $group;
     }
 
-    /**
-     * @return \Modera\SecurityBundle\Entity\Group
-     */
-    public function getGroup()
+    public function getGroup(): ?Group
     {
         return $this->group;
     }
 
-    /**
-     * @return array
-     */
-    public function describeEntity()
+    public function describeEntity(): string
     {
-        return sprintf('Group "%s"', $this->getGroup()->getName());
+        return sprintf('Group "%s"', $this->getGroup() ? $this->getGroup()->getName() : '-');
     }
 }

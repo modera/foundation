@@ -12,17 +12,14 @@ use Modera\MjrIntegrationBundle\Sections\Section;
  */
 class MenuItem extends Section
 {
-    private $glyph;
-    private $label;
+    private ?string $glyph;
+
+    private string $label;
 
     /**
-     * @param string $label
-     * @param string $controller
-     * @param string $id
-     * @param array  $metadata
-     * @param string $glyph
+     * @param mixed[] $metadata
      */
-    public function __construct($label, $controller, $id, array $metadata = array(), $glyph = null)
+    public function __construct(string $label, string $controller, string $id, array $metadata = [], ?string $glyph = null)
     {
         $this->glyph = $glyph;
         $this->label = $label;
@@ -30,18 +27,12 @@ class MenuItem extends Section
         parent::__construct($id, $controller, $metadata);
     }
 
-    /**
-     * @return string
-     */
-    public function getGlyph()
+    public function getGlyph(): ?string
     {
         return $this->glyph;
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
