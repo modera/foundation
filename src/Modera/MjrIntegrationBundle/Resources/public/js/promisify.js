@@ -42,7 +42,7 @@
                         throw error;
                     }
 
-                    if (!result['success']) {
+                    if (false === result['success']) {
                         var error = new Error(result['message'] || 'Undefined error.');
                         var keys = Object.getOwnPropertyNames(error);
                         Ext.Object.each(result, function(key, value) {
