@@ -2,10 +2,10 @@
 
 namespace Modera\ConfigBundle\Manager;
 
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use Doctrine\ORM\EntityManagerInterface;
 use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
+use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -13,40 +13,29 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  */
 class ConfigurationEntriesManager implements ConfigurationEntriesManagerInterface
 {
-    /**
-     * @var EntityManager
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
     /**
-     * @var array
+     * @var array<mixed>
      */
-    private $semanticConfig = array();
+    private array $semanticConfig;
+
+    private ?UniquityValidator $uniquityValidator;
 
     /**
-     * @var UniquityValidator
+     * @param array<mixed> $semanticConfig
      */
-    private $uniquityValidator;
-
-    /**
-     * @param EntityManager          $em
-     * @param array                  $semanticConfig
-     * @param UniquityValidator|null $uniquityValidator
-     */
-    public function __construct(EntityManager $em, array $semanticConfig = array(), UniquityValidator $uniquityValidator = null)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        array $semanticConfig = [],
+        ?UniquityValidator $uniquityValidator = null
+    ) {
         $this->em = $em;
         $this->semanticConfig = $semanticConfig;
         $this->uniquityValidator = $uniquityValidator;
     }
 
-    /**
-     * @param string $name
-     * @param object $owner
-     *
-     * @return ConfigurationEntryInterface
-     */
-    public function findOneByName($name, $owner = null)
+    public function findOneByName(string $name, ?object $owner = null): ?ConfigurationEntryInterface
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -71,48 +60,31 @@ class ConfigurationEntriesManager implements ConfigurationEntriesManagerInterfac
             }
         }
 
+        /** @var ConfigurationEntryInterface[] $result */
         $result = $qb->getQuery()->getResult();
 
-        return isset($result[0]) ? $result[0] : null;
+        return $result[0] ?? null;
     }
 
-    /**
-     * @return bool
-     */
-    private function isOwnerConfigured()
+    private function isOwnerConfigured(): bool
     {
         return isset($this->semanticConfig['owner_entity']) && null !== $this->semanticConfig['owner_entity'];
     }
 
-    /**
-     * @throws \RuntimeException When requested configuration property with name $name is not found
-     *
-     * @param string $name
-     * @param object $owner
-     *
-     * @return ConfigurationEntryInterface
-     */
-    public function findOneByNameOrDie($name, $owner = null)
+    public function findOneByNameOrDie(string $name, ?object $owner = null): ConfigurationEntryInterface
     {
         $result = $this->findOneByName($name, $owner);
         if (!$result) {
-            throw new \RuntimeException(sprintf(
-                'Unable to find required configuration property %s', $name
-            ));
+            throw new \RuntimeException(\sprintf('Unable to find required configuration property %s', $name));
         }
 
         return $result;
     }
 
-    /**
-     * @param ConfigurationEntryInterface $entry
-     */
-    public function save(ConfigurationEntryInterface $entry)
+    public function save(ConfigurationEntryInterface $entry): void
     {
         if (!($entry instanceof ConfigurationEntry)) {
-            throw new InvalidArgumentException(
-                '$entry must be an instance of '.ConfigurationEntry::class
-            );
+            throw new InvalidArgumentException('$entry must be an instance of '.ConfigurationEntry::class);
         }
 
         $this->em->beginTransaction();
@@ -120,9 +92,7 @@ class ConfigurationEntriesManager implements ConfigurationEntriesManagerInterfac
         try {
             if ($this->uniquityValidator) {
                 if (!$this->uniquityValidator->isValidForSaving($entry)) {
-                    throw new ConfigurationEntryAlreadyExistsException(
-                        sprintf('Configuration property with name "%s" already exists.', $entry->getName())
-                    );
+                    throw new ConfigurationEntryAlreadyExistsException(\sprintf('Configuration property with name "%s" already exists.', $entry->getName()));
                 }
             }
 
@@ -142,7 +112,7 @@ class ConfigurationEntriesManager implements ConfigurationEntriesManagerInterfac
      *
      * @return ConfigurationEntryInterface[]
      */
-    public function findAllExposed($owner = null)
+    public function findAllExposed($owner = null): array
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -166,6 +136,9 @@ class ConfigurationEntriesManager implements ConfigurationEntriesManagerInterfac
             }
         }
 
-        return $qb->getQuery()->getResult();
+        /** @var ConfigurationEntryInterface[] $arr */
+        $arr = $qb->getQuery()->getResult();
+
+        return $arr;
     }
 }

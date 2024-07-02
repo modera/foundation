@@ -2,10 +2,10 @@
 
 namespace Modera\BackendLanguagesBundle\Contributions;
 
-use Doctrine\ORM\EntityManager;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\LanguagesBundle\Entity\Language;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 /**
  * @author    Sergei VIzel <sergei.vizel@modera.org>
@@ -13,55 +13,41 @@ use Modera\LanguagesBundle\Entity\Language;
  */
 class JsResourcesProvider implements ContributorInterface
 {
-    /**
-     * @var EntityManager
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var Router
-     */
-    private $router;
+    private Router $router;
 
-    /**
-     * @var string
-     */
-    private $defaultLocale;
+    private string $defaultLocale;
 
-    /**
-     * @param EntityManager $em
-     * @param Router $router
-     * @param string $defaultLocale
-     */
-    public function __construct(EntityManager $em, Router $router, $defaultLocale = 'en')
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        Router $router,
+        string $defaultLocale = 'en'
+    ) {
         $this->em = $em;
         $this->router = $router;
         $this->defaultLocale = $defaultLocale;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         $locale = $this->defaultLocale;
 
-        /* @var Language $defaultLanguage */
-        $defaultLanguage = $this->em->getRepository(Language::class)->findOneBy(array(
+        /** @var ?Language $defaultLanguage */
+        $defaultLanguage = $this->em->getRepository(Language::class)->findOneBy([
             'isDefault' => true,
-        ));
+        ]);
         if ($defaultLanguage) {
             $locale = $defaultLanguage->getLocale();
         }
 
-        return array(
-            array(
+        return [
+            [
                 'order' => PHP_INT_MIN + 10,
-                'resource' => $this->router->generate('modera_backend_languages_extjs_l10n', array(
+                'resource' => $this->router->generate('modera_backend_languages_extjs_l10n', [
                     'locale' => $locale,
-                )),
-            ),
-        );
+                ]),
+            ],
+        ];
     }
 }

@@ -3,21 +3,21 @@
 namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Translation\MessageCatalogue;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Translation\Catalogue\TargetOperation;
-use Symfony\Component\Translation\Catalogue\MergeOperation;
-use Symfony\Component\Translation\Reader\TranslationReader;
-use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
-use Modera\TranslationsBundle\Service\TranslationHandlersChain;
+use Modera\LanguagesBundle\Entity\Language;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\TranslationsBundle\Entity\TranslationToken;
-use Modera\LanguagesBundle\Entity\Language;
+use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
+use Modera\TranslationsBundle\Service\TranslationHandlersChain;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Translation\Catalogue\MergeOperation;
+use Symfony\Component\Translation\Catalogue\TargetOperation;
+use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\Translation\Reader\TranslationReader;
 
 /**
  * From files to database.
@@ -27,25 +27,17 @@ use Modera\LanguagesBundle\Entity\Language;
  */
 class ImportTranslationsCommand extends Command
 {
-    /**
-     * @var ContainerInterface
-     */
     private ContainerInterface $container;
 
     /**
      * @required
-     *
-     * @param ContainerInterface $container
      */
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('modera:translations:import')
@@ -57,10 +49,7 @@ class ImportTranslationsCommand extends Command
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $batchSize = 20;
 
@@ -70,10 +59,10 @@ class ImportTranslationsCommand extends Command
 
         $printMessageNames = $output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE;
 
-        /* @var Language[] $languages */
+        /** @var Language[] $languages */
         $languages = $this->em()->getRepository(Language::class)->findAll();
-        if (!count($languages)) {
-            $languages = array($this->createAndReturnDefaultLanguage());
+        if (!\count($languages)) {
+            $languages = [$this->createAndReturnDefaultLanguage()];
         }
 
         $imported = false;
@@ -84,8 +73,8 @@ class ImportTranslationsCommand extends Command
 
         $tokens = $this->getTokens();
 
-        $new = array();
-        $obsolete = array();
+        $new = [];
+        $obsolete = [];
         foreach ($languages as $language) {
             if (!$language->isEnabled()) {
                 continue;
@@ -97,22 +86,25 @@ class ImportTranslationsCommand extends Command
                 $extractedCatalogue = $this->getExtractedCatalogue($input, $output, $locale);
             } catch (\RuntimeException $e) {
                 $output->writeln($e->getMessage());
+
                 return 1;
             }
 
-            $dbMessages = array();
+            /** @var array<string, array<string, string>> $dbMessages */
+            $dbMessages = [];
             foreach ($tokens as $domain => $arr) {
                 foreach ($arr as $token) {
-                    if ($token['isObsolete']) {
+                    if ($token['isObsolete'] ?? null) {
                         continue;
                     }
 
-                    if (isset($token['languageTranslationTokens'])) {
+                    if (\is_array($token['languageTranslationTokens'] ?? null)) {
                         foreach ($token['languageTranslationTokens'] as $ltt) {
                             $lang = $this->findLanguage($languages, $ltt['language']);
-                            if ($lang && $lang->getLocale() == $locale) {
+                            if ($lang && $locale === $lang->getLocale()) {
+                                /** @var array<string, string> $token */
                                 if (!isset($dbMessages[$token['domain']])) {
-                                    $dbMessages[$token['domain']] = array();
+                                    $dbMessages[$token['domain']] = [];
                                 }
                                 $dbMessages[$token['domain']][$token['tokenName']] = $ltt['translation'];
                                 break;
@@ -122,17 +114,17 @@ class ImportTranslationsCommand extends Command
                 }
             }
 
-            $dbObsoleteMessages = array();
+            $dbObsoleteMessages = [];
             $databaseCatalogue = new MessageCatalogue($locale);
-            if (count($dbMessages)) {
+            if (\count($dbMessages)) {
                 foreach ($dbMessages as $domain => $messages) {
-                    if (MessageCatalogue::INTL_DOMAIN_SUFFIX !== substr($domain, -strlen(MessageCatalogue::INTL_DOMAIN_SUFFIX))) {
-                        if (isset($dbMessages[$domain . MessageCatalogue::INTL_DOMAIN_SUFFIX])) {
-                            $intlMessages = $dbMessages[$domain . MessageCatalogue::INTL_DOMAIN_SUFFIX];
-                            foreach($messages as $tokenName => $translation) {
+                    if (MessageCatalogue::INTL_DOMAIN_SUFFIX !== \substr($domain, -\strlen(MessageCatalogue::INTL_DOMAIN_SUFFIX))) {
+                        if (isset($dbMessages[$domain.MessageCatalogue::INTL_DOMAIN_SUFFIX])) {
+                            $intlMessages = $dbMessages[$domain.MessageCatalogue::INTL_DOMAIN_SUFFIX];
+                            foreach ($messages as $tokenName => $translation) {
                                 if (isset($intlMessages[$tokenName])) {
                                     if (!isset($dbObsoleteMessages[$domain])) {
-                                        $dbObsoleteMessages[$domain] = array();
+                                        $dbObsoleteMessages[$domain] = [];
                                     }
                                     $dbObsoleteMessages[$domain][$tokenName] = $translation;
                                     unset($messages[$tokenName]);
@@ -148,37 +140,37 @@ class ImportTranslationsCommand extends Command
             $operation = new TargetOperation($databaseCatalogue, $extractedCatalogue);
 
             foreach ($operation->getDomains() as $domain) {
-                $newMessages = array_filter($operation->getNewMessages($domain), function ($k) {
-                    return !is_int($k);
-                }, ARRAY_FILTER_USE_KEY);
-                $obsoleteMessages = !$ignoreObsolete ? array_merge(
-                    array_filter($operation->getObsoleteMessages($domain), function ($k) {
-                        return !is_int($k);
-                    }, ARRAY_FILTER_USE_KEY), $dbObsoleteMessages[$domain] ?? []
+                $newMessages = \array_filter($operation->getNewMessages($domain), function ($k) {
+                    return !\is_int($k);
+                }, \ARRAY_FILTER_USE_KEY);
+                $obsoleteMessages = !$ignoreObsolete ? \array_merge(
+                    \array_filter($operation->getObsoleteMessages($domain), function ($k) {
+                        return !\is_int($k);
+                    }, \ARRAY_FILTER_USE_KEY),
+                    $dbObsoleteMessages[$domain] ?? []
                 ) : [];
 
                 // if tokenName is same, but translation was changed
-                $updatedMessages = array();
+                $updatedMessages = [];
                 $allMessages = $operation->getMessages($domain);
                 $extractedMessages = $extractedCatalogue->all($domain);
 
                 foreach ($extractedMessages as $tokenName => $translation) {
-                    if (MessageCatalogue::INTL_DOMAIN_SUFFIX !== substr($domain, -strlen(MessageCatalogue::INTL_DOMAIN_SUFFIX))) {
-                        if ($extractedCatalogue->defines($tokenName, $domain . MessageCatalogue::INTL_DOMAIN_SUFFIX)) {
-                            if (array_key_exists($tokenName, $newMessages)) {
+                    if (MessageCatalogue::INTL_DOMAIN_SUFFIX !== \substr($domain, -\strlen(MessageCatalogue::INTL_DOMAIN_SUFFIX))) {
+                        if ($extractedCatalogue->defines($tokenName, $domain.MessageCatalogue::INTL_DOMAIN_SUFFIX)) {
+                            if (\array_key_exists($tokenName, $newMessages)) {
                                 unset($newMessages[$tokenName]);
-                            } else if (isset($dbMessages[$domain]) && array_key_exists($tokenName, $dbMessages[$domain])) {
-                                if (!$ignoreObsolete && !array_key_exists($tokenName, $obsoleteMessages)) {
+                            } elseif (isset($dbMessages[$domain]) && \array_key_exists($tokenName, $dbMessages[$domain])) {
+                                if (!$ignoreObsolete && !\array_key_exists($tokenName, $obsoleteMessages)) {
                                     $obsoleteMessages[$tokenName] = $dbMessages[$domain][$tokenName];
                                 }
                             }
-
                             continue;
                         } else {
-                            if (in_array($domain . MessageCatalogue::INTL_DOMAIN_SUFFIX, $operation->getDomains(), true)) {
-                                if (isset($dbMessages[$domain]) && !array_key_exists($tokenName, $dbMessages[$domain])) {
-                                    $intlObsoleteMessages = $operation->getObsoleteMessages($domain . MessageCatalogue::INTL_DOMAIN_SUFFIX);
-                                    if (array_key_exists($tokenName, $intlObsoleteMessages)) {
+                            if (\in_array($domain.MessageCatalogue::INTL_DOMAIN_SUFFIX, $operation->getDomains(), true)) {
+                                if (isset($dbMessages[$domain]) && !\array_key_exists($tokenName, $dbMessages[$domain])) {
+                                    $intlObsoleteMessages = $operation->getObsoleteMessages($domain.MessageCatalogue::INTL_DOMAIN_SUFFIX);
+                                    if (\array_key_exists($tokenName, $intlObsoleteMessages)) {
                                         $newMessages[$tokenName] = $translation;
                                     }
                                 }
@@ -186,10 +178,10 @@ class ImportTranslationsCommand extends Command
                         }
                     }
 
-                    if (!array_key_exists($tokenName, $newMessages) && array_key_exists($tokenName, $allMessages)) {
+                    if (!\array_key_exists($tokenName, $newMessages) && \array_key_exists($tokenName, $allMessages)) {
                         if ($extractedMessages[$tokenName] !== $allMessages[$tokenName]) {
                             $token = $this->findTranslationToken($tokens, $domain, $tokenName);
-                            if ($token) {
+                            if ($token && $language->getId()) {
                                 $ltt = $this->findLanguageTranslationToken($token, $language->getId());
                                 // if not translated yet
                                 if ($ltt && $ltt['isNew']) {
@@ -200,11 +192,11 @@ class ImportTranslationsCommand extends Command
                     }
                 }
 
-                if (count($obsoleteMessages)) {
-                    if (MessageCatalogue::INTL_DOMAIN_SUFFIX !== substr($domain, -strlen(MessageCatalogue::INTL_DOMAIN_SUFFIX))) {
-                        if (in_array($domain . MessageCatalogue::INTL_DOMAIN_SUFFIX, $operation->getDomains(), true)) {
-                            $intlObsoleteMessages = $operation->getObsoleteMessages($domain . MessageCatalogue::INTL_DOMAIN_SUFFIX);
-                            if (count($intlObsoleteMessages)) {
+                if (\count($obsoleteMessages)) {
+                    if (MessageCatalogue::INTL_DOMAIN_SUFFIX !== \substr($domain, -\strlen(MessageCatalogue::INTL_DOMAIN_SUFFIX))) {
+                        if (\in_array($domain.MessageCatalogue::INTL_DOMAIN_SUFFIX, $operation->getDomains(), true)) {
+                            $intlObsoleteMessages = $operation->getObsoleteMessages($domain.MessageCatalogue::INTL_DOMAIN_SUFFIX);
+                            if (\count($intlObsoleteMessages)) {
                                 foreach ($obsoleteMessages as $tokenName => $translation) {
                                     if (isset($intlObsoleteMessages[$tokenName])) {
                                         unset($obsoleteMessages[$tokenName]);
@@ -215,42 +207,42 @@ class ImportTranslationsCommand extends Command
                     }
                 }
 
-                if (count($newMessages) || count($updatedMessages) || count($obsoleteMessages)) {
+                if (\count($newMessages) || \count($updatedMessages) || \count($obsoleteMessages)) {
                     $imported = true;
                 }
 
-                if (count($newMessages) || count($updatedMessages)) {
+                if (\count($newMessages) || \count($updatedMessages)) {
                     if (!isset($new[$domain])) {
-                        $new[$domain] = array();
+                        $new[$domain] = [];
                     }
 
-                    if (count($newMessages)) {
-                        $output->writeln(sprintf('  <info>New messages (domain: %s): %s</>', $domain, count($newMessages)));
+                    if (\count($newMessages)) {
+                        $output->writeln(\sprintf('  <info>New messages (domain: %s): %s</>', $domain, \count($newMessages)));
                         if ($printMessageNames) {
                             $this->printMessages($output, $newMessages);
                         }
                     }
 
-                    if (count($updatedMessages)) {
-                        $output->writeln(sprintf('  <info>Updated messages (domain: %s): %s</>', $domain, count($updatedMessages)));
+                    if (\count($updatedMessages)) {
+                        $output->writeln(\sprintf('  <info>Updated messages (domain: %s): %s</>', $domain, \count($updatedMessages)));
                         if ($printMessageNames) {
                             $this->printMessages($output, $updatedMessages);
                         }
                     }
 
-                    foreach (array_merge($newMessages, $updatedMessages) as $tokenName => $translation) {
+                    foreach (\array_merge($newMessages, $updatedMessages) as $tokenName => $translation) {
                         if (!isset($new[$domain][$tokenName])) {
-                            $new[$domain][$tokenName] = array();
+                            $new[$domain][$tokenName] = [];
                         }
-                        $new[$domain][$tokenName][] = array(
+                        $new[$domain][$tokenName][] = [
                             'translation' => $translation,
-                            'language'    => $language->getId(),
-                        );
+                            'language' => $language->getId(),
+                        ];
                     }
                 }
 
-                if (count($obsoleteMessages)) {
-                    $output->writeln(sprintf('  <fg=red>Obsolete messages (domain: %s): %s</>', $domain, count($obsoleteMessages)));
+                if (\count($obsoleteMessages)) {
+                    $output->writeln(\sprintf('  <fg=red>Obsolete messages (domain: %s): %s</>', $domain, \count($obsoleteMessages)));
                     if ($printMessageNames) {
                         $this->printMessages($output, $obsoleteMessages);
                     }
@@ -266,26 +258,26 @@ class ImportTranslationsCommand extends Command
         }
 
         if ($imported) {
-            if (count($new)) {
+            if (\count($new)) {
                 // insert translation tokens
-                $insertTranslationTokens = array();
+                $insertTranslationTokens = [];
                 foreach ($new as $domain => $translationTokens) {
                     foreach ($translationTokens as $tokenName => $arr) {
-                        $key = $domain . $tokenName;
+                        $key = $domain.$tokenName;
                         if (!isset($insertTranslationTokens[$key])) {
+                            /** @var string $domain */
                             $token = $this->findTranslationToken($tokens, $domain, $tokenName);
                             if (!$token) {
-                                $insertTranslationTokens[$key] = array(
-                                    'domain'     => $domain,
-                                    'tokenName'  => $tokenName,
-                                );
+                                $insertTranslationTokens[$key] = [
+                                    'domain' => $domain,
+                                    'tokenName' => $tokenName,
+                                ];
                             }
                         }
-
                     }
                 }
 
-                foreach (array_values($insertTranslationTokens) as $key => $data) {
+                foreach (\array_values($insertTranslationTokens) as $key => $data) {
                     $token = new TranslationToken();
                     $token
                         ->setDomain($data['domain'])
@@ -304,25 +296,26 @@ class ImportTranslationsCommand extends Command
                 $tokens = $this->getTokens();
 
                 // insert/update language translation tokens
-                $insertLanguageTranslationTokens = array();
-                $updateLanguageTranslationTokens = array();
+                $insertLanguageTranslationTokens = [];
+                $updateLanguageTranslationTokens = [];
                 foreach ($new as $domain => $translationTokens) {
                     foreach ($translationTokens as $tokenName => $arr) {
+                        /** @var string $domain */
                         $token = $this->findTranslationToken($tokens, $domain, $tokenName);
                         if ($token) {
                             foreach ($arr as $data) {
-                                $ltt = $this->findLanguageTranslationToken($token, $data['language']);
+                                $ltt = $this->findLanguageTranslationToken($token, $data['language'] ?? 0);
                                 if (!$ltt) {
-                                    $insertLanguageTranslationTokens[] = array(
+                                    $insertLanguageTranslationTokens[] = [
                                         'language' => $data['language'],
                                         'translationToken' => $token['id'],
                                         'translation' => $data['translation'],
-                                    );
-                                } else if ($ltt['isNew']) {
-                                    $updateLanguageTranslationTokens[] = array(
+                                    ];
+                                } elseif ($ltt['isNew']) {
+                                    $updateLanguageTranslationTokens[] = [
                                         'id' => $ltt['id'],
                                         'translation' => $data['translation'],
-                                    );
+                                    ];
                                 }
                             }
                         }
@@ -331,8 +324,12 @@ class ImportTranslationsCommand extends Command
 
                 foreach ($insertLanguageTranslationTokens as $key => $data) {
                     $languageToken = new LanguageTranslationToken();
-                    $languageToken->setLanguage($this->em()->getReference(Language::class, $data['language']));
-                    $languageToken->setTranslationToken($this->em()->getReference(TranslationToken::class, $data['translationToken']));
+                    /** @var Language $languageReference */
+                    $languageReference = $this->em()->getReference(Language::class, $data['language']);
+                    $languageToken->setLanguage($languageReference);
+                    /** @var TranslationToken $translationTokenReference */
+                    $translationTokenReference = $this->em()->getReference(TranslationToken::class, $data['translationToken']);
+                    $languageToken->setTranslationToken($translationTokenReference);
                     $languageToken->setTranslation($data['translation']);
 
                     if ($markAsTranslated) {
@@ -351,7 +348,7 @@ class ImportTranslationsCommand extends Command
 
                 foreach ($updateLanguageTranslationTokens as $key => $data) {
                     $query = $this->em()->createQuery(
-                        sprintf(
+                        \sprintf(
                             'UPDATE %s ltt SET ltt.translation = :translation %s WHERE ltt.id = :id',
                             LanguageTranslationToken::class,
                             $markAsTranslated ? ', ltt.isNew = :isNew' : ''
@@ -371,22 +368,23 @@ class ImportTranslationsCommand extends Command
                 $tokens = $this->getTokens();
 
                 // update translation tokens
-                $updateTranslationTokens = array();
+                $updateTranslationTokens = [];
                 foreach ($new as $domain => $translationTokens) {
                     foreach ($translationTokens as $tokenName => $arr) {
+                        /** @var string $domain */
                         $token = $this->findTranslationToken($tokens, $domain, $tokenName);
                         if ($token) {
-                            $updateTranslationTokens[] = array(
+                            $updateTranslationTokens[] = [
                                 'id' => $token['id'],
                                 'isObsolete' => false,
-                            );
+                            ];
                         }
                     }
                 }
 
                 foreach ($updateTranslationTokens as $key => $token) {
                     $query = $this->em()->createQuery(
-                        sprintf(
+                        \sprintf(
                             'UPDATE %s tt SET tt.isObsolete = :isObsolete WHERE tt.id = :id',
                             TranslationToken::class
                         )
@@ -401,7 +399,7 @@ class ImportTranslationsCommand extends Command
             // set obsolete
             if (count($obsolete)) {
                 $query = $this->em()->createQuery(
-                    sprintf(
+                    \sprintf(
                         'UPDATE %s tt SET tt.isObsolete = true WHERE tt.id IN(:ids)',
                         TranslationToken::class
                     )
@@ -418,58 +416,45 @@ class ImportTranslationsCommand extends Command
         return 0;
     }
 
-    /**
-     * @return string
-     */
-    protected function getImportStrategy()
+    protected function getImportStrategy(): string
     {
         $strategy = TranslationHandlerInterface::STRATEGY_SOURCE_TREE;
 
         if ($this->container->hasParameter('modera.translations_import_strategy')) {
+            /** @var string $strategy */
             $strategy = $this->container->getParameter('modera.translations_import_strategy');
         }
 
         return $strategy;
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @param string          $locale
-     * @return MessageCatalogue
-     */
-    protected function getExtractedCatalogue(InputInterface $input, OutputInterface $output, $locale)
+    protected function getExtractedCatalogue(InputInterface $input, OutputInterface $output, string $locale): MessageCatalogue
     {
+        /** @var string $strategy */
         $strategy = $input->getOption('strategy');
         if (!$strategy) {
             $strategy = $this->getImportStrategy();
         }
 
-        if (TranslationHandlerInterface::STRATEGY_RESOURCE_FILES == $strategy) {
+        if (TranslationHandlerInterface::STRATEGY_RESOURCE_FILES === $strategy) {
             return $this->getExtractedCatalogueByResourceFiles($input, $output, $locale);
         }
 
         return $this->getExtractedCatalogueBySourceTree($input, $output, $locale);
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @param string          $locale
-     * @return MessageCatalogue
-     */
-    protected function getExtractedCatalogueBySourceTree(InputInterface $input, OutputInterface $output, $locale)
+    protected function getExtractedCatalogueBySourceTree(InputInterface $input, OutputInterface $output, string $locale): MessageCatalogue
     {
         $catalogue = new MessageCatalogue($locale);
 
-        /* @var TranslationHandlerInterface[] $handlers */
+        /** @var TranslationHandlerInterface[] $handlers */
         $handlers = $this->getTranslationHandlersChain()->getHandlers();
-        if (count($handlers) == 0) {
+        if (0 === \count($handlers)) {
             throw new \RuntimeException('No translation handler are found, aborting ...');
         }
 
         foreach ($handlers as $handler) {
-            if (in_array(TranslationHandlerInterface::STRATEGY_SOURCE_TREE, $handler->getStrategies())) {
+            if (\in_array(TranslationHandlerInterface::STRATEGY_SOURCE_TREE, $handler->getStrategies())) {
                 $bundleName = $handler->getBundleName();
 
                 foreach ($handler->getSources() as $source) {
@@ -477,6 +462,7 @@ class ImportTranslationsCommand extends Command
 
                     if (null !== $extractedCatalogue) {
                         $mergeOperation = new MergeOperation($catalogue, $extractedCatalogue);
+                        /** @var MessageCatalogue $catalogue */
                         $catalogue = $mergeOperation->getResult();
 
                         $output->writeln(
@@ -490,13 +476,7 @@ class ImportTranslationsCommand extends Command
         return $catalogue;
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @param string          $locale
-     * @return MessageCatalogue
-     */
-    protected function getExtractedCatalogueByResourceFiles(InputInterface $input, OutputInterface $output, $locale)
+    protected function getExtractedCatalogueByResourceFiles(InputInterface $input, OutputInterface $output, string $locale): MessageCatalogue
     {
         $markAsTranslated = $input->getOption('mark-as-translated');
         $extractedCatalogue = new MessageCatalogue($locale);
@@ -507,8 +487,8 @@ class ImportTranslationsCommand extends Command
             $this->getTranslationReader()->read($translationsDir, $extractedCatalogue);
 
             // load fallback translations
-            $parts = explode('_', $locale);
-            if (count($parts) > 1) {
+            $parts = \explode('_', $locale);
+            if (\count($parts) > 1) {
                 $fallbackCatalogue = new MessageCatalogue($parts[0]);
                 $this->getTranslationReader()->read($translationsDir, $fallbackCatalogue);
 
@@ -516,11 +496,12 @@ class ImportTranslationsCommand extends Command
                     $extractedCatalogue,
                     new MessageCatalogue($locale, $fallbackCatalogue->all())
                 );
+                /** @var MessageCatalogue $extractedCatalogue */
                 $extractedCatalogue = $mergeOperation->getResult();
             }
 
             // if empty, load default translations
-            if (count($extractedCatalogue->all()) == 0 && !$markAsTranslated) {
+            if (0 === \count($extractedCatalogue->all()) && !$markAsTranslated) {
                 $defaultLocale = $this->getTranslationsDefaultLocale();
                 if ($defaultLocale) {
                     $defaultCatalogue = new MessageCatalogue($defaultLocale);
@@ -530,6 +511,7 @@ class ImportTranslationsCommand extends Command
                         $extractedCatalogue,
                         new MessageCatalogue($locale, $defaultCatalogue->all())
                     );
+                    /** @var MessageCatalogue $extractedCatalogue */
                     $extractedCatalogue = $mergeOperation->getResult();
                 }
             }
@@ -540,11 +522,11 @@ class ImportTranslationsCommand extends Command
         }
 
         if (!$markAsTranslated) {
-            /* @var TranslationHandlerInterface[] $handlers */
+            /** @var TranslationHandlerInterface[] $handlers */
             $handlers = $this->getTranslationHandlersChain()->getHandlers();
-            if (count($handlers)) {
+            if (\count($handlers)) {
                 foreach ($handlers as $handler) {
-                    if (in_array(TranslationHandlerInterface::STRATEGY_RESOURCE_FILES, $handler->getStrategies())) {
+                    if (\in_array(TranslationHandlerInterface::STRATEGY_RESOURCE_FILES, $handler->getStrategies())) {
                         $bundleName = $handler->getBundleName();
 
                         foreach ($handler->getSources() as $source) {
@@ -552,6 +534,7 @@ class ImportTranslationsCommand extends Command
 
                             if (null !== $catalogue) {
                                 $mergeOperation = new MergeOperation($extractedCatalogue, $catalogue);
+                                /** @var MessageCatalogue $extractedCatalogue */
                                 $extractedCatalogue = $mergeOperation->getResult();
 
                                 $output->writeln(
@@ -567,83 +550,79 @@ class ImportTranslationsCommand extends Command
         return $extractedCatalogue;
     }
 
-    /**
-     * @return null|string
-     */
-    private function getTranslationsDefaultLocale()
+    private function getTranslationsDefaultLocale(): ?string
     {
         $defaultLocale = null;
 
         if ($this->container->hasParameter('kernel.default_locale')) {
+            /** @var string $defaultLocale */
             $defaultLocale = $this->container->getParameter('kernel.default_locale');
         }
 
         if ($this->container->hasParameter('modera.translations_default_locale')) {
+            /** @var string $defaultLocale */
             $defaultLocale = $this->container->getParameter('modera.translations_default_locale');
         }
 
         return $defaultLocale;
     }
 
-    /**
-     * @return string
-     */
-    private function getTranslationsDir()
+    private function getTranslationsDir(): string
     {
+        /** @var string $projectDir */
         $projectDir = $this->container->getParameter('kernel.project_dir');
-        $translationsDir = join(DIRECTORY_SEPARATOR, [ $projectDir, 'app', 'Resources', 'translations' ]);
+        $translationsDir = \join(\DIRECTORY_SEPARATOR, [$projectDir, 'app', 'Resources', 'translations']);
 
         if ($this->container->hasParameter('modera.translations_dir')) {
+            /** @var string $translationsDir */
             $translationsDir = $this->container->getParameter('modera.translations_dir');
-        } else if ($this->container->hasParameter('translator.default_path')) {
+        } elseif ($this->container->hasParameter('translator.default_path')) {
+            /** @var string $translationsDir */
             $translationsDir = $this->container->getParameter('translator.default_path');
         }
 
         return $translationsDir;
     }
 
-    /**
-     * @return TranslationReader
-     */
-    private function getTranslationReader()
+    private function getTranslationReader(): TranslationReader
     {
-        return $this->container->get('modera_translations.translation.reader');
+        /** @var TranslationReader $translationReader */
+        $translationReader = $this->container->get('modera_translations.translation.reader');
+
+        return $translationReader;
+    }
+
+    private function getTranslationHandlersChain(): TranslationHandlersChain
+    {
+        /** @var TranslationHandlersChain $translationHandlersChain */
+        $translationHandlersChain = $this->container->get('modera_translations.service.translation_handlers_chain');
+
+        return $translationHandlersChain;
+    }
+
+    private function em(): EntityManagerInterface
+    {
+        /** @var EntityManagerInterface $em */
+        $em = $this->container->get('doctrine.orm.entity_manager');
+
+        return $em;
     }
 
     /**
-     * @return TranslationHandlersChain
+     * @param array<string, string> $messages
      */
-    private function getTranslationHandlersChain()
-    {
-        return $this->container->get('modera_translations.service.translation_handlers_chain');
-    }
-
-    /**
-     * @return EntityManagerInterface
-     */
-    private function em()
-    {
-        return $this->container->get('doctrine.orm.entity_manager');
-    }
-
-    /**
-     * @param OutputInterface $output
-     * @param $messages
-     */
-    private function printMessages(OutputInterface $output, $messages)
+    private function printMessages(OutputInterface $output, array $messages): void
     {
         foreach ($messages as $token => $message) {
             $output->writeln("    * $message (token: $token)");
         }
     }
 
-    /**
-     * @return Language
-     */
-    private function createAndReturnDefaultLanguage()
+    private function createAndReturnDefaultLanguage(): Language
     {
         $defaultLocale = 'en';
         if ($this->container->hasParameter('kernel.default_locale')) {
+            /** @var string $defaultLocale */
             $defaultLocale = $this->container->getParameter('kernel.default_locale');
         }
 
@@ -657,7 +636,7 @@ class ImportTranslationsCommand extends Command
         return $language;
     }
 
-    private function cleanDatabaseTables()
+    private function cleanDatabaseTables(): void
     {
         $query = $this->em()->createQuery(sprintf('DELETE %s ltt', LanguageTranslationToken::class));
         $query->execute();
@@ -667,54 +646,61 @@ class ImportTranslationsCommand extends Command
     }
 
     /**
-     * @return array
+     * @return array<string, array<int, array<mixed>>>
      */
-    private function getTokens()
+    private function getTokens(): array
     {
-        $tokens = array();
+        /** @var array<string, array<int, array<mixed>>> $tokens */
+        $tokens = [];
 
         $query = $this->em()->createQuery(
-            sprintf(
+            \sprintf(
                 'SELECT tt FROM %s tt',
                 TranslationToken::class
             )
         );
+        /** @var array<array<string, mixed>> $translationTokens */
         $translationTokens = $query->getResult($query::HYDRATE_ARRAY);
 
         $query = $this->em()->createQuery(
-            sprintf(
+            \sprintf(
                 'SELECT ltt, IDENTITY(ltt.language) as language, IDENTITY(ltt.translationToken) as translationToken FROM %s ltt',
                 LanguageTranslationToken::class
             )
         );
+        /** @var array<array<int|string, mixed>> $languageTranslationTokens */
         $languageTranslationTokens = $query->getResult($query::HYDRATE_ARRAY);
 
-        $tmp = array();
+        /** @var array<string, array<mixed>> $tmp */
+        $tmp = [];
         foreach ($languageTranslationTokens as $ltt) {
             if (!isset($tmp[$ltt['translationToken']])) {
-                $tmp[$ltt['translationToken']] = array();
+                $tmp[$ltt['translationToken']] = [];
             }
 
-            $tmp[$ltt['translationToken']][] = array_merge($ltt[0], array(
+            /** @var array<mixed> $arr */
+            $arr = $ltt[0];
+            $tmp[$ltt['translationToken']][] = \array_merge($arr, [
                 'language' => $ltt['language'],
-            ));
+            ]);
         }
 
         foreach ($translationTokens as $key => $tt) {
             if (isset($tmp[$tt['id']])) {
                 if (!isset($translationTokens[$key]['languageTranslationTokens'])) {
-                    $translationTokens[$key]['languageTranslationTokens'] = array();
+                    $translationTokens[$key]['languageTranslationTokens'] = [];
                 }
                 $translationTokens[$key]['languageTranslationTokens'] = $tmp[$tt['id']];
             }
         }
 
         foreach ($translationTokens as $token) {
-            if (!isset($tokens[$token['domain']])) {
-                $tokens[$token['domain']] = array();
+            /** @var string $domain */
+            $domain = $token['domain'];
+            if (!isset($tokens[$domain])) {
+                $tokens[$domain] = [];
             }
-
-            $tokens[$token['domain']][] = $token;
+            $tokens[$domain][] = $token;
         }
 
         unset($translationTokens, $languageTranslationTokens, $tmp);
@@ -723,13 +709,10 @@ class ImportTranslationsCommand extends Command
     }
 
     /**
-     * @param array $languages
-     * @param $languageId
-     * @return Language|null
+     * @param array<Language> $languages
      */
-    private function findLanguage(array $languages, $languageId)
+    private function findLanguage(array $languages, int $languageId): ?Language
     {
-        /* @var Language[] $languages */
         foreach ($languages as $language) {
             if ($languageId == $language->getId()) {
                 return $language;
@@ -740,15 +723,15 @@ class ImportTranslationsCommand extends Command
     }
 
     /**
-     * @param array $tokens
-     * @param string $domain
-     * @param string $tokenName
-     * @return array|null
+     * @param array<string, array<mixed>> $tokens
+     *
+     * @return ?array<mixed>
      */
-    private function findTranslationToken(array $tokens, $domain, $tokenName)
+    private function findTranslationToken(array $tokens, string $domain, string $tokenName): ?array
     {
-        if (isset($tokens[$domain])) {
+        if (\is_array($tokens[$domain] ?? null)) {
             foreach ($tokens[$domain] as $token) {
+                /** @var array<mixed> $token */
                 if ($tokenName === $token['tokenName']) {
                     return $token;
                 }
@@ -759,18 +742,17 @@ class ImportTranslationsCommand extends Command
     }
 
     /**
-     * @param array|null $token
-     * @param int $languageId
-     * @return array|null
+     * @param array<string, mixed> $token
+     *
+     * @return ?array<mixed>
      */
-    private function findLanguageTranslationToken(array $token = null, $languageId)
+    private function findLanguageTranslationToken(array $token, int $languageId): ?array
     {
-        if ($token) {
-            if (isset($token['languageTranslationTokens'])) {
-                foreach ($token['languageTranslationTokens'] as $ltt) {
-                    if ($languageId == $ltt['language']) {
-                        return $ltt;
-                    }
+        if (\is_array($token['languageTranslationTokens'] ?? null)) {
+            foreach ($token['languageTranslationTokens'] as $ltt) {
+                /** @var array<mixed> $ltt */
+                if ($languageId === $ltt['language']) {
+                    return $ltt;
                 }
             }
         }

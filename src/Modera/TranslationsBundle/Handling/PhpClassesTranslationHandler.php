@@ -12,9 +12,6 @@ class PhpClassesTranslationHandler extends TemplateTranslationHandler
 {
     public const SOURCE_NAME = 'php-classes';
 
-    /**
-     * {@inheritdoc}
-     */
     protected function resolveResourcesDirectory(BundleInterface $bundle): string
     {
         return $bundle->getPath();

@@ -2,29 +2,25 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Controller;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\Pagination\Paginator;
-use Modera\SecurityBundle\Entity\User;
-use Modera\SecurityBundle\Service\UserService;
-use Modera\SecurityBundle\ModeraSecurityBundle;
-use Modera\SecurityBundle\Security\Authenticator;
-use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
-use Modera\MjrIntegrationBundle\Config\MainConfigInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\AssetsHandling\AssetsProviderInterface;
 use Modera\MjrIntegrationBundle\ClientSideDependencyInjection\ServiceDefinitionsManager;
+use Modera\MjrIntegrationBundle\Config\MainConfigInterface;
 use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
-use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
 use Modera\MJRSecurityIntegrationBundle\DependencyInjection\ModeraMJRSecurityIntegrationExtension;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
+use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
+use Modera\SecurityBundle\Security\Authenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
@@ -35,23 +31,35 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class IndexController extends Controller
 {
+    protected function getContainer(): ContainerInterface
+    {
+        /** @var ContainerInterface $container */
+        $container = $this->container;
+
+        return $container;
+    }
+
     /**
      * Entry point MF backend.
      *
      * @Route("/")
-     *
-     * @return array
      */
-    public function indexAction()
+    public function indexAction(): Response
     {
-        $runtimeConfig = $this->container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
-        $securedRuntimeConfig = $this->container->getParameter(ModeraMJRSecurityIntegrationExtension::CONFIG_KEY);
+        /** @var array<string, mixed> $runtimeConfig */
+        $runtimeConfig = $this->getContainer()->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
 
-        /* @var ContributorInterface $classLoaderMappingsProvider */
-        $classLoaderMappingsProvider = $this->get('modera_mjr_integration.bootstrapping_class_loader_mappings_provider');
+        /** @var array<string, mixed> $securedRuntimeConfig */
+        $securedRuntimeConfig = $this->getContainer()->getParameter(ModeraMJRSecurityIntegrationExtension::CONFIG_KEY);
 
-        /* @var MainConfigInterface $mainConfig */
-        $mainConfig = $this->container->get($runtimeConfig['main_config_provider']);
+        /** @var ContributorInterface $classLoaderMappingsProvider */
+        $classLoaderMappingsProvider = $this->getContainer()->get('modera_mjr_integration.bootstrapping_class_loader_mappings_provider');
+
+        /** @var string $mainConfigProvider */
+        $mainConfigProvider = $runtimeConfig['main_config_provider'];
+
+        /** @var MainConfigInterface $mainConfig */
+        $mainConfig = $this->getContainer()->get($mainConfigProvider);
         $runtimeConfig['home_section'] = $mainConfig->getHomeSection();
         $runtimeConfig['deployment_name'] = $mainConfig->getTitle();
         $runtimeConfig['deployment_url'] = $mainConfig->getUrl();
@@ -60,27 +68,27 @@ class IndexController extends Controller
         // for docs regarding how to use "non-blocking" assets see
         // \Modera\MjrIntegrationBundle\AssetsHandling\AssetsProvider class
 
-        /* @var AssetsProviderInterface $assetsProvider */
-        $assetsProvider = $this->get('modera_mjr_integration.assets_handling.assets_provider');
+        /** @var AssetsProviderInterface $assetsProvider */
+        $assetsProvider = $this->getContainer()->get('modera_mjr_integration.assets_handling.assets_provider');
 
-        /* @var RouterInterface $router */
-        $router = $this->get('router');
+        /** @var RouterInterface $router */
+        $router = $this->getContainer()->get('router');
         // converting URL like /app_dev.php/backend/ModeraFoundation/Application.js to /app_dev.php/backend/ModeraFoundation
         $appLoadingPath = $router->generate('modera_mjr_security_integration.index.application');
-        $appLoadingPath = substr($appLoadingPath, 0, strpos($appLoadingPath, 'Application.js') - 1);
+        $appLoadingPath = \substr($appLoadingPath, 0, \strpos($appLoadingPath, 'Application.js') - 1);
 
-        /* @var Kernel $kernel */
-        $kernel = $this->get('kernel');
+        /** @var Kernel $kernel */
+        $kernel = $this->getContainer()->get('kernel');
 
         $content = $this->renderView(
             '@ModeraMJRSecurityIntegration/Index/index.html.twig',
-            array(
-                'config' => array_merge($runtimeConfig, $securedRuntimeConfig),
+            [
+                'config' => \array_merge($runtimeConfig, $securedRuntimeConfig),
                 'css_resources' => $assetsProvider->getCssAssets(AssetsProviderInterface::TYPE_BLOCKING),
                 'js_resources' => $assetsProvider->getJavascriptAssets(AssetsProviderInterface::TYPE_BLOCKING),
                 'app_loading_path' => $appLoadingPath,
-                'disable_caching' => $kernel->getEnvironment() != 'prod',
-            )
+                'disable_caching' => 'prod' !== $kernel->getEnvironment(),
+            ]
         );
 
         $response = new Response($content);
@@ -96,25 +104,25 @@ class IndexController extends Controller
      * @see Resources/config/routing.yml
      * @see \Modera\MJRSecurityIntegrationBundle\Contributions\RoutingResourcesProvider
      */
-    public function applicationAction()
+    public function applicationAction(): Response
     {
-        /* @var AssetsProviderInterface $assetsProvider */
-        $assetsProvider = $this->get('modera_mjr_integration.assets_handling.assets_provider');
+        /** @var AssetsProviderInterface $assetsProvider */
+        $assetsProvider = $this->getContainer()->get('modera_mjr_integration.assets_handling.assets_provider');
 
-        $nonBlockingResources = array(
+        $nonBlockingResources = [
             'css' => $assetsProvider->getCssAssets(AssetsProviderInterface::TYPE_NON_BLOCKING),
             'js' => $assetsProvider->getJavascriptAssets(AssetsProviderInterface::TYPE_NON_BLOCKING),
-        );
+        ];
 
-        /* @var ServiceDefinitionsManager $definitionsMgr */
-        $definitionsMgr = $this->container->get('modera_mjr_integration.csdi.service_definitions_manager');
+        /** @var ServiceDefinitionsManager $definitionsMgr */
+        $definitionsMgr = $this->getContainer()->get('modera_mjr_integration.csdi.service_definitions_manager');
         $content = $this->renderView(
             '@ModeraMJRSecurityIntegration/Index/application.html.twig',
-            array(
+            [
                 'non_blocking_resources' => $nonBlockingResources,
                 'container_services' => $definitionsMgr->getDefinitions(),
-                'config' => $this->container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY),
-            )
+                'config' => $this->getContainer()->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY),
+            ]
         );
 
         $response = new Response($content);
@@ -126,48 +134,41 @@ class IndexController extends Controller
     /**
      * Endpoint can be used by MJR to figure out if user is already authenticated and therefore
      * runtime UI can be loaded.
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
      */
-    public function isAuthenticatedAction(Request $request)
+    public function isAuthenticatedAction(Request $request): JsonResponse
     {
         $this->initSession($request);
 
-        /* @var TokenStorageInterface $sc */
-        $sc = $this->get('security.token_storage');
+        /** @var TokenStorageInterface $sc */
+        $sc = $this->getContainer()->get('security.token_storage');
         $token = $sc->getToken();
 
         $response = Authenticator::getAuthenticationResponse($token);
 
         if ($response['success']) {
-            if (!$this->isGranted(ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER, $token->getUser())) {
-                $response = array(
+            if (!$token || !$this->isGranted(ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER, $token->getUser())) {
+                $response = [
                     'success' => false,
                     'message' => "You don't have required rights to access administration interface.",
-                );
+                ];
             }
         }
 
         return new JsonResponse($response);
     }
 
-    /**
-     * @param Request $request
-     * @param string  $username
-     * @return RedirectResponse
-     */
-    public function switchUserToAction(Request $request, $username)
+    public function switchUserToAction(Request $request, string $username): RedirectResponse
     {
         $url = '/';
 
-        $switchUserConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY . '.switch_user');
+        /** @var ?array{'parameter': string} $switchUserConfig */
+        $switchUserConfig = $this->getContainer()->getParameter(ModeraSecurityExtension::CONFIG_KEY.'.switch_user');
         if ($switchUserConfig) {
-            $parameters = array();
+            $parameters = [];
             $parameters[$switchUserConfig['parameter']] = $username;
-            $isAuthenticatedRoute = $this->container->getParameter(
-                ModeraMJRSecurityIntegrationExtension::CONFIG_KEY . '.is_authenticated_url'
+            /** @var string $isAuthenticatedRoute */
+            $isAuthenticatedRoute = $this->getContainer()->getParameter(
+                ModeraMJRSecurityIntegrationExtension::CONFIG_KEY.'.is_authenticated_url'
             );
             $url = $this->generateUrl($isAuthenticatedRoute, $parameters);
         }
@@ -175,22 +176,11 @@ class IndexController extends Controller
         return $this->redirect($url);
     }
 
-    /**
-     * @param Request $request
-     */
-    private function initSession(Request $request)
+    private function initSession(Request $request): void
     {
         $session = $request->getSession();
         if ($session instanceof Session && !$session->getId()) {
             $session->start();
         }
-    }
-
-    /**
-     * @return EntityManager
-     */
-    private function em()
-    {
-        return $this->get('doctrine')->getManager();
     }
 }

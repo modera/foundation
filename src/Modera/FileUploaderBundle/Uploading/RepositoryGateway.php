@@ -14,38 +14,26 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class RepositoryGateway implements UploadGatewayInterface
 {
-    private $fileRepository;
-    private $repositoryName;
+    private FileRepository $fileRepository;
+    private string $repositoryName;
 
-    /**
-     * @param FileRepository $fileRepository
-     * @param string         $repositoryName
-     */
-    public function __construct(FileRepository $fileRepository, $repositoryName)
+    public function __construct(FileRepository $fileRepository, string $repositoryName)
     {
         $this->fileRepository = $fileRepository;
         $this->repositoryName = $repositoryName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isResponsible(Request $request)
+    public function isResponsible(Request $request): bool
     {
         $repository = $request->request->get('_repository');
         if (!$repository) {
-            throw new \RuntimeException(
-                'Unable to resolve what channel to use ( request parameter "_repository" is missing )'
-            );
+            throw new \RuntimeException('Unable to resolve what channel to use ( request parameter "_repository" is missing )');
         }
 
-        return $repository == $this->repositoryName;
+        return $repository === $this->repositoryName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function upload(Request $request)
+    public function upload(Request $request): ?Response
     {
         $this->beforeUpload($request);
 
@@ -57,19 +45,16 @@ class RepositoryGateway implements UploadGatewayInterface
     }
 
     /**
-     * @param Request      $request
      * @param StoredFile[] $storedFiles
-     *
-     * @return JsonResponse|Response
      */
-    protected function formatResponse(Request $request, array $storedFiles)
+    protected function formatResponse(Request $request, array $storedFiles): Response
     {
         if ($request->isXmlHttpRequest()) {
-            return new JsonResponse(array(
+            return new JsonResponse([
                 'success' => true,
-            ));
+            ]);
         } else {
-            return new Response(true);
+            return new Response(Response::$statusTexts[Response::HTTP_OK]);
         }
     }
 
@@ -78,10 +63,8 @@ class RepositoryGateway implements UploadGatewayInterface
      * in this method.
      *
      * Feel free to override this method in subclass.
-     *
-     * @param Request $request
      */
-    protected function beforeUpload(Request $request)
+    protected function beforeUpload(Request $request): void
     {
     }
 
@@ -90,24 +73,21 @@ class RepositoryGateway implements UploadGatewayInterface
      *
      * Feel free to override this method in subclass.
      *
-     * @param Request      $request
      * @param StoredFile[] $storedFiles
      */
-    protected function afterUpload(Request $request, array $storedFiles)
+    protected function afterUpload(Request $request, array $storedFiles): void
     {
     }
 
     /**
-     * @param Request $request
-     *
      * @return StoredFile[]
      */
-    protected function doUpload(Request $request)
+    protected function doUpload(Request $request): array
     {
-        $storedFiles = array();
+        $storedFiles = [];
 
         foreach ($request->files as $file) {
-            if ($file) {
+            if ($file instanceof \SplFileInfo) {
                 $storedFiles[] = $this->fileRepository->put($this->repositoryName, $file);
             }
         }

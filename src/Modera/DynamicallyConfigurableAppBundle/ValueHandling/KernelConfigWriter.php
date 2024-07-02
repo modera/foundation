@@ -4,9 +4,9 @@ namespace Modera\DynamicallyConfigurableAppBundle\ValueHandling;
 
 use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
 use Modera\ConfigBundle\Config\ValueUpdatedHandlerInterface;
-use Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBundle as Bundle;
-use Modera\DynamicallyConfigurableAppBundle\KernelConfigInterface;
 use Modera\DynamicallyConfigurableAppBundle\KernelConfig;
+use Modera\DynamicallyConfigurableAppBundle\KernelConfigInterface;
+use Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBundle as Bundle;
 
 /**
  * When "kernel_env", "kernel_debug" configuration entries are updated
@@ -17,50 +17,40 @@ use Modera\DynamicallyConfigurableAppBundle\KernelConfig;
  */
 class KernelConfigWriter implements ValueUpdatedHandlerInterface
 {
-    /**
-     * @var string
-     */
-    private $kernelConfigFQCN;
+    private string $kernelConfigFQCN;
 
-    /**
-     * @param null|string $kernelConfigFQCN
-     */
-    public function __construct($kernelConfigFQCN = null)
+    public function __construct(?string $kernelConfigFQCN = null)
     {
         $this->kernelConfigFQCN = $kernelConfigFQCN ?: KernelConfig::class;
 
-        if (!is_subclass_of($this->kernelConfigFQCN, KernelConfigInterface::class)) {
-            throw new \RuntimeException(
-                '\\' . $this->kernelConfigFQCN . ' must implement \\' . KernelConfigInterface::class
-            );
+        if (!\is_subclass_of($this->kernelConfigFQCN, KernelConfigInterface::class)) {
+            throw new \RuntimeException('\\'.$this->kernelConfigFQCN.' must implement \\'.KernelConfigInterface::class);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function onUpdate(ConfigurationEntryInterface $entry)
+    public function onUpdate(ConfigurationEntryInterface $entry): void
     {
         if (!$this->canHandleEntry($entry)) {
             return;
         }
 
-        $mode = array();
-        if ($entry->getName() == Bundle::CONFIG_KERNEL_DEBUG) {
-            $mode['debug'] = $entry->getValue() == 'true';
-        } elseif ($entry->getName() == Bundle::CONFIG_KERNEL_ENV) {
+        $mode = [];
+        if (Bundle::CONFIG_KERNEL_DEBUG === $entry->getName()) {
+            $mode['debug'] = (bool) $entry->getValue();
+        } elseif (Bundle::CONFIG_KERNEL_ENV === $entry->getName()) {
             $mode['env'] = $entry->getValue();
         }
 
-        call_user_func(array($this->kernelConfigFQCN, 'write'), $mode);
+        $callback = [$this->kernelConfigFQCN, 'write'];
+        if (!\is_callable($callback)) {
+            throw new \RuntimeException('Write method not found');
+        }
+
+        \call_user_func($callback, $mode);
     }
 
-    /**
-     * @param ConfigurationEntryInterface $entry
-     * @return bool
-     */
-    private function canHandleEntry(ConfigurationEntryInterface $entry)
+    private function canHandleEntry(ConfigurationEntryInterface $entry): bool
     {
-        return in_array($entry->getName(), array(Bundle::CONFIG_KERNEL_DEBUG, Bundle::CONFIG_KERNEL_ENV));
+        return \in_array($entry->getName(), [Bundle::CONFIG_KERNEL_DEBUG, Bundle::CONFIG_KERNEL_ENV]);
     }
 }

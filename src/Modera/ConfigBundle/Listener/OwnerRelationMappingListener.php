@@ -14,33 +14,30 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
 class OwnerRelationMappingListener
 {
     /**
-     * @var array
+     * @var array{'owner_entity': string}
      */
-    private $semanticConfig = array();
+    private array $semanticConfig;
 
     /**
-     * @param array $semanticConfig
+     * @param array{'owner_entity': string} $semanticConfig
      */
     public function __construct(array $semanticConfig)
     {
         $this->semanticConfig = $semanticConfig;
     }
 
-    /**
-     * @param LoadClassMetadataEventArgs $args
-     */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $args)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
     {
-        /* @var ClassMetadataInfo $mapping */
+        /** @var ClassMetadataInfo $mapping */
         $mapping = $args->getClassMetadata();
 
-        if ($mapping->getName() == ConfigurationEntry::class) {
-            $mapping->mapManyToOne(array(
+        if (ConfigurationEntry::class === $mapping->getName()) {
+            $mapping->mapManyToOne([
                 'fieldName' => 'owner',
                 'type' => ClassMetadataInfo::MANY_TO_ONE,
                 'isOwningSide' => true,
                 'targetEntity' => $this->semanticConfig['owner_entity'],
-            ));
+            ]);
         }
     }
 }

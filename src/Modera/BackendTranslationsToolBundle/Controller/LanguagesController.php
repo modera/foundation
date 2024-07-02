@@ -2,9 +2,9 @@
 
 namespace Modera\BackendTranslationsToolBundle\Controller;
 
+use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 use Modera\LanguagesBundle\Entity\Language;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
-use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -12,24 +12,21 @@ use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
  */
 class LanguagesController extends AbstractCrudController
 {
-    /**
-     * @return array
-     */
-    public function getConfig()
+    public function getConfig(): array
     {
-        return array(
+        return [
             'entity' => Language::class,
-            'security' => array(
+            'security' => [
                 'role' => ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION,
-            ),
-            'hydration' => array(
-                'groups' => array(
+            ],
+            'hydration' => [
+                'groups' => [
                     'list' => ['id', 'name', 'locale', 'isEnabled'],
-                ),
-                'profiles' => array(
+                ],
+                'profiles' => [
                     'list',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 }

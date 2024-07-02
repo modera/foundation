@@ -2,10 +2,10 @@
 
 namespace Modera\MjrIntegrationBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -14,15 +14,12 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class ModeraMjrIntegrationExtension extends Extension
 {
-    const CONFIG_KEY = 'modera_mjr_integration.config';
-    const CONFIG_APP_NAME = 'modera_mjr_integration.config.app_name';
-    const CONFIG_RUNTIME_PATH = 'modera_mjr_integration.config.runtime_path';
-    const CONFIG_ROUTES_PREFIX = 'modera_mjr_integration.routes_prefix';
+    public const CONFIG_KEY = 'modera_mjr_integration.config';
+    public const CONFIG_APP_NAME = 'modera_mjr_integration.config.app_name';
+    public const CONFIG_RUNTIME_PATH = 'modera_mjr_integration.config.runtime_path';
+    public const CONFIG_ROUTES_PREFIX = 'modera_mjr_integration.routes_prefix';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
@@ -36,16 +33,18 @@ class ModeraMjrIntegrationExtension extends Extension
         $loader->load('controller.xml');
         $loader->load('services.xml');
 
-        if (class_exists('Modera\BackendTranslationsToolBundle\Handling\ExtjsTranslationHandler')) {
+        if (\class_exists('Modera\BackendTranslationsToolBundle\Handling\ExtjsTranslationHandler')) {
             try {
                 $loader->load('translations.xml');
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
 
-        if (class_exists('Symfony\Component\Console\Application')) {
+        if (\class_exists('Symfony\Component\Console\Application')) {
             try {
                 $loader->load('console.xml');
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
     }
 }

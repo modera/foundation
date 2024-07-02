@@ -2,9 +2,9 @@
 
 namespace Modera\LanguagesBundle\EventListener;
 
-use Doctrine\ORM\Events;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Events;
 use Modera\LanguagesBundle\Entity\Language;
 
 /**
@@ -13,10 +13,7 @@ use Modera\LanguagesBundle\Entity\Language;
  */
 class LanguageSubscriber implements EventSubscriber
 {
-    /**
-     * @return array
-     */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::postPersist,
@@ -24,33 +21,24 @@ class LanguageSubscriber implements EventSubscriber
         ];
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(LifecycleEventArgs $args): void
     {
         $this->updateDefaultLanguage($args);
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(LifecycleEventArgs $args): void
     {
         $this->updateDefaultLanguage($args);
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    private function updateDefaultLanguage(LifecycleEventArgs $args)
+    private function updateDefaultLanguage(LifecycleEventArgs $args): void
     {
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
         if ($entity instanceof Language) {
             if ($entity->isDefault()) {
                 $em = $args->getEntityManager();
                 $query = $em->createQuery(
-                    sprintf(
+                    \sprintf(
                         'UPDATE %s l SET l.isDefault = :status WHERE l.id != :id',
                         Language::class
                     )

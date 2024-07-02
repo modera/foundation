@@ -3,88 +3,72 @@
 namespace Modera\BackendLanguagesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Modera\SecurityBundle\Entity\User;
 use Modera\LanguagesBundle\Entity\Language;
+use Modera\SecurityBundle\Entity\User;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  *
  * @ORM\Entity
+ *
  * @ORM\Table(name="modera_backendlanguages_usersettings")
  */
 class UserSettings
 {
     /**
-     * @ORM\Column(type="integer")
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var User
      * @ORM\OneToOne(targetEntity="Modera\SecurityBundle\Entity\User")
      */
-    private $user;
+    private ?User $user = null;
 
     /**
-     * @var Language|null
      * @ORM\ManyToOne(targetEntity="Modera\LanguagesBundle\Entity\Language")
      */
-    private $language;
+    private ?Language $language = null;
 
     /**
      * @deprecated Use native ::class property
-     *
-     * @return string
      */
-    public static function clazz()
+    public static function clazz(): string
     {
-        @trigger_error(sprintf(
+        @\trigger_error(\sprintf(
             'The "%s()" method is deprecated. Use native ::class property.',
             __METHOD__
         ), \E_USER_DEPRECATED);
 
-        return get_called_class();
+        return \get_called_class();
     }
 
-    /**
-     * @return string
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return User
-     */
-    public function getUser()
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    /**
-     * @param User $user
-     */
-    public function setUser(User $user = null)
+    public function setUser(?User $user = null): void
     {
         $this->user = $user;
     }
 
-    /**
-     * @return Language|null
-     */
-    public function getLanguage()
+    public function getLanguage(): ?Language
     {
         return $this->language;
     }
 
-    /**
-     * @param Language|null $language
-     */
-    public function setLanguage(Language $language = null)
+    public function setLanguage(?Language $language = null): void
     {
         $this->language = $language;
     }

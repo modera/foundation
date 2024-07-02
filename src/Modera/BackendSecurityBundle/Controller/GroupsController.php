@@ -3,12 +3,12 @@
 namespace Modera\BackendSecurityBundle\Controller;
 
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
+use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Entity\Group;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
-use Modera\FoundationBundle\Translation\T;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
 use Modera\ServerCrudBundle\NewValuesFactory\NewValuesFactoryInterface;
-use Modera\ServerCrudBundle\Validation\DefaultEntityValidator;
+use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -17,14 +17,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class GroupsController extends AbstractCrudController
 {
-    /**
-     * @return array
-     */
     public function getConfig(): array
     {
-        $em = $this->getDoctrine();
-
-        $groupEntityValidator = function (array $params, Group $group, DefaultEntityValidator $defaultValidator, array $config, ContainerInterface $container) use ($em) {
+        $groupEntityValidator = function (array $params, Group $group, EntityValidatorInterface $defaultValidator, array $config, ContainerInterface $container) {
             $validationResult = $defaultValidator->validate($group, $config);
 
             if (!$group->getRefName()) {
@@ -32,17 +27,17 @@ class GroupsController extends AbstractCrudController
             }
 
             /** @var Group[] $groupWithSuchRefNameList */
-            $groupWithSuchRefNameList = $em->getRepository(Group::class)->findByRefName($group->getRefName());
+            $groupWithSuchRefNameList = $this->em()->getRepository(Group::class)->findByRefName($group->getRefName());
 
-            if (count($groupWithSuchRefNameList) > 0) {
+            if (\count($groupWithSuchRefNameList) > 0) {
                 $groupWithSuchRefName = $groupWithSuchRefNameList[0];
 
-                if ($groupWithSuchRefName->getId() != $group->getId()) {
+                if ($groupWithSuchRefName->getId() !== $group->getId()) {
                     $validationResult->addFieldError(
                         'refName',
                         T::trans(
                             'This refName is taken. Consider use \'%groupName%\' group or change current reference name.',
-                            array('%groupName%' => $groupWithSuchRefName->getName())
+                            ['%groupName%' => $groupWithSuchRefName->getName()]
                         )
                     );
                 }
@@ -52,7 +47,7 @@ class GroupsController extends AbstractCrudController
         };
 
         $mapEntity = function (array $params, Group $group, DataMapperInterface $defaultMapper, ContainerInterface $container) {
-            $allowedFieldsToEdit = array('name', 'refName', 'permissions');
+            $allowedFieldsToEdit = ['name', 'refName', 'permissions'];
             $params = \array_intersect_key($params, \array_flip($allowedFieldsToEdit));
             $defaultMapper->mapData($params, $group);
 
@@ -63,7 +58,7 @@ class GroupsController extends AbstractCrudController
              * is ''.
              */
             $refName = $group->getRefName();
-            if ($refName === '') {
+            if (!$refName) {
                 $group->setRefName(null);
             } else {
                 /*
@@ -73,45 +68,45 @@ class GroupsController extends AbstractCrudController
             }
         };
 
-        return array(
+        return [
             'entity' => Group::class,
-            'security' => array(
+            'security' => [
                 'role' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
-                'actions' => array(
+                'actions' => [
                     'create' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
                     'update' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
                     'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
                     'batchUpdate' => false,
-                ),
-            ),
-            'hydration' => array(
-                'groups' => array(
+                ],
+            ],
+            'hydration' => [
+                'groups' => [
                     'list' => function (Group $group) {
-                        return array(
+                        return [
                             'id' => $group->getId(),
                             'name' => $group->getName(),
-                            'usersCount' => count($group->getUsers()),
-                        );
+                            'usersCount' => \count($group->getUsers()),
+                        ];
                     },
                     'delete-group' => ['name'],
                     'main-form' => ['id', 'name', 'refName'],
                     'compact-list' => ['id', 'name'],
-                ),
-                'profiles' => array(
+                ],
+                'profiles' => [
                     'list', 'compact-list',
                     'delete-group',
-                    'edit-group' => array('main-form'),
-                ),
-            ),
+                    'edit-group' => ['main-form'],
+                ],
+            ],
             'format_new_entity_values' => function (array $params, array $config, NewValuesFactoryInterface $defaultImpl, ContainerInterface $container) {
-                return array(
+                return [
                     'refName' => null,
-                );
+                ];
             },
             'new_entity_validator' => $groupEntityValidator,
             'updated_entity_validator' => $groupEntityValidator,
             'map_data_on_create' => $mapEntity,
             'map_data_on_update' => $mapEntity,
-        );
+        ];
     }
 }

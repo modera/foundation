@@ -8,7 +8,9 @@ use Modera\LanguagesBundle\Entity\Language;
 
 /**
  * @ORM\Entity
+ *
  * @ORM\Table(name="modera_translations_languagetranslationtoken", uniqueConstraints={
+ *
  *     @UniqueConstraint(name="language_translation_token", columns={"language_id", "translation_token_id"})
  * })
  *
@@ -18,123 +20,101 @@ use Modera\LanguagesBundle\Entity\Language;
 class LanguageTranslationToken
 {
     /**
-     * @var int
      * @ORM\Column(type="integer")
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var Language
      * @ORM\ManyToOne(targetEntity="Modera\LanguagesBundle\Entity\Language", fetch="EAGER")
+     *
      * @ORM\JoinColumn(name="language_id", referencedColumnName="id")
      */
-    private $language;
+    private ?Language $language = null;
 
     /**
-     * @var TranslationToken
      * @ORM\ManyToOne(targetEntity="TranslationToken", inversedBy="languageTranslationTokens")
+     *
      * @ORM\JoinColumn(name="translation_token_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $translationToken;
+    private ?TranslationToken $translationToken = null;
 
     /**
-     * @var bool
      * @ORM\Column(type="boolean", nullable=false)
      */
-    private $isNew = true;
+    private bool $isNew = true;
 
     /**
-     * @var string
      * @ORM\Column(type="text", nullable=false)
      */
-    private $translation;
+    private ?string $translation = null;
 
     /**
      * @deprecated Use native ::class property
-     *
-     * @return string
      */
-    public static function clazz()
+    public static function clazz(): string
     {
-        @trigger_error(sprintf(
+        @\trigger_error(\sprintf(
             'The "%s()" method is deprecated. Use native ::class property.',
             __METHOD__
         ), \E_USER_DEPRECATED);
 
-        return get_called_class();
+        return \get_called_class();
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return \Modera\LanguagesBundle\Entity\Language
-     */
-    public function getLanguage()
+    public function getLanguage(): ?Language
     {
         return $this->language;
     }
 
-    /**
-     * @param Language $language
-     */
-    public function setLanguage($language)
+    public function setLanguage(Language $language): self
     {
         $this->language = $language;
+
+        return $this;
     }
 
-    /**
-     * @return TranslationToken
-     */
-    public function getTranslationToken()
+    public function getTranslationToken(): ?TranslationToken
     {
         return $this->translationToken;
     }
 
-    /**
-     * @param TranslationToken $translationToken
-     */
-    public function setTranslationToken($translationToken)
+    public function setTranslationToken(TranslationToken $translationToken): self
     {
         $this->translationToken = $translationToken;
+
+        return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isNew()
+    public function isNew(): bool
     {
         return $this->isNew;
     }
 
-    /**
-     * @param bool $isNew
-     */
-    public function setNew($isNew)
+    public function setNew(bool $isNew): self
     {
         $this->isNew = $isNew;
+
+        return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTranslation()
+    public function getTranslation(): ?string
     {
         return $this->translation;
     }
 
-    /**
-     * @param string $translation
-     */
-    public function setTranslation($translation)
+    public function setTranslation(string $translation): self
     {
         $this->translation = $translation;
+
+        return $this;
     }
 }

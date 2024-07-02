@@ -13,9 +13,7 @@ class ModeraBackendSecurityAppKernel extends \Modera\FoundationBundle\Testing\Ab
             new Symfony\Bundle\TwigBundle\TwigBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
 
-            new Sli\ExtJsIntegrationBundle\SliExtJsIntegrationBundle(),
-            new Sli\AuxBundle\SliAuxBundle(),
-            new Sli\ExpanderBundle\SliExpanderBundle($this),
+            new Modera\ExpanderBundle\ModeraExpanderBundle($this),
 
             new Modera\TranslationsBundle\ModeraTranslationsBundle(),
             new Modera\FoundationBundle\ModeraFoundationBundle(),

@@ -8,6 +8,9 @@ namespace Modera\MjrIntegrationBundle\Config;
  */
 class CallbackConfigMerger implements ConfigMergerInterface
 {
+    /**
+     * @var callable
+     */
     private $callback;
 
     /**
@@ -15,20 +18,15 @@ class CallbackConfigMerger implements ConfigMergerInterface
      */
     public function __construct($callback)
     {
-        if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
-                'Given $callback is not callable.'
-            );
+        if (!\is_callable($callback)) {
+            throw new \InvalidArgumentException('Given $callback is not callable.');
         }
 
         $this->callback = $callback;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function merge(array $existingConfig)
+    public function merge(array $existingConfig): array
     {
-        return call_user_func($this->callback, $existingConfig);
+        return \call_user_func($this->callback, $existingConfig);
     }
 }

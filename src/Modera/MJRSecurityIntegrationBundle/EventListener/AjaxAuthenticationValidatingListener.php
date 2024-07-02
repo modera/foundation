@@ -16,30 +16,30 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class AjaxAuthenticationValidatingListener
 {
     // these constants are used only to simplify writing unit test
-    const RESULT_NOT_AJAX = 'not_ajax';
-    const RESULT_NOT_BACKEND_REQUEST = 'not_backend_request';
+    public const RESULT_NOT_AJAX = 'not_ajax';
+    public const RESULT_NOT_BACKEND_REQUEST = 'not_backend_request';
 
-    private $backendRoutesPrefix;
+    private string $backendRoutesPrefix;
 
-    /**
-     * @param string $backendRoutesPrefix
-     */
-    public function __construct($backendRoutesPrefix)
+    public function __construct(string $backendRoutesPrefix)
     {
         $this->backendRoutesPrefix = $backendRoutesPrefix;
     }
 
+    public function onKernelException(ExceptionEvent $event): void
+    {
+        $this->kernelExceptionHandler($event);
+    }
+
     /**
-     * @param ExceptionEvent $event
-     *
-     * @return string
+     * @internal
      */
-    public function onKernelException(ExceptionEvent $event)
+    public function kernelExceptionHandler(ExceptionEvent $event): ?string
     {
         if (!$event->getRequest()->isXmlHttpRequest()) {
             return self::RESULT_NOT_AJAX;
         }
-        if (substr($event->getRequest()->getPathInfo(), 0, strlen($this->backendRoutesPrefix)) != $this->backendRoutesPrefix) {
+        if (\substr($event->getRequest()->getPathInfo(), 0, \strlen($this->backendRoutesPrefix)) !== $this->backendRoutesPrefix) {
             return self::RESULT_NOT_BACKEND_REQUEST;
         }
 
@@ -49,14 +49,16 @@ class AjaxAuthenticationValidatingListener
             $msg = "Your session has expired and you need to re-login or you don't have privileges to perform given action.";
 
             $response = new JsonResponse(
-                array(
+                [
                     'success' => false,
                     'message' => T::trans($msg),
-                ),
+                ],
                 403
             );
 
             $event->setResponse($response);
         }
+
+        return null;
     }
 }

@@ -3,10 +3,10 @@
 namespace Modera\ConfigBundle\DependencyInjection;
 
 use Modera\ConfigBundle\ModeraConfigBundle;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -15,10 +15,7 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class ModeraConfigExtension extends Extension
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
@@ -33,20 +30,21 @@ class ModeraConfigExtension extends Extension
         }
         */
 
-        if ($config['owner_entity']) {
+        if (\is_string($config['owner_entity'] ?? null)) {
             $listener = $container->getDefinition('modera_config.listener.owner_relation_mapping_listener');
 
-            $listener->addTag('doctrine.event_listener', array(
+            $listener->addTag('doctrine.event_listener', [
                 'event' => 'loadClassMetadata',
-            ));
+            ]);
         }
 
         $container->setParameter(ModeraConfigBundle::CONFIG_KEY, $config);
 
-        if (class_exists('Symfony\Component\Console\Application')) {
+        if (\class_exists('Symfony\Component\Console\Application')) {
             try {
                 $loader->load('console.xml');
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
     }
 }

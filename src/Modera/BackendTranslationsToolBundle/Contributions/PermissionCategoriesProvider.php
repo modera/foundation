@@ -2,9 +2,9 @@
 
 namespace Modera\BackendTranslationsToolBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Model\PermissionCategory;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -15,12 +15,9 @@ class PermissionCategoriesProvider implements ContributorInterface
     /**
      * @var PermissionCategory[]
      */
-    private $items;
+    private ?array $items = null;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (!$this->items) {
             $this->items = [

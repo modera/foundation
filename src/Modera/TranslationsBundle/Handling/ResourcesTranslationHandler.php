@@ -18,10 +18,20 @@ class ResourcesTranslationHandler implements TranslationHandlerInterface
 
     protected string $bundle;
 
+    /**
+     * @var string[]
+     */
     protected iterable $resources = [];
 
+    /**
+     * @var string[]
+     */
     protected array $strategies = [];
 
+    /**
+     * @param ?string[] $resources
+     * @param ?string[] $strategies
+     */
     public function __construct(
         ExtractorInterface $extractor,
         string $source,
@@ -33,36 +43,24 @@ class ResourcesTranslationHandler implements TranslationHandlerInterface
         $this->source = $source;
         $this->bundle = $bundle;
         $this->resources = $resources ?? [];
-        $this->strategies = $strategies ?? [ static::STRATEGY_SOURCE_TREE ];
+        $this->strategies = $strategies ?? [static::STRATEGY_SOURCE_TREE];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBundleName(): string
     {
         return $this->bundle;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getStrategies(): array
     {
         return $this->strategies;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSources(): array
     {
-        return array($this->source);
+        return [$this->source];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function extract(string $source, string $locale): ?MessageCatalogueInterface
     {
         if (!$this->isSourceAvailable($source)) {
@@ -80,6 +78,9 @@ class ResourcesTranslationHandler implements TranslationHandlerInterface
         return $this->source === $source;
     }
 
+    /**
+     * @return string[]
+     */
     protected function getResources(): iterable
     {
         return $this->resources;

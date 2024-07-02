@@ -2,12 +2,11 @@
 
 namespace Modera\BackendConfigUtilsBundle\Controller;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
-use Modera\ConfigBundle\Entity\ConfigurationEntry;
-use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
-use Modera\ConfigBundle\Config\ConfigurationEntryDefinition;
-use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
+use Modera\ConfigBundle\Config\ConfigurationEntryDefinition;
+use Modera\ConfigBundle\Entity\ConfigurationEntry;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -15,25 +14,22 @@ use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
  */
 class DefaultController extends AbstractCrudController
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getConfig(): array
     {
-        return array(
+        return [
             'entity' => ConfigurationEntry::class,
-            'security' => array(
+            'security' => [
                 'role' => ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS,
-            ),
-            'hydration' => array(
-                'groups' => array(
+            ],
+            'hydration' => [
+                'groups' => [
                     'list' => function (ConfigurationEntry $entry) {
                         $readableName = $entry->getReadableName();
                         if ($entryDef = $this->getEntryDef($entry)) {
                             $readableName = $entryDef->getReadableName();
                         }
 
-                        return array(
+                        return [
                             'id' => $entry->getId(),
                             'name' => $entry->getName(),
                             'readableName' => $readableName,
@@ -41,11 +37,11 @@ class DefaultController extends AbstractCrudController
                             'value' => $entry->getValue(),
                             'isReadOnly' => $entry->isReadOnly(),
                             'editorConfig' => $entry->getClientHandlerConfig(),
-                        );
+                        ];
                     },
-                ),
+                ],
                 'profiles' => ['list'],
-            ),
+            ],
             'map_data_on_update' => function (array $params, ConfigurationEntry $entry) {
                 if ($entry->isReadOnly() || !$entry->isExposed()) {
                     return;
@@ -55,19 +51,20 @@ class DefaultController extends AbstractCrudController
                     $entry->setValue($params['value']);
                 }
             },
-        );
+        ];
     }
 
     private function getEntryDef(ConfigurationEntry $entity): ?ConfigurationEntryDefinition
     {
-        /* @var ContributorInterface $provider */
-        $provider = $this->get('modera_config.config_entries_provider');
+        /** @var ContributorInterface $provider */
+        $provider = $this->container->get('modera_config.config_entries_provider');
         foreach ($provider->getItems() as $entryDef) {
-            /* @var ConfigurationEntryInterface $entryDef */
+            /** @var ConfigurationEntryDefinition $entryDef */
             if ($entity->getName() == $entryDef->getName()) {
                 return $entryDef;
             }
         }
+
         return null;
     }
 }

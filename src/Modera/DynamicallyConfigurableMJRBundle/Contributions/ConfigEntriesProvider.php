@@ -3,8 +3,8 @@
 namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
 use Modera\ConfigBundle\Config\ConfigurationEntryDefinition as CED;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -12,10 +12,7 @@ use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBund
  */
 class ConfigEntriesProvider implements ContributorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         return [
             new CED(Bundle::CONFIG_TITLE, 'Site name', 'Modera Foundation', 'general'),

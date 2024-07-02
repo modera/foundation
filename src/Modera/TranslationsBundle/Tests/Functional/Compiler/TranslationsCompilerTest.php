@@ -17,30 +17,30 @@ use Modera\TranslationsBundle\Compiler\TranslationsCompiler;
 class TranslationsCompilerTest extends AbstractFunctionalTestCase
 {
     // override
-    public static function doSetUpBeforeClass()
+    public static function doSetUpBeforeClass(): void
     {
         self::setUpDatabase();
     }
 
     // override
-    public static function doTearDownAfterClass()
+    public static function doTearDownAfterClass(): void
     {
         self::dropDatabase();
     }
 
     public function testCompile()
     {
-//        $this->markTestSkipped(
-//            'After migration to Symfony 3.1+ this test started exploding with "PDOException: There is no active transaction"'
-//        );
-        $em = self::$container->get('doctrine')->getManager();
+        /*$this->markTestSkipped(
+            'After migration to Symfony 3.1+ this test started exploding with "PDOException: There is no active transaction"'
+        );*/
+        $em = self::getContainer()->get('doctrine')->getManager();
         $em->getConnection()->beginTransaction();
 
         /* @var KernelInterface $kernel */
-        $kernel = self::$container->get('kernel');
+        $kernel = self::getContainer()->get('kernel');
 
         /* @var TranslationsCompiler $compiler */
-        $compiler = self::$container->get('modera_translations.compiler.translations_compiler');
+        $compiler = self::getContainer()->get('modera_translations.compiler.translations_compiler');
 
         $this->launchImportCommand();
 

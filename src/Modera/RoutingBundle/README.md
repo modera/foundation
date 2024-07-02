@@ -26,7 +26,7 @@ adding the following line in the `config/bundles.php` file of your project:
 
 return [
     // ...
-    Sli\ExpanderBundle\SliExpanderBundle::class => ['all' => true], // if you still don't have it
+    Modera\ExpanderBundle\ModeraExpanderBundle::class => ['all' => true], // if you still don't have it
     Modera\RoutingBundle\ModeraRoutingBundle::class => ['all' => true],
 ];
 ```
@@ -42,10 +42,10 @@ _modera_routing:
 
 ## Documentation
 
-Internally `ModeraRoutingBundle` relies on `SliExpanderBundle` to leverage a consistent approach to creating extension
+Internally `ModeraRoutingBundle` relies on `ModeraExpanderBundle` to leverage a consistent approach to creating extension
 points. Shortly speaking, in order for a bundle to contribute routing resources it has to do two things:
 
- 1. Create a contributor class which implements \Sli\ExpanderBundle\Ext\ContributorInterface
+ 1. Create a contributor class which implements \Modera\ExpanderBundle\Ext\ContributorInterface
  2. Register it in a service container with tag `modera_routing.routing_resources_provider`.
 
 This is how your contributor class may look like:
@@ -55,7 +55,7 @@ This is how your contributor class may look like:
 
 namespace Modera\ExampleBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class RoutingResourcesProvider implements ContributorInterface
 {

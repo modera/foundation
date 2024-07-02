@@ -2,11 +2,11 @@
 
 namespace Modera\MjrIntegrationBundle\Contributions;
 
-use Symfony\Component\HttpKernel\Kernel;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Provides JavaScript files required for MJR to work.
@@ -16,38 +16,41 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class JsResourcesProvider implements ContributorInterface
 {
-    /**
-     * @var Router
-     */
-    private $router;
+    private Router $router;
 
     /**
-     * @var array
+     * @var array{
+     *     'extjs_path': string,
+     *     'extjs_include_rtl': bool,
+     *     'extjs_console_warnings': bool,
+     *     'moment_js_version': string,
+     * }
      */
-    private $bundleConfig;
+    private array $bundleConfig;
 
-    /**
-     * @var bool
-     */
-    private $isDevEnv;
+    private bool $isDevEnv;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
-        $this->router = $container->get('router');
-        $this->bundleConfig = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
+        /** @var Router $router */
+        $router = $container->get('router');
+        $this->router = $router;
 
-        /* @var Kernel $kernel */
+        /** @var array{
+         *     'extjs_path': string,
+         *     'extjs_include_rtl': bool,
+         *     'extjs_console_warnings': bool,
+         *     'moment_js_version': string,
+         * } $bundleConfig */
+        $bundleConfig = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
+        $this->bundleConfig = $bundleConfig;
+
+        /** @var Kernel $kernel */
         $kernel = $container->get('kernel');
-        $this->isDevEnv = $kernel->getEnvironment() == 'dev';
+        $this->isDevEnv = 'dev' === $kernel->getEnvironment();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         // https://www.sencha.com/forum/showthread.php?142565
         // ext-all: minified, no JSDoc, no console warnings
@@ -62,35 +65,35 @@ class JsResourcesProvider implements ContributorInterface
         }
         $extjs .= '.js';
 
-        return array(
-            array(
+        return [
+            [
                 'order' => PHP_INT_MIN + 5,
                 'resource' => '//cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js',
-            ),
-            array(
+            ],
+            [
                 'order' => PHP_INT_MIN + 5,
-                'resource' => '//cdnjs.cloudflare.com/ajax/libs/moment.js/' . $this->bundleConfig['moment_js_version'] . '/moment-with-locales.min.js',
-            ),
-            array(
+                'resource' => '//cdnjs.cloudflare.com/ajax/libs/moment.js/'.$this->bundleConfig['moment_js_version'].'/moment-with-locales.min.js',
+            ],
+            [
                 'order' => PHP_INT_MIN + 5,
                 'resource' => $extjs,
-            ),
-            array(
+            ],
+            [
                 'order' => PHP_INT_MIN + 5,
                 'resource' => $this->router->generate('modera_font_awesome_js'),
-            ),
-            array(
+            ],
+            [
                 'order' => PHP_INT_MIN + 5,
                 'resource' => '/bundles/moderamjrintegration/js/orientationchange.js',
-            ),
-            array(
+            ],
+            [
                 'order' => PHP_INT_MIN + 5,
                 'resource' => '/bundles/moderamjrintegration/js/stylesheetsloader.js',
-            ),
-            array(
+            ],
+            [
                 'order' => PHP_INT_MIN + 5,
                 'resource' => '/bundles/moderamjrintegration/js/promisify.js',
-            ),
-        );
+            ],
+        ];
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Modera\FoundationBundle\Testing;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -24,44 +26,55 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class FunctionalTestCase extends WebTestCase
 {
-    const IM_METHOD = 'method';
-    const IM_CLASS = 'class';
+    public const IM_METHOD = 'method';
+    public const IM_CLASS = 'class';
 
-    /* @var \Doctrine\ORM\EntityManager */
+    /**
+     * @var EntityManagerInterface
+     */
     protected static $em;
-    /* @var \Symfony\Component\DependencyInjection\ContainerInterface */
-    protected static $container;
 
-    private static function rollbackTransaction()
+    protected static function getContainer(): ContainerInterface
+    {
+        $container = static::$kernel->getContainer();
+        if ($container->has('test.service_container')) {
+            $container = $container->get('test.service_container');
+        }
+
+        /** @var \Symfony\Bundle\FrameworkBundle\Test\TestContainer $container */
+        $container = $container;
+
+        return $container;
+    }
+
+    private static function rollbackTransaction(): void
     {
         $c = static::$em->getConnection();
         // having this check if there's an active transaction will let us
-        // to use this TC as parent-class for integration test cases
+        // use this TC as parent-class for integration test cases
         // even if they don't use EM
         if ($c->isTransactionActive()) {
             $c->rollback();
         }
     }
 
-    private static function emExists()
+    private static function emExists(): bool
     {
-        return static::$container->has('doctrine.orm.entity_manager');
+        return static::getContainer()->has('doctrine.orm.entity_manager');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     final public static function setUpBeforeClass(): void
     {
         static::$kernel = static::createKernel();
         static::$kernel->boot();
-        static::$container = static::$kernel->getContainer();
 
         if (self::emExists()) {
-            static::$em = static::$container->get('doctrine.orm.entity_manager');
+            /** @var EntityManagerInterface $em */
+            $em = static::getContainer()->get('doctrine.orm.entity_manager');
+            static::$em = $em;
         }
 
-        if (static::getIsolationLevel() == self::IM_CLASS && self::emExists()) {
+        if (self::IM_CLASS === static::getIsolationLevel() && self::emExists()) {
             static::$em->getConnection()->beginTransaction();
         }
 
@@ -71,17 +84,14 @@ class FunctionalTestCase extends WebTestCase
     /**
      * Template method.
      */
-    public static function doSetUpBeforeClass()
+    public static function doSetUpBeforeClass(): void
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     final public static function tearDownAfterClass(): void
     {
-        if (static::getIsolationLevel() == self::IM_CLASS && self::emExists()) {
-            static::rollbackTransaction();
+        if (self::IM_CLASS === static::getIsolationLevel() && self::emExists()) {
+            self::rollbackTransaction();
         }
 
         static::doTearDownAfterClass();
@@ -90,26 +100,21 @@ class FunctionalTestCase extends WebTestCase
     /**
      * Template method.
      */
-    public static function doTearDownAfterClass()
+    public static function doTearDownAfterClass(): void
     {
     }
 
     /**
      * Override this method to change isolation level of the test.
-     *
-     * @return string
      */
-    protected static function getIsolationLevel()
+    protected static function getIsolationLevel(): string
     {
         return self::IM_METHOD;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     final public function setUp(): void
     {
-        if ($this->getIsolationLevel() == self::IM_METHOD && $this->emExists()) {
+        if (self::IM_METHOD === $this->getIsolationLevel() && $this->emExists()) {
             self::$em->getConnection()->beginTransaction();
         }
 
@@ -119,20 +124,17 @@ class FunctionalTestCase extends WebTestCase
     /**
      * Template method.
      */
-    public function doSetUp()
+    public function doSetUp(): void
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     final public function tearDown(): void
     {
-        if ($this->getIsolationLevel() == self::IM_METHOD && $this->emExists()) {
+        if (self::IM_METHOD === $this->getIsolationLevel() && $this->emExists()) {
             self::rollbackTransaction();
         }
 
-        if (static::$container->has('security.token_storage')) {
+        if (static::getContainer()->has('security.token_storage')) {
             $this->logoutUser();
         }
 
@@ -142,24 +144,24 @@ class FunctionalTestCase extends WebTestCase
     /**
      * Template method.
      */
-    public function doTearDown()
+    public function doTearDown(): void
     {
     }
 
     /**
-     * Will logout currently authenticated user.
+     * Will log out currently authenticated user.
      */
-    public function logoutUser()
+    public function logoutUser(): void
     {
-        /* @var TokenStorageInterface $ts */
-        $ts = static::$container->get('security.token_storage');
+        /** @var TokenStorageInterface $ts */
+        $ts = static::getContainer()->get('security.token_storage');
         $ts->setToken(null);
     }
 
     /**
-     * {@inheritdoc}
+     * @param array{'environment'?: string, 'debug'?: bool} $options
      */
-    protected static function createKernel(array $options = array())
+    protected static function createKernel(array $options = []): KernelInterface
     {
         global $_SERVER;
 
@@ -173,13 +175,18 @@ class FunctionalTestCase extends WebTestCase
         if ($isMonolithTestSuite) {
             static::$class = static::getKernelClass();
 
-            return new static::$class(
+            $kernel = new static::$class(
                 isset($options['environment']) ? $options['environment'] : 'test',
                 isset($options['debug']) ? $options['debug'] : true
             );
         } else {
             // letting to use runtime-caching
-            return parent::createKernel($options);
+            $kernel = parent::createKernel($options);
         }
+
+        /** @var KernelInterface $kernel */
+        $kernel = $kernel;
+
+        return $kernel;
     }
 }

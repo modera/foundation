@@ -9,12 +9,12 @@ namespace Modera\DynamicallyConfigurableAppBundle;
 interface KernelConfigInterface
 {
     /**
-     * @param array $mode
+     * @param array{'debug'?: bool, 'env'?: string} $mode
      */
-    public static function write(array $mode);
+    public static function write(array $mode): void;
 
     /**
-     * @return array
+     * @return array{'debug': bool, 'env': string}
      */
     public static function read(): array;
 }

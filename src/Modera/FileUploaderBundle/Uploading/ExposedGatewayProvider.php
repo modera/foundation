@@ -2,7 +2,7 @@
 
 namespace Modera\FileUploaderBundle\Uploading;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -10,20 +10,17 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class ExposedGatewayProvider implements ContributorInterface
 {
-    private $items;
-
     /**
-     * @param AllExposedRepositoriesGateway $gateway
+     * @var UploadGatewayInterface[]
      */
+    private array $items;
+
     public function __construct(AllExposedRepositoriesGateway $gateway)
     {
-        $this->items = array($gateway);
+        $this->items = [$gateway];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         return $this->items;
     }

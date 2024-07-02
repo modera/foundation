@@ -2,7 +2,7 @@
 
 namespace Modera\ConfigBundle\Manager;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 
 /**
@@ -16,48 +16,40 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  */
 class UniquityValidator
 {
-    /**
-     * @var EntityManager
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
     /**
-     * @var array
+     * @var array<mixed>
      */
-    private $semanticConfig;
+    private array $semanticConfig;
 
     /**
-     * @param EntityManager $em
-     * @param array         $semanticConfig
+     * @param array<mixed> $semanticConfig
      */
-    public function __construct(EntityManager $em, array $semanticConfig)
+    public function __construct(EntityManagerInterface $em, array $semanticConfig)
     {
         $this->em = $em;
         $this->semanticConfig = $semanticConfig;
     }
 
-    /**
-     * @param ConfigurationEntry $entry
-     *
-     * @return bool
-     */
-    public function isValidForSaving(ConfigurationEntry $entry)
+    public function isValidForSaving(ConfigurationEntry $entry): bool
     {
         $query = null;
         if ($this->semanticConfig['owner_entity'] && $entry->getOwner()) {
-            $query = sprintf('SELECT e.id FROM %s e WHERE e.name = ?0 AND e.owner = ?1', get_class($entry));
+            $query = \sprintf('SELECT e.id FROM %s e WHERE e.name = ?0 AND e.owner = ?1', \get_class($entry));
             $query = $this->em->createQuery($query);
 
             $query->setParameters([$entry->getName(), $entry->getOwner()]);
         } else {
-            $query = sprintf('SELECT e.id FROM %s e WHERE e.name = ?0', get_class($entry));
+            $query = \sprintf('SELECT e.id FROM %s e WHERE e.name = ?0', \get_class($entry));
             $query = $this->em->createQuery($query);
 
             $query->setParameter(0, $entry->getName());
         }
 
+        /** @var array<array{'id': int}> $result */
         $result = $query->getArrayResult();
-        $isNameInUse = count($result) > 0;
+        $isNameInUse = \count($result) > 0;
 
         if ($isNameInUse) {
             // if name is already in use then we will allow to save configuration property if it represents

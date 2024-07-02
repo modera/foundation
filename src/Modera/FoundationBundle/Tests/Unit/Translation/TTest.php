@@ -7,9 +7,9 @@ use Modera\FoundationBundle\Translation\T;
 
 class MockTranslator implements TranslatorInterface
 {
-    public function trans($id, array $parameters = array(), $domain = null, $locale = null)
+    public function trans(string $id, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return array($id, $parameters, $domain, $locale);
+        return \json_encode(array($id, $parameters, $domain, $locale));
     }
 
     public function setLocale($locale)
@@ -60,6 +60,9 @@ class TTest extends \PHPUnit\Framework\TestCase
             'foo id', array('params'), 'foo domain', 'foo locale',
         );
 
-        $this->assertSame($expectedOutput, T::trans('foo id', array('params'), 'foo domain', 'foo locale'));
+        $this->assertSame(
+            \json_encode($expectedOutput),
+            T::trans('foo id', array('params'), 'foo domain', 'foo locale')
+        );
     }
 }

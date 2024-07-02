@@ -2,10 +2,10 @@
 
 namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
-use Modera\DynamicallyConfigurableMJRBundle\Resolver\ValueResolverInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
+use Modera\DynamicallyConfigurableMJRBundle\Resolver\ValueResolverInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -13,61 +13,50 @@ use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBund
  */
 class CssResourcesProvider implements ContributorInterface
 {
-    /**
-     * @var ConfigurationEntriesManagerInterface
-     */
-    private $mgr;
+    private ConfigurationEntriesManagerInterface $mgr;
 
-    /**
-     * @var ValueResolverInterface|null
-     */
-    private $resolver;
+    private ?ValueResolverInterface $resolver;
 
-    /**
-     * @param ConfigurationEntriesManagerInterface $mgr
-     * @param ValueResolverInterface|null $resolver
-     */
-    public function __construct(ConfigurationEntriesManagerInterface $mgr, ValueResolverInterface $resolver = null)
+    public function __construct(ConfigurationEntriesManagerInterface $mgr, ?ValueResolverInterface $resolver = null)
     {
         $this->mgr = $mgr;
         $this->resolver = $resolver;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        $items = array();
+        $items = [];
 
+        /** @var ?string $logoUrl */
         $logoUrl = $this->findAndResolve(Bundle::CONFIG_LOGO_URL);
         if ($logoUrl) {
-            $items[] = array('order' => PHP_INT_MAX, 'resource' => '/bundles/moderadynamicallyconfigurablemjr/css/logo.css');
-            $items[] = array('order' => PHP_INT_MAX, 'resource' => '/logo.css');
+            $items[] = ['order' => PHP_INT_MAX, 'resource' => '/bundles/moderadynamicallyconfigurablemjr/css/logo.css'];
+            $items[] = ['order' => PHP_INT_MAX, 'resource' => '/logo.css'];
         }
 
+        /** @var ?string $skinCssUrl */
         $skinCssUrl = $this->findAndResolve(Bundle::CONFIG_SKIN_CSS);
         if ($skinCssUrl) {
             $needle = '_TIMESTAMP_';
-            if (\mb_strpos($skinCssUrl, $needle) !== false) {
-                $skinCssUrl = \str_replace($needle, \time(), $skinCssUrl);
+            if (false !== \mb_strpos($skinCssUrl, $needle)) {
+                $skinCssUrl = \str_replace($needle, (string) \time(), $skinCssUrl);
             }
-            $items[] = array('order' => PHP_INT_MAX, 'resource' => $skinCssUrl);
+            $items[] = ['order' => PHP_INT_MAX, 'resource' => $skinCssUrl];
         }
 
         return $items;
     }
 
     /**
-     * @param string $name
-     * @return mixed
+     * @return mixed Mixed value
      */
-    private function findAndResolve($name)
+    private function findAndResolve(string $name)
     {
         $value = $this->mgr->findOneByNameOrDie($name)->getValue();
         if ($this->resolver) {
             $value = $this->resolver->resolve($name, $value);
         }
+
         return $value;
     }
 }

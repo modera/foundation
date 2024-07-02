@@ -2,17 +2,14 @@
 
 namespace Modera\MjrIntegrationBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class ClassLoaderMappingsProvider implements ContributorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
+        return [
             'Modera.mjrintegration' => '/bundles/moderamjrintegration/js',
-        );
+        ];
     }
 }

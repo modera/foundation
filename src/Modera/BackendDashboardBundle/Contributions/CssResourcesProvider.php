@@ -2,7 +2,7 @@
 
 namespace Modera\BackendDashboardBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -10,13 +10,10 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class CssResourcesProvider implements ContributorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
+        return [
             '/bundles/moderabackenddashboard/css/styles.css',
-        );
+        ];
     }
 }

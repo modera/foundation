@@ -18,10 +18,7 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
      */
     private static $st;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function doSetUpBeforeClass()
+    public static function doSetUpBeforeClass(): void
     {
         self::$st = new SchemaTool(self::$em);
         self::$st->createSchema([
@@ -30,10 +27,7 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
         ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function doTearDownAfterClass()
+    public static function doTearDownAfterClass(): void
     {
         self::$st->dropSchema([
             self::$em->getClassMetadata(ConfigurationEntry::class),

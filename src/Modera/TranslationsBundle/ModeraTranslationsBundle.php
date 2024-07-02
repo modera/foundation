@@ -2,9 +2,9 @@
 
 namespace Modera\TranslationsBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Modera\TranslationsBundle\DependencyInjection\Compiler\TranslationHandlersCompilerPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -12,10 +12,7 @@ use Modera\TranslationsBundle\DependencyInjection\Compiler\TranslationHandlersCo
  */
 class ModeraTranslationsBundle extends Bundle
 {
-    /**
-     * @param ContainerBuilder $container
-     */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         parent::build($container);
 

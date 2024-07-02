@@ -11,23 +11,25 @@ use Modera\ModuleBundle\Composer\AbstractScriptHandler;
  */
 class ScriptHandler extends AbstractScriptHandler
 {
-    /**
-     * @param Event $event
-     */
-    public static function installConfigEntries(Event $event)
+    public static function installConfigEntries(Event $event): void
     {
         $options = static::getOptions($event);
+
+        /** @var string $binDir */
         $binDir = $options['symfony-bin-dir'];
 
         echo '>>> ModeraConfigBundle: Install config entries'.PHP_EOL;
 
-        if (!is_dir($binDir)) {
+        if (!\is_dir($binDir)) {
             echo 'The symfony-bin-dir ('.$binDir.') specified in composer.json was not found in '.getcwd().'.'.PHP_EOL;
 
             return;
         }
 
-        static::executeCommand($event, $binDir, 'modera:config:install-config-entries', $options['process-timeout']);
+        /** @var int $processTimeout */
+        $processTimeout = $options['process-timeout'];
+
+        static::executeCommand($event, $binDir, 'modera:config:install-config-entries', $processTimeout);
 
         echo '>>> ModeraConfigBundle: done'.PHP_EOL;
     }

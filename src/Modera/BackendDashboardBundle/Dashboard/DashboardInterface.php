@@ -51,8 +51,6 @@ interface DashboardInterface
      * Checks if dashboard is allowed within given environment.
      * May be used as security check, but also may check for installed modules, settings etc.
      *
-     * @param ContainerInterface $container
-     *
      * @return bool
      */
     public function isAllowed(ContainerInterface $container);

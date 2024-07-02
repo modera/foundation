@@ -6,7 +6,7 @@ use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Modera\FoundationBundle\Translation\T;
 
 /**
- * @author Sergei Lissovski <sergei.lissovski@gmail.com>
+ * @author Sergei Lissovski <sergei.lissovski@modera.org>
  */
 class ModeraFoundationBundleTest extends FunctionalTestCase
 {

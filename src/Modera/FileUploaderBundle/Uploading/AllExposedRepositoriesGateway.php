@@ -3,7 +3,9 @@
 namespace Modera\FileUploaderBundle\Uploading;
 
 use Modera\FileRepositoryBundle\Repository\FileRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -11,57 +13,46 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class AllExposedRepositoriesGateway implements UploadGatewayInterface
 {
-    private $fileRepository;
+    private FileRepository $fileRepository;
 
-    /**
-     * @param FileRepository $fileRepository
-     */
     public function __construct(FileRepository $fileRepository)
     {
         $this->fileRepository = $fileRepository;
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return string
-     */
-    protected function getRepositoryName(Request $request)
+    protected function getRepositoryName(Request $request): ?string
     {
-        return $request->request->get('_repository');
+        /** @var ?string $repositoryName */
+        $repositoryName = $request->request->get('_repository');
+
+        return $repositoryName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isResponsible(Request $request)
+    public function isResponsible(Request $request): bool
     {
-        $repositoryName = $request->request->get('_repository');
-        if ($repositoryName) {
+        if ($repositoryName = $this->getRepositoryName($request)) {
             return $this->fileRepository->repositoryExists($repositoryName);
         }
 
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function upload(Request $request)
+    public function upload(Request $request): ?Response
     {
+        /** @var string $repositoryName */
         $repositoryName = $this->getRepositoryName($request);
 
-        $ids = array();
+        $ids = [];
         foreach ($request->files as $file) {
-            if ($file) {
+            if ($file instanceof \SplFileInfo) {
                 $storedFile = $this->fileRepository->put($repositoryName, $file);
                 $ids[] = $storedFile->getId();
             }
         }
 
-        return array(
+        return new JsonResponse([
             'success' => true,
             'ids' => $ids,
-        );
+        ]);
     }
 }

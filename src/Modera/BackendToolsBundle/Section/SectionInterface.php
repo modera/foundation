@@ -10,43 +10,30 @@ namespace Modera\BackendToolsBundle\Section;
  */
 interface SectionInterface
 {
-    /**
-     * @return string
-     */
-    public function getGlyph();
+    public function getGlyph(): string;
+
+    public function getIconSrc(): string;
+
+    public function getIconClass(): string;
+
+    public function getName(): string;
+
+    public function getDescription(): string;
 
     /**
-     * @return string
+     * Optional metadata.
+     *
+     * @return array<mixed>
      */
-    public function getIconSrc();
+    public function getMeta(): array;
 
     /**
-     * @return string
+     * ID of a section to activate.
      */
-    public function getIconClass();
+    public function getSection(): string;
 
     /**
-     * @return string
+     * @return array<mixed>
      */
-    public function getName();
-
-    /**
-     * @return string
-     */
-    public function getDescription();
-
-    /**
-     * @return array Optional metadata
-     */
-    public function getMeta();
-
-    /**
-     * @return string ID of a section to activate
-     */
-    public function getSection();
-
-    /**
-     * @return array
-     */
-    public function getSectionActivationParams();
+    public function getSectionActivationParams(): array;
 }

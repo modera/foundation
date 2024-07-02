@@ -2,6 +2,7 @@
 
 namespace Modera\BackendDashboardBundle\Tests\Unit;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Modera\BackendDashboardBundle\Dashboard\DashboardInterface;
@@ -11,7 +12,7 @@ use Modera\BackendDashboardBundle\Service\DashboardManager;
 use Modera\SecurityBundle\Entity\Group;
 use Modera\SecurityBundle\Entity\GroupRepository;
 use Modera\SecurityBundle\Entity\User;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -58,7 +59,7 @@ class DashboardManagerTest extends \PHPUnit\Framework\TestCase
         $user = \Phake::mock(User::class);
         \Phake::when($user)
             ->getGroups()
-            ->thenReturn([$group])
+            ->thenReturn(new ArrayCollection([$group]))
         ;
 
         $userSettings = \Phake::mock(UserSettings::class);
@@ -136,7 +137,7 @@ class DashboardManagerTest extends \PHPUnit\Framework\TestCase
         $user = \Phake::mock(User::class);
         \Phake::when($user)
             ->getGroups()
-            ->thenReturn([$group1])
+            ->thenReturn(new ArrayCollection([$group1]))
         ;
 
         $userSettings = \Phake::mock(UserSettings::class);

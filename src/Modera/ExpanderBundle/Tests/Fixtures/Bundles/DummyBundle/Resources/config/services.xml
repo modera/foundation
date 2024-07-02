@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="modera_expander_dummy_bundle.contributions.dummy_resources_provider"
+                 class="Modera\ExpanderBundle\Tests\Fixtures\Bundles\DummyBundle\Contributions\DummyResourcesProvider">
+
+            <tag name="modera_expander.dummy_resources_provider" />
+        </service>
+    </services>
+</container>
