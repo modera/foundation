@@ -14,18 +14,10 @@ interface ListenerInterface
 {
     /**
      * When this method is invoked given $entry has already been persisted and its primary key is available.
-     *
-     * @param ConfigurationEntry $entry
      */
-    public function onConfigurationEntryAdded(ConfigurationEntry $entry);
+    public function onConfigurationEntryAdded(ConfigurationEntry $entry): void;
 
-    /**
-     * @param ConfigurationEntry $entry
-     */
-    public function onConfigurationEntryUpdated(ConfigurationEntry $entry);
+    public function onConfigurationEntryUpdated(ConfigurationEntry $entry): void;
 
-    /**
-     * @param ConfigurationEntry $entry
-     */
-    public function onConfigurationEntryRemoved(ConfigurationEntry $entry);
+    public function onConfigurationEntryRemoved(ConfigurationEntry $entry): void;
 }

@@ -2,7 +2,7 @@
 
 namespace Modera\MjrIntegrationBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * This contribution will only be used if ModeraBackendOnSteroidsBundle bundle is installed.
@@ -12,13 +12,10 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class SteroidClassMappingsProvider implements ContributorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
+        return [
             '@ModeraMjrIntegrationBundle/Resources/public/js/runtime',
-        );
+        ];
     }
 }

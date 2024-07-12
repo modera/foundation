@@ -8,23 +8,11 @@ namespace Modera\BackendSecurityBundle\Section;
  */
 interface SectionInterface
 {
-    /**
-     * @return string
-     */
-    public function getId();
+    public function getId(): string;
 
-    /**
-     * @return string
-     */
-    public function getTitle();
+    public function getTitle(): string;
 
-    /**
-     * @return string
-     */
-    public function getGlyphIcon();
+    public function getGlyphIcon(): string;
 
-    /**
-     * @return string
-     */
-    public function getUiClass();
+    public function getUiClass(): string;
 }

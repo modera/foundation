@@ -12,9 +12,9 @@ namespace Modera\MjrIntegrationBundle\Config;
 interface ConfigMergerInterface
 {
     /**
-     * @param array $existingConfig
+     * @param array<mixed> $existingConfig
      *
-     * @return array
+     * @return array<mixed>
      */
-    public function merge(array $existingConfig);
+    public function merge(array $existingConfig): array;
 }

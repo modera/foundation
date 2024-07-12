@@ -2,7 +2,7 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Tests\Unit\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Modera\MJRSecurityIntegrationBundle\Contributions\ConfigMergersProvider;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
@@ -31,6 +31,7 @@ class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
         \Phake::when($user)->getId()->thenReturn(777);
         \Phake::when($user)->getFullName()->thenReturn('John Doe');
         \Phake::when($user)->getEmail()->thenReturn('john.doe@example.org');
+        \Phake::when($user)->getUserIdentifier()->thenReturn('john.doe');
         \Phake::when($user)->getUsername()->thenReturn('john.doe');
 
         $token = \Phake::mock(MockTokenInterface::class);

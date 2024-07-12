@@ -2,11 +2,11 @@
 
 namespace Modera\MJRThemeIntegrationBundle\Contributions;
 
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
 use Modera\MJRThemeIntegrationBundle\DependencyInjection\ModeraMJRThemeIntegrationExtension;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -14,41 +14,37 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class CssResourcesProvider implements ContributorInterface
 {
-    /**
-     * @var bool
-     */
-    private $isDevEnv;
+    private bool $isDevEnv;
 
     /**
-     * @var array
+     * @var array{'theme_path': string}
      */
-    private $themeIntegrationConfig;
+    private array $themeIntegrationConfig;
 
     /**
-     * @var array
+     * @var array{'runtime_path': string, 'extjs_include_rtl': bool}
      */
-    private $mjrInteggrationConfig;
+    private array $mjrIntegrationConfig;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
-        /* @var Kernel $kernel */
+        /** @var Kernel $kernel */
         $kernel = $container->get('kernel');
-        $this->isDevEnv = $kernel->getEnvironment() == 'dev';
+        $this->isDevEnv = 'dev' === $kernel->getEnvironment();
 
-        $this->themeIntegrationConfig = $container->getParameter(ModeraMJRThemeIntegrationExtension::CONFIG_KEY);
-        $this->mjrInteggrationConfig = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
+        /** @var array{'theme_path': string} $themeIntegrationConfig */
+        $themeIntegrationConfig = $container->getParameter(ModeraMJRThemeIntegrationExtension::CONFIG_KEY);
+        $this->themeIntegrationConfig = $themeIntegrationConfig;
+
+        /** @var array{'runtime_path': string, 'extjs_include_rtl': bool} $mjrIntegrationConfig */
+        $mjrIntegrationConfig = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
+        $this->mjrIntegrationConfig = $mjrIntegrationConfig;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         $suffix = '';
-        if ($this->mjrInteggrationConfig['extjs_include_rtl']) {
+        if ($this->mjrIntegrationConfig['extjs_include_rtl']) {
             $suffix .= '-rtl';
         }
         if ($this->isDevEnv) {
@@ -56,9 +52,9 @@ class CssResourcesProvider implements ContributorInterface
         }
         $suffix .= '.css';
 
-        return array(
-            $this->themeIntegrationConfig['theme_path'].'/build/resources/modera-theme-all' . $suffix,
-            $this->mjrInteggrationConfig['runtime_path'].'/build/resources/MJR-all' . $suffix,
-        );
+        return [
+            $this->themeIntegrationConfig['theme_path'].'/build/resources/modera-theme-all'.$suffix,
+            $this->mjrIntegrationConfig['runtime_path'].'/build/resources/MJR-all'.$suffix,
+        ];
     }
 }

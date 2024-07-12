@@ -2,7 +2,7 @@
 
 namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -13,19 +13,16 @@ class ClassLoaderMappingsProvider implements ContributorInterface
     /**
      * @var string[]
      */
-    private $items;
+    private array $items;
 
     public function __construct()
     {
-        $this->items = array(
+        $this->items = [
             'Modera.backend.dcmjr' => '/bundles/moderadynamicallyconfigurablemjr/js',
-        );
+        ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         return $this->items;
     }

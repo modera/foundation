@@ -2,8 +2,7 @@
 
 namespace Modera\BackendDashboardBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
-use Modera\BackendDashboardBundle\Contributions\ConfigMergersProvider;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -11,37 +10,27 @@ use Modera\BackendDashboardBundle\Contributions\ConfigMergersProvider;
  */
 class ClassLoaderMappingsProvider implements ContributorInterface
 {
-    /**
-     * @var ConfigMergersProvider
-     */
-    private $configMergersProvider;
+    private ConfigMergersProvider $configMergersProvider;
 
     /**
-     * @var array
+     * @var array<string, string>
      */
-    private $items = array();
+    private ?array $items = null;
 
-    /**
-     * @param ConfigMergersProvider $configMergersProvider
-     */
     public function __construct(ConfigMergersProvider $configMergersProvider)
     {
         $this->configMergersProvider = $configMergersProvider;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (!$this->items) {
-            $landingSection = $this->configMergersProvider->getUserLandingSection();
+            $this->items = [];
 
             // Register dashboard namespace, if landing section not dashboard
+            $landingSection = $this->configMergersProvider->getUserLandingSection();
             if ('dashboard' !== $landingSection) {
-                $this->items = array(
-                    'Modera.backend.dashboard' => '/bundles/moderabackenddashboard/js'
-                );
+                $this->items['Modera.backend.dashboard'] = '/bundles/moderabackenddashboard/js';
             }
         }
 

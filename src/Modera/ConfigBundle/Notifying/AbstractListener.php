@@ -12,26 +12,17 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  */
 abstract class AbstractListener implements ListenerInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function onConfigurationEntryAdded(ConfigurationEntry $entry)
+    public function onConfigurationEntryAdded(ConfigurationEntry $entry): void
     {
         // do nothing
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function onConfigurationEntryUpdated(ConfigurationEntry $entry)
+    public function onConfigurationEntryUpdated(ConfigurationEntry $entry): void
     {
         // do nothing
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function onConfigurationEntryRemoved(ConfigurationEntry $entry)
+    public function onConfigurationEntryRemoved(ConfigurationEntry $entry): void
     {
         // do nothing
     }

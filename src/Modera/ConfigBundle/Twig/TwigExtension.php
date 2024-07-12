@@ -2,9 +2,9 @@
 
 namespace Modera\ConfigBundle\Twig;
 
-use Twig\TwigFunction;
-use Twig\Extension\AbstractExtension;
 use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * You may rely on functions exposed by this class but the class itself may be moved or renamed later.
@@ -16,35 +16,23 @@ use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
  */
 class TwigExtension extends AbstractExtension
 {
-    /**
-     * @var \Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface
-     */
-    private $configEntriesManager;
+    private ConfigurationEntriesManagerInterface $configEntriesManager;
 
-    /**
-     * @param ConfigurationEntriesManagerInterface $configEntriesManager
-     */
     public function __construct(ConfigurationEntriesManagerInterface $configEntriesManager)
     {
         $this->configEntriesManager = $configEntriesManager;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'modera_config';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
-            new TwigFunction('modera_config_value', array($this, 'twigModeraConfigValue')),
-            new TwigFunction('modera_config_owner_value', array($this, 'getModeraConfigOwnerValue')),
+            new TwigFunction('modera_config_value', [$this, 'twigModeraConfigValue']),
+            new TwigFunction('modera_config_owner_value', [$this, 'getModeraConfigOwnerValue']),
         ];
     }
 
@@ -58,7 +46,7 @@ class TwigExtension extends AbstractExtension
      *
      * @return mixed|null
      */
-    public function twigModeraConfigValue($propertyName, $strict = true)
+    public function twigModeraConfigValue(string $propertyName, bool $strict = true)
     {
         return $this->getModeraConfigOwnerValue($propertyName, null, $strict);
     }
@@ -66,13 +54,9 @@ class TwigExtension extends AbstractExtension
     /**
      * @private
      *
-     * @param string $propertyName
-     * @param object $owner
-     * @param bool   $strict
-     *
      * @return mixed|null
      */
-    public function getModeraConfigOwnerValue($propertyName, $owner = null, $strict = true)
+    public function getModeraConfigOwnerValue(string $propertyName, ?object $owner = null, bool $strict = true)
     {
         $mgr = $this->configEntriesManager;
 

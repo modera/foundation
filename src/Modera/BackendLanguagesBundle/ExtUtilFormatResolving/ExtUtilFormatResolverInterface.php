@@ -9,9 +9,9 @@ namespace Modera\BackendLanguagesBundle\ExtUtilFormatResolving;
 interface ExtUtilFormatResolverInterface
 {
     /**
-     * @param string $locale
-     * @param array $config
-     * @return array
+     * @param array<string, mixed> $config
+     *
+     * @return array<string, mixed>
      */
-    public function resolveExtUtilFormat($locale, array $config = array());
+    public function resolveExtUtilFormat(string $locale, array $config = []): array;
 }

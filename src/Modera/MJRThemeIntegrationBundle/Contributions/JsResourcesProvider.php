@@ -2,8 +2,8 @@
 
 namespace Modera\MJRThemeIntegrationBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MJRThemeIntegrationBundle\DependencyInjection\ModeraMJRThemeIntegrationExtension;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -12,26 +12,25 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class JsResourcesProvider implements ContributorInterface
 {
-    private $themeIntegrationConfig;
-
     /**
-     * @param ContainerInterface $container
+     * @var array{'theme_path': string}
      */
+    private array $themeIntegrationConfig;
+
     public function __construct(ContainerInterface $container)
     {
-        $this->themeIntegrationConfig = $container->getParameter(ModeraMJRThemeIntegrationExtension::CONFIG_KEY);
+        /** @var array{'theme_path': string} $themeIntegrationConfig */
+        $themeIntegrationConfig = $container->getParameter(ModeraMJRThemeIntegrationExtension::CONFIG_KEY);
+        $this->themeIntegrationConfig = $themeIntegrationConfig;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            array(
+        return [
+            [
                 'order' => PHP_INT_MIN + 10,
                 'resource' => $this->themeIntegrationConfig['theme_path'].'/build/modera-theme.js',
-            ),
-        );
+            ],
+        ];
     }
 }

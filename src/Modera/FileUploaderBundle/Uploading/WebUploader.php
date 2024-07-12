@@ -2,8 +2,9 @@
 
 namespace Modera\FileUploaderBundle\Uploading;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -11,25 +12,17 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class WebUploader
 {
-    private $gatewaysProvider;
+    private ContributorInterface $gatewaysProvider;
 
-    /**
-     * @param ContributorInterface $gatewaysProvider
-     */
     public function __construct(ContributorInterface $gatewaysProvider)
     {
         $this->gatewaysProvider = $gatewaysProvider;
     }
 
-    /**
-     * @param Request $request
-     * @return mixed
-     */
-    public function upload(Request $request)
+    public function upload(Request $request): ?Response
     {
         foreach ($this->gatewaysProvider->getItems() as $gateway) {
-            /* @var UploadGatewayInterface $gateway */
-
+            /** @var UploadGatewayInterface $gateway */
             if ($gateway->isResponsible($request)) {
                 if ($result = $gateway->upload($request)) {
                     return $result;
@@ -37,6 +30,6 @@ class WebUploader
             }
         }
 
-        return false;
+        return null;
     }
 }

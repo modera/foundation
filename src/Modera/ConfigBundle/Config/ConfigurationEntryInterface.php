@@ -14,7 +14,7 @@ interface ConfigurationEntryInterface
     /**
      * @return string Unique name of configuration property
      */
-    public function getName();
+    public function getName(): string;
 
     /**
      * @return mixed A value {@class HandlerInterface} returned when converted denormalized value. Usually this will
@@ -27,7 +27,7 @@ interface ConfigurationEntryInterface
      *                     an entity is passed, then implementation of {@class HandlerInterface} is responsible
      *                     to cast it down to something that can be stored in database
      *
-     * @return mixed
+     * @return mixed Mixed value
      */
     public function setValue($value);
 
@@ -38,27 +38,22 @@ interface ConfigurationEntryInterface
     public function getDenormalizedValue();
 
     /**
-     * @param mixed $value
+     * @param mixed $value Mixed value
      *
      * @return int One of TYPE constants
      */
-    public function setDenormalizedValue($value);
+    public function setDenormalizedValue($value): int;
 
     /**
-     * @return string A human-readable value of currently stored value. For example, this value will
-     *                be used LIST view where all available configuration properties are displayed
+     * @return mixed A human-readable value of currently stored value. For example, this value will
+     *               be used LIST view where all available configuration properties are displayed
      */
     public function getReadableValue();
 
     /**
      * If returns TRUE then this configuration property will be accessible from web ( js-runtime ).
-     *
-     * @return bool
      */
-    public function isExposed();
+    public function isExposed(): bool;
 
-    /**
-     * @return bool
-     */
-    public function isReadOnly();
+    public function isReadOnly(): bool;
 }

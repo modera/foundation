@@ -5,16 +5,16 @@ namespace Modera\BackendTranslationsToolBundle\FileProvider;
 use Symfony\Component\Finder\Finder;
 
 /**
- * @author Sergei Lissovski <sergei.lissovski@gmail.com>
+ * @author Sergei Lissovski <sergei.lissovski@modera.org>
  */
 class ExtjsClassesProvider implements FileProviderInterface
 {
-    static private $regex;
+    private static ?string $regex = null;
 
-    static public function isValidExtjsClass($sourceCode)
+    public static function extractExtJsClassName(string $sourceCode): ?string
     {
         if (!self::$regex) {
-            self::$regex = implode('', array( // FIXME stupid one
+            self::$regex = \implode('', [ // FIXME stupid one
                 '@',
                 'Ext\.define\(',
                 '(\'|")+',
@@ -22,24 +22,23 @@ class ExtjsClassesProvider implements FileProviderInterface
                 '(\'|")+',
                 '.*',
                 ',',
-                '@'
-            ));
+                '@',
+            ]);
         }
 
-        preg_match(self::$regex, $sourceCode, $matches);
-        return isset($matches['className']) ? $matches['className'] : false;
+        \preg_match(self::$regex, $sourceCode, $matches);
+
+        return $matches['className'] ?? null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getFiles($directory)
+    public function getFiles(string $directory): array
     {
-        $paths = array();
+        $paths = [];
 
         $finder = new Finder();
         foreach ($finder->files()->name('*.js')->in($directory) as $filepath) {
-            if (self::isValidExtjsClass(file_get_contents($filepath))) {
+            $className = self::extractExtJsClassName(\file_get_contents($filepath) ?: '');
+            if (null !== $className) {
                 $paths[] = $filepath;
             }
         }

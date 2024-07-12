@@ -2,10 +2,10 @@
 
 namespace Modera\RoutingBundle;
 
+use Modera\ExpanderBundle\Ext\ExtensionPoint;
 use Modera\RoutingBundle\DependencyInjection\DelegatingLoaderCloningCompilerPass;
-use Sli\ExpanderBundle\Ext\ExtensionPoint;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -13,10 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class ModeraRoutingBundle extends Bundle
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(
             new DelegatingLoaderCloningCompilerPass()
@@ -28,7 +25,7 @@ This extension points make it possible for bundles to dynamically contribute rou
 this way when a new bundle is added then you don't need to update root routing.yml file every time.
 This how a sample contribution could look like:
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class RoutingResourcesProvider implements ContributorInterface
 {

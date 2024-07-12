@@ -19,7 +19,7 @@
         "php": ">=7.4",
         "symfony/framework-bundle": "^5.4|^6.0",
         "modera/direct-bundle": "^5.0",
-        "sergeil/expander-bundle": "^1.2"
+        "modera/expander-bundle": "^5.0"
     },
     "require-dev": {
         "phake/phake": "^4.0",

@@ -6,7 +6,7 @@ use Modera\BackendDashboardBundle\Contributions\ConfigMergersProvider;
 use Modera\BackendDashboardBundle\Dashboard\DashboardInterface;
 use Modera\BackendDashboardBundle\Service\DashboardManager;
 use Modera\SecurityBundle\Entity\User;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -38,7 +38,10 @@ class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
         $this->dashboardMgr = \Phake::mock(DashboardManager::class);
 
         $this->provider = new ConfigMergersProvider(
-            $this->container, $this->contributor, $this->tokenStorage, $this->dashboardMgr
+            $this->container,
+            $this->contributor,
+            $this->tokenStorage,
+            $this->dashboardMgr
         );
     }
 

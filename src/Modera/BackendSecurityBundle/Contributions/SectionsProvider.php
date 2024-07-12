@@ -2,8 +2,8 @@
 
 namespace Modera\BackendSecurityBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Sections\Section;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -12,22 +12,19 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 class SectionsProvider implements ContributorInterface
 {
     /**
-     * @var array
+     * @var Section[]
      */
-    private $items;
+    private ?array $items = null;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (!$this->items) {
-            $this->items = array(
-                new Section('tools.security', 'Modera.backend.security.toolscontribution.runtime.Section', array(
+            $this->items = [
+                new Section('tools.security', 'Modera.backend.security.toolscontribution.runtime.Section', [
                     Section::META_NAMESPACE => 'Modera.backend.security',
                     Section::META_NAMESPACE_PATH => '/bundles/moderabackendsecurity/js',
-                )),
-            );
+                ]),
+            ];
         }
 
         return $this->items;

@@ -8,8 +8,8 @@ use Modera\BackendTranslationsToolBundle\FileProvider\ExtjsClassesProvider;
 use Modera\BackendTranslationsToolBundle\Extractor\ExtjsClassesExtractor;
 
 /**
- * @author Sergei Lissovski <sergei.lissovski@gmail.com>
- */ 
+ * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ */
 class ExtjsClassesExtractorTest extends \PHPUnit\Framework\TestCase
 {
     public function testExtract()

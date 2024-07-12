@@ -21,21 +21,15 @@ class JsonFileExtractor implements ExtractorInterface
         $this->locale = $locale ?? 'en';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setPrefix(string $prefix)
+    public function setPrefix(string $prefix): void
     {
         $this->prefix = $prefix;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function extract($resource, MessageCatalogue $catalogue)
+    public function extract($resource, MessageCatalogue $catalogue): void
     {
         if (!\is_iterable($resource)) {
-            $resource = array($resource);
+            $resource = [$resource];
         }
 
         foreach ($resource as $path) {
@@ -59,7 +53,7 @@ class JsonFileExtractor implements ExtractorInterface
                 $messages = \json_decode($content, true);
                 if (\is_array($messages)) {
                     foreach ($messages as $token => $translation) {
-                        $catalogue->set($token, $this->prefix . $translation, $domain);
+                        $catalogue->set($token, $this->prefix.$translation, $domain);
                     }
                 }
             }

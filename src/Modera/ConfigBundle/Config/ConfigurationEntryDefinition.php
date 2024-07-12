@@ -10,74 +10,78 @@ namespace Modera\ConfigBundle\Config;
  */
 class ConfigurationEntryDefinition
 {
-    private $name;
-    private $readableName;
-    private $value;
-    private $category;
-    private $serverHandlerConfig;
-    private $clientHandlerConfig;
-    private $isExposed;
-    private $isReadOnly;
+    private string $name;
+
+    private string $readableName;
 
     /**
-     * @param string $name
-     * @param string $readableName
-     * @param mixed  $value
-     * @param string $category
-     * @param array  $serverHandlerConfig
-     * @param array  $clientHandlerConfig
-     * @param bool   $isReadOnly
-     * @param bool   $isExposed
+     * @var mixed Mixed value
+     */
+    private $value;
+
+    private string $category;
+
+    /**
+     * @var array<mixed>
+     */
+    private array $serverHandlerConfig;
+
+    /**
+     * @var array<mixed>
+     */
+    private array $clientHandlerConfig;
+
+    private bool $isExposed;
+
+    private bool $isReadOnly;
+
+    /**
+     * @param mixed        $value               Mixed value
+     * @param array<mixed> $serverHandlerConfig
+     * @param array<mixed> $clientHandlerConfig
      */
     public function __construct(
-        $name, $readableName, $value, $category,
-        $serverHandlerConfig = null, $clientHandlerConfig = null,
-        $isReadOnly = false, $isExposed = true
+        string $name,
+        string $readableName,
+        $value,
+        string $category,
+        ?array $serverHandlerConfig = null,
+        ?array $clientHandlerConfig = null,
+        bool $isReadOnly = false,
+        bool $isExposed = true
     ) {
         $this->name = $name;
         $this->readableName = $readableName;
         $this->value = $value;
         $this->category = $category;
-        $this->serverHandlerConfig = $serverHandlerConfig ?: array();
-        $this->clientHandlerConfig = $clientHandlerConfig ?: array();
+        $this->serverHandlerConfig = $serverHandlerConfig ?: [];
+        $this->clientHandlerConfig = $clientHandlerConfig ?: [];
         $this->isReadOnly = $isReadOnly;
         $this->isExposed = $isExposed;
     }
 
-    /**
-     * @return bool
-     */
-    public function isExposed()
+    public function isExposed(): bool
     {
         return $this->isExposed;
     }
 
-    /**
-     * @return bool
-     */
-    public function isReadOnly()
+    public function isReadOnly(): bool
     {
         return $this->isReadOnly;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return string
-     */
-    public function getReadableName()
+    public function getReadableName(): string
     {
         return $this->readableName;
     }
 
     /**
-     * @return mixed
+     * @return mixed Mixed value
      */
     public function getValue()
     {
@@ -85,33 +89,27 @@ class ConfigurationEntryDefinition
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getClientHandlerConfig()
+    public function getClientHandlerConfig(): array
     {
         return $this->clientHandlerConfig;
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getServerHandlerConfig()
+    public function getServerHandlerConfig(): array
     {
         return $this->serverHandlerConfig;
     }
 
-    /**
-     * @param string $category
-     */
-    public function setCategory($category)
+    public function setCategory(string $category): void
     {
         $this->category = $category;
     }
 
-    /**
-     * @return string
-     */
-    public function getCategory()
+    public function getCategory(): string
     {
         return $this->category;
     }

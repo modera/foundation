@@ -10,115 +10,139 @@ use Symfony\Component\Yaml\Yaml;
  */
 class FontAwesome
 {
-    /**
-     * @var string
-     */
-    public static $version = '5.15.4';
+    public static string $version = '5.15.4';
+
+    public static string $cdn = 'https://use.fontawesome.com/releases/v';
+
+    public static ?string $bucket = 'https://raw.githubusercontent.com/FortAwesome/Font-Awesome';
+
+    public static string $iconsYml = '/metadata/icons.yml';
+
+    public static string $shimsYml = '/metadata/shims.yml';
+
+    public static bool $rejectUnauthorized = true;
+
+    public static ?string $cacheDir = null;
 
     /**
-     * @var string
+     * @var ?array{
+     *     'metadata': array{
+     *         'icons': array<
+     *             string,
+     *             array{
+     *                 'unicode': string,
+     *                 'styles': string[],
+     *                 'search'?: array{'terms'?: string[]}
+     *             },
+     *         >,
+     *         'shims': array<string, array{'name'?: string, 'prefix'?: string}>,
+     *     },
+     *     'css': array{
+     *         'brands': string,
+     *         'light': false|string,
+     *         'regular': string,
+     *         'solid': string,
+     *     },
+     * }
      */
-    public static $cdn = 'https://use.fontawesome.com/releases/v';
+    private static ?array $cache = null;
 
     /**
-     * @var string|null
+     * @var array{
+     *     'fas': string,
+     *     'far': string,
+     *     'fal': string,
+     *     'fab': string,
+     *     'solid': string,
+     *     'regular': string,
+     *     'light': string,
+     *     'brands': string,
+     * }
      */
-    public static $bucket = 'https://raw.githubusercontent.com/FortAwesome/Font-Awesome';
-
-    /**
-     * @var string
-     */
-    public static $iconsYml = '/metadata/icons.yml';
-
-    /**
-     * @var string
-     */
-    public static $shimsYml = '/metadata/shims.yml';
-
-    /**
-     * @var bool
-     */
-    public static $rejectUnauthorized = true;
-
-    /**
-     * @var string|null
-     */
-    public static $cacheDir = null;
-
-    /**
-     * @var array
-     */
-    private static $cache = array();
-
-    /**
-     * @var array
-     */
-    private static $aliases = array(
+    private static array $aliases = [
         'fas' => 'FontAwesomeSolid',
         'far' => 'FontAwesomeRegular',
         'fal' => 'FontAwesomeLight',
         'fab' => 'FontAwesomeBrands',
 
-        'solid'   => 'FontAwesomeSolid',
+        'solid' => 'FontAwesomeSolid',
         'regular' => 'FontAwesomeRegular',
-        'light'   => 'FontAwesomeLight',
-        'brands'  => 'FontAwesomeBrands',
-    );
+        'light' => 'FontAwesomeLight',
+        'brands' => 'FontAwesomeBrands',
+    ];
 
     /**
-     * @return array
+     * @return array{
+     *     'metadata': array{
+     *         'icons': array<
+     *             string,
+     *             array{
+     *                 'unicode': string,
+     *                 'styles': string[],
+     *                 'search'?: array{'terms'?: string[]}
+     *             },
+     *         >,
+     *         'shims': array<string, array{'name'?: string, 'prefix'?: string}>,
+     *     },
+     *     'css': array{
+     *         'brands': string,
+     *         'light': false|string,
+     *         'regular': string,
+     *         'solid': string,
+     *     },
+     * }
      */
-    private static function getCache()
+    private static function getCache(): array
     {
-        if (count(self::$cache)) {
+        if (null !== self::$cache) {
             return self::$cache;
         }
 
-        $cacheDir = self::$cacheDir ?: dirname(__DIR__) . '/Resources/cache/font-awesome';
-        $cacheVersion = substr(md5(join(';', array(
+        $cacheDir = self::$cacheDir ?: \dirname(__DIR__).'/Resources/cache/font-awesome';
+        $cacheVersion = \substr(\md5(\join(';', [
             self::$cdn,
             self::$bucket,
             self::$iconsYml,
-            self::$shimsYml
-        ))), 0, 5);
-        $cachePathname = $cacheDir . '/' . self::$version . '-' . $cacheVersion . '.php';
+            self::$shimsYml,
+        ])), 0, 5);
+        $cachePathname = $cacheDir.'/'.self::$version.'-'.$cacheVersion.'.php';
 
         // create cache
-        if (!file_exists($cachePathname)) {
-            if (!file_exists($cacheDir)) {
-                mkdir($cacheDir, 0777, true);
+        if (!\file_exists($cachePathname)) {
+            if (!\file_exists($cacheDir)) {
+                \mkdir($cacheDir, 0777, true);
             }
 
-            $context = stream_context_create(array(
-                'ssl' => array(
+            $context = \stream_context_create([
+                'ssl' => [
                     'verify_peer' => self::$rejectUnauthorized,
                     'verify_peer_name' => self::$rejectUnauthorized,
-                ),
-            ));
+                ],
+            ]);
 
-            $iconsYml = self::$bucket . '/' . self::$version . self::$iconsYml;
-            $shimsYml = self::$bucket . '/' . self::$version . self::$shimsYml;
+            $iconsYml = self::$bucket.'/'.self::$version.self::$iconsYml;
+            $shimsYml = self::$bucket.'/'.self::$version.self::$shimsYml;
 
-            $metadata = array(
-                'icons' => Yaml::parse(file_get_contents(self::$bucket ? $iconsYml : self::$iconsYml, false, $context)),
-                'shims' => Yaml::parse(file_get_contents(self::$bucket ? $shimsYml : self::$shimsYml, false, $context)),
-            );
+            $metadata = [
+                'icons' => Yaml::parse(\file_get_contents(self::$bucket ? $iconsYml : self::$iconsYml, false, $context) ?: ''),
+                'shims' => Yaml::parse(\file_get_contents(self::$bucket ? $shimsYml : self::$shimsYml, false, $context) ?: ''),
+            ];
 
-            $css = array(
-                'brands' => file_get_contents(self::$cdn . self::$version . '/css/brands.css', false, $context),
-                'light' => @file_get_contents(self::$cdn . self::$version . '/css/light.css', false, $context),
-                'regular' => file_get_contents(self::$cdn . self::$version . '/css/regular.css', false, $context),
-                'solid' => file_get_contents(self::$cdn . self::$version . '/css/solid.css', false, $context),
-            );
+            $css = [
+                'brands' => \file_get_contents(self::$cdn.self::$version.'/css/brands.css', false, $context),
+                'light' => @\file_get_contents(self::$cdn.self::$version.'/css/light.css', false, $context),
+                'regular' => \file_get_contents(self::$cdn.self::$version.'/css/regular.css', false, $context),
+                'solid' => \file_get_contents(self::$cdn.self::$version.'/css/solid.css', false, $context),
+            ];
 
-            file_put_contents($cachePathname, join(PHP_EOL, array(
+            \file_put_contents($cachePathname, \join(PHP_EOL, [
                 '<?php',
-                'return ' . var_export(array(
+                'return '.\var_export([
                     'metadata' => $metadata,
                     'css' => $css,
-                ), true) . ';',
-                ''
-            )));
+                ], true).';',
+                '',
+            ]));
         }
 
         self::$cache = require $cachePathname;
@@ -127,9 +151,19 @@ class FontAwesome
     }
 
     /**
-     * @return array
+     * @return array{
+     *     'icons': array<
+     *         string,
+     *         array{
+     *             'unicode': string,
+     *             'styles': string[],
+     *             'search'?: array{'terms'?: string[]}
+     *         },
+     *     >,
+     *     'shims': array<string, array{'name'?: string, 'prefix'?: string}>,
+     * }
      */
-    private static function getMetadata()
+    private static function getMetadata(): array
     {
         $cache = self::getCache();
 
@@ -137,54 +171,44 @@ class FontAwesome
     }
 
     /**
-     * @return array
+     * @return array{
+     *     'brands': string,
+     *     'light': false|string,
+     *     'regular': string,
+     *     'solid': string,
+     * }
      */
-    private static function getCss()
+    private static function getCss(): array
     {
         $cache = self::getCache();
 
         return $cache['css'];
     }
 
-    /**
-     * @param string $unicode
-     * @param string $fontFamily
-     *
-     * @return string
-     */
-    private static function prepareIcon($unicode, $fontFamily)
+    private static function prepareIcon(string $unicode, string $fontFamily): string
     {
-        return 'x' . $unicode . '@' . $fontFamily;
+        return 'x'.$unicode.'@'.$fontFamily;
     }
 
-    /**
-     * @param string $value
-     * @param string|null $style
-     * @return string
-     */
-    public static function unicode($value, $style = null) {
+    public static function unicode(string $value, ?string $style = null): string
+    {
         return self::prepareIcon($value, $style ? self::$aliases[$style] : 'FontAwesome');
     }
 
     /**
      * http://fontawesome.io/icons/.
-     *
-     * @param string $name
-     * @param string|null $style
-     *
-     * @return string|null
      */
-    public static function resolve($name, $style = null)
+    public static function resolve(string $name, ?string $style = null): ?string
     {
-        if (count(explode('@', $name)) > 1) {
+        if (\count(\explode('@', $name)) > 1) {
             return $name;
         }
 
         $fontFamily = null;
         $metadata = self::getMetadata();
 
-        if (false !== strrpos($name, 'fa-')) {
-            $name = substr($name, 3);
+        if (false !== \strrpos($name, 'fa-')) {
+            $name = \substr($name, 3);
         }
 
         if (!$style) {
@@ -198,18 +222,18 @@ class FontAwesome
                 if (isset($shim['prefix']) && isset(self::$aliases[$shim['prefix']])) {
                     $fontFamily = self::$aliases[$shim['prefix']];
                 }
-            } else if (!isset($metadata['icons'][$name])) {
+            } elseif (!isset($metadata['icons'][$name])) {
                 foreach ($metadata['icons'] as $key => $meta) {
                     if (isset($meta['search']) && isset($meta['search']['terms'])) {
-                        if (in_array($name, $meta['search']['terms'])) {
+                        if (\in_array($name, $meta['search']['terms'])) {
                             $name = $key;
                             break;
                         }
                     }
                 }
 
-                if (!isset($metadata['icons'][$name]) && '-o' === substr($name, -2)) {
-                    $name = substr($name, 0, -2);
+                if (!isset($metadata['icons'][$name]) && '-o' === \substr($name, -2)) {
+                    $name = \substr($name, 0, -2);
                 }
             }
         }
@@ -221,38 +245,35 @@ class FontAwesome
                 if ($style && isset(self::$aliases[$style])) {
                     $fontFamily = self::$aliases[$style];
                 } else {
-                    $fontFamily = self::$aliases[strtolower($icon['styles'][0])];
+                    $fontFamily = self::$aliases[\strtolower($icon['styles'][0])];
                 }
             }
 
             return self::prepareIcon($icon['unicode'], $fontFamily);
         }
 
-        return;
+        return null;
     }
 
     /**
-     * @return array
+     * @return string[]
      */
-    public static function cssResources()
+    public static function cssResources(): array
     {
-        return array(
-            self::$cdn . self::$version . '/css/all.css',
-            self::$cdn . self::$version . '/css/v4-shims.css',
-        );
+        return [
+            self::$cdn.self::$version.'/css/all.css',
+            self::$cdn.self::$version.'/css/v4-shims.css',
+        ];
     }
 
-    /**
-     * @return string
-     */
-    public static function cssCode()
+    public static function cssCode(): string
     {
-        $replace = array(
-            'Font Awesome 5 Pro'    => null,
-            'Font Awesome 5 Free'   => null,
+        $replace = [
+            'Font Awesome 5 Pro' => null,
+            'Font Awesome 5 Free' => null,
             'Font Awesome 5 Brands' => null,
-            '../webfonts/' => self::$cdn . self::$version . '/webfonts/',
-        );
+            '../webfonts/' => self::$cdn.self::$version.'/webfonts/',
+        ];
 
         $css = '';
         foreach (self::getCss() as $style => $content) {
@@ -264,22 +285,19 @@ class FontAwesome
                 if (!$value) {
                     $value = self::$aliases[$style];
                 }
-                $content = str_replace($key, $value, $content);
+                $content = \str_replace($key, $value, $content);
             }
-            $css .= $content . PHP_EOL;
+            $css .= $content.PHP_EOL;
 
             if ('solid' == $style) {
-                $css .= str_replace(self::$aliases[$style], 'FontAwesome', $content) . PHP_EOL;
+                $css .= \str_replace(self::$aliases[$style], 'FontAwesome', $content).PHP_EOL;
             }
         }
 
         return $css;
     }
 
-    /**
-     * @return string
-     */
-    public static function jsCode()
+    public static function jsCode(): string
     {
         $version = \json_encode(self::$version);
         $aliases = \json_encode(self::$aliases);

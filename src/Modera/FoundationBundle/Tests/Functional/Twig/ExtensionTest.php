@@ -14,7 +14,7 @@ class ExtensionTest extends FunctionalTestCase
     public function testHasExtension()
     {
         /* @var \Twig\Environment $twig */
-        $twig = self::$container->get('twig');
+        $twig = self::getContainer()->get('twig');
 
         $this->assertTrue($twig->hasExtension(Extension::class));
     }
@@ -22,7 +22,7 @@ class ExtensionTest extends FunctionalTestCase
     public function testHasFilters()
     {
         /* @var \Twig\Environment $twig */
-        $twig = self::$container->get('twig');
+        $twig = self::getContainer()->get('twig');
 
         $this->assertInstanceOf('Twig\TwigFilter', $twig->getFilter('mf_prepend_every_line'));
     }

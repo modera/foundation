@@ -2,7 +2,7 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -11,21 +11,18 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 class ClassLoaderMappingsProvider implements ContributorInterface
 {
     /**
-     * @var array
+     * @var array<string, string>
      */
-    private $items;
+    private array $items;
 
     public function __construct()
     {
-        $this->items = array(
+        $this->items = [
             'Modera.mjrsecurityintegration' => '/bundles/moderamjrsecurityintegration/js',
-        );
+        ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         return $this->items;
     }

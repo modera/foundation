@@ -10,28 +10,15 @@ use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
  */
 interface ConfigurationEntriesManagerInterface
 {
-    /**
-     * @param string $name
-     * @param object $owner
-     *
-     * @return ConfigurationEntryInterface
-     */
-    public function findOneByName($name, $owner = null);
+    public function findOneByName(string $name, ?object $owner = null): ?ConfigurationEntryInterface;
 
     /**
-     * @throws \RuntimeException
-     *
-     * @param string $name
-     * @param object $owner
-     *
-     * @return ConfigurationEntryInterface
+     * @throws \RuntimeException When requested configuration property with name $name is not found
      */
-    public function findOneByNameOrDie($name, $owner = null);
+    public function findOneByNameOrDie(string $name, ?object $owner = null): ConfigurationEntryInterface;
 
     /**
      * @throws ConfigurationEntryAlreadyExistsException
-     *
-     * @param ConfigurationEntryInterface $entry
      */
-    public function save(ConfigurationEntryInterface $entry);
+    public function save(ConfigurationEntryInterface $entry): void;
 }

@@ -8,10 +8,7 @@ namespace Modera\DynamicallyConfigurableMJRBundle\Resolver;
  */
 class ValueResolver implements ValueResolverInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function resolve($name, $value)
+    public function resolve(string $name, $value)
     {
         return $value;
     }

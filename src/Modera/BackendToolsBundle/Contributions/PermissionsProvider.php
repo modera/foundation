@@ -3,9 +3,9 @@
 namespace Modera\BackendToolsBundle\Contributions;
 
 use Modera\BackendToolsBundle\ModeraBackendToolsBundle;
-use Modera\SecurityBundle\Model\Permission;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\SecurityBundle\Model\Permission;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -13,12 +13,12 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class PermissionsProvider implements ContributorInterface
 {
-    private $items;
-
     /**
-     * {@inheritdoc}
+     * @var Permission[]
      */
-    public function getItems()
+    private ?array $items = null;
+
+    public function getItems(): array
     {
         if (!$this->items) {
             $this->items = [

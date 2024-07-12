@@ -29,12 +29,14 @@ class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
 {
     private $ce;
     private $em;
+    private $entityRepository;
     /* @var EntityRepositoryHandler $handler */
     private $handler;
 
     public function setUp(): void
     {
         $this->em = $this->createMock('Doctrine\ORM\EntityManager', array(), array(), '', false);
+        $this->entityRepository = $this->createMock('Doctrine\ORM\EntityRepository', array(), array(), '', false);
         $this->ce = $this->createMock(ConfigurationEntry::class, array(), array(), '', false);
         $this->handler = new EntityRepositoryHandler($this->em);
     }
@@ -60,10 +62,19 @@ class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
 
     private function teachEntityManagerToExpectForFind($id, $entityInstance)
     {
-        $this->em->expects($this->any())
-             ->method('find')
-             ->with($this->equalTo(DummyEntity::class, $id))
-             ->will($this->returnValue($entityInstance));
+        $this->entityRepository
+            ->expects($this->any())
+            ->method('find')
+            ->with($this->equalTo($id))
+            ->will($this->returnValue($entityInstance))
+        ;
+
+        $this->em
+            ->expects($this->any())
+            ->method('getRepository')
+            ->with($this->equalTo(DummyEntity::class))
+            ->will($this->returnValue($this->entityRepository))
+        ;
     }
 
     public function testGetReadableValue()

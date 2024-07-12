@@ -83,7 +83,7 @@ class FontAwesomeTest extends \PHPUnit\Framework\TestCase
                 if (isset($shim['prefix']) && isset($aliases[$shim['prefix']])) {
                     $fontFamily = 'FontAwesome' . ucfirst($aliases[$shim['prefix']]);
                 }
-            } else if (!isset($icons[$name])) {
+            } elseif (!isset($icons[$name])) {
                 foreach ($icons as $key => $meta) {
                     if (isset($meta['search']) && isset($meta['search']['terms'])) {
                         if (in_array($name, $meta['search']['terms'])) {

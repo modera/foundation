@@ -2,9 +2,9 @@
 
 namespace Modera\MjrIntegrationBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Menu\MenuItem;
 use Modera\MjrIntegrationBundle\Menu\MenuItemInterface;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * Contributes js-runtime menu items based on a config defined in "modera_mjr_integration" namespace.
@@ -17,40 +17,53 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
 class ConfigMenuItemsProvider implements ContributorInterface
 {
     /**
-     * @var array
+     * @var MenuItem[]
      */
-    private $items;
+    private array $items;
 
     /**
-     * @var array
+     * @var array{
+     *     'menu_items'?: array{
+     *         'id': string,
+     *         'name': string,
+     *         'namespace': string,
+     *         'controller': string,
+     *         'path': string
+     *     }[]
+     * }
      */
-    private $config;
+    private array $config;
 
     /**
-     * @param array $config
+     * @param array{
+     *     'menu_items'?: array{
+     *         'id': string,
+     *         'name': string,
+     *         'namespace': string,
+     *         'controller': string,
+     *         'path': string
+     *     }[]
+     * } $config
      */
     public function __construct(array $config)
     {
-        if (!isset($config['menu_items']) || !is_array($config['menu_items'])) {
+        if (!\is_array($config['menu_items'] ?? null)) {
             throw new \InvalidArgumentException('Given "$config" doesn\'t have key "menu_items" or it is not array!.');
         }
         $this->config = $config;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (!$this->items) {
-            $this->items = array();
-            foreach ($this->config['menu_items'] as $menuItem) {
-                $controller = str_replace('$ns', $menuItem['namespace'], $menuItem['controller']);
+            $this->items = [];
+            foreach ($this->config['menu_items'] ?? [] as $menuItem) {
+                $controller = \str_replace('$ns', $menuItem['namespace'], $menuItem['controller']);
 
-                $this->items[] = new MenuItem($menuItem['name'], $controller, $menuItem['id'], array(
+                $this->items[] = new MenuItem($menuItem['name'], $controller, $menuItem['id'], [
                     MenuItemInterface::META_NAMESPACE => $menuItem['namespace'],
                     MenuItemInterface::META_NAMESPACE_PATH => $menuItem['path'],
-                ));
+                ]);
             }
         }
 

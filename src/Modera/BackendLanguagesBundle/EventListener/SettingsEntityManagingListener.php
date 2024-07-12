@@ -3,8 +3,8 @@
 namespace Modera\BackendLanguagesBundle\EventListener;
 
 use Doctrine\ORM\Event\OnFlushEventArgs;
-use Modera\SecurityBundle\Entity\User;
 use Modera\BackendLanguagesBundle\Entity\UserSettings;
+use Modera\SecurityBundle\Entity\User;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -12,12 +12,9 @@ use Modera\BackendLanguagesBundle\Entity\UserSettings;
  */
 class SettingsEntityManagingListener
 {
-    /**
-     * @param OnFlushEventArgs $event
-     */
-    public function onFlush(OnFlushEventArgs $event)
+    public function onFlush(OnFlushEventArgs $event): void
     {
-        $em = $event->getEntityManager();
+        $em = $event->getObjectManager();
         $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {
@@ -32,8 +29,10 @@ class SettingsEntityManagingListener
 
         foreach ($uow->getScheduledEntityDeletions() as $entity) {
             if ($entity instanceof User) {
-                $query = $em->createQuery(sprintf('DELETE FROM %s us WHERE us.user = ?0', UserSettings::class));
-                $query->execute(array($entity));
+                $query = $em->createQuery(
+                    \sprintf('DELETE FROM %s us WHERE us.user = ?0', UserSettings::class)
+                );
+                $query->execute([$entity]);
             }
         }
     }

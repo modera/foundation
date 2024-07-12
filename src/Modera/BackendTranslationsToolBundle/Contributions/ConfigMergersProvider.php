@@ -2,9 +2,8 @@
 
 namespace Modera\BackendTranslationsToolBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
-use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -12,57 +11,44 @@ use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
  */
 class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterface
 {
-    /**
-     * @var FiltersProvider
-     */
-    private $filtersProvider;
+    private FiltersProvider $filtersProvider;
 
-    /**
-     * @param FiltersProvider $filtersProvider
-     */
-    public function __construct(ContributorInterface $filtersProvider)
+    public function __construct(FiltersProvider $filtersProvider)
     {
         $this->filtersProvider = $filtersProvider;
     }
 
-    /**
-     * @param array $currentConfig
-     *
-     * @return array
-     */
-    public function merge(array $currentConfig)
+    public function merge(array $existingConfig): array
     {
-        $filters = array();
+        $filters = [];
         foreach ($this->filtersProvider->getItems() as $key => $arr) {
-            $filters[$key] = array();
+            if (!\is_array($arr)) {
+                continue;
+            }
 
-            /* @var FilterInterface $iteratedFilter */
+            $filters[$key] = [];
+
             foreach ($arr as $iteratedFilter) {
                 if (!$iteratedFilter->isAllowed()) {
                     continue;
                 }
 
-                $filters[$key][] = array(
+                $filters[$key][] = [
                     'id' => $iteratedFilter->getId(),
                     'name' => $iteratedFilter->getName(),
-                );
+                ];
             }
         }
 
-        return array_merge($currentConfig, array(
-            'modera_backend_translations_tool' => array(
+        return \array_merge($existingConfig, [
+            'modera_backend_translations_tool' => [
                 'filters' => $filters,
-            ),
-        ));
+            ],
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return array
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array($this);
+        return [$this];
     }
 }

@@ -26,22 +26,26 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
     public static function setUpDatabase()
     {
         self::$st = new SchemaTool(self::$em);
-        self::$st->createSchema([self::$em->getClassMetadata(Language::class)]);
-        self::$st->createSchema([self::$em->getClassMetadata(TranslationToken::class)]);
-        self::$st->createSchema([self::$em->getClassMetadata(LanguageTranslationToken::class)]);
+        self::$st->createSchema([
+            self::$em->getClassMetadata(Language::class),
+            self::$em->getClassMetadata(TranslationToken::class),
+            self::$em->getClassMetadata(LanguageTranslationToken::class),
+        ]);
     }
 
     // override
     public static function dropDatabase()
     {
-        self::$st->dropSchema([self::$em->getClassMetadata(Language::class)]);
-        self::$st->dropSchema([self::$em->getClassMetadata(TranslationToken::class)]);
-        self::$st->dropSchema([self::$em->getClassMetadata(LanguageTranslationToken::class)]);
+        self::$st->dropSchema([
+            self::$em->getClassMetadata(Language::class),
+            self::$em->getClassMetadata(TranslationToken::class),
+            self::$em->getClassMetadata(LanguageTranslationToken::class),
+        ]);
     }
 
     protected function launchCompileCommand(array $parameters = array())
     {
-        $app = new Application(self::$container->get('kernel'));
+        $app = new Application(self::getContainer()->get('kernel'));
         $app->setAutoExit(false);
 
         $input = new ArrayInput(array_merge(array(
@@ -56,7 +60,7 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
 
     protected function launchImportCommand(array $parameters = array())
     {
-        $app = new Application(self::$container->get('kernel'));
+        $app = new Application(self::getContainer()->get('kernel'));
         $app->setAutoExit(false);
 
         $input = new ArrayInput(array_merge(array(

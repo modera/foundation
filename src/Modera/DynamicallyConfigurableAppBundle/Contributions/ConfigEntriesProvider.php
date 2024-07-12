@@ -3,9 +3,9 @@
 namespace Modera\DynamicallyConfigurableAppBundle\Contributions;
 
 use Modera\ConfigBundle\Config\ConfigurationEntryDefinition as CED;
-use Modera\FoundationBundle\Translation\T;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBundle as Bundle;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\FoundationBundle\Translation\T;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -13,10 +13,7 @@ use Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBund
  */
 class ConfigEntriesProvider implements ContributorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         // "client" configuration configs are not that much important when standard foundation is used because
         // "general" category relies on "Modera.backend.dcmjr.view.GeneralSettingsPanel" to display
@@ -25,33 +22,35 @@ class ConfigEntriesProvider implements ContributorInterface
         $yes = T::trans('yes');
         $no = T::trans('no');
 
-        $kernelDebugServer = array(
+        $kernelDebugServer = [
             'handler' => 'modera_config.boolean_handler',
             'update_handler' => 'modera_dynamically_configurable_app.value_handling.kernel_config_writer',
             'true_text' => $yes,
             'false_text' => $no,
-        );
-        $kernelDebugClient = array(
+        ];
+
+        $kernelDebugClient = [
             'xtype' => 'combo',
             'store' => [['prod', 'yes'], ['dev', 'no']],
-        );
+        ];
 
-        $kernelEnvServer = array(
+        $kernelEnvServer = [
             'handler' => 'modera_config.dictionary_handler',
             'update_handler' => 'modera_dynamically_configurable_app.value_handling.kernel_config_writer',
-            'dictionary' => array(
+            'dictionary' => [
                 'prod' => $yes,
                 'dev' => $no,
-            ),
-        );
-        $kernelEnvClient = array(
+            ],
+        ];
+
+        $kernelEnvClient = [
             'xtype' => 'combo',
             'store' => [[true, 'yes'], [false, 'no']],
-        );
+        ];
 
-        return array(
+        return [
             new CED(Bundle::CONFIG_KERNEL_ENV, T::trans('Production mode'), 'prod', 'general', $kernelEnvServer, $kernelEnvClient),
             new CED(Bundle::CONFIG_KERNEL_DEBUG, T::trans('Debug mode'), false, 'general', $kernelDebugServer, $kernelDebugClient),
-        );
+        ];
     }
 }

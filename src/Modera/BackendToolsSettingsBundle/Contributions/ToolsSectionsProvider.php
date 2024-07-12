@@ -3,8 +3,8 @@
 namespace Modera\BackendToolsSettingsBundle\Contributions;
 
 use Modera\BackendToolsBundle\Section\Section;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * Contributes a section to Backend/Tools.
@@ -16,31 +16,29 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class ToolsSectionsProvider implements ContributorInterface
 {
-    private $items;
-
-    private $sectionsProvider;
-
     /**
-     * @param ContributorInterface $sectionsProvider
+     * @var Section[]
      */
+    private ?array $items = null;
+
+    private ContributorInterface $sectionsProvider;
+
     public function __construct(ContributorInterface $sectionsProvider)
     {
         $this->sectionsProvider = $sectionsProvider;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (!$this->items) {
-            $this->items = array();
-            if (count($this->sectionsProvider->getItems())) {
+            $this->items = [];
+            if (\count($this->sectionsProvider->getItems())) {
                 $this->items[] = new Section(
                     T::trans('Settings'),
                     'tools.settings',
                     T::trans('Configure the current site.'),
-                    '', '',
+                    '',
+                    '',
                     'modera-backend-tools-settings-icon'
                 );
             }

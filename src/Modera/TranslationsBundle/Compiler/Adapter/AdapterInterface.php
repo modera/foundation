@@ -11,12 +11,12 @@ use Symfony\Component\Translation\MessageCatalogueInterface;
 interface AdapterInterface
 {
     /**
-     * Clear all previous dumped messages
+     * Clear all previous dumped messages.
      */
     public function clear(): void;
 
     /**
-     * Dump messages
+     * Dump messages.
      */
     public function dump(MessageCatalogueInterface $catalogue): void;
 

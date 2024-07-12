@@ -19,7 +19,7 @@ class SimpleDashboardTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('baz', $dashboard->getUiClass());
 
         $this->assertTrue($dashboard->isAllowed(
-                \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface')
-            ));
+            \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface')
+        ));
     }
 }

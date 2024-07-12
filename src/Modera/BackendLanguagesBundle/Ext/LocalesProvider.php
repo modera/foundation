@@ -2,7 +2,7 @@
 
 namespace Modera\BackendLanguagesBundle\Ext;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -13,12 +13,12 @@ class LocalesProvider implements ContributorInterface
     /**
      * @var string[]
      */
-    private $items = array();
+    private array $items;
 
     /**
      * @param string[] $items
      */
-    public function __construct(array $items = array())
+    public function __construct(array $items = [])
     {
         $this->items = $items;
     }

@@ -8,8 +8,8 @@ namespace Modera\MjrIntegrationBundle\AssetsHandling;
  */
 interface AssetsProviderInterface
 {
-    const TYPE_BLOCKING = 'blocking';
-    const TYPE_NON_BLOCKING = 'non_blocking';
+    public const TYPE_BLOCKING = 'blocking';
+    public const TYPE_NON_BLOCKING = 'non_blocking';
 
     /**
      * @return string[]

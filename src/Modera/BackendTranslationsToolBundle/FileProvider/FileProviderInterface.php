@@ -8,14 +8,15 @@ namespace Modera\BackendTranslationsToolBundle\FileProvider;
  * files as well as some vendor libraries. Most of the times you will want to extract tokens from your own javascript
  * files and ignore vendor related ones.
  *
- * @author Sergei Lissovski <sergei.lissovski@gmail.com>
- */ 
+ * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ */
 interface FileProviderInterface
 {
     /**
-     * @param string $directory  Base directory where to look at
-     * @return string[]  Full paths to files that must be parsed by
-     *                   {@class Modera\BackendTranslationsToolBundle\Extractor\ExtjsClassesExtractor}
+     * @param string $directory Base directory where to look at
+     *
+     * @return string[] Full paths to files that must be parsed by
+     *                  {@class Modera\BackendTranslationsToolBundle\Extractor\ExtjsClassesExtractor}
      */
-    public function getFiles($directory);
+    public function getFiles(string $directory): array;
 }

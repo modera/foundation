@@ -4,6 +4,7 @@ namespace Modera\FoundationBundle\Utils;
 
 /**
  * @internal
+ *
  * @experimental
  *
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -11,11 +12,8 @@ namespace Modera\FoundationBundle\Utils;
  */
 class DeprecationNoticeEmitter
 {
-    /**
-     * @param string $notice
-     */
-    public function emit($notice)
+    public function emit(string $notice): void
     {
-        @trigger_error($notice, E_USER_DEPRECATED);
+        @\trigger_error($notice, E_USER_DEPRECATED);
     }
 }

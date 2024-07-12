@@ -1,0 +1,19 @@
+parameters:
+    level: 9
+    excludePaths:
+        - tools
+        - vendor
+        - src/Modera/*/Tests/*
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - { identifier: missingType.generics }
+        - '#Function twig_escape_filter not found.#'
+        - '#Class .* extends unknown class Composer\\Script\\Event.#'
+        - '#Method .* has invalid return type Composer\\Installer\\PackageEvent.#'
+        - '#Method .* has invalid return type Composer\\Package\\CompletePackage.#'
+        - '#Parameter \$composer of method .* has invalid type Composer\\Composer.#'
+        - '#Parameter \$event of method .* has invalid type Composer\\EventDispatcher\\Event.#'
+        - '#Parameter \$event of method .* has invalid type Composer\\Installer\\PackageEvent.#'
+        - '#Parameter \$event of method .* has invalid type Composer\\Script\\Event.#'
+        - '#Property .* has unknown class Composer\\Installer\\PackageEvent as its type.#'
+        - '#Method Doctrine\\Persistence\\ObjectManager::flush\(\) invoked with 1 parameter, 0 required#'

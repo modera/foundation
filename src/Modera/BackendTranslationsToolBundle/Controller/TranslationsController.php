@@ -2,24 +2,26 @@
 
 namespace Modera\BackendTranslationsToolBundle\Controller;
 
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Modera\BackendTranslationsToolBundle\Cache\CompileNeeded;
+use Modera\BackendTranslationsToolBundle\Contributions\FiltersProvider;
+use Modera\BackendTranslationsToolBundle\DependencyInjection\ModeraBackendTranslationsToolExtension;
+use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
+use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 use Modera\DirectBundle\Annotation\Remote;
-use Modera\ServerCrudBundle\Exceptions\BadRequestException;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\ExceptionHandling\ExceptionHandlerInterface;
+use Modera\ServerCrudBundle\Exceptions\BadRequestException;
 use Modera\TranslationsBundle\Compiler\TranslationsCompiler;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\TranslationsBundle\Entity\TranslationToken;
-use Modera\BackendTranslationsToolBundle\DependencyInjection\ModeraBackendTranslationsToolExtension;
-use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
-use Modera\BackendTranslationsToolBundle\Contributions\FiltersProvider;
-use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
-use Modera\BackendTranslationsToolBundle\Cache\CompileNeeded;
+use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -27,81 +29,89 @@ use Modera\BackendTranslationsToolBundle\Cache\CompileNeeded;
  */
 class TranslationsController extends AbstractCrudController
 {
-    private function checkAccess()
+    protected function getContainer(): ContainerInterface
     {
+        /** @var ContainerInterface $container */
+        $container = $this->container;
+
+        return $container;
+    }
+
+    private function checkAccess(): void
+    {
+        /** @var AuthorizationCheckerInterface $authorizationChecker */
+        $authorizationChecker = $this->getContainer()->get('security.authorization_checker');
         $role = ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION;
-        if (false === $this->get('security.authorization_checker')->isGranted($role)) {
+        if (false === $authorizationChecker->isGranted($role)) {
             throw $this->createAccessDeniedException();
         }
     }
 
     /**
-     * @param LanguageTranslationToken $ltt
-     * @return array
+     * @return array<string, mixed>
      */
-    private function hydrateLanguageTranslationToken(LanguageTranslationToken $ltt)
+    private function hydrateLanguageTranslationToken(LanguageTranslationToken $ltt): array
     {
-        return array(
+        return [
             'id' => $ltt->getId(),
             'isNew' => $ltt->isNew(),
             'translation' => $ltt->getTranslation(),
-            'locale' => $ltt->getLanguage()->getLocale(),
-            'language' => $ltt->getLanguage()->getName(),
-        );
+            'locale' => $ltt->getLanguage() ? $ltt->getLanguage()->getLocale() : null,
+            'language' => $ltt->getLanguage() ? $ltt->getLanguage()->getName() : null,
+        ];
     }
 
-    /**
-     * @return array
-     */
-    public function getConfig()
+    public function getConfig(): array
     {
-        return array(
+        return [
             'entity' => TranslationToken::class,
-            'security' => array(
+            'security' => [
                 'role' => ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION,
-            ),
-            'hydration' => array(
-                'groups' => array(
+            ],
+            'hydration' => [
+                'groups' => [
                     'list' => function (TranslationToken $translationToken) {
-                        $translations = array();
+                        $translations = [];
                         foreach ($translationToken->getLanguageTranslationTokens() as $ltt) {
-                            if ($ltt->getLanguage()->isEnabled()) {
+                            if ($ltt->getLanguage() && $ltt->getLanguage()->isEnabled()) {
                                 $translations[$ltt->getLanguage()->getId()] = $this->hydrateLanguageTranslationToken($ltt);
                             }
                         }
 
-                        return array(
+                        return [
                             'id' => $translationToken->getId(),
                             'domain' => $translationToken->getDomain(),
                             'tokenName' => $translationToken->getTokenName(),
                             'isObsolete' => $translationToken->isObsolete(),
                             'translations' => $translations,
-                        );
+                        ];
                     },
-                ),
-                'profiles' => array(
+                ],
+                'profiles' => [
                     'list',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     /**
      * @Remote
      *
-     * @param array $params
+     * @param array<string, mixed> $params
+     *
+     * @return array<string, mixed>
      */
-    public function listWithFiltersAction(array $params)
+    public function listWithFiltersAction(array $params): array
     {
         $this->checkAccess();
 
         try {
             $filterId = null;
             $filterValue = null;
-            if (isset($params['filter'])) {
+            if (isset($params['filter']) && \is_array($params['filter'])) {
                 foreach ($params['filter'] as $filter) {
-                    if ('__filter__' == $filter['property']) {
-                        $parts = explode('-', $filter['value'], 2);
+                    if (isset($filter['property']) && '__filter__' == $filter['property']) {
+                        $parts = \explode('-', $filter['value'], 2);
                         $filterId = $parts[0];
                         if (isset($parts[1])) {
                             $filterValue = $parts[1];
@@ -112,11 +122,11 @@ class TranslationsController extends AbstractCrudController
 
                 if ($filterValue) {
                     $params['filter'] = [
-                        array('property' => 'languageTranslationTokens.language.isEnabled', 'value' => 'eq:true'),
+                        ['property' => 'languageTranslationTokens.language.isEnabled', 'value' => 'eq:true'],
                         [
-                            array('property' => 'domain', 'value' => 'eq:'.$filterValue),
-                            array('property' => 'tokenName', 'value' => 'like:%'.$filterValue.'%'),
-                            array('property' => 'languageTranslationTokens.translation', 'value' => 'like:%'.$filterValue.'%'),
+                            ['property' => 'domain', 'value' => 'eq:'.$filterValue],
+                            ['property' => 'tokenName', 'value' => 'like:%'.$filterValue.'%'],
+                            ['property' => 'languageTranslationTokens.translation', 'value' => 'like:%'.$filterValue.'%'],
                         ],
                     ];
                 } else {
@@ -132,14 +142,16 @@ class TranslationsController extends AbstractCrudController
                 throw $e;
             }
 
-            /* @var FiltersProvider $filtersProvider */
-            $filtersProvider = $this->get('modera_backend_translations_tool.filters_provider');
+            /** @var FiltersProvider $filtersProvider */
+            $filtersProvider = $this->getContainer()->get('modera_backend_translations_tool.filters_provider');
 
             $filter = null;
             $filters = $filtersProvider->getItems();
+            if (!isset($filters['translation_token']) || !\is_array($filters['translation_token'])) {
+                $filters['translation_token'] = [];
+            }
             foreach ($filters['translation_token'] as $iteratedFilter) {
-                /* @var FilterInterface $iteratedFilter */
-
+                /** @var FilterInterface $iteratedFilter */
                 if ($iteratedFilter->getId() == $filterId && $iteratedFilter->isAllowed()) {
                     $filter = $iteratedFilter;
                     break;
@@ -147,10 +159,13 @@ class TranslationsController extends AbstractCrudController
             }
 
             if (!$filter) {
-                throw new \RuntimeException(sprintf('Filter with given parameter "%s" not found', $filterId));
+                throw new \RuntimeException(\sprintf('Filter with given parameter "%s" not found', $filterId));
             }
 
             $result = $filter->getResult($params);
+            if (!isset($result['items']) || !\is_array($result['items'])) {
+                $result['items'] = [];
+            }
 
             $hydratedItems = [];
             foreach ($result['items'] as $entity) {
@@ -168,68 +183,77 @@ class TranslationsController extends AbstractCrudController
     /**
      * @Remote
      *
-     * @param array $params
+     * @param array<mixed> $params
+     *
+     * @return array<mixed>
      */
-    public function importAction(array $params)
+    public function importAction(array $params): array
     {
         $this->checkAccess();
 
-        $app = new Application($this->get('kernel'));
+        /** @var KernelInterface $kernel */
+        $kernel = $this->getContainer()->get('kernel');
+        $app = new Application($kernel);
         $app->setAutoExit(false);
 
-        $cmd = $this->container->getParameter(ModeraBackendTranslationsToolExtension::CONFIG_KEY . '.import_cmd');
+        /** @var string $cmd */
+        $cmd = $this->getContainer()->getParameter(ModeraBackendTranslationsToolExtension::CONFIG_KEY.'.import_cmd');
         $input = new StringInput($cmd);
         $input->setInteractive(false);
 
         $result = $app->run($input, new NullOutput());
 
-        return array(
+        return [
             'success' => (0 === $result),
-            'updated_models' => array(
+            'updated_models' => [
                 'modera.translations_bundle.translation_token' => [],
-            ),
-        );
+            ],
+        ];
     }
 
     /**
      * @Remote
+     *
+     * @param array<string, mixed> $params
+     *
+     * @return array<string, mixed>
      */
-    public function compileAction(array $params)
+    public function compileAction(array $params): array
     {
         $this->checkAccess();
 
-        /* @var TranslationsCompiler $compiler */
-        $compiler = $this->get('modera_translations.compiler.translations_compiler');
+        /** @var TranslationsCompiler $compiler */
+        $compiler = $this->getContainer()->get('modera_translations.compiler.translations_compiler');
 
-        $onlyTranslated = $this->container->getParameter(ModeraBackendTranslationsToolExtension::CONFIG_KEY . '.compile_only_translated');
+        /** @var bool $onlyTranslated */
+        $onlyTranslated = $this->getContainer()->getParameter(ModeraBackendTranslationsToolExtension::CONFIG_KEY.'.compile_only_translated');
 
         $result = $compiler->compile($onlyTranslated);
 
         if ($result->isSuccessful()) {
-            /* @var CompileNeeded $compileNeeded */
-            $compileNeeded = $this->get('modera_backend_translations_tool.cache.compile_needed');
+            /** @var CompileNeeded $compileNeeded */
+            $compileNeeded = $this->getContainer()->get('modera_backend_translations_tool.cache.compile_needed');
             $compileNeeded->set(false);
-
         } else {
-            /* @var KernelInterface $kernel */
-            $kernel = $this->get('kernel');
+            /** @var KernelInterface $kernel */
+            $kernel = $this->getContainer()->get('kernel');
 
             // if activity logger bundle is available then logging the error there as well
             $bundles = $kernel->getBundles();
             if (isset($bundles['ModeraActivityLoggerBundle'])) {
-                /* @var UserInterface $user*/
+                /** @var UserInterface $user */
                 $user = $this->getUser();
 
-                /* @var LoggerInterface $logger */
-                $logger = $this->get('modera_activity_logger.manager.activity_manager');
+                /** @var LoggerInterface $logger */
+                $logger = $this->getContainer()->get('modera_activity_logger.manager.activity_manager');
 
                 $logger->error(
                     // 'message' field for Activity entity is mapped as "string", so we can't put there a whole message
-                    "Failed to compile translations, details: \n\n".substr($result->getErrorMessage(), 0, 150).'...',
-                    array(
+                    "Failed to compile translations, details: \n\n".\substr($result->getErrorMessage(), 0, 150).'...',
+                    [
                         'type' => 'translations',
                         'author' => $user->getUsername(),
-                    )
+                    ]
                 );
             }
         }
@@ -239,9 +263,9 @@ class TranslationsController extends AbstractCrudController
             throw new \Exception($result->getErrorMessage());
         }
 
-        $response = array(
+        $response = [
             'success' => $result->isSuccessful(),
-        );
+        ];
 
         return $response;
     }
@@ -249,19 +273,21 @@ class TranslationsController extends AbstractCrudController
     /**
      * @Remote
      *
-     * @param array $params
+     * @param array<string, mixed> $params
+     *
+     * @return array<string, mixed>
      */
-    public function isCompileNeededAction(array $params)
+    public function isCompileNeededAction(array $params): array
     {
         $this->checkAccess();
 
-        /* @var CompileNeeded $compileNeeded */
-        $compileNeeded = $this->get('modera_backend_translations_tool.cache.compile_needed');
+        /** @var CompileNeeded $compileNeeded */
+        $compileNeeded = $this->getContainer()->get('modera_backend_translations_tool.cache.compile_needed');
         $isCompileNeeded = $compileNeeded->get();
 
-        return array(
+        return [
             'success' => true,
             'status' => $isCompileNeeded,
-        );
+        ];
     }
 }

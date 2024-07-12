@@ -2,21 +2,21 @@
 
 namespace Modera\BackendLanguagesBundle\Twig;
 
-use Symfony\Component\Intl\Locales;
-use Twig\TwigFilter;
-use Twig\Environment;
-use Twig\TwigFunction;
-use Twig\Extension\AbstractExtension;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\BackendLanguagesBundle\ExtUtilFormatResolving\ExtUtilFormatResolverInterface;
 use Modera\BackendLanguagesBundle\Service\SanitizeInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Symfony\Component\Intl\Locales;
+use Twig\Environment;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 /**
  * @author Sergei Vizel <sergei.vizel@gmail.com>
  */
 class Extension extends AbstractExtension
 {
-    const REGION_LANGUAGES = array(
+    private const REGION_LANGUAGES = [
         'AD' => 'ca',
         'AE' => 'ar',
         'AF' => 'fa,ps',
@@ -267,9 +267,9 @@ class Extension extends AbstractExtension
         'ZA' => 'zu,xh,af,st,tn,en',
         'ZM' => 'en',
         'ZW' => 'en,sn,nd',
-    );
+    ];
 
-    const CLDR_MAPPING = array(
+    private const CLDR_MAPPING = [
         // Era is not implemented
         'GGGGG' => '',
         'GGGG' => '',
@@ -318,204 +318,177 @@ class Extension extends AbstractExtension
         'zz' => 'T', // Timezone abbreviation
         'zzz' => 'T', // Timezone abbreviation
         'zzzz' => 'e', // Timezone
-    );
+    ];
 
-    /**
-     * @var ContributorInterface
-     */
-    private $customLocalesProvider;
+    private ContributorInterface $customLocalesProvider;
 
-    /**
-     * @var ContributorInterface
-     */
-    private $extUtilFormatResolverProvider;
+    private ContributorInterface $extUtilFormatResolverProvider;
 
-    /**
-     * @var SanitizeInterface
-     */
-    private $sanitizationService;
+    private SanitizeInterface $sanitizationService;
 
-    /**
-     * @param ContributorInterface $customLocalesProvider
-     * @param ContributorInterface $extUtilFormatResolverProvider
-     * @param SanitizeInterface    $sanitizationService
-     */
     public function __construct(
         ContributorInterface $customLocalesProvider,
         ContributorInterface $extUtilFormatResolverProvider,
         SanitizeInterface $sanitizationService
-    )
-    {
+    ) {
         $this->customLocalesProvider = $customLocalesProvider;
         $this->extUtilFormatResolverProvider = $extUtilFormatResolverProvider;
         $this->sanitizationService = $sanitizationService;
     }
 
-    public function getFilters()
+    /**
+     * @return TwigFilter[]
+     */
+    public function getFilters(): array
     {
-        return array(
+        return [
             new TwigFilter(
                 'modera_backend_languages_escape',
-                array($this, 'escapeJsString'),
-                array('is_safe' => array('html', 'js'), 'needs_environment' => true)
+                [$this, 'escapeJsString'],
+                ['is_safe' => ['html', 'js'], 'needs_environment' => true]
             ),
-        );
+        ];
     }
 
     /**
-     * @return array
+     * @return TwigFunction[]
      */
-    public function getFunctions()
+    public function getFunctions(): array
     {
-        return array(
+        return [
             new TwigFunction(
                 'modera_backend_languages_ext_util_format',
-                array($this, 'getExtUtilFormat'),
-                array('is_safe' => array('html', 'js'))
+                [$this, 'getExtUtilFormat'],
+                ['is_safe' => ['html', 'js']]
             ),
             new TwigFunction(
                 'modera_backend_languages_ext_date_format',
-                array($this, 'getExtDateFormat'),
-                array('is_safe' => array('html', 'js'))
+                [$this, 'getExtDateFormat'],
+                ['is_safe' => ['html', 'js']]
             ),
             new TwigFunction(
                 'modera_backend_languages_ext_time_format',
-                array($this, 'getExtTimeFormat'),
-                array('is_safe' => array('html', 'js'))
+                [$this, 'getExtTimeFormat'],
+                ['is_safe' => ['html', 'js']]
             ),
             new TwigFunction(
                 'modera_backend_languages_ext_start_day',
-                array($this, 'getExtStartDay'),
-                array('is_safe' => array('html', 'js'))
+                [$this, 'getExtStartDay'],
+                ['is_safe' => ['html', 'js']]
             ),
-        );
+        ];
     }
 
-    /**
-     * @return string
-     */
-    public function escapeJsString(Environment $env, $string)
+    public function escapeJsString(Environment $env, string $string): string
     {
         $string = $this->sanitizationService->sanitizeHtml($string);
 
         return \twig_escape_filter($env, $string, 'js');
     }
 
-    /**
-     * @return string
-     */
-    public function getExtUtilFormat($locale)
+    public function getExtUtilFormat(string $locale): string
     {
-        $locales = array();
+        $locales = [];
         foreach ($this->getLocales() as $value) {
             $locales[$value] = $this->getLocaleFormat($value);
         }
-        $default = isset($locales[$locale]) ? $locales[$locale] : $this->getLocaleFormat($locale);
+        $default = $locales[$locale] ?? $this->getLocaleFormat($locale);
 
-        return json_encode(array_merge(array(
+        return \json_encode(\array_merge([
             '_default' => $default,
             '_locales' => $locales,
-        ), $default));
+        ], $default)) ?: '{}';
     }
 
-    /**
-     * @param string $locale
-     * @return string
-     */
-    public function getExtDateFormat($locale)
+    public function getExtDateFormat(string $locale): string
     {
         return $this->getIntlDateFormatterPattern($locale, 'date');
     }
 
-    /**
-     * @param string $locale
-     * @return string
-     */
-    public function getExtTimeFormat($locale)
+    public function getExtTimeFormat(string $locale): string
     {
         return $this->getIntlDateFormatterPattern($locale, 'time');
     }
 
-    /**
-     * @param string $locale
-     * @return string
-     */
-    public function getExtStartDay($locale)
+    public function getExtStartDay(string $locale): int
     {
-        $cal = \IntlCalendar::createInstance(NULL, $locale);
+        $cal = \IntlCalendar::createInstance(null, $locale);
+
         return $cal->getFirstDayOfWeek() - 1;
     }
 
     /**
-     * @return array
+     * @return string[]
      */
-    private function getLocales()
+    private function getLocales(): array
     {
-        $locales = array_keys(Locales::getNames());
+        $locales = \array_keys(Locales::getNames());
         foreach ($this->getCustomLocales() as $locale) {
             $locales[] = $locale;
         }
+
         return $locales;
     }
 
     /**
-     * @return array
+     * @return string[]
      */
-    private function getCustomLocales()
+    private function getCustomLocales(): array
     {
-        $locales = array();
+        $locales = [];
+        /** @var string $locale */
         foreach ($this->customLocalesProvider->getItems() as $locale) {
             $locales[] = $locale;
         }
+
         return $locales;
     }
 
     /**
-     * @param string $code
-     * @return array
+     * @return string[]
      */
-    private function getLanguagesByRegion($code)
+    private function getLanguagesByRegion(string $code): array
     {
-        if (array_key_exists($code, static::REGION_LANGUAGES)) {
-            if (strpos(static::REGION_LANGUAGES[$code], ',') !== false) {
-                return explode(',', static::REGION_LANGUAGES[$code]);
+        if (\array_key_exists($code, self::REGION_LANGUAGES)) {
+            if (false !== \strpos(self::REGION_LANGUAGES[$code], ',')) {
+                return \explode(',', self::REGION_LANGUAGES[$code]);
             } else {
-                return array(static::REGION_LANGUAGES[$code]);
+                return [self::REGION_LANGUAGES[$code]];
             }
         }
-        return array();
+
+        return [];
     }
 
     /**
-     * @param string $locale
-     * @return array
+     * @return array<string, mixed>
      */
-    private function getLocaleFormat($locale)
+    private function getLocaleFormat(string $locale): array
     {
-        $arr = \Locale::parseLocale($locale);
+        $arr = \Locale::parseLocale($locale) ?? [];
 
         if (isset($arr['region'])) {
             $languages = $this->getLanguagesByRegion($arr['region']);
-            if (count($languages)) {
+            if (\count($languages)) {
                 $arr['language'] = $languages[0];
             }
         }
 
         $fmt1 = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
-        $fmt2 = new \NumberFormatter(locale_compose($arr), \NumberFormatter::CURRENCY);
+        $fmt2 = new \NumberFormatter(\locale_compose($arr) ?: '', \NumberFormatter::CURRENCY);
 
         $currencySign = $fmt1->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
         $decimalSeparator = $fmt2->getSymbol(\NumberFormatter::DECIMAL_SEPARATOR_SYMBOL);
         $thousandSeparator = $fmt2->getSymbol(\NumberFormatter::GROUPING_SEPARATOR_SYMBOL);
-        $currencyAtEnd = explode('€', str_replace('EUR', '€', $fmt2->formatCurrency(0, 'EUR')))[1] == '';
+        $currencyAtEnd = '' === \explode('€', \str_replace('EUR', '€', $fmt2->formatCurrency(0, 'EUR') ?: ''))[1];
 
-        $config = array(
+        $config = [
             '_language' => $arr['language'],
             'thousandSeparator' => $thousandSeparator,
             'decimalSeparator' => $decimalSeparator,
             'currencySign' => $currencySign,
             'currencyAtEnd' => $currencyAtEnd,
-        );
+        ];
 
         $items = $this->extUtilFormatResolverProvider->getItems();
         foreach ($items as $index => $resolver) {
@@ -527,48 +500,41 @@ class Extension extends AbstractExtension
         return $config;
     }
 
-    /**
-     * @param string $locale
-     * @param string $type
-     * @return string
-     */
-    private function getIntlDateFormatterPattern($locale, $type = 'date')
+    private function getIntlDateFormatterPattern(string $locale, string $type = 'date'): string
     {
-        $arr = \Locale::parseLocale($locale);
+        $arr = \Locale::parseLocale($locale) ?? [];
 
         if (isset($arr['region'])) {
             $languages = $this->getLanguagesByRegion($arr['region']);
-            if (count($languages)) {
+            if (\count($languages)) {
                 $arr['language'] = $languages[0];
             }
         }
 
         if ('time' == $type) {
-            $fmt = new \IntlDateFormatter(locale_compose($arr), \IntlDateFormatter::NONE, \IntlDateFormatter::SHORT);
+            $fmt = new \IntlDateFormatter(\locale_compose($arr) ?: null, \IntlDateFormatter::NONE, \IntlDateFormatter::SHORT);
         } else {
-            $fmt = new \IntlDateFormatter(locale_compose($arr), \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
+            $fmt = new \IntlDateFormatter(\locale_compose($arr) ?: null, \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
         }
 
-        return $this->convertCLDRtoPHP($fmt->getPattern());
+        return $this->convertCLDRtoPHP($fmt->getPattern() ?: '');
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
-    private function convertCLDRtoPHP($value)
+    private function convertCLDRtoPHP(string $value): string
     {
-        $mapping = static::CLDR_MAPPING;
-        $splitters = array(', ', ' ', ',', '-', '\/', '\\.', '\'', ':');
-        $array = preg_split('/(' . implode('|', $splitters) . ')/',  $value);
-        usort($array, function($a, $b){
-            return strlen($b) - strlen($a);
+        $mapping = self::CLDR_MAPPING;
+        $splitters = [', ', ' ', ',', '-', '\/', '\\.', '\'', ':'];
+        /** @var string[] $array */
+        $array = \preg_split('/('.\implode('|', $splitters).')/', $value);
+        \usort($array, function ($a, $b) {
+            return \strlen($b) - \strlen($a);
         });
 
         foreach ($array as $search) {
             $replace = isset($mapping[$search]) ? $mapping[$search] : '*';
-            $value = str_replace($search, $replace, $value);
+            $value = \str_replace($search, $replace, $value);
         }
-        return str_replace(' ,', ',', $value);
+
+        return \str_replace(' ,', ',', $value);
     }
 }

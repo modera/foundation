@@ -2,10 +2,10 @@
 
 namespace Modera\BackendTranslationsToolBundle\Contributions;
 
+use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Model\Permission;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
-use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -13,12 +13,12 @@ use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
  */
 class PermissionsProvider implements ContributorInterface
 {
-    private $items;
-
     /**
-     * {@inheritdoc}
+     * @var Permission[]
      */
-    public function getItems()
+    private ?array $items = null;
+
+    public function getItems(): array
     {
         if (!$this->items) {
             $this->items = [

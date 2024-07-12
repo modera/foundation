@@ -10,17 +10,13 @@ interface FilterInterface
 {
     /**
      * Technical name of filter. Used as a key in arrays/forms.
-     *
-     * @return string
      */
-    public function getId();
+    public function getId(): string;
 
     /**
-     * Human readable name of filter.
-     *
-     * @return string
+     * Human-readable name of filter.
      */
-    public function getName();
+    public function getName(): string;
 
     /**
      * Returns filtered data.
@@ -32,25 +28,21 @@ interface FilterInterface
      *     'total'   => int
      * )
      *
-     * @param array $params
+     * @param array<mixed> $params
      *
-     * @return array
+     * @return array<mixed>
      */
-    public function getResult(array $params);
+    public function getResult(array $params): array;
 
     /**
      * Returns total.
      *
-     * @param array $params
-     *
-     * @return int
+     * @param array<mixed> $params
      */
-    public function getCount(array $params);
+    public function getCount(array $params): int;
 
     /**
      * Checks if filter is allowed.
-     *
-     * @return bool
      */
-    public function isAllowed();
+    public function isAllowed(): bool;
 }

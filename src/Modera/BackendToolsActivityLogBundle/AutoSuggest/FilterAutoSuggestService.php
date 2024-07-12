@@ -2,11 +2,11 @@
 
 namespace Modera\BackendToolsActivityLogBundle\AutoSuggest;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Modera\ActivityLoggerBundle\Manager\ActivityManagerInterface;
 use Modera\ActivityLoggerBundle\Model\ActivityInterface;
-use Modera\SecurityBundle\Entity\User;
 use Modera\FoundationBundle\Translation\T;
+use Modera\SecurityBundle\Entity\User;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -14,50 +14,48 @@ use Modera\FoundationBundle\Translation\T;
  */
 class FilterAutoSuggestService
 {
-    private $em;
-    private $activityManager;
+    private EntityManagerInterface $em;
 
-    /**
-     * @param EntityManager $em
-     */
-    public function __construct(EntityManager $em, ActivityManagerInterface $activityManager)
-    {
+    private ActivityManagerInterface $activityManager;
+
+    public function __construct(
+        EntityManagerInterface $em,
+        ActivityManagerInterface $activityManager
+    ) {
         $this->em = $em;
         $this->activityManager = $activityManager;
     }
 
-    protected function stringifyUser(User $user)
+    protected function stringifyUser(User $user): ?string
     {
         return $user->getFullName()
-              ? sprintf('%s (%s)', $user->getFullName(), $user->getUsername())
+              ? \sprintf('%s (%s)', $user->getFullName(), $user->getUsername())
               : $user->getUsername();
     }
 
     /**
-     * @param string $queryType
-     * @param string $query
-     *
-     * @return array[]
+     * @return array<mixed>
      */
-    public function suggest($queryType, $query)
+    public function suggest(string $queryType, string $query): array
     {
         if ('user' == $queryType) {
-            $dql = $this->em->createQuery(sprintf(
+            $dql = $this->em->createQuery(\sprintf(
                 'SELECT u FROM %s u WHERE u.firstName LIKE ?0 OR u.lastName LIKE ?0 OR u.username LIKE ?0 OR u.email LIKE ?0',
                 User::class
             ));
             $dql->setParameter(0, '%'.$query.'%');
 
-            $rawResult = [];
-            foreach ($dql->getResult() as $user) {
-                /* @var User $user */
+            /** @var User[] $users */
+            $users = $dql->getResult();
 
+            $rawResult = [];
+            foreach ($users as $user) {
                 $value = $this->stringifyUser($user);
 
-                $rawResult[] = array(
+                $rawResult[] = [
                     'id' => $user->getId(),
                     'value' => $value,
-                );
+                ];
             }
 
             return $rawResult;
@@ -65,39 +63,44 @@ class FilterAutoSuggestService
             $user = $this->em->find(User::class, $query);
 
             if (!$user) {
-                throw new \DomainException(T::trans('Unable to find a user "%username%"', array('%username%' => $query)));
+                throw new \DomainException(T::trans('Unable to find a user "%username%"', ['%username%' => $query]));
             }
 
             return [
-                array(
+                [
                     'id' => $user->getId(),
                     'value' => $this->stringifyUser($user),
-                ),
+                ],
             ];
         } elseif ('eventType' == $queryType) {
-            $activities = $this->activityManager->query(array(
+            $activities = $this->activityManager->query([
                 'filter' => [
-                    array('property' => 'type', 'value' => 'like:%'.$query.'%'),
+                    [
+                        'property' => 'type',
+                        'value' => 'like:%'.$query.'%',
+                    ],
                 ],
-            ));
+            ]);
 
             $rawResult = [];
+            /** @var ActivityInterface $activity */
             foreach ($activities['items'] as $activity) {
-                /* @var ActivityInterface $activity */
                 $rawResult[] = $activity->getType();
             }
 
-            $rawResult = array_values(array_unique($rawResult));
+            $rawResult = \array_values(\array_unique($rawResult));
 
             $result = [];
             foreach ($rawResult as $item) {
-                $result[] = array(
+                $result[] = [
                     'id' => $item,
                     'value' => $item,
-                );
+                ];
             }
 
             return $result;
         }
+
+        throw new \DomainException(T::trans('Undefined query type "%value%"', ['%value%' => $queryType]));
     }
 }

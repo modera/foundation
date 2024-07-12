@@ -2,11 +2,11 @@
 
 namespace Modera\BackendLanguagesBundle\Controller;
 
-use Symfony\Component\Translation\Translator;
+use Modera\LanguagesBundle\Helper\LocaleHelper;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
-use Modera\LanguagesBundle\Helper\LocaleHelper;
+use Symfony\Component\Translation\Translator;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -24,14 +24,17 @@ class IndexController extends Controller
         return '@ModeraBackendLanguages/Index/compile.js.twig';
     }
 
+    /**
+     * @return array<string, string>
+     */
     protected function getTranslations(string $locale): array
     {
-        /* @var Translator $translator */
-        $translator = $this->get('translator');
+        /** @var Translator $translator */
+        $translator = $this->container->get('translator');
 
-        $messages = array();
+        $messages = [];
         foreach ($translator->getCatalogue($locale)->all($this->getDomain()) as $token => $translation) {
-            $messages[$token] = $translator->trans($token, array(), $this->getDomain(), $locale);
+            $messages[$token] = $translator->trans($token, [], $this->getDomain(), $locale);
         }
 
         return $messages;
@@ -43,25 +46,25 @@ class IndexController extends Controller
             $locale = $request->getLocale();
         }
 
-        $tokenGroups = array();
+        $tokenGroups = [];
         foreach ($this->getTranslations($locale) as $fullToken => $translation) {
-            $className = explode('.', $fullToken);
-            $token = array_pop($className);
-            $className = implode('.', $className);
+            $className = \explode('.', $fullToken);
+            $token = \array_pop($className);
+            $className = \implode('.', $className);
 
             if (!isset($tokenGroups[$className])) {
-                $tokenGroups[$className] = array();
+                $tokenGroups[$className] = [];
             }
 
             $tokenGroups[$className][$token] = $translation;
         }
 
-        $body = $this->renderView($this->getTemplate(), array(
+        $body = $this->renderView($this->getTemplate(), [
             'locale' => $locale,
             'direction' => LocaleHelper::getDirection($locale),
             'token_groups' => $tokenGroups,
-        ));
+        ]);
 
-        return new Response($body, 200, array('Content-Type' => 'application/javascript; charset=UTF-8'));
+        return new Response($body, 200, ['Content-Type' => 'application/javascript; charset=UTF-8']);
     }
 }

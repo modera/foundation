@@ -3,6 +3,8 @@
 namespace Modera\BackendTranslationsToolBundle\Tests\Unit\Filtering;
 
 use Modera\BackendTranslationsToolBundle\Filtering\Filter;
+use Modera\ServerCrudBundle\Persistence\OperationResult;
+use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -63,16 +65,41 @@ class FilterTest extends \PHPUnit\Framework\TestCase
     }
 }
 
-class DummyDoctrinePersistenceHandler
+class DummyDoctrinePersistenceHandler implements PersistenceHandlerInterface
 {
-    public function getCount($className, array $params)
+    public function getCount($className, array $params): int
     {
         return 0;
     }
 
-    public function query($className, array $params)
+    public function query($className, array $params): array
     {
         return array();
+    }
+
+    public function resolveEntityPrimaryKeyFields($entityClass): array
+    {
+        return array();
+    }
+
+    public function save($entity): OperationResult
+    {
+        return new OperationResult();
+    }
+
+    public function update($entity): OperationResult
+    {
+        return new OperationResult();
+    }
+
+    public function updateBatch(array $entities): OperationResult
+    {
+        return new OperationResult();
+    }
+
+    public function remove(array $entities): OperationResult
+    {
+        return new OperationResult();
     }
 }
 

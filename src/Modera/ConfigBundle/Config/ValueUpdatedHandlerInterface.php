@@ -14,8 +14,6 @@ interface ValueUpdatedHandlerInterface
     /**
      * This method will be invoked when new data has been already mapped to $entry but not persisted
      * to storage yet.
-     *
-     * @param ConfigurationEntryInterface $entry
      */
-    public function onUpdate(ConfigurationEntryInterface $entry);
+    public function onUpdate(ConfigurationEntryInterface $entry): void;
 }

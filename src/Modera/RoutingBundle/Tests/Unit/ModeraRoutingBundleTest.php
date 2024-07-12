@@ -19,7 +19,9 @@ class ModeraRoutingBundleTest extends \PHPUnit\Framework\TestCase
         $bundle->build($containerBuilder);
 
         \Phake::verify($containerBuilder, \Phake::atLeast(2))
-            ->addCompilerPass($this->isInstanceOf('Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface')
-        );
+            ->addCompilerPass(
+                $this->isInstanceOf('Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface')
+            )
+        ;
     }
 }

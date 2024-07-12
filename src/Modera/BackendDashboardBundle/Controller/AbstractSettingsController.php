@@ -2,11 +2,12 @@
 
 namespace Modera\BackendDashboardBundle\Controller;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
-use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
-use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\BackendDashboardBundle\Dashboard\DashboardInterface;
 use Modera\BackendDashboardBundle\Entity\SettingsEntityInterface;
+use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
@@ -14,45 +15,42 @@ use Modera\BackendDashboardBundle\Entity\SettingsEntityInterface;
  */
 abstract class AbstractSettingsController extends AbstractCrudController
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getConfig(): array
     {
-        return array(
+        return [
             'entity' => $this->getEntityClass(),
-            'security' => array(
-                'role' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES
-            ),
-            'hydration' => array(
-                'groups' => array(
+            'security' => [
+                'role' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
+            ],
+            'hydration' => [
+                'groups' => [
                     'main' => function ($settings) {
                         return $this->hydrateSettings($settings);
                     },
-                ),
-                'profiles' => array(
+                ],
+                'profiles' => [
                     'main',
-                ),
-            ),
+                ],
+            ],
             'map_data_on_update' => function ($params, $entity, $defaultMapper) {
-                $this->mapEntityOnUpdate($params, $entity, $defaultMapper);
+                $this->mapEntityOnUpdate($params, $entity);
             },
-        );
+        ];
     }
 
-    /**
-     * @return string
-     */
     abstract protected function getEntityClass(): string;
 
-    private function mapEntityOnUpdate(array $params, SettingsEntityInterface $entity)
+    /**
+     * @param array<mixed> $params
+     */
+    private function mapEntityOnUpdate(array $params, SettingsEntityInterface $entity): void
     {
-        if (isset($params['dashboards']) && is_array($params['dashboards'])) {
-            $dashboardSettings = array(
-                'hasAccess' => array(),
+        if (isset($params['dashboards']) && \is_array($params['dashboards'])) {
+            $dashboardSettings = [
+                'hasAccess' => [],
                 'defaultDashboard' => null,
-                'landingSection' => isset($params['landingSection']) ? $params['landingSection'] : 'dashboard',
-            );
+                'landingSection' => $params['landingSection'] ?? 'dashboard',
+            ];
 
             foreach ($params['dashboards'] as $dashboard) {
                 if (isset($dashboard['hasAccess']) && isset($dashboard['id']) && isset($dashboard['isDefault'])) {
@@ -75,35 +73,44 @@ abstract class AbstractSettingsController extends AbstractCrudController
 
     private function getDashboardProvider(): ContributorInterface
     {
-        return $this->get('modera_backend_dashboard.dashboard_provider');
+        /** @var ContributorInterface $provider */
+        $provider = $this->container->get('modera_backend_dashboard.dashboard_provider');
+
+        return $provider;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function hydrateSettings(SettingsEntityInterface $e): array
     {
-        $dashboards = array();
+        $dashboards = [];
         foreach ($this->getDashboardProvider()->getItems() as $dashboard) {
-            /* @var DashboardInterface $dashboard */
+            /** @var DashboardInterface $dashboard */
 
-            if (!$dashboard->isAllowed($this->container)) {
+            /** @var ContainerInterface $container */
+            $container = $this->container;
+            if (!$dashboard->isAllowed($container)) {
                 continue;
             }
 
-            $dashboards[] = array(
+            $dashboards[] = [
                 'id' => $dashboard->getName(),
                 'name' => $dashboard->getLabel(),
-            );
+            ];
         }
 
+        /** @var array{hasAccess: string[], defaultDashboard: ?string, landingSection?: ?string} $userDashboardSettings */
         $userDashboardSettings = $e->getDashboardSettings();
 
-        $preparedDashboardSettings = array();
+        $preparedDashboardSettings = [];
         foreach ($dashboards as $dashboard) {
-            $preparedDashboardSettings[] = array_merge(
+            $preparedDashboardSettings[] = \array_merge(
                 $dashboard,
-                array(
-                    'hasAccess' => in_array($dashboard['id'], $userDashboardSettings['hasAccess']),
+                [
+                    'hasAccess' => \in_array($dashboard['id'], $userDashboardSettings['hasAccess']),
                     'isDefault' => $dashboard['id'] == $userDashboardSettings['defaultDashboard'],
-                )
+                ]
             );
         }
 
@@ -112,11 +119,11 @@ abstract class AbstractSettingsController extends AbstractCrudController
             $landingSection = $userDashboardSettings['landingSection'];
         }
 
-        return array(
+        return [
             'id' => $e->getId(),
             'title' => $e->describeEntity(),
             'landingSection' => $landingSection,
             'dashboardSettings' => $preparedDashboardSettings,
-        );
+        ];
     }
 }

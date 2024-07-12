@@ -10,26 +10,35 @@ namespace Modera\BackendToolsBundle\Section;
  */
 class Section implements SectionInterface
 {
-    private $glyph;
-    private $iconSrc;
-    private $iconClass;
-    private $name;
-    private $description;
-    private $meta;
-    private $section;
-    private $sectionActivationParams;
+    private string $glyph;
+    private string $iconSrc;
+    private string $iconClass;
+    private string $name;
+    private string $description;
+    /**
+     * @var array<mixed>
+     */
+    private array $meta;
+    private string $section;
+    /**
+     * @var array<mixed>
+     */
+    private array $sectionActivationParams;
 
     /**
-     * @param string $name
-     * @param string $section
-     * @param string $description
-     * @param string $glyph
-     * @param string $iconClass
-     * @param array  $sectionActivationParams
-     * @param array  $meta
+     * @param array<mixed> $sectionActivationParams
+     * @param array<mixed> $meta
      */
-    public function __construct($name, $section, $description = '', $glyph = '', $iconSrc = '', $iconClass = '', array $sectionActivationParams = array(), array $meta = array())
-    {
+    public function __construct(
+        string $name,
+        string $section,
+        string $description = '',
+        string $glyph = '',
+        string $iconSrc = '',
+        string $iconClass = '',
+        array $sectionActivationParams = [],
+        array $meta = []
+    ) {
         $this->name = $name;
         $this->section = $section;
         $this->description = $description;
@@ -40,66 +49,42 @@ class Section implements SectionInterface
         $this->meta = $meta;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getGlyph()
+    public function getGlyph(): string
     {
         return $this->glyph;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getIconSrc()
+    public function getIconSrc(): string
     {
         return $this->iconSrc;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getIconClass()
+    public function getIconClass(): string
     {
         return $this->iconClass;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMeta()
+    public function getMeta(): array
     {
         return $this->meta;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSection()
+    public function getSection(): string
     {
         return $this->section;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSectionActivationParams()
+    public function getSectionActivationParams(): array
     {
         return $this->sectionActivationParams;
     }

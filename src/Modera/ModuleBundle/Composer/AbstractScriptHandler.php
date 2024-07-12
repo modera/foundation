@@ -3,8 +3,8 @@
 namespace Modera\ModuleBundle\Composer;
 
 use Composer\Script\Event;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Process\PhpExecutableFinder;
+use Symfony\Component\Process\Process;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -13,17 +13,13 @@ use Symfony\Component\Process\PhpExecutableFinder;
 abstract class AbstractScriptHandler
 {
     /**
-     * @param Event  $event
-     * @param string $consoleDir
-     * @param string $cmd
-     * @param int    $timeout
-     *
      * @throws \RuntimeException
      */
-    protected static function executeCommand(Event $event, $consoleDir, $cmd, $timeout = 300)
+    protected static function executeCommand(Event $event, string $consoleDir, string $cmd, int $timeout = 300): void
     {
-        $php = escapeshellarg(static::getPhp());
-        $console = escapeshellarg($consoleDir.'/console');
+        $php = \escapeshellarg(static::getPhp());
+        $console = \escapeshellarg($consoleDir.'/console');
+        // @phpstan-ignore-next-line
         if ($event->getIO()->isDecorated()) {
             $console .= ' --ansi';
         }
@@ -33,6 +29,7 @@ abstract class AbstractScriptHandler
         if (\method_exists(Process::class, 'fromShellCommandline')) {
             $process = Process::fromShellCommandline($command, null, null, null, $timeout);
         } else {
+            // @phpstan-ignore-next-line
             $process = new Process($command, null, null, null, $timeout);
         }
 
@@ -40,9 +37,11 @@ abstract class AbstractScriptHandler
             echo $buffer;
         });
         if (!$process->isSuccessful()) {
-            $msg = sprintf(
+            $msg = \sprintf(
                 "An error occurred when executing the \"%s\" command: \n%s\n%s",
-                escapeshellarg($cmd), $process->getErrorOutput(), $process->getOutput()
+                \escapeshellarg($cmd),
+                $process->getErrorOutput(),
+                $process->getOutput()
             );
 
             throw new \RuntimeException($msg);
@@ -50,28 +49,30 @@ abstract class AbstractScriptHandler
     }
 
     /**
-     * @param Event $event
-     *
-     * @return array
+     * @return array<string, mixed>
      */
-    protected static function getOptions(Event $event)
+    protected static function getOptions(Event $event): array
     {
-        $options = array_merge(array(
+        // @phpstan-ignore-next-line
+        $extra = $event->getComposer()->getPackage()->getExtra();
+
+        $options = \array_merge([
             'symfony-app-dir' => 'app',
             'symfony-bin-dir' => 'bin',
-        ), $event->getComposer()->getPackage()->getExtra());
+        ], $extra);
 
-        $options['process-timeout'] = $event->getComposer()->getConfig()->get('process-timeout');
+        // @phpstan-ignore-next-line
+        $processTimeout = $event->getComposer()->getConfig()->get('process-timeout');
+
+        $options['process-timeout'] = $processTimeout;
 
         return $options;
     }
 
     /**
-     * @return false|string
-     *
      * @throws \RuntimeException
      */
-    protected static function getPhp()
+    protected static function getPhp(): string
     {
         $phpFinder = new PhpExecutableFinder();
         if (!$phpPath = $phpFinder->find()) {
@@ -82,66 +83,60 @@ abstract class AbstractScriptHandler
     }
 
     /**
-     * @param array $options
-     *
-     * @return bool
+     * @param array<string, mixed> $options
      */
-    protected static function useNewDirectoryStructure(array $options)
+    protected static function useNewDirectoryStructure(array $options): bool
     {
-        return isset($options['symfony-var-dir']) && is_dir($options['symfony-var-dir']);
+        /** @var array{'symfony-var-dir'?: string} $options */
+        $options = $options;
+
+        return isset($options['symfony-var-dir']) && \is_dir($options['symfony-var-dir']);
     }
 
-    /**
-     * @param Event $event
-     * @param string $configName
-     * @param string $path
-     * @param string $actionName
-     *
-     * @return bool
-     */
-    protected static function hasDirectory(Event $event, $configName, $path, $actionName = null)
+    protected static function hasDirectory(Event $event, string $configName, string $path, ?string $actionName = null): bool
     {
-        if (!is_dir($path)) {
+        if (!\is_dir($path)) {
+            // @phpstan-ignore-next-line
             $event->getIO()->write(
-                sprintf(
+                \sprintf(
                     'The %s (%s) specified in composer.json was not found in %s.',
                     $configName,
                     $path,
-                    getcwd() . ($actionName ? ', can not ' . $actionName : '')
+                    \getcwd().($actionName ? ', can not '.$actionName : '')
                 )
             );
+
             return false;
         }
+
         return true;
     }
 
-    /**
-     * @param Event  $event
-     * @param string $actionName
-     *
-     * @return string|null
-     */
-    protected static function getConsoleDir(Event $event, $actionName = null)
+    protected static function getConsoleDir(Event $event, ?string $actionName = null): ?string
     {
         $options = static::getOptions($event);
         if (static::useNewDirectoryStructure($options)) {
+            /** @var array{'symfony-bin-dir': string} $options */
             if (!static::hasDirectory($event, 'symfony-bin-dir', $options['symfony-bin-dir'], $actionName)) {
-                return;
+                return null;
             }
+
             return $options['symfony-bin-dir'];
         }
+        /** @var array{'symfony-app-dir': string} $options */
         if (!static::hasDirectory($event, 'symfony-app-dir', $options['symfony-app-dir'], $actionName)) {
-            return;
+            return null;
         }
+
         return $options['symfony-app-dir'];
     }
 
     /**
-     * @param string $handlerName
-     * @return mixed
+     * @return mixed Mixed value
      */
-    protected static function getScriptHandler(Event $event, $handlerName)
+    protected static function getScriptHandler(Event $event, string $handlerName)
     {
+        /** @var array{'modera-module'?: array{'script-handler'?: array<string, mixed>}} $options */
         $options = static::getOptions($event);
         if (isset($options['modera-module']) && isset($options['modera-module']['script-handler'])) {
             if (isset($options['modera-module']['script-handler'][$handlerName])) {

@@ -15,9 +15,9 @@
     ],
     "require": {
         "php": ">=7.4",
+        "modera/expander-bundle": "^5.0",
         "modera/file-repository-bundle": "^5.0",
-        "modera/foundation-bundle": "^5.0",
-        "sergeil/expander-bundle": "^1.2"
+        "modera/foundation-bundle": "^5.0"
     },
     "require-dev": {
         "phake/phake": "^4.0",

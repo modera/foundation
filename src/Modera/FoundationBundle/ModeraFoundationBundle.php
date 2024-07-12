@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 class ModeraFoundationBundle extends Bundle
 {
     // override
-    public function boot()
+    public function boot(): void
     {
         $reflClass = new \ReflectionClass(T::class);
         $reflProp = $reflClass->getProperty('container');

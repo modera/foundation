@@ -2,9 +2,9 @@
 
 namespace Modera\BackendDashboardBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Modera\BackendDashboardBundle\Traits\DashboardSettingsTrait;
 use Modera\SecurityBundle\Entity\User;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @internal
@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @copyright 2014 Modera Foundation
  *
  * @ORM\Entity
+ *
  * @ORM\Table(name="modera_dashboard_userdashboardsettings")
  */
 class UserSettings implements SettingsEntityInterface
@@ -20,87 +21,69 @@ class UserSettings implements SettingsEntityInterface
     use DashboardSettingsTrait;
 
     /**
-     * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @var User
      *
-     * @Orm\OneToOne(targetEntity="Modera\SecurityBundle\Entity\User")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @ORM\Column(type="integer")
      */
-    private $user;
+    private ?int $id = null;
 
     /**
-     * @ORM\Column(type="array")
+     * @ORM\OneToOne(targetEntity="Modera\SecurityBundle\Entity\User")
      */
-    private $dashboardSettings = array(
+    private ?User $user = null;
+
+    /**
+     * @var array<string, mixed>
+     *
+     * @ORM\Column(type="json")
+     */
+    private $dashboardSettings = [
         'defaultDashboard' => null,
         'hasAccess' => [], // contains "names" of dashboard given user will have access to
-    );
+    ];
 
     /**
      * @deprecated Use native ::class property
-     *
-     * @return string
      */
-    public static function clazz()
+    public static function clazz(): string
     {
-        @trigger_error(sprintf(
+        @\trigger_error(\sprintf(
             'The "%s()" method is deprecated. Use native ::class property.',
             __METHOD__
         ), \E_USER_DEPRECATED);
 
-        return get_called_class();
+        return \get_called_class();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setDashboardSettings(array $dashboardSettings)
+    public function setDashboardSettings(array $settings): void
     {
-        $this->dashboardSettings = $dashboardSettings;
+        $this->dashboardSettings = $settings;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDashboardSettings()
+    public function getDashboardSettings(): array
     {
         return $this->dashboardSettings;
     }
 
-    /**
-     * @param \Modera\SecurityBundle\Entity\User $user
-     */
-    public function setUser($user)
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }
 
-    /**
-     * @return \Modera\SecurityBundle\Entity\User
-     */
-    public function getUser()
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function describeEntity()
+    public function describeEntity(): string
     {
-        return sprintf('User "%s"', $this->getUser()->getUsername());
+        return sprintf('User "%s"', $this->getUser() ? $this->getUser()->getUsername() : '-');
     }
 }

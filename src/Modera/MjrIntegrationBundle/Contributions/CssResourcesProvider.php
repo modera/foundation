@@ -2,10 +2,10 @@
 
 namespace Modera\MjrIntegrationBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -13,26 +13,19 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class CssResourcesProvider implements ContributorInterface
 {
-    /**
-     * @var Router
-     */
-    private $router;
+    private Router $router;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
-        $this->router = $container->get('router');
+        /** @var Router $router */
+        $router = $container->get('router');
+        $this->router = $router;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array_merge(FontAwesome::cssResources(), array(
+        return \array_merge(FontAwesome::cssResources(), [
             $this->router->generate('modera_font_awesome_css'),
-        ));
+        ]);
     }
 }

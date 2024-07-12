@@ -6,8 +6,8 @@ use Doctrine\ORM\EntityManager;
 use Modera\BackendDashboardBundle\Dashboard\DashboardInterface;
 use Modera\BackendDashboardBundle\Entity\GroupSettings;
 use Modera\BackendDashboardBundle\Entity\UserSettings;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\SecurityBundle\Entity\User;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -15,25 +15,15 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class DashboardManager
 {
-    /**
-     * @var EntityManager
-     */
-    private $em;
+    private EntityManager $em;
+
+    private ContributorInterface $dashboardsProvider;
 
     /**
-     * @var ContributorInterface
+     * @var array<string, DashboardInterface>
      */
-    private $dashboardsProvider;
+    private ?array $dashboards = null;
 
-    /**
-     * @var array
-     */
-    private $dashboards;
-
-    /**
-     * @param EntityManager        $em
-     * @param ContributorInterface $dashboardsProvider
-     */
     public function __construct(EntityManager $em, ContributorInterface $dashboardsProvider)
     {
         $this->em = $em;
@@ -43,38 +33,33 @@ class DashboardManager
     /**
      * @return DashboardInterface[]
      */
-    public function getDashboards()
+    public function getDashboards(): array
     {
-        return $this->dashboardsProvider->getItems();
+        /** @var DashboardInterface[] $items */
+        $items = $this->dashboardsProvider->getItems();
+
+        return $items;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return DashboardInterface|null
-     */
-    public function getDashboardByName($name)
+    public function getDashboardByName(string $name): ?DashboardInterface
     {
         if (!$this->dashboards) {
-            $this->dashboards = array();
+            $this->dashboards = [];
+            /** @var DashboardInterface $dashboard */
             foreach ($this->dashboardsProvider->getItems() as $dashboard) {
-                /* @var DashboardInterface $dashboard */
-
                 $this->dashboards[$dashboard->getName()] = $dashboard;
             }
         }
 
-        return isset($this->dashboards[$name]) ? $this->dashboards[$name] : null;
+        return $this->dashboards[$name] ?? null;
     }
 
     /**
      * Finds all dashboards that given user has access to.
      *
-     * @param User $user
-     *
      * @return DashboardInterface[]
      */
-    public function getUserDashboards(User $user)
+    public function getUserDashboards(User $user): array
     {
         $names = [];
         foreach ($this->getSettings($user) as $settingsEntry) {
@@ -82,12 +67,12 @@ class DashboardManager
                 $names[] = $settingsEntry['defaultDashboard'];
             }
 
-            if (isset($settingsEntry['hasAccess'])) {
-                $names = array_merge($names, $settingsEntry['hasAccess']);
+            if (isset($settingsEntry['hasAccess']) && \is_array($settingsEntry['hasAccess'])) {
+                $names = \array_merge($names, $settingsEntry['hasAccess']);
             }
         }
 
-        $names = array_unique($names);
+        $names = \array_unique($names);
 
         $dashboards = [];
         foreach ($names as $name) {
@@ -104,16 +89,14 @@ class DashboardManager
      * Returns default dashboards that are configured for given user, usually you will want to take the first
      * from the list.
      *
-     * @param User $user
-     *
      * @return DashboardInterface[]
      */
-    public function getDefaultDashboards(User $user)
+    public function getDefaultDashboards(User $user): array
     {
         $dashboards = [];
 
         foreach ($this->getSettings($user) as $settingsEntry) {
-            if (isset($settingsEntry['defaultDashboard']) && $settingsEntry['defaultDashboard']) {
+            if (isset($settingsEntry['defaultDashboard']) && \is_string($settingsEntry['defaultDashboard'])) {
                 $dashboard = $this->getDashboardByName($settingsEntry['defaultDashboard']);
                 if ($dashboard) {
                     // helps to avoid possible duplicate dashboards
@@ -122,29 +105,27 @@ class DashboardManager
             }
         }
 
-        return array_values($dashboards);
+        return \array_values($dashboards);
     }
 
     /**
      * First settings entries returned are more specific.
      *
-     * @param User $user
-     *
-     * @return array
+     * @return array<int, array<string, mixed>>
      */
-    private function getSettings(User $user)
+    private function getSettings(User $user): array
     {
         $settings = [];
 
-        /** @var UserSettings $userSettings */
-        $userSettings = $this->em->getRepository(UserSettings::class)->findOneBy(array('user' => $user));
+        /** @var ?UserSettings $userSettings */
+        $userSettings = $this->em->getRepository(UserSettings::class)->findOneBy(['user' => $user]);
         if ($userSettings) {
             $settings[] = $userSettings->getDashboardSettings();
         }
 
         foreach ($user->getGroups() as $group) {
-            /** @var GroupSettings $groupSettings */
-            $groupSettings = $this->em->getRepository(GroupSettings::class)->findOneBy(array('group' => $group));
+            /** @var ?GroupSettings $groupSettings */
+            $groupSettings = $this->em->getRepository(GroupSettings::class)->findOneBy(['group' => $group]);
             if ($groupSettings) {
                 $settings[] = $groupSettings->getDashboardSettings();
             }

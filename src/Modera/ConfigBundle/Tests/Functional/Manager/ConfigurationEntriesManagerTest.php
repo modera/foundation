@@ -18,7 +18,7 @@ class ConfigurationEntriesManagerTest extends AbstractFunctionalTestCase
      */
     private function getManager()
     {
-        return self::$container->get('modera_config.configuration_entries_manager');
+        return self::getContainer()->get('modera_config.configuration_entries_manager');
     }
 
     public function testFindOneByName()

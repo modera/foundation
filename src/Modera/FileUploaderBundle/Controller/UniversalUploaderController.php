@@ -6,8 +6,10 @@ use Modera\FileRepositoryBundle\Exceptions\FileValidationException;
 use Modera\FileUploaderBundle\Uploading\WebUploader;
 use Modera\FoundationBundle\Translation\T;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -16,38 +18,43 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class UniversalUploaderController extends Controller
 {
+    protected function getContainer(): ContainerInterface
+    {
+        /** @var ContainerInterface $container */
+        $container = $this->container;
+
+        return $container;
+    }
+
     /**
      * @Route("%modera_file_uploader.uploader_url%", name="modera_file_uploader", options={"expose"=true})
-     *
-     * @param Request $request
      */
-    public function uploadAction(Request $request)
+    public function uploadAction(Request $request): Response
     {
-        if (!$this->container->getParameter('modera_file_uploader.is_enabled')) {
+        if (!$this->getContainer()->getParameter('modera_file_uploader.is_enabled')) {
             throw $this->createNotFoundException(T::trans('Uploader is not enabled.'));
         }
 
-        /* @var WebUploader $webUploader */
-        $webUploader = $this->get('modera_file_uploader.uploading.web_uploader');
+        /** @var WebUploader $webUploader */
+        $webUploader = $this->getContainer()->get('modera_file_uploader.uploading.web_uploader');
 
-        $result = null;
         try {
-            $result = $webUploader->upload($request);
+            $response = $webUploader->upload($request);
         } catch (FileValidationException $e) {
-            return new JsonResponse(array(
+            return new JsonResponse([
                 'success' => false,
-                'error' => implode(', ', $e->getErrors()),
+                'error' => \implode(', ', $e->getErrors()),
                 'errors' => $e->getErrors(),
-            ));
+            ]);
         }
 
-        if (false === $result) {
-            return new JsonResponse(array(
+        if (null === $response) {
+            return new JsonResponse([
                 'success' => false,
                 'error' => T::trans('Unable to find an upload gateway that is able to process this file upload.'),
-            ));
+            ]);
         }
 
-        return new JsonResponse($result);
+        return $response;
     }
 }

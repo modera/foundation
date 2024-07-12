@@ -11,14 +11,16 @@ class KernelConfig implements KernelConfigInterface
     protected static function getRootDir(): string
     {
         $refKernel = null;
-        try {
-            $refKernel = new \ReflectionClass('App\Kernel');
-        } catch (\Exception $e) {
-            // TODO: BC
-            $refKernel = new \ReflectionClass('AppKernel');
-        } catch (\Exception $e) {}
 
-        if (null === $refKernel) {
+        if (\class_exists($kernelClass = 'App\Kernel')) {
+            /** @var class-string $kernelClass */
+            $refKernel = new \ReflectionClass($kernelClass);
+        } elseif (\class_exists($kernelClass = 'AppKernel')) {
+            /** @var class-string $kernelClass */
+            $refKernel = new \ReflectionClass($kernelClass);
+        }
+
+        if (null === $refKernel || !$refKernel->getFileName()) {
             throw new \RuntimeException('Undefined project structure');
         }
 
@@ -27,37 +29,31 @@ class KernelConfig implements KernelConfigInterface
 
     protected static function getKernelJsonPath(): string
     {
-        return static::getRootDir() . DIRECTORY_SEPARATOR . 'kernel.json';
+        return static::getRootDir().DIRECTORY_SEPARATOR.'kernel.json';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function write(array $mode)
+    public static function write(array $mode): void
     {
-        $kernelJson = array_merge(static::read(), $mode);
+        $kernelJson = \array_merge(static::read(), $mode);
         $kernelJson['_comment'] = 'This file is used to control with what configuration AppKernel should be created with.';
 
-        file_put_contents(static::getKernelJsonPath(), json_encode($kernelJson, \JSON_PRETTY_PRINT));
+        \file_put_contents(static::getKernelJsonPath(), \json_encode($kernelJson, \JSON_PRETTY_PRINT));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function read(): array
     {
-        $defaultMode = array(
-            'env'   => 'prod',
+        $defaultMode = [
+            'env' => 'prod',
             'debug' => false,
-        );
+        ];
 
-        $mode = @file_get_contents(static::getKernelJsonPath());
+        $mode = @\file_get_contents(static::getKernelJsonPath());
 
         if (false === $mode) {
             return $defaultMode;
         } else {
-            $mode = json_decode($mode, true);
-            if (is_array($mode) && isset($mode['env']) && isset($mode['debug'])) {
+            $mode = \json_decode($mode, true);
+            if (\is_array($mode) && isset($mode['env']) && isset($mode['debug'])) {
                 return $mode;
             } else {
                 return $defaultMode;

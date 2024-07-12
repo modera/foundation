@@ -2,11 +2,12 @@
 
 namespace Modera\ModuleBundle\Listener;
 
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Modera\ModuleBundle\DependencyInjection\ModeraModuleExtension;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -14,32 +15,24 @@ use Modera\ModuleBundle\DependencyInjection\ModeraModuleExtension;
  */
 class MaintenanceListener
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private ContainerInterface $container;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
-    /**
-     * @param RequestEvent $event
-     */
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         if ($this->isMaintenanceMode()) {
             $request = $event->getRequest();
             if ($request->isXmlHttpRequest()) {
-                $response = new JsonResponse(array(
+                $response = new JsonResponse([
                     'success' => false,
                     'message' => 'The server is temporarily down for maintenance.',
-                ), JsonResponse::HTTP_SERVICE_UNAVAILABLE);
+                ], JsonResponse::HTTP_SERVICE_UNAVAILABLE);
             } else {
+                /** @var \Twig\Environment $engine */
                 $engine = $this->container->get('twig');
                 $content = $engine->render('@ModeraModule/maintenance.html.twig');
                 $response = new Response($content, JsonResponse::HTTP_SERVICE_UNAVAILABLE);
@@ -50,13 +43,13 @@ class MaintenanceListener
         }
     }
 
-    /**
-     * @return bool
-     */
-    protected function isMaintenanceMode()
+    protected function isMaintenanceMode(): bool
     {
-        $debug = in_array($this->container->get('kernel')->getEnvironment(), array('test', 'dev'));
-        $name = ModeraModuleExtension::CONFIG_KEY . '.maintenance_mode';
-        return $this->container->getParameter($name) === true && !$debug;
+        /** @var KernelInterface $kernel */
+        $kernel = $this->container->get('kernel');
+        $debug = \in_array($kernel->getEnvironment(), ['test', 'dev']);
+        $name = ModeraModuleExtension::CONFIG_KEY.'.maintenance_mode';
+
+        return true === $this->container->getParameter($name) && !$debug;
     }
 }

@@ -48,7 +48,7 @@ This is how a simple provider class could look like:
 namespace MyCompany\SiteBundle\Contributions;
 
 use Modera\ConfigBundle\Config\ConfigurationEntryDefinition as CED;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class ConfigEntriesProvider implements ContributorInterface
 {
@@ -59,10 +59,7 @@ class ConfigEntriesProvider implements ContributorInterface
         $this->em = $em;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         $serverConfig = array(
             'id' => 'modera_config.entity_repository_handler'
@@ -99,10 +96,10 @@ In order to fetch a configuration property in your application code you need to 
 ``` php
 <?php
 
-/* @var \Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface $service */
+/** @var \Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface $service */
 $service = $container->get('modera_config.configuration_entries_manager');
 
-/* @var \Modera\ConfigBundle\Config\ConfigurationEntryInterface $entry */
+/** @var \Modera\ConfigBundle\Config\ConfigurationEntryInterface $entry */
 $entry = $service->findOneByNameOrDie('admin_user');
 
 // will yield "MyCompany\SecurityBundle\Entity\User"

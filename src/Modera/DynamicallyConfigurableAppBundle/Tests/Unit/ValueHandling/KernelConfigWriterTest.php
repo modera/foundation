@@ -80,7 +80,7 @@ class DummyKernelConfig implements KernelConfigInterface
     /**
      * {@inheritdoc}
      */
-    public static function write(array $mode)
+    public static function write(array $mode): void
     {
         static::$mode = array_merge(static::read(), $mode);
     }

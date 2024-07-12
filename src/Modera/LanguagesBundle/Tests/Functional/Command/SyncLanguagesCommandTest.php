@@ -21,16 +21,20 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
     private static $st;
 
     // override
-    public static function doSetUpBeforeClass()
+    public static function doSetUpBeforeClass(): void
     {
         self::$st = new SchemaTool(self::$em);
-        self::$st->createSchema(array(self::$em->getClassMetadata(Language::class)));
+        self::$st->createSchema([
+            self::$em->getClassMetadata(Language::class),
+        ]);
     }
 
     // override
-    public static function doTearDownAfterClass()
+    public static function doTearDownAfterClass(): void
     {
-        self::$st->dropSchema(array(self::$em->getClassMetadata(Language::class)));
+        self::$st->dropSchema([
+            self::$em->getClassMetadata(Language::class),
+        ]);
     }
 
     /**

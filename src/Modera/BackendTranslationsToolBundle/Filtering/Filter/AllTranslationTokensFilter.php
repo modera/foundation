@@ -8,18 +8,12 @@ namespace Modera\BackendTranslationsToolBundle\Filtering\Filter;
  */
 class AllTranslationTokensFilter extends AbstractTranslationTokensFilter
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
+    public function getId(): string
     {
         return 'all';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'All';
     }

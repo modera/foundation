@@ -33,7 +33,7 @@ class AjaxAuthenticationValidatingListenerTest extends \PHPUnit\Framework\TestCa
 
         $lnr = new AjaxAuthenticationValidatingListener('/mega-backend');
 
-        $this->assertEquals(AjaxAuthenticationValidatingListener::RESULT_NOT_AJAX, $lnr->onKernelException($event));
+        $this->assertEquals(AjaxAuthenticationValidatingListener::RESULT_NOT_AJAX, $lnr->kernelExceptionHandler($event));
     }
 
     public function testOnKernelExceptionWithNoBackend()
@@ -42,7 +42,7 @@ class AjaxAuthenticationValidatingListenerTest extends \PHPUnit\Framework\TestCa
 
         $lnr = new AjaxAuthenticationValidatingListener('/mega-backend');
 
-        $this->assertEquals(AjaxAuthenticationValidatingListener::RESULT_NOT_BACKEND_REQUEST, $lnr->onKernelException($event));
+        $this->assertEquals(AjaxAuthenticationValidatingListener::RESULT_NOT_BACKEND_REQUEST, $lnr->kernelExceptionHandler($event));
     }
 
     public function testOnKernelExceptionWithInvalidException()
@@ -50,7 +50,7 @@ class AjaxAuthenticationValidatingListenerTest extends \PHPUnit\Framework\TestCa
         $event = $this->createEvent(true, '/mega-backend');
 
         $lnr = new AjaxAuthenticationValidatingListener('/mega-backend');
-        $lnr->onKernelException($event);
+        $lnr->kernelExceptionHandler($event);
 
         $this->assertNull($event->getResponse());
     }
@@ -60,7 +60,7 @@ class AjaxAuthenticationValidatingListenerTest extends \PHPUnit\Framework\TestCa
         $event = $this->createEvent(true, '/mega-backend', new AccessDeniedException());
 
         $lnr = new AjaxAuthenticationValidatingListener('/mega-backend');
-        $lnr->onKernelException($event);
+        $lnr->kernelExceptionHandler($event);
 
         /* @var JsonResponse $response */
         $response = $event->getResponse();

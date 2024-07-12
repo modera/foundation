@@ -2,11 +2,10 @@
 
 namespace Modera\TranslationsBundle\Compiler;
 
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * You can use this service to compile translations, under the hood service relies on a console command because
@@ -34,12 +33,12 @@ class TranslationsCompiler
     {
         $app = $this->createApplication();
 
-        $input = new ArrayInput(array(
+        $input = new ArrayInput([
             'command' => 'modera:translations:compile',
             '--only-translated' => $onlyTranslated,
             '--no-ansi' => true,
             '-v' => true,
-        ));
+        ]);
         $input->setInteractive(false);
 
         $compileOutput = new BufferedOutput();

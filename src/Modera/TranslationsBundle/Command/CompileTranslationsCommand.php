@@ -4,16 +4,16 @@ namespace Modera\TranslationsBundle\Command;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Translation\MessageCatalogue;
+use Modera\LanguagesBundle\Entity\Language;
 use Modera\TranslationsBundle\Compiler\Adapter\AdapterInterface;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\TranslationsBundle\Service\Translator;
-use Modera\LanguagesBundle\Entity\Language;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * Takes tokens from database and compiles them back to SF files.
@@ -23,22 +23,17 @@ use Modera\LanguagesBundle\Entity\Language;
  */
 class CompileTranslationsCommand extends Command
 {
-    /**
-     * @var ContainerInterface
-     */
     private ContainerInterface $container;
 
     /**
      * @required
-     *
-     * @param ContainerInterface $container
      */
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('modera:translations:compile')
@@ -49,14 +44,13 @@ class CompileTranslationsCommand extends Command
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $catalogues = $this->extractCatalogues(!!$input->getOption('only-translated'));
-        if (count($catalogues)) {
-            $adapter = $this->getAdapter($input->getOption('adapter'));
+        $catalogues = $this->extractCatalogues((bool) $input->getOption('only-translated'));
+        if (\count($catalogues)) {
+            /** @var ?string $adapterId */
+            $adapterId = $input->getOption('adapter');
+            $adapter = $this->getAdapter($adapterId);
 
             $output->writeln('<fg=red>Clearing old translations</>');
             $adapter->clear();
@@ -64,7 +58,7 @@ class CompileTranslationsCommand extends Command
             $output->writeln('');
             $output->writeln('Dumping translations:');
             foreach ($catalogues as $locale => $catalogue) {
-                $output->writeln('    <fg=green>' . $locale . '</>');
+                $output->writeln('    <fg=green>'.$locale.'</>');
                 $adapter->dump($catalogue);
             }
             $output->writeln('');
@@ -82,12 +76,11 @@ class CompileTranslationsCommand extends Command
     }
 
     /**
-     * @param bool $onlyTranslated
      * @return MessageCatalogue[]
      */
-    protected function extractCatalogues($onlyTranslated = false)
+    protected function extractCatalogues(bool $onlyTranslated = false): array
     {
-        /* @var EntityManagerInterface $em */
+        /** @var EntityManagerInterface $em */
         $em = $this->container->get('doctrine.orm.entity_manager');
 
         $qb = $em->createQueryBuilder();
@@ -96,8 +89,10 @@ class CompileTranslationsCommand extends Command
             ->where($qb->expr()->eq('l.isEnabled', ':isEnabled'))
             ->setParameter('isEnabled', true);
 
+        /** @var array<int, string> $languages */
         $languages = [];
-        foreach ($qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY) as $row) {
+        /** @var array{'id': int, 'locale': string} $row */
+        foreach ((array) $qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY) as $row) {
             $languages[$row['id']] = $row['locale'];
         }
 
@@ -105,7 +100,7 @@ class CompileTranslationsCommand extends Command
         $qb->select('ltt.id, ltt.translation, IDENTITY(ltt.language) AS language, tt.domain, tt.tokenName')
             ->from(LanguageTranslationToken::class, 'ltt')
             ->leftJoin('ltt.translationToken', 'tt')
-            ->where($qb->expr()->in('ltt.language', array_keys($languages)))
+            ->where($qb->expr()->in('ltt.language', \array_keys($languages)))
             ->andWhere($qb->expr()->in('tt.isObsolete', ':isObsolete'))
             ->setParameter('isObsolete', false)
         ;
@@ -115,14 +110,16 @@ class CompileTranslationsCommand extends Command
                 ->setParameter('isNew', false);
         }
 
-        $catalogues = array();
-        foreach (array_values($languages) as $locale) {
+        $catalogues = [];
+        foreach (\array_values($languages) as $locale) {
             $catalogues[$locale] = new MessageCatalogue($locale);
         }
 
-        foreach ($qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY) as $row) {
+        foreach ((array) $qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY) as $row) {
+            /** @var array{'language': int, 'domain': string, 'tokenName': string, 'translation': string} $row */
+            /** @var string $locale */
             $locale = $languages[$row['language']];
-            /* @var MessageCatalogue $catalogue */
+            /** @var MessageCatalogue $catalogue */
             $catalogue = $catalogues[$locale];
             $catalogue->set($row['tokenName'], $row['translation'], $row['domain']);
         }
@@ -131,27 +128,28 @@ class CompileTranslationsCommand extends Command
     }
 
     /**
-     * Clear translations cache dir
+     * Clear translations cache dir.
      */
-    protected function translationsCacheWarmUp()
+    protected function translationsCacheWarmUp(): void
     {
-        $this->getTranslator()->warmUp($this->container->getParameter('kernel.cache_dir'));
+        /** @var string $cacheDir */
+        $cacheDir = $this->container->getParameter('kernel.cache_dir');
+        $this->getTranslator()->warmUp($cacheDir);
     }
 
-    /**
-     * @param null|string $id
-     * @return AdapterInterface
-     */
-    protected function getAdapter($id = null)
+    protected function getAdapter(?string $id = null): AdapterInterface
     {
-        return $this->container->get($id ?: 'modera_translations.compiler.adapter');
+        /** @var AdapterInterface $adapter */
+        $adapter = $this->container->get($id ?: 'modera_translations.compiler.adapter');
+
+        return $adapter;
     }
 
-    /**
-     * @return Translator
-     */
-    protected function getTranslator()
+    protected function getTranslator(): Translator
     {
-        return $this->container->get('modera_translations.service.translator');
+        /** @var Translator $translator */
+        $translator = $this->container->get('modera_translations.service.translator');
+
+        return $translator;
     }
 }

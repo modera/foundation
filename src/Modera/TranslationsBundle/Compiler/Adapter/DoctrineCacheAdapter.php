@@ -8,12 +8,13 @@ use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
  * @deprecated https://github.com/doctrine/cache
+ *
  * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2019 Modera Foundation
  */
 class DoctrineCacheAdapter implements AdapterInterface
 {
-    const CACHE_KEY = 'modera_translations.doctrine_cache_adapter';
+    public const CACHE_KEY = 'modera_translations.doctrine_cache_adapter';
 
     private Cache $cache;
 
@@ -22,34 +23,30 @@ class DoctrineCacheAdapter implements AdapterInterface
         $this->cache = $cache;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function clear(): void
     {
         $this->cache->delete(self::CACHE_KEY);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function dump(MessageCatalogueInterface $catalogue): void
     {
+        /** @var array<string, array<mixed>> $catalogues */
         $catalogues = [];
         if ($string = $this->cache->fetch(self::CACHE_KEY)) {
-            $catalogues = unserialize($string);
+            /** @var string $string */
+            /** @var array<string, array<mixed>> $catalogues */
+            $catalogues = \unserialize($string);
         }
         $catalogues[$catalogue->getLocale()] = $catalogue->all();
-        $this->cache->save(self::CACHE_KEY, serialize($catalogues));
+        $this->cache->save(self::CACHE_KEY, \serialize($catalogues));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function loadCatalogue(string $locale): MessageCatalogueInterface
     {
         if ($string = $this->cache->fetch(self::CACHE_KEY)) {
-            $catalogues = unserialize($string);
+            /** @var string $string */
+            /** @var array<string, array<mixed>> $catalogues */
+            $catalogues = \unserialize($string);
             if (isset($catalogues[$locale])) {
                 return new MessageCatalogue($locale, $catalogues[$locale]);
             }

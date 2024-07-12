@@ -5,6 +5,7 @@ namespace Modera\ConfigBundle\Tests\Functional\Entity;
 use Doctrine\ORM\Tools\SchemaTool;
 use Modera\ConfigBundle\Entity\ConfigurationEntry as CE;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
+use Modera\ConfigBundle\Tests\Fixtures\Entities\User;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 
 /**
@@ -17,24 +18,20 @@ class ConfigurationEntryTest extends FunctionalTestCase
      */
     private static $st;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function doSetUpBeforeClass()
+    public static function doSetUpBeforeClass(): void
     {
         self::$st = new SchemaTool(self::$em);
         self::$st->createSchema([
             self::$em->getClassMetadata(ConfigurationEntry::class),
+            self::$em->getClassMetadata(User::class),
         ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function doTearDownAfterClass()
+    public static function doTearDownAfterClass(): void
     {
         self::$st->dropSchema([
             self::$em->getClassMetadata(ConfigurationEntry::class),
+            self::$em->getClassMetadata(User::class),
         ]);
     }
 

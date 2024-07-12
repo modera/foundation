@@ -3,7 +3,7 @@
 namespace Modera\RoutingBundle\Tests\Unit\Routing;
 
 use Modera\RoutingBundle\Routing\Loader;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Route;
 

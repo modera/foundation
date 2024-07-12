@@ -10,18 +10,15 @@ use Symfony\Component\Process\Process;
  */
 class BackgroundProcess extends Process
 {
-    /**
-     * {@inheritdoc}
-     */
     public function __destruct()
     {
         // overwritten to prevent kill process
     }
 
     /**
-     * {@inheritdoc}
+     * @param array<string, string> $env
      */
-    public function start(callable $callback = null, array $env = array())
+    public function start(?callable $callback = null, array $env = []): void
     {
         $commandline = $this->getCommandLine();
         static::prepare($this);
@@ -29,21 +26,18 @@ class BackgroundProcess extends Process
         static::overrideCommandLine($this, $commandline);
     }
 
-    /**
-     * @param Process $process
-     */
-    public static function prepare(Process $process)
+    public static function prepare(Process $process): void
     {
         $commandline = $process->getCommandLine();
         if ('\\' === \DIRECTORY_SEPARATOR) {
-            $commandline = 'START /b "" ' . $commandline;
+            $commandline = 'START /b "" '.$commandline;
         } else {
-            $commandline = 'nohup ' . $commandline . ' >/dev/null 2>&1 & echo $!';
+            $commandline = 'nohup '.$commandline.' >/dev/null 2>&1 & echo $!';
         }
         static::overrideCommandLine($process, $commandline);
     }
 
-    protected static function overrideCommandLine(Process $process, string $commandline)
+    protected static function overrideCommandLine(Process $process, string $commandline): void
     {
         $property = new \ReflectionProperty(Process::class, 'commandline');
         $property->setAccessible(true);

@@ -16,7 +16,7 @@ class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
         $provider = new ConfigMergersProvider(
             new ClientDIContributor(),
             array(
-                'hide_delete_user_functionality' => 'yoyo',
+                'hide_delete_user_functionality' => true,
             )
         );
 
@@ -26,7 +26,7 @@ class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
         $expectedResult = array(
             'existing_key' => 'foobar',
             'modera_backend_security' => array(
-                'hideDeleteUserFunctionality' => 'yoyo',
+                'hideDeleteUserFunctionality' => true,
                 'sections' => array(
                     array(
                         'sectionConfig' => array(

@@ -2,11 +2,11 @@
 
 namespace Modera\MjrIntegrationBundle\Contributions\Config;
 
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 use Modera\MjrIntegrationBundle\Config\MainConfigInterface;
 use Modera\MjrIntegrationBundle\Menu\MenuManager;
 use Modera\MjrIntegrationBundle\Sections\Section;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * Merges standard and very basic configuration.
@@ -16,17 +16,16 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class ConfigMerger implements ConfigMergerInterface
 {
-    private $mainConfig;
-    private $menuMgr;
-    private $sectionsProvider;
-    private $classLoaderMappingsProvider;
+    private MainConfigInterface $mainConfig;
+    private MenuManager $menuMgr;
+    private ContributorInterface $sectionsProvider;
+    private ContributorInterface $classLoaderMappingsProvider;
 
-    /**
-     * @param array       $mainConfig
-     * @param MenuManager $menuMgr
-     */
     public function __construct(
-        MainConfigInterface $mainConfig, MenuManager $menuMgr, ContributorInterface $sectionsProvider, ContributorInterface $classLoaderMappingsProvider
+        MainConfigInterface $mainConfig,
+        MenuManager $menuMgr,
+        ContributorInterface $sectionsProvider,
+        ContributorInterface $classLoaderMappingsProvider
     ) {
         $this->mainConfig = $mainConfig;
         $this->menuMgr = $menuMgr;
@@ -34,39 +33,36 @@ class ConfigMerger implements ConfigMergerInterface
         $this->classLoaderMappingsProvider = $classLoaderMappingsProvider;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function merge(array $existingConfig)
+    public function merge(array $existingConfig): array
     {
-        $menuItems = array();
+        $menuItems = [];
         foreach ($this->menuMgr->getAll() as $menuItem) {
-            $menuItems[] = array(
+            $menuItems[] = [
                 'id' => $menuItem->getId(),
                 'glyph' => $menuItem->getGlyph(),
                 'label' => $menuItem->getLabel(),
                 'controller' => $menuItem->getController(),
                 'metadata' => $menuItem->getMetadata(),
-            );
+            ];
         }
 
-        $sections = array();
+        $sections = [];
+        /** @var Section $section */
         foreach ($this->sectionsProvider->getItems() as $section) {
-            /* @var Section $section */
-            $sections[] = array(
+            $sections[] = [
                 'id' => $section->getId(),
                 'controller' => $section->getController(),
                 'metadata' => $section->getMetadata(),
-            );
+            ];
         }
 
-        return array_merge($existingConfig, array(
+        return \array_merge($existingConfig, [
             'deploymentName' => $this->mainConfig->getTitle(),
             'deploymentUrl' => $this->mainConfig->getUrl(),
             'homeSection' => $this->mainConfig->getHomeSection(),
             'sections' => $sections, // backend sections
             'menuItems' => $menuItems,
             'classLoaderMappings' => $this->classLoaderMappingsProvider->getItems(),
-        ));
+        ]);
     }
 }

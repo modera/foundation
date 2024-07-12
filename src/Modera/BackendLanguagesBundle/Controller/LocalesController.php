@@ -2,10 +2,13 @@
 
 namespace Modera\BackendLanguagesBundle\Controller;
 
-use Symfony\Component\Intl\Locales;
-use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Controller\AbstractBaseController;
 use Modera\LanguagesBundle\Entity\Language;
+use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Intl\Locales;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -13,37 +16,45 @@ use Modera\LanguagesBundle\Entity\Language;
  */
 class LocalesController extends AbstractBaseController
 {
-    protected function checkAccess()
+    protected function checkAccess(): void
     {
+        /** @var AuthorizationCheckerInterface $authorizationChecker */
+        $authorizationChecker = $this->container->get('security.authorization_checker');
         $role = ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER;
-        if (false === $this->get('security.authorization_checker')->isGranted($role)) {
+        if (false === $authorizationChecker->isGranted($role)) {
             throw $this->createAccessDeniedException();
         }
     }
 
     /**
      * @Remote
+     *
+     * @param array<mixed> $params
+     *
+     * @return array<mixed>
      */
     public function listAction(array $params): array
     {
         $this->checkAccess();
 
-        $locales = array_filter($this->getLocales(), function($locale) use ($params) {
-            $parts = explode('_', $locale);
-            if (count($parts) > 1) {
-                if (isset($params['ignore']) && is_array($params['ignore']) && in_array($locale, $params['ignore'])) {
+        $locales = \array_filter($this->getLocales(), function ($locale) use ($params) {
+            $parts = \explode('_', $locale);
+            if (\count($parts) > 1) {
+                if (isset($params['ignore']) && \is_array($params['ignore']) && \in_array($locale, $params['ignore'])) {
                     return false;
                 }
-                return isset($params['language']) ? $params['language'] == $parts[0] : true;
+
+                return !isset($params['language']) || $params['language'] === $parts[0];
             }
+
             return false;
         });
 
-        $arr = array();
+        $arr = [];
         foreach ($locales as $locale) {
             $value = Language::getLocaleName($locale, $this->getDisplayLocale());
             if (isset($params['language'])) {
-                $value = substr(explode('(', $value, 2)[1], 0, -1);
+                $value = \substr(\explode('(', $value, 2)[1], 0, -1);
             }
             $arr[$locale] = $value;
         }
@@ -51,33 +62,43 @@ class LocalesController extends AbstractBaseController
         $collator = new \Collator($this->getDisplayLocale());
         $collator->asort($arr);
 
-        $result = array();
+        $result = [];
         foreach ($arr as $locale => $name) {
-            $result[] = array(
+            $result[] = [
                 'id' => $locale,
                 'name' => $name,
-            );
+            ];
         }
 
-        return array(
+        return [
             'success' => true,
             'items' => $result,
-            'total' => count($result),
-        );
+            'total' => \count($result),
+        ];
     }
 
+    /**
+     * @return array<int, string>
+     */
     private function getLocales(): array
     {
-        $locales = array_keys(Locales::getNames());
-        foreach ($this->get('modera_backend_languages.locales_provider')->getItems() as $locale) {
+        /** @var ContributorInterface $localesProvider */
+        $localesProvider = $this->container->get('modera_backend_languages.locales_provider');
+        $locales = \array_keys(Locales::getNames());
+        /** @var string $locale */
+        foreach ($localesProvider->getItems() as $locale) {
             $locales[] = $locale;
         }
+
         return $locales;
     }
 
     private function getDisplayLocale(): string
     {
-        $request = $this->get('request_stack')->getCurrentRequest();
-        return $request->getLocale();
+        /** @var RequestStack $rs */
+        $rs = $this->container->get('request_stack');
+        $request = $rs->getCurrentRequest();
+
+        return $request ? $request->getLocale() : 'en';
     }
 }

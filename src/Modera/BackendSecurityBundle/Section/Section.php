@@ -8,33 +8,15 @@ namespace Modera\BackendSecurityBundle\Section;
  */
 class Section implements SectionInterface
 {
-    /**
-     * @var string
-     */
-    private $id;
+    private string $id;
 
-    /**
-     * @var string
-     */
-    private $title;
+    private string $title;
 
-    /**
-     * @var string
-     */
-    private $glyphIcon;
+    private string $glyphIcon;
 
-    /**
-     * @var string
-     */
-    private $uiClass;
+    private string $uiClass;
 
-    /**
-     * @param string $id
-     * @param string $title
-     * @param string $glyphIcon
-     * @param string $uiClass
-     */
-    public function __construct($id, $title, $glyphIcon, $uiClass)
+    public function __construct(string $id, string $title, string $glyphIcon, string $uiClass)
     {
         $this->id = $id;
         $this->title = $title;
@@ -42,34 +24,22 @@ class Section implements SectionInterface
         $this->uiClass = $uiClass;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getGlyphIcon()
+    public function getGlyphIcon(): string
     {
         return $this->glyphIcon;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUiClass()
+    public function getUiClass(): string
     {
         return $this->uiClass;
     }

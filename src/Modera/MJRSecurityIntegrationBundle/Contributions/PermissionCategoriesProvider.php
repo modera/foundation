@@ -2,9 +2,9 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Contributions;
 
-use Modera\SecurityBundle\Model\PermissionCategory;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\SecurityBundle\Model\PermissionCategory;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -15,12 +15,9 @@ class PermissionCategoriesProvider implements ContributorInterface
     /**
      * @var PermissionCategory[]
      */
-    private $items;
+    private ?array $items = null;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (!$this->items) {
             $this->items = [

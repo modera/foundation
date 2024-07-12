@@ -2,9 +2,9 @@
 
 namespace Modera\MjrIntegrationBundle;
 
+use Modera\ExpanderBundle\Ext\ExtensionPoint;
 use Modera\MjrIntegrationBundle\DependencyInjection\ConfigProviderAliasingCompilerPass;
 use Modera\MjrIntegrationBundle\DependencyInjection\MenuItemContributorCompilerPass;
-use Sli\ExpanderBundle\Ext\ExtensionPoint;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -16,10 +16,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class ModeraMjrIntegrationBundle extends Bundle
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new ConfigProviderAliasingCompilerPass());
 
@@ -31,7 +28,7 @@ class ModeraMjrIntegrationBundle extends Bundle
 You will need to use this extension point when you need to contribute some additional data to so called 'runtime-config'
 (a config which is exposed to MJR when it is loaded). This is how a typical contribution could look like:
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\CallbackConfigMerger;
 
 class ConfigMergersProvider implements ContributorInterface
@@ -40,19 +37,16 @@ class ConfigMergersProvider implements ContributorInterface
 
     public function __construct()
     {
-        \$this->items = array(
+        \$this->items = [
             new CallbackConfigMerger(function(array \$currentConfig)  {
-                return array_merge(\$currentConfig, array(
-                    'php_version' => phpversion()
-                ));
+                return \array_merge(\$currentConfig, [
+                    'php_version' => phpversion(),
+                ]);
             })
-        );
+        ];
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getItems()
+    public function getItems(): array
     {
         return \$this->items;
     }
@@ -71,21 +65,18 @@ menu item contribution could look like this:
 use Modera\MjrIntegrationBundle\Menu\MenuItem;
 use Modera\MjrIntegrationBundle\Menu\MenuItemInterface;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class MenuItemsProvider implements ContributorInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
+        return [
             new MenuItem('Dashboard', 'Modera.backend.dashboard.runtime.Section', 'dashboard', [
                 MenuItemInterface::META_NAMESPACE => 'Modera.backend.dashboard',
-                MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackenddashboard/js'
+                MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackenddashboard/js',
             ], FontAwesome::resolve('cog', 'fas')),
-        );
+        ];
     }
 }
 TEXT;
@@ -101,20 +92,20 @@ event before user is authenticated yet. If you need to expose services only when
 "modera_mjr_security_integration.client_di_service_defs" extension-point instead. A typical contribution could look like
 this:
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class ClientDiServiceDefinitionsProvider implements ContributorInterface
 {
     // override
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            'modera_backend_dashboard.user_dashboard_settings_window_contributor' => array(
+        return [
+            'modera_backend_dashboard.user_dashboard_settings_window_contributor' => [
                 'className' => 'Modera.backend.dashboard.runtime.UserDashboardSettingsWindowContributor',
                 'args' => ['@application'],
-                'tags' => ['shared_activities_provider']
-            )
-        );
+                'tags' => ['shared_activities_provider'],
+            ],
+        ];
     }
 }
 TEXT;
@@ -129,21 +120,18 @@ when you need a place where you can play with your activities but don't want to 
 you can configure extjs-class loader. This is how contribution could look like:
 
 use Modera\MjrIntegrationBundle\Sections\Section;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class SectionsProvider implements ContributorInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            new Section('tools.modules', 'Modera.backend.module.toolscontribution.runtime.Section', array(
+        return [
+            new Section('tools.modules', 'Modera.backend.module.toolscontribution.runtime.Section', [
                 Section::META_NAMESPACE => 'Modera.backend.module',
-                Section::META_NAMESPACE_PATH => '/bundles/moderabackendmodule/js'
-            ))
-        );
+                Section::META_NAMESPACE_PATH => '/bundles/moderabackendmodule/js',
+            ])
+        ];
     }
 }
 TEXT;
@@ -157,18 +145,15 @@ This extension point allow to contribute CSS resources that must be included to 
 will need to use this extension point when you want to add some styling rules to you backend extjs components. This
 is how a typical contribution could look like:
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class CssResourcesProvider implements ContributorInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            '/bundles/moderabackendmodule/css/styles.css'
-        );
+        return [
+            '/bundles/moderabackendmodule/css/styles.css',
+        ];
     }
 }
 TEXT;
@@ -181,18 +166,15 @@ TEXT;
 You will want to use this extension-point when you need to teach backend extjs class loader where from to load
 class which belong to a certain namespace. This is how contribution could look like:
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class ClassLoaderMappingsProvider implements ContributorInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            'Modera.backend.configutils' => '/bundles/moderabackendconfigutils/js'
-        );
+        return [
+            'Modera.backend.configutils' => '/bundles/moderabackendconfigutils/js',
+        ];
     }
 }
 TEXT;
@@ -205,18 +187,15 @@ TEXT;
 You can use this extension-point when you need to contribute javascript files to be loaded when a backend page
 is loaded. This is how a typical contribution will look like:'
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class JsResourcesProvider implements ContributorInterface
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js'
-        );
+        return [
+            '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js',
+        ];
     }
 }
 TEXT;
@@ -240,19 +219,16 @@ TEXT;
 You can use this extension point to contribute items to a Help menu (usually rendered in backend's header, next to where
 username and exit button are located). This is how sample contribution can look like:
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Help\SimpleHelpMenuItem;
 
 class HelpMenuItemsProvider implements ContributorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         return [
             SimpleHelpMenuItem::createUrlAware('Help / Support', 'https://confluence.modera.org'),
-            SimpleHelpMenuItem::createActivityAware('About', 'product-about-info');
+            SimpleHelpMenuItem::createActivityAware('About', 'product-about-info'),
         ];
     }
 }

@@ -5,55 +5,37 @@ namespace Modera\MjrIntegrationBundle\Help;
 /**
  * Use methods {@link #createActivityAware} or {@link #createIntentAware} to create help menu items.
  *
- * @since 2.54.0
- *
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class SimpleHelpMenuItem implements HelpMenuItemInterface
 {
-    /**
-     * @var string
-     */
-    private $label;
+    private string $label;
+
+    private ?string $activityId = null;
 
     /**
-     * @var string
+     * @var mixed[]
      */
-    private $activityId;
+    private array $activityParams = [];
+
+    private ?string $intentId = null;
 
     /**
-     * @var array
+     * @var mixed[]
      */
-    private $activityParams = array();
+    private array $intentParams = [];
 
-    /**
-     * @var string
-     */
-    private $intentId;
-
-    /**
-     * @var array
-     */
-    private $intentParams = array();
-
-    /**
-     * @var string
-     */
-    private $url;
+    private ?string $url = null;
 
     /**
      * Creates a menu item that will trigger activity activation when menu item is clicked by user.
      *
-     * @param string $label
-     * @param string $activityId
-     * @param array  $activityParams
-     *
-     * @return HelpMenuItemInterface
+     * @param mixed[] $activityParams
      */
-    public static function createActivityAware($label, $activityId, $activityParams = array())
+    public static function createActivityAware(string $label, string $activityId, array $activityParams = []): self
     {
-        $me = new static();
+        $me = new self();
         $me->label = $label;
         $me->activityId = $activityId;
         $me->activityParams = $activityParams;
@@ -64,15 +46,11 @@ class SimpleHelpMenuItem implements HelpMenuItemInterface
     /**
      * Creates a menu item that will trigger intent dispatching when menu item is clicked by user.
      *
-     * @param string $label
-     * @param string $intentId
-     * @param array  $intentParams
-     *
-     * @return HelpMenuItemInterface
+     * @param mixed[] $intentParams
      */
-    public static function createIntentAware($label, $intentId, $intentParams = array())
+    public static function createIntentAware(string $label, string $intentId, array $intentParams = []): self
     {
-        $me = new static();
+        $me = new self();
         $me->label = $label;
         $me->intentId = $intentId;
         $me->intentParams = $intentParams;
@@ -82,65 +60,42 @@ class SimpleHelpMenuItem implements HelpMenuItemInterface
 
     /**
      * Creates a menu item that will trigger opening a new URL.
-     *
-     * @param string $label
-     * @param string $url
-     *
-     * @return HelpMenuItemInterface
      */
-    public static function createUrlAware($label, $url)
+    public static function createUrlAware(string $label, string $url): self
     {
-        $me = new static();
+        $me = new self();
         $me->label = $label;
         $me->url = $url;
 
         return $me;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getActivityId()
+    public function getActivityId(): ?string
     {
         return $this->activityId;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getActivityParams()
+    public function getActivityParams(): array
     {
         return $this->activityParams;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getIntentId()
+    public function getIntentId(): ?string
     {
         return $this->intentId;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getIntentParams()
+    public function getIntentParams(): array
     {
         return $this->intentParams;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
     }

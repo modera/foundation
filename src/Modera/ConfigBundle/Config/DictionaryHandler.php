@@ -10,33 +10,24 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  */
 class DictionaryHandler implements HandlerInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getReadableValue(ConfigurationEntry $entry)
     {
         $cfg = $entry->getServerHandlerConfig();
 
-        if (isset($cfg['dictionary']) && isset($cfg['dictionary'][$entry->getDenormalizedValue()])) {
+        if (\is_array($cfg['dictionary'] ?? null) && isset($cfg['dictionary'][$entry->getDenormalizedValue()])) {
             return $cfg['dictionary'][$entry->getDenormalizedValue()];
         }
 
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getValue(ConfigurationEntry $entry)
     {
         return $entry->getDenormalizedValue();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function convertToStorageValue($input, ConfigurationEntry $entry)
+    public function convertToStorageValue($value, ConfigurationEntry $entry)
     {
-        return $input;
+        return $value;
     }
 }

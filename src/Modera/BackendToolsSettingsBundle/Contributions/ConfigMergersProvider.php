@@ -2,7 +2,7 @@
 
 namespace Modera\BackendToolsSettingsBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -10,23 +10,17 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class ConfigMergersProvider implements ContributorInterface
 {
-    private $merger;
+    private SectionsConfigMerger $merger;
 
-    /**
-     * @param SectionsConfigMerger $merger
-     */
     public function __construct(SectionsConfigMerger $merger)
     {
         $this->merger = $merger;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
+        return [
             $this->merger,
-        );
+        ];
     }
 }

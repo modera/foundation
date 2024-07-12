@@ -8,15 +8,9 @@ class DummyEntity
 {
     use DashboardSettingsTrait;
 
-    /**
-     * @var array
-     */
-    public $dashboardSettings = array();
+    public array $dashboardSettings = [];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDashboardSettings()
+    public function getDashboardSettings(): array
     {
         return $this->dashboardSettings;
     }

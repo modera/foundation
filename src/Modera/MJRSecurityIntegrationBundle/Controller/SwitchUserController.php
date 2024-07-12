@@ -3,10 +3,11 @@
 namespace Modera\MJRSecurityIntegrationBundle\Controller;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Modera\FoundationBundle\Controller\AbstractBaseController as Controller;
+use Modera\DirectBundle\Annotation\Remote;
 use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
 use Modera\SecurityBundle\ModeraSecurityBundle;
-use Modera\DirectBundle\Annotation\Remote;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -16,16 +17,28 @@ class SwitchUserController extends Controller
 {
     use BackendUsersTrait;
 
+    protected function getContainer(): ContainerInterface
+    {
+        /** @var ContainerInterface $container */
+        $container = $this->container;
+
+        return $container;
+    }
+
     /**
      * @Remote
      *
-     * @param array $params
-     * @return array
+     * @param array<string, mixed> $params
+     *
+     * @return array<string, mixed>
      */
-    public function listAction(array $params)
+    public function listAction(array $params): array
     {
         $role = ModeraSecurityBundle::ROLE_ROOT_USER;
-        if ($switchUserConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY . '.switch_user')) {
+
+        /** @var ?array{'role': string} $switchUserConfig */
+        $switchUserConfig = $this->getContainer()->getParameter(ModeraSecurityExtension::CONFIG_KEY.'.switch_user');
+        if ($switchUserConfig) {
             $role = $switchUserConfig['role'];
         }
         $this->denyAccessUnlessGranted($role);
@@ -34,7 +47,7 @@ class SwitchUserController extends Controller
         $query->setHydrationMode($query::HYDRATE_ARRAY);
         $paginator = new Paginator($query);
 
-        $items = array();
+        $items = [];
         $total = $paginator->count();
         if ($total) {
             foreach ($paginator as $item) {
@@ -42,10 +55,10 @@ class SwitchUserController extends Controller
             }
         }
 
-        return array(
+        return [
             'success' => true,
             'items' => $items,
             'total' => $total,
-        );
+        ];
     }
 }

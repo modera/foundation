@@ -10,39 +10,27 @@ use Symfony\Component\Cache\Adapter\AdapterInterface;
  */
 class CompileNeeded
 {
-    const COMPILE_NEEDED_KEY = 'modera_backend_translations_tool.compile_needed';
+    private const COMPILE_NEEDED_KEY = 'modera_backend_translations_tool.compile_needed';
 
-    /**
-     * @var AdapterInterface
-     */
-    private $cache;
+    private AdapterInterface $cache;
 
-    /**
-     * @param AdapterInterface $cache
-     */
     public function __construct(AdapterInterface $cache)
     {
         $this->cache = $cache;
     }
 
-    /**
-     * @param bool $value
-     */
-    public function set($value)
+    public function set(bool $value): void
     {
         $this->cache->save($this->cache->getItem(self::COMPILE_NEEDED_KEY)->set($value));
     }
 
-    /**
-     * @return bool
-     */
-    public function get()
+    public function get(): bool
     {
         $value = false;
 
         $item = $this->cache->getItem(self::COMPILE_NEEDED_KEY);
         if ($item->isHit()) {
-            $value = $item->get();
+            $value = (bool) $item->get();
         }
 
         return $value;

@@ -2,7 +2,7 @@
 
 namespace Modera\BackendConfigUtilsBundle\Tests\Unit\Controller;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Modera\BackendConfigUtilsBundle\Controller\DefaultController;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
@@ -50,13 +50,13 @@ class DefaultControllerTest extends \PHPUnit\Framework\TestCase
 
         $entry = \Phake::mock(ConfigurationEntry::class);
 
-        $this->teachEntry($entry, 'getId', 'foo_id');
+        $this->teachEntry($entry, 'getId', 0);
         $this->teachEntry($entry, 'getName', 'foo_name');
         $this->teachEntry($entry, 'getReadableName', 'foo_rn');
         $this->teachEntry($entry, 'getReadableValue', 'foo_rv');
         $this->teachEntry($entry, 'getValue', 'foo_v');
-        $this->teachEntry($entry, 'isReadOnly', 'foo_ro');
-        $this->teachEntry($entry, 'getClientHandlerConfig', 'foo_ch');
+        $this->teachEntry($entry, 'isReadOnly', true);
+        $this->teachEntry($entry, 'getClientHandlerConfig', ['foo_ch']);
 
         $result = $hydrator($entry);
 
@@ -65,12 +65,12 @@ class DefaultControllerTest extends \PHPUnit\Framework\TestCase
             $this->assertArrayHasKey($key, $result);
         }
 
-        $this->assertEquals('foo_id', $result['id']);
+        $this->assertEquals(0, $result['id']);
         $this->assertEquals('foo_name', $result['name']);
         $this->assertEquals('foo_rn', $result['readableName']);
         $this->assertEquals('foo_rv', $result['readableValue']);
-        $this->assertEquals('foo_ro', $result['isReadOnly']);
-        $this->assertEquals('foo_ch', $result['editorConfig']);
+        $this->assertEquals(true, $result['isReadOnly']);
+        $this->assertEquals(['foo_ch'], $result['editorConfig']);
     }
 
     public function testGetConfigMapDataOnUpdate()

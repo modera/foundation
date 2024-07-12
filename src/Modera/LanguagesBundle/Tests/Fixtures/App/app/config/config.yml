@@ -5,6 +5,8 @@ parameters:
     db_password: '%env(SYMFONY__DB_PASSWORD)%'
 
 framework:
+    test: true
+    annotations:     ~
     secret:          Hell yeah!
     csrf_protection: true
     session:         ~

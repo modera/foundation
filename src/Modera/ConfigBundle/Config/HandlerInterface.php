@@ -11,7 +11,7 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
 interface HandlerInterface
 {
     /**
-     * @return string Value that will be displayed in the frontend (list view)
+     * @return mixed Value that will be displayed in the frontend (list view)
      */
     public function getReadableValue(ConfigurationEntry $entry);
 
@@ -25,10 +25,9 @@ interface HandlerInterface
      * Takes a value (it can be an object or whatever) that came from client side(or from some other place) and converts
      * it to something that can be saved in database.
      *
-     * @param mixed              $object
-     * @param ConfigurationEntry $entry
+     * @param mixed $value Mixed value
      *
-     * @return mixed
+     * @return mixed Mixed value
      */
-    public function convertToStorageValue($object, ConfigurationEntry $entry);
+    public function convertToStorageValue($value, ConfigurationEntry $entry);
 }

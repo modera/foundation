@@ -2,7 +2,7 @@
 
 namespace Modera\BackendDashboardBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Alex Rudakov <alexandr.rudakov@modera.org>
@@ -10,22 +10,19 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class ClientDiServiceDefinitionsProvider implements ContributorInterface
 {
-    /**
-     * @return array
-     */
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            'modera_backend_dashboard.user_dashboard_settings_window_contributor' => array(
+        return [
+            'modera_backend_dashboard.user_dashboard_settings_window_contributor' => [
                 'className' => 'Modera.backend.dashboard.runtime.UserDashboardSettingsWindowContributor',
                 'args' => ['@application'],
                 'tags' => ['shared_activities_provider'],
-            ),
-            'modera_backend_dashboard.settings_window_view_contributor' => array(
+            ],
+            'modera_backend_dashboard.settings_window_view_contributor' => [
                 'className' => 'Modera.backend.dashboard.runtime.SettingsWindowContributor',
                 'args' => ['@application'],
                 'tags' => ['shared_activities_provider'],
-            ),
-        );
+            ],
+        ];
     }
 }

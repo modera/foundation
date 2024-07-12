@@ -8,8 +8,10 @@ services:
         public: true
 
 framework:
+    test: true
     secret:          Hell yeah!
     session:        ~
+    annotations: ~
     validation: {enable_annotations: true}
     router:
         resource: "%kernel.project_dir%/app/config/routing.yml"

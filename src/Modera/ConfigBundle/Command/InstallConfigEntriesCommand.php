@@ -2,10 +2,10 @@
 
 namespace Modera\ConfigBundle\Command;
 
+use Modera\ConfigBundle\Config\ConfigEntriesInstaller;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Modera\ConfigBundle\Config\ConfigEntriesInstaller;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -22,10 +22,7 @@ class InstallConfigEntriesCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('modera:config:install-config-entries')
@@ -33,19 +30,16 @@ class InstallConfigEntriesCommand extends Command
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(' >> Installing configuration-entries ...');
 
         $installedEntries = $this->installer->install();
 
         foreach ($installedEntries as $entry) {
-            $output->writeln(sprintf('  - %s ( %s )', $entry->getName(), $entry->getReadableName()));
+            $output->writeln(\sprintf('  - %s ( %s )', $entry->getName(), $entry->getReadableName()));
         }
-        if (count($installedEntries) == 0) {
+        if (0 === \count($installedEntries)) {
             $output->writeln(" >> There's nothing to install, aborting");
         } else {
             $output->writeln(' >> Done!');

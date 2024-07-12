@@ -2,7 +2,7 @@
 
 namespace Modera\MjrIntegrationBundle\Menu;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * Manages menu.
@@ -12,11 +12,8 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class MenuManager
 {
-    private $provider;
+    private ContributorInterface $provider;
 
-    /**
-     * @param ContributorInterface $provider
-     */
     public function __construct(ContributorInterface $provider)
     {
         $this->provider = $provider;
@@ -25,8 +22,11 @@ class MenuManager
     /**
      * @return MenuItemInterface[]
      */
-    public function getAll()
+    public function getAll(): array
     {
-        return $this->provider->getItems();
+        /** @var MenuItemInterface[] $items */
+        $items = $this->provider->getItems();
+
+        return $items;
     }
 }

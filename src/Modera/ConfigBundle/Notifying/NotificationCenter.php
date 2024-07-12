@@ -2,8 +2,8 @@
 
 namespace Modera\ConfigBundle\Notifying;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @private
@@ -13,48 +13,33 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  */
 class NotificationCenter
 {
-    /**
-     * @var ContributorInterface
-     */
-    private $contributor;
+    private ContributorInterface $contributor;
 
-    /**
-     * @param ContributorInterface $contributor
-     */
     public function __construct(ContributorInterface $contributor)
     {
-         $this->contributor = $contributor;
+        $this->contributor = $contributor;
     }
 
-    /**
-     * @param ConfigurationEntry $entry
-     */
-    public function notifyConfigurationEntryAdded(ConfigurationEntry $entry)
+    public function notifyConfigurationEntryAdded(ConfigurationEntry $entry): void
     {
+        /** @var ListenerInterface $listener */
         foreach ($this->contributor->getItems() as $listener) {
-            /* @var ListenerInterface $listener */
             $listener->onConfigurationEntryAdded($entry);
         }
     }
 
-    /**
-     * @param ConfigurationEntry $entry
-     */
-    public function notifyConfigurationEntryUpdated(ConfigurationEntry $entry)
+    public function notifyConfigurationEntryUpdated(ConfigurationEntry $entry): void
     {
+        /** @var ListenerInterface $listener */
         foreach ($this->contributor->getItems() as $listener) {
-            /* @var ListenerInterface $listener */
             $listener->onConfigurationEntryUpdated($entry);
         }
     }
 
-    /**
-     * @param ConfigurationEntry $entry
-     */
-    public function notifyConfigurationEntryRemoved(ConfigurationEntry $entry)
+    public function notifyConfigurationEntryRemoved(ConfigurationEntry $entry): void
     {
+        /** @var ListenerInterface $listener */
         foreach ($this->contributor->getItems() as $listener) {
-            /* @var ListenerInterface $listener */
             $listener->onConfigurationEntryRemoved($entry);
         }
     }

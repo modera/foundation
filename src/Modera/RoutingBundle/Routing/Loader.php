@@ -2,10 +2,10 @@
 
 namespace Modera\RoutingBundle\Routing;
 
-use Symfony\Component\Routing\RouteCollection;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
  * Collects dynamically contributed routing resources.
@@ -16,54 +16,40 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class Loader implements LoaderInterface
 {
-    /**
-     * @var ContributorInterface
-     */
-    private $resourcesProvider;
+    private ContributorInterface $resourcesProvider;
 
-    /**
-     * @var bool
-     */
-    private $isLoaded = false;
+    private bool $isLoaded = false;
 
-    /**
-     * @var LoaderInterface
-     */
-    private $rootLoader;
+    private LoaderInterface $rootLoader;
 
-    /**
-     * @param ContributorInterface $resourcesProvider
-     * @param LoaderInterface      $rootLoader
-     */
+    protected LoaderResolverInterface $resolver;
+
     public function __construct(ContributorInterface $resourcesProvider, LoaderInterface $rootLoader)
     {
         $this->rootLoader = $rootLoader;
         $this->resourcesProvider = $resourcesProvider;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function load($resource, $type = null)
+    public function load($resource, ?string $type = null)
     {
         if (true === $this->isLoaded) {
             throw new \RuntimeException('Do not add the "modera_routing" loader twice');
         }
 
-        $resources = array();
+        $resources = [];
         $items = $this->resourcesProvider->getItems();
         foreach ($items as $index => $resource) {
-            if (!is_array($resource)) {
-                $resource = array(
+            if (!\is_array($resource)) {
+                $resource = [
                     'resource' => $resource,
-                );
+                ];
             }
-            $resource = array_merge(array('order' => 0, 'type' => null), $resource);
+            $resource = \array_merge(['order' => 0, 'type' => null], $resource);
             $resource['index'] = $index;
             $resources[] = $resource;
         }
 
-        usort($resources, function ($a, $b) {
+        \usort($resources, function ($a, $b) {
             if ($a['order'] == $b['order']) {
                 return ($a['index'] < $b['index']) ? -1 : 1;
             }
@@ -73,7 +59,10 @@ class Loader implements LoaderInterface
 
         $collection = new RouteCollection();
         foreach ($resources as $item) {
-            $collection->addCollection($this->rootLoader->load($item['resource'], $item['type']));
+            /** @var array{'resource': mixed,'type': string} $item */
+            /** @var RouteCollection $rootCollection */
+            $rootCollection = $this->rootLoader->load($item['resource'], $item['type']);
+            $collection->addCollection($rootCollection);
         }
 
         $this->isLoaded = true;
@@ -81,35 +70,22 @@ class Loader implements LoaderInterface
         return $collection;
     }
 
-    /**
-     * @param mixed  $resource
-     * @param string $type
-     *
-     * @return bool
-     */
-    public function supports($resource, $type = null)
+    public function supports($resource, ?string $type = null): bool
     {
         return 'modera_routing' === $type;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getResolver()
+    public function getResolver(): LoaderResolverInterface
     {
+        return $this->resolver;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setResolver(LoaderResolverInterface $resolver)
+    public function setResolver(LoaderResolverInterface $resolver): void
     {
+        $this->resolver = $resolver;
     }
 
-    /**
-     * @return bool
-     */
-    public function isLoaded()
+    public function isLoaded(): bool
     {
         return $this->isLoaded;
     }

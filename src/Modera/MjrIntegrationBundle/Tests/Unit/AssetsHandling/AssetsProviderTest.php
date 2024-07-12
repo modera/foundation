@@ -3,7 +3,7 @@
 namespace Modera\MjrIntegrationBundle\Tests\Unit\AssetsHandling;
 
 use Modera\MjrIntegrationBundle\AssetsHandling\AssetsProvider;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>

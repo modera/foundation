@@ -9,9 +9,9 @@ namespace Modera\DynamicallyConfigurableMJRBundle\Resolver;
 interface ValueResolverInterface
 {
     /**
-     * @param string $name
-     * @param mixed $value
-     * @return mixed
+     * @param mixed $value Mixed value
+     *
+     * @return mixed Mixed value
      */
-    public function resolve($name, $value);
+    public function resolve(string $name, $value);
 }

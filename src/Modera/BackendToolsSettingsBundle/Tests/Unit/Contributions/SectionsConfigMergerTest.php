@@ -4,31 +4,31 @@ namespace Modera\BackendToolsSettingsBundle\Tests\Unit\Contributions;
 
 use Modera\BackendToolsSettingsBundle\Contributions\SectionsConfigMerger;
 use Modera\BackendToolsSettingsBundle\Section\SectionInterface;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class DummySection implements SectionInterface
 {
-    public function getId()
+    public function getId(): string
     {
         return 'foo-id';
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'foo-id';
     }
 
-    public function getGlyph()
+    public function getGlyph(): ?string
     {
         return 'foo-glyph';
     }
 
-    public function getActivityClass()
+    public function getActivityClass(): string
     {
         return 'foo-ac';
     }
 
-    public function getMeta()
+    public function getMeta(): array
     {
         return array(
             'megameta',

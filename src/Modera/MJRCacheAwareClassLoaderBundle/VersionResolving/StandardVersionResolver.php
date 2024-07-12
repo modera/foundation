@@ -4,7 +4,7 @@ namespace Modera\MJRCacheAwareClassLoaderBundle\VersionResolving;
 
 use Modera\MJRCacheAwareClassLoaderBundle\DependencyInjection\ModeraMJRCacheAwareClassLoaderExtension;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Standard version resolver will try to do the following things in order to resolve currently installed MF version:.
@@ -20,28 +20,30 @@ use Symfony\Component\HttpKernel\Kernel;
  */
 class StandardVersionResolver implements VersionResolverInterface
 {
-    /* @var Kernel */
-    private $kernel;
-    private $semanticConfig = array();
+    private KernelInterface $kernel;
 
     /**
-     * @param ContainerInterface $container
+     * @var array{'version'?: string}
      */
+    private array $semanticConfig;
+
     public function __construct(ContainerInterface $container)
     {
-        $this->kernel = $container->get('kernel');
-        $this->semanticConfig = $container->getParameter(ModeraMJRCacheAwareClassLoaderExtension::CONFIG_KEY);
+        /** @var KernelInterface $kernel */
+        $kernel = $container->get('kernel');
+        $this->kernel = $kernel;
+
+        /** @var array{'version'?: string} $semanticConfig */
+        $semanticConfig = $container->getParameter(ModeraMJRCacheAwareClassLoaderExtension::CONFIG_KEY);
+        $this->semanticConfig = $semanticConfig;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function resolve()
+    public function resolve(): string
     {
         $configuredVersion = isset($this->semanticConfig['version']) ? $this->semanticConfig['version'] : '';
-        $fileVersion = @file_get_contents($this->kernel->getProjectDir().'/modera-version.txt');
+        $fileVersion = @\file_get_contents($this->kernel->getProjectDir().'/modera-version.txt');
 
-        if ('' != $configuredVersion) {
+        if ('' !== $configuredVersion) {
             return $configuredVersion;
         } elseif (false !== $fileVersion) {
             return $fileVersion;

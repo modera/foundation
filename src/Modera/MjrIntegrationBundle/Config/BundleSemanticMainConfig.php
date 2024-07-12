@@ -15,36 +15,29 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class BundleSemanticMainConfig implements MainConfigInterface
 {
-    private $config;
-
     /**
-     * @param ContainerInterface $container
+     * @var array{'deployment_name'?: string, 'deployment_url'?: string, 'home_section': string}
      */
+    private array $config;
+
     public function __construct(ContainerInterface $container)
     {
-        $this->config = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
+        /** @var array{'deployment_name'?: string, 'deployment_url'?: string, 'home_section': string} $config */
+        $config = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
+        $this->config = $config;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getTitle()
+    public function getTitle(): ?string
     {
-        return $this->config['deployment_name'];
+        return $this->config['deployment_name'] ?? null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUrl()
+    public function getUrl(): ?string
     {
-        return $this->config['deployment_url'];
+        return $this->config['deployment_url'] ?? null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getHomeSection()
+    public function getHomeSection(): ?string
     {
         return $this->config['home_section'];
     }

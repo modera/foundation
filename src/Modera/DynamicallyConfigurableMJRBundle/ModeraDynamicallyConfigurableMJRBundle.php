@@ -2,8 +2,8 @@
 
 namespace Modera\DynamicallyConfigurableMJRBundle;
 
+use Modera\ExpanderBundle\Contributing\ExtensionPointsAwareBundleInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Sli\ExpanderBundle\Contributing\ExtensionPointsAwareBundleInterface;
 
 /**
  * @author    Sergei Lissovski <sergei.lissovski@modera.org>
@@ -11,22 +11,19 @@ use Sli\ExpanderBundle\Contributing\ExtensionPointsAwareBundleInterface;
  */
 class ModeraDynamicallyConfigurableMJRBundle extends Bundle implements ExtensionPointsAwareBundleInterface
 {
-    const CONFIG_TITLE = 'site_name';
-    const CONFIG_URL = 'url';
-    const CONFIG_HOME_SECTION = 'home_section';
-    const CONFIG_SKIN_CSS = 'skin_css';
-    const CONFIG_MJR_EXT_JS = 'mjr_ext_js';
-    const CONFIG_LOGO_URL = 'logo_url';
+    public const CONFIG_TITLE = 'site_name';
+    public const CONFIG_URL = 'url';
+    public const CONFIG_HOME_SECTION = 'home_section';
+    public const CONFIG_SKIN_CSS = 'skin_css';
+    public const CONFIG_MJR_EXT_JS = 'mjr_ext_js';
+    public const CONFIG_LOGO_URL = 'logo_url';
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExtensionPointContributions(): array
     {
-        return array(
-            'modera_routing.routing_resources_provider' => array(
+        return [
+            'modera_routing.routing_resources_provider' => [
                 '@ModeraDynamicallyConfigurableMJRBundle/Resources/config/routing.yml',
-            ),
-        );
+            ],
+        ];
     }
 }

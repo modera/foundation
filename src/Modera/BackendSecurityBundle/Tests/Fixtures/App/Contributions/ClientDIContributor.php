@@ -3,7 +3,7 @@
 namespace Modera\BackendSecurityBundle\Tests\Fixtures\App\Contributions;
 
 use Modera\BackendSecurityBundle\Section\Section;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @author    Artem Brovko <artem.brovko@modera.com>
@@ -11,10 +11,10 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class ClientDIContributor implements ContributorInterface
 {
-    public function getItems()
+    public function getItems(): array
     {
         return [
-            new Section('section1', 'Section 1', 'icon-1', 'Some.ui.class')
+            new Section('section1', 'Section 1', 'icon-1', 'Some.ui.class'),
         ];
     }
 

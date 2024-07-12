@@ -17,9 +17,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 interface ModuleBundleInterface
 {
     /**
-     * @param KernelInterface $kernel
-     *
      * @return BundleInterface[]
      */
-    public function getBundles(KernelInterface $kernel);
+    public function getBundles(KernelInterface $kernel): array;
 }

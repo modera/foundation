@@ -16,17 +16,17 @@ interface MenuItemInterface extends SectionInterface
     /**
      * A CSS icon class which may be used to render an icon in frontend.
      */
-    const META_ICON = 'icon';
+    public const META_ICON = 'icon';
 
     /**
-     * @return string A label that will be shown in UI
+     * A label that will be shown in UI.
      */
-    public function getLabel();
+    public function getLabel(): string;
 
     /**
      * @see \Modera\MjrIntegrationBundle\Model\FontAwesome
      *
-     * @return string A glyph to display in menu
+     * A glyph to display in menu
      */
-    public function getGlyph();
+    public function getGlyph(): string;
 }

@@ -11,60 +11,41 @@ namespace Modera\TranslationsBundle\Compiler;
  */
 class CompilationResult
 {
-    /**
-     * @var int
-     */
-    private $exitCode;
+    private int $exitCode;
 
-    /**
-     * @var string
-     */
-    private $rawOutput;
+    private string $rawOutput;
 
     /**
      * @internal
-     *
-     * @param int    $exitCode
-     * @param string $rawOutput
      */
-    public function __construct($exitCode, $rawOutput)
+    public function __construct(int $exitCode, string $rawOutput)
     {
         $this->exitCode = $exitCode;
         $this->rawOutput = $rawOutput;
     }
 
-    /**
-     * @return bool
-     */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
-        return 0 == $this->exitCode;
+        return 0 === $this->exitCode;
     }
 
-    /**
-     * @return int
-     */
-    public function getExitCode()
+    public function getExitCode(): int
     {
         return $this->exitCode;
     }
 
     /**
      * Returns console command output as is.
-     *
-     * @return string
      */
-    public function getRawOutput()
+    public function getRawOutput(): string
     {
         return $this->rawOutput;
     }
 
     /**
      * Extracts exception error message from command's output.
-     *
-     * @return string
      */
-    public function getErrorMessage()
+    public function getErrorMessage(): string
     {
         // extracting message manually seemed like a faster solution than adding "format" support
         // to console command
@@ -72,29 +53,29 @@ class CompilationResult
             return '';
         }
 
-        $splitOutput = explode("\n", $this->getRawOutput());
+        $splitOutput = \explode(PHP_EOL, $this->getRawOutput());
         $startIndex = null;
         $endIndex = null;
         foreach ($splitOutput as $i => $line) {
-            $line = trim($line);
+            $line = \trim($line);
 
-            if (null == $startIndex && preg_match('/\.*\[.+\].*/', $line)) {
+            if (null === $startIndex && \preg_match('/\.*\[.+\].*/', $line)) {
                 $startIndex = $i + 1;
             }
 
-            if (null !== $startIndex && 'Exception trace:' == $line) {
+            if (null !== $startIndex && 'Exception trace:' === $line) {
                 $endIndex = $i - 1;
             }
         }
 
         if (null !== $startIndex && null !== $endIndex) {
-            $extractedChunk = array_slice($splitOutput, $startIndex, $endIndex - $startIndex);
+            $extractedChunk = \array_slice($splitOutput, $startIndex, $endIndex - $startIndex);
 
             foreach ($extractedChunk as $i => $value) {
-                $extractedChunk[$i] = trim($value);
+                $extractedChunk[$i] = \trim($value);
             }
 
-            return implode("\n", $extractedChunk);
+            return \implode("\n", $extractedChunk);
         }
 
         return '';

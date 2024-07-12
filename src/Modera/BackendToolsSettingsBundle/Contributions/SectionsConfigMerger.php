@@ -3,8 +3,8 @@
 namespace Modera\BackendToolsSettingsBundle\Contributions;
 
 use Modera\BackendToolsSettingsBundle\Section\SectionInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * Merges settings sections to MJR runtime-config.
@@ -14,33 +14,26 @@ use Sli\ExpanderBundle\Ext\ContributorInterface;
  */
 class SectionsConfigMerger implements ConfigMergerInterface
 {
-    private $sectionsProvider;
+    private ContributorInterface $sectionsProvider;
 
-    /**
-     * @param ContributorInterface $sectionsProvider Settings sections provider
-     */
     public function __construct(ContributorInterface $sectionsProvider)
     {
         $this->sectionsProvider = $sectionsProvider;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function merge(array $existingConfig)
+    public function merge(array $existingConfig): array
     {
-        $existingConfig['settingsSections'] = array();
+        $existingConfig['settingsSections'] = [];
 
+        /** @var SectionInterface $section */
         foreach ($this->sectionsProvider->getItems() as $section) {
-            /* @var SectionInterface $section */
-
-            $existingConfig['settingsSections'][] = array(
+            $existingConfig['settingsSections'][] = [
                 'id' => $section->getId(),
                 'name' => $section->getName(),
                 'activityClass' => $section->getActivityClass(),
                 'glyph' => $section->getGlyph(),
                 'meta' => $section->getMeta(),
-            );
+            ];
         }
 
         return $existingConfig;

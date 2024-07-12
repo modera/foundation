@@ -2,8 +2,9 @@
 
 namespace Modera\BackendTranslationsToolBundle\Contributions;
 
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\BackendTranslationsToolBundle\Filtering\Filter;
+use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -13,36 +14,27 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class FiltersProvider implements ContributorInterface
 {
     /**
-     * @var array
+     * @var array<string, FilterInterface[]>
      */
-    private $items;
+    private ?array $items = null;
 
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private ContainerInterface $container;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (!$this->items) {
-            $this->items = array(
-                'translation_token' => array(
+            $this->items = [
+                'translation_token' => [
                     new Filter\AllTranslationTokensFilter($this->container),
                     new Filter\NewTranslationTokensFilter($this->container),
                     new Filter\ObsoleteTranslationTokensFilter($this->container),
-                ),
-            );
+                ],
+            ];
         }
 
         return $this->items;

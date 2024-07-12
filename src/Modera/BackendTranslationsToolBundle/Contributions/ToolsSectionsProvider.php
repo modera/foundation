@@ -2,10 +2,10 @@
 
 namespace Modera\BackendTranslationsToolBundle\Contributions;
 
-use Modera\FoundationBundle\Translation\T;
 use Modera\BackendToolsBundle\Section\Section;
-use Sli\ExpanderBundle\Ext\ContributorInterface;
 use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\FoundationBundle\Translation\T;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
@@ -16,32 +16,30 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  */
 class ToolsSectionsProvider implements ContributorInterface
 {
-    private $authorizationChecker;
-
-    private $items;
+    private AuthorizationCheckerInterface $authorizationChecker;
 
     /**
-     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @var Section[]
      */
+    private ?array $items = null;
+
     public function __construct(AuthorizationCheckerInterface $authorizationChecker)
     {
         $this->authorizationChecker = $authorizationChecker;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems()
+    public function getItems(): array
     {
         if (!$this->items) {
-            $this->items = array();
+            $this->items = [];
 
             if ($this->authorizationChecker->isGranted(ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION)) {
                 $this->items[] = new Section(
                     T::trans('Translations'),
                     'tools.translations',
                     T::trans('A tool set for translating content from different sources.'),
-                    '', '',
+                    '',
+                    '',
                     'modera-backend-translations-tool-tools-icon'
                 );
             }

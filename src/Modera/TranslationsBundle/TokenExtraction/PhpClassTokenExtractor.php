@@ -45,61 +45,62 @@ use Symfony\Component\Translation\MessageCatalogue;
 class PhpClassTokenExtractor implements ExtractorInterface
 {
     /**
-     * Prefix for new found message.
-     *
-     * @var string
+     * Prefix for new-found message.
      */
-    private $prefix = '';
+    private string $prefix = '';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function extract($directory, MessageCatalogue $catalog)
-    {
-        // load any existing translation files
-        $finder = new Finder();
-        $files = $finder->files()->name('*.php')->exclude('Tests')->in($directory);
-        foreach ($files as $file) {
-            $this->parseTokens(token_get_all(file_get_contents($file)), $catalog);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setPrefix($prefix)
+    public function setPrefix(string $prefix): void
     {
         $this->prefix = $prefix;
+    }
+
+    public function extract($resource, MessageCatalogue $catalogue): void
+    {
+        if (\is_iterable($resource)) {
+            foreach ($resource as $dir) {
+                $this->extract($dir, $catalogue);
+            }
+
+            return;
+        }
+
+        // load any existing translation files
+        $finder = new Finder();
+        $files = $finder->files()->name('*.php')->exclude('Tests')->in((string) $resource);
+        foreach ($files as $file) {
+            $this->parseTokens(
+                \token_get_all(\file_get_contents($file) ?: ''),
+                $catalogue
+            );
+        }
     }
 
     /**
      * Normalizes a token.
      *
-     * @param mixed $token
-     *
-     * @return string
+     * @param string|array<int, int|string> $token
      */
-    protected function normalizeToken($token)
+    protected function normalizeToken($token): string
     {
-        if (is_array($token)) {
-            return $token[1];
+        if (\is_array($token)) {
+            return (string) $token[1];
         }
 
         return $token;
     }
 
     /**
-     * @param array $tokens
+     * @param array<int, string|array<int, int|string>> $tokens
      *
-     * @return array[]
+     * @return array<int, array<string, int|string|array<mixed>|null>>
      */
-    private function extractInvocations(array $tokens)
+    private function extractInvocations(array $tokens): array
     {
         $sequences = [
             ['T', '::', 'trans'],
         ];
 
-        $invocations = array();
+        $invocations = [];
 
         foreach ($sequences as $seq) {
             foreach ($tokens as $tokenIndex => $token) {
@@ -107,19 +108,19 @@ class PhpClassTokenExtractor implements ExtractorInterface
                 foreach ($seq as $seqIndex => $item) {
                     $indexToValidate = $tokenIndex + $seqIndex; // next token in a token stream
 
-                    if (isset($tokens[$indexToValidate]) && $this->normalizeToken($tokens[$indexToValidate]) == $item) {
+                    if (isset($tokens[$indexToValidate]) && $this->normalizeToken($tokens[$indexToValidate]) === $item) {
                         ++$matchCount;
                     }
                 }
 
                 // we will continue only if we got exact match for entire sequence of tokens
-                if ($matchCount != count($seq)) {
+                if ($matchCount !== \count($seq)) {
                     continue;
                 }
 
-                $startIndex = $tokenIndex + count($seq);
+                $startIndex = $tokenIndex + \count($seq);
 
-                if ($tokens[$startIndex] != '(') {
+                if ('(' !== $tokens[$startIndex]) {
                     continue;
                 }
 
@@ -127,31 +128,31 @@ class PhpClassTokenExtractor implements ExtractorInterface
                 $depth = 1; // because there was already one "("
                 $bodyLength = null;
 
-                $bodyStartTokens = array_slice($tokens, $startIndex);
+                $bodyStartTokens = \array_slice($tokens, $startIndex);
                 foreach ($bodyStartTokens as $braceWannaBeIndex => $braceWannaBeToken) {
                     $value = $this->normalizeToken($braceWannaBeToken);
 
-                    if ('(' == $value) {
+                    if ('(' === $value) {
                         ++$depth;
-                    } elseif (')' == $value) {
+                    } elseif (')' === $value) {
                         --$depth;
                     }
 
-                    if (0 == $depth) {
-                        $bodyLength = $braceWannaBeIndex;
+                    if (0 === $depth) {
+                        $bodyLength = (int) $braceWannaBeIndex;
                         break;
                     }
                 }
 
-                $bodyTokens = array_slice($tokens, $startIndex, $bodyLength);
+                $bodyTokens = \array_slice($tokens, $startIndex, $bodyLength);
 
-                $invocations[] = array(
-                    'method_name' => $seq[count($seq) - 1],
+                $invocations[] = [
+                    'method_name' => $seq[\count($seq) - 1],
                     'start_index' => $startIndex,
                     'body' => $bodyTokens,
                     'length' => $bodyLength,
                     'tokens' => $tokens,
-                );
+                ];
             }
         }
 
@@ -161,16 +162,16 @@ class PhpClassTokenExtractor implements ExtractorInterface
     /**
      * Will filter out whitespace tokens because we don't use them in during tokens stream analysis.
      *
-     * @param array $tokens
+     * @param array<mixed> $tokens
      *
-     * @return array[]
+     * @return array<mixed>
      */
-    private function siftOutWhitespaceTokens(array $tokens)
+    private function siftOutWhitespaceTokens(array $tokens): array
     {
         $result = [];
 
         foreach ($tokens as $token) {
-            if (is_array($token) && \T_WHITESPACE == $token[0]) {
+            if (\is_array($token) && \T_WHITESPACE === $token[0]) {
                 continue;
             }
 
@@ -181,80 +182,85 @@ class PhpClassTokenExtractor implements ExtractorInterface
     }
 
     /**
-     * @param array $invocation
+     * @param array<string, mixed> $invocation
      *
-     * @return array[]
+     * @return array<string, mixed>
      */
-    private function extractArgumentTokens(array $invocation)
+    private function extractArgumentTokens(array $invocation): array
     {
-        $tokens = $invocation['body'];
+        $tokens = (array) $invocation['body'];
 
         // if method contains no parameters, like Helper::trans()
-        if (count($tokens) == 0) {
-            return array();
+        if (0 === \count($tokens)) {
+            return [];
         }
 
-        $args = array(
+        $args = [
             'token' => $tokens[0],
-            'params' => array(),
-            'domain' => array(),
-        );
+            'params' => [],
+            'domain' => [],
+        ];
 
         // first argument is "message":
         // trans($id, $parameters, $domain, $locale)
 
         $indexShift = 0;
 
-        if (is_array($tokens[0]) && \T_STRING == $tokens[0][0] && 'implode' == $tokens[0][1]) {
-            $indexShift += array_search(')', $tokens, true) + 1;
+        if (\is_array($tokens[0]) && \T_STRING === $tokens[0][0] && 'implode' === $tokens[0][1]) {
+            $indexShift += (int) \array_search(')', $tokens, true) + 1;
         }
 
-        $isParamsArgSpecified = isset($tokens[$indexShift + 1]) && ',' == $tokens[$indexShift + 1]
-                             && isset($tokens[$indexShift + 2]);
+        $isParamsArgSpecified = isset($tokens[$indexShift + 1])
+                            && ',' === $tokens[$indexShift + 1]
+                            && isset($tokens[$indexShift + 2])
+        ;
 
         if ($isParamsArgSpecified) {
-            $isArrayParameter = strtolower($this->normalizeToken($tokens[$indexShift + 2])) == 'array'
-                              && isset($tokens[$indexShift + 3]) && $this->normalizeToken($tokens[$indexShift + 3]) == '(';
+            $isArrayParameter = 'array' === \strtolower($this->normalizeToken($tokens[$indexShift + 2]))
+                            && isset($tokens[$indexShift + 3])
+                            && '(' === $this->normalizeToken($tokens[$indexShift + 3])
+            ;
 
             if (!$isArrayParameter) {
-                $isArrayParameter = $this->normalizeToken($tokens[$indexShift + 2]) == '[';
+                $isArrayParameter = '[' === $this->normalizeToken($tokens[$indexShift + 2]);
             }
 
-            $isNullParameter = strtolower($this->normalizeToken($tokens[$indexShift + 2])) == 'null';
-            $isVariableParameter = \T_VARIABLE == $tokens[$indexShift + 2][0];
+            $isNullParameter = 'null' === \strtolower($this->normalizeToken($tokens[$indexShift + 2]));
+            $isVariableParameter = \T_VARIABLE === $tokens[$indexShift + 2][0];
 
             if ($isArrayParameter) {
                 $depth = 1;
                 $secondArgEndIndex = null;
 
-                $j = $this->normalizeToken($tokens[$indexShift + 2]) == '[' ? 3 : 4;
-                for ($i = $indexShift + $j; $i < count($tokens); ++$i) {
+                $j = '[' === $this->normalizeToken($tokens[$indexShift + 2]) ? 3 : 4;
+                for ($i = $indexShift + $j; $i < \count($tokens); ++$i) {
                     $value = $this->normalizeToken($tokens[$i]);
 
                     // parameters may be nested
-                    if ('(' == $value) {
+                    if ('(' === $value) {
                         ++$depth;
-                    } elseif (')' == $value) {
+                    } elseif (')' === $value) {
                         --$depth;
-                    } elseif ('[' == $value) {
+                    } elseif ('[' === $value) {
                         ++$depth;
-                    } elseif (']' == $value) {
+                    } elseif (']' === $value) {
                         --$depth;
                     }
 
-                    if (0 == $depth) {
+                    if (0 === $depth) {
                         $secondArgEndIndex = $i;
                         break;
                     }
                 }
 
                 // token parameters
-                $args['params'] = array_slice($tokens, $indexShift + $j, $secondArgEndIndex);
+                $args['params'] = \array_slice($tokens, $indexShift + $j, $secondArgEndIndex);
 
                 // if $params argument is followed by "," we assume that domain is specified
                 $isDomainArgumentSpecified = isset($tokens[$indexShift + $secondArgEndIndex + 1])
-                                           && ',' == $tokens[$indexShift + $secondArgEndIndex + 1]
-                                           && isset($tokens[$indexShift + $secondArgEndIndex + 2]);
+                                        && ',' === $tokens[$indexShift + $secondArgEndIndex + 1]
+                                        && isset($tokens[$indexShift + $secondArgEndIndex + 2])
+                ;
 
                 if ($isDomainArgumentSpecified) {
                     $args['domain'] = $tokens[$indexShift + $secondArgEndIndex + 2];
@@ -264,8 +270,9 @@ class PhpClassTokenExtractor implements ExtractorInterface
 
                 // if params are followed by "null," we assume that domain parameter is also provided
                 $isDomainArgumentSpecified = isset($tokens[$indexShift + 3])
-                                          && $this->normalizeToken($tokens[$indexShift + 3]) == ','
-                                          && isset($tokens[$indexShift + 4]);
+                                        && ',' === $this->normalizeToken($tokens[$indexShift + 3])
+                                        && isset($tokens[$indexShift + 4])
+                ;
 
                 if ($isDomainArgumentSpecified) {
                     $args['domain'] = $tokens[$indexShift + 4];
@@ -277,95 +284,106 @@ class PhpClassTokenExtractor implements ExtractorInterface
     }
 
     /**
-     * @param array $tokens
-     * @return string
+     * @param array<int, string|array<int, int|string>> $tokens
      */
-    private function resolveImplodeFn(array $tokens)
+    private function resolveImplodeFn(array $tokens): string
     {
         $glue = '';
-        if (\T_CONSTANT_ENCAPSED_STRING == $tokens[2][0]) {
-            $glue = substr($tokens[2][1], 1, -1);
-        } else if (\T_STRING == $tokens[2][0]) {
-            $glue = constant($tokens[2][1]);
+        if (\T_CONSTANT_ENCAPSED_STRING === $tokens[2][0]) {
+            $glue = \substr((string) $tokens[2][1], 1, -1);
+        } elseif (\T_STRING === $tokens[2][0]) {
+            $glue = \constant((string) $tokens[2][1]);
+        }
+        if (!\is_string($glue)) {
+            throw new \RuntimeException('$glue must be a string');
         }
 
-        $pieces = array();
-        foreach (array_slice($tokens, 6, -2) as $val) {
-            if (is_array($val)) {
-                $pieces[] = substr($val[1], 1, -1);
+        $pieces = [];
+        foreach (\array_slice($tokens, 6, -2) as $val) {
+            if (\is_array($val)) {
+                $pieces[] = \substr((string) $val[1], 1, -1);
             }
         }
 
-        return '\'' . implode($glue, $pieces) . '\'';
+        return '\''.\implode($glue, $pieces).'\'';
     }
 
     /**
-     * @param array $valueToken
-     * @param array $invocation
-     *
-     * @return string
+     * @param array<int, int|string> $valueToken
+     * @param array<string, mixed>   $invocation
      */
-    private function resolveTokenValue(array $valueToken, array $invocation)
+    private function resolveTokenValue(array $valueToken, array $invocation): string
     {
-        if (\T_CONSTANT_ENCAPSED_STRING == $valueToken[0]) {
+        if (\T_CONSTANT_ENCAPSED_STRING === $valueToken[0]) {
             // just a string literal
-            return trim($valueToken[1], $valueToken[1][0]);
+            $value = (string) $valueToken[1];
 
-        } elseif (\T_STRING == $valueToken[0]) {
-            if ('implode' == $valueToken[1]) {
-                $limit = array_search(')', array_slice($invocation['tokens'], $invocation['start_index']), true) + 2;
-                $value = $this->resolveImplodeFn(array_slice($invocation['tokens'], $invocation['start_index'], $limit));
+            return \trim($value, $value[0]);
+        } elseif (\T_STRING === $valueToken[0]) {
+            if ('implode' === $valueToken[1]) {
+                /** @var int $startIndex */
+                $startIndex = $invocation['start_index'];
+                /** @var array<int, string|array<int, int|string>> $tokens */
+                $tokens = $invocation['tokens'];
+                $limit = (int) \array_search(')', \array_slice($tokens, $startIndex), true) + 2;
+                $value = $this->resolveImplodeFn(\array_slice($tokens, $startIndex, $limit));
 
-                return trim($value, $value[0]);
+                return \trim($value, $value[0]);
             }
-
-        } elseif (\T_VARIABLE == $valueToken[0]) {
+        } elseif (\T_VARIABLE === $valueToken[0]) {
             // variable is used, we are going to try to resolve its value even if it is composite
             // ( made up of several assign statements )
 
             $variableName = $valueToken[1];
 
+            /** @var int $startIndex */
+            $startIndex = $invocation['start_index'];
+            /** @var array<int, string|array<int, int|string>> $tokens */
+            $tokens = $invocation['tokens'];
+
             // narrowing variable value assign. zone
-            $parentTokens = array_slice($invocation['tokens'], 0, $invocation['start_index']);
-            $parentTokens = array_reverse($parentTokens);
+            $parentTokens = \array_slice($tokens, 0, $startIndex);
+            $parentTokens = \array_reverse($parentTokens);
 
             $length = null;
             foreach ($parentTokens as $i => $parentToken) {
-                if (is_array($parentToken) && \T_FUNCTION == $parentToken[0]) {
+                if (\is_array($parentToken) && \T_FUNCTION === $parentToken[0]) {
                     $length = $i;
                     break;
                 }
             }
 
-            $parentTokens = array_slice($parentTokens, 0, $length);
-            $parentTokens = array_reverse($parentTokens);
+            $parentTokens = \array_slice($parentTokens, 0, $length);
+            $parentTokens = \array_reverse($parentTokens);
 
             // now that we have all tokens from FUNCTION to the Helper::*() we can compile variable's value
 
             $variableValue = '';
             foreach ($parentTokens as $i => $parentToken) {
                 // ha, this is our variable!
-                if (is_array($parentToken) && \T_VARIABLE == $parentToken[0] && $parentToken[1] == $variableName) {
+                if (\is_array($parentToken) && \T_VARIABLE === $parentToken[0] && $parentToken[1] === $variableName) {
                     // both assign operator and a value exist
                     if (isset($parentTokens[$i + 1]) && isset($parentTokens[$i + 2])) {
                         $assignValueTokenValue = $parentTokens[$i + 1];
                         $variableValueTokenValue = $parentTokens[$i + 2];
 
                         $isValidAssignToken = false;
-                        if (is_string($assignValueTokenValue) && '=' == $assignValueTokenValue) {
-                            $isValidAssignToken = true;
-                        } elseif (is_array($assignValueTokenValue) && \T_CONCAT_EQUAL == $assignValueTokenValue[0]) {
-                            $isValidAssignToken = true;
+                        if (\is_string($assignValueTokenValue)) {
+                            $isValidAssignToken = '=' === $assignValueTokenValue;
+                        } elseif (\is_array($assignValueTokenValue)) {
+                            $isValidAssignToken = \T_CONCAT_EQUAL === $assignValueTokenValue[0];
                         }
 
                         // we are not going to support assign statement when one variable points to another etc
-                        $isValidVarValueToken = is_array($variableValueTokenValue) && \T_CONSTANT_ENCAPSED_STRING == $variableValueTokenValue[0];
+                        $isValidVarValueToken = \is_array($variableValueTokenValue)
+                                            && \T_CONSTANT_ENCAPSED_STRING === $variableValueTokenValue[0]
+                        ;
 
-                        if (!$isValidVarValueToken && \T_STRING == $variableValueTokenValue[0]) {
-                            if ('implode' == $variableValueTokenValue[1]) {
+                        if (!$isValidVarValueToken && \T_STRING === $variableValueTokenValue[0]) {
+                            if ('implode' === $variableValueTokenValue[1]) {
                                 $offset = $i + 2;
-                                $limit = array_search(')', array_slice($parentTokens, $offset), true) + 2;
-                                $variableValueTokenValue = $this->resolveImplodeFn(array_slice($parentTokens, $offset, $limit));
+                                $limit = \array_search(')', \array_slice($parentTokens, $offset), true) + 2;
+                                $variableValueTokenValue = $this->resolveImplodeFn(\array_slice($parentTokens, $offset, $limit));
                                 $isValidVarValueToken = true;
                             }
                         }
@@ -374,10 +392,10 @@ class PhpClassTokenExtractor implements ExtractorInterface
                             $value = $this->normalizeToken($variableValueTokenValue);
                             $assignStmt = $this->normalizeToken($assignValueTokenValue);
 
-                            if ('=' == $assignStmt) {
-                                $variableValue = trim($value, $value[0]);
-                            } elseif ('.=' == $assignStmt) {
-                                $variableValue .= trim($value, $value[0]);
+                            if ('=' === $assignStmt) {
+                                $variableValue = \trim($value, $value[0]);
+                            } elseif ('.=' === $assignStmt) {
+                                $variableValue .= \trim($value, $value[0]);
                             }
                         }
                     }
@@ -393,14 +411,12 @@ class PhpClassTokenExtractor implements ExtractorInterface
     /**
      * Will make sure if a token stream which represents a file has required USE statement.
      *
-     * @param array $tokens
-     *
-     * @return bool
+     * @param array<int, mixed> $tokens
      */
-    private function containsRequiredUseStatements(array $tokens)
+    private function containsRequiredUseStatements(array $tokens): bool
     {
         foreach ($tokens as $currentIndex => $token) {
-            if (!is_array($token)) {
+            if (!\is_array($token)) {
                 continue;
             }
 
@@ -408,11 +424,11 @@ class PhpClassTokenExtractor implements ExtractorInterface
                 $expectedSequence = ['Modera', '\\', 'FoundationBundle', '\\', 'Translation', '\\', 'T'];
                 $expectedLength = [
                     1,                        // >= PHP 8
-                    count($expectedSequence), // <= PHP 7
+                    \count($expectedSequence), // <= PHP 7
                 ];
                 foreach ($expectedLength as $length) {
-                    $currentSequence = array_slice($tokens, $currentIndex + 1, $length);
-                    if (implode('', $expectedSequence) == $this->joinTokenSequence($currentSequence)) {
+                    $currentSequence = \array_slice($tokens, $currentIndex + 1, $length);
+                    if (\implode('', $expectedSequence) === $this->joinTokenSequence($currentSequence)) {
                         return true;
                     }
                 }
@@ -422,43 +438,54 @@ class PhpClassTokenExtractor implements ExtractorInterface
         return false;
     }
 
-    private function joinTokenSequence(array $tokenSequence)
+    /**
+     * @param array<mixed> $tokenSequence
+     */
+    private function joinTokenSequence(array $tokenSequence): string
     {
         $result = [];
 
         foreach ($tokenSequence as $token) {
-            $result[] = is_array($token) ? $token[1] : $token;
+            $result[] = \is_array($token) ? $token[1] : $token;
         }
 
-        return implode('', $result);
+        return \implode('', $result);
     }
 
-    private function parseTokens(array $tokens, MessageCatalogue $catalog)
+    /**
+     * @param array<mixed> $tokens
+     */
+    private function parseTokens(array $tokens, MessageCatalogue $catalog): void
     {
+        /** @var array<int, string|array<int, int|string>> $tokens */
         $tokens = $this->siftOutWhitespaceTokens($tokens);
 
         if (!$this->containsRequiredUseStatements($tokens)) {
-            return false;
+            return;
         }
 
         $invocations = $this->extractInvocations($tokens);
 
         foreach ($invocations as $invocation) {
             $argumentsTokens = $this->extractArgumentTokens($invocation);
-            if (count($argumentsTokens) == 0) {
+            if (0 === \count($argumentsTokens)) {
                 continue;
             }
 
-            $tokenValue = $this->resolveTokenValue($argumentsTokens['token'], $invocation);
+            /** @var array<int, int|string> $valueToken */
+            $valueToken = $argumentsTokens['token'];
+            $tokenValue = $this->resolveTokenValue($valueToken, $invocation);
             if (!$tokenValue) {
                 continue;
             }
 
             $domain = 'messages';
-            if (count($argumentsTokens['domain']) > 0) {
-                $isNullParameter = strtolower($this->normalizeToken($argumentsTokens['domain'])) == 'null';
+            /** @var array<int, int|string> $domainTokens */
+            $domainTokens = $argumentsTokens['domain'];
+            if (\count($domainTokens) > 0) {
+                $isNullParameter = 'null' === \strtolower($this->normalizeToken($domainTokens));
                 if (!$isNullParameter) {
-                    $domain = $this->resolveTokenValue($argumentsTokens['domain'], $invocation);
+                    $domain = $this->resolveTokenValue($domainTokens, $invocation);
                 }
             }
 

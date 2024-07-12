@@ -5,6 +5,7 @@ namespace Modera\FileUploaderBundle\Tests\Unit\Controller;
 use Modera\FileRepositoryBundle\Exceptions\FileValidationException;
 use Modera\FileUploaderBundle\Controller\UniversalUploaderController;
 use Modera\FileUploaderBundle\Uploading\WebUploader;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -77,12 +78,12 @@ class UniversalUploaderControllerTest extends \PHPUnit\Framework\TestCase
     {
         $request = new Request();
 
-        $this->teachContainer($request, true, false);
+        $this->teachContainer($request, true, null);
 
-        $result = $this->ctr->uploadAction($request);
-        $this->assertInstanceOf('Symfony\Component\HttpFoundation\JsonResponse', $result);
+        $response = $this->ctr->uploadAction($request);
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\JsonResponse', $response);
 
-        $content = json_decode($result->getContent(), true);
+        $content = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('success', $content);
         $this->assertFalse($content['success']);
         $this->assertArrayHasKey('error', $content);
@@ -93,17 +94,17 @@ class UniversalUploaderControllerTest extends \PHPUnit\Framework\TestCase
     {
         $request = new Request();
 
-        $response = array(
+        $result = array(
             'success' => true,
             'blah' => 'foo',
         );
 
-        $this->teachContainer($request, true, $response);
+        $this->teachContainer($request, true, new JsonResponse($result));
 
-        $result = $this->ctr->uploadAction($request);
-        $this->assertInstanceOf('Symfony\Component\HttpFoundation\JsonResponse', $result);
+        $response = $this->ctr->uploadAction($request);
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\JsonResponse', $response);
 
-        $this->assertSame($response, json_decode($result->getContent(), true));
+        $this->assertSame($result, json_decode($response->getContent(), true));
     }
 
     public function testUploadActionWithValidationException()
@@ -114,10 +115,10 @@ class UniversalUploaderControllerTest extends \PHPUnit\Framework\TestCase
 
         $this->teachContainer($request, true, $exception);
 
-        $result = $this->ctr->uploadAction($request);
-        $this->assertInstanceOf('Symfony\Component\HttpFoundation\JsonResponse', $result);
+        $response = $this->ctr->uploadAction($request);
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\JsonResponse', $response);
 
-        $content = json_decode($result->getContent(), true);
+        $content = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('success', $content);
         $this->assertFalse($content['success']);
         $this->assertArrayHasKey('error', $content);

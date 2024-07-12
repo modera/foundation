@@ -8,23 +8,19 @@ namespace Modera\LanguagesBundle\Helper;
  */
 class LocaleHelper
 {
-    const RTL = array('ar', 'he');
+    public const RTL = ['ar', 'he'];
 
     /**
      * Retrieve the language direction (ltr or rtl).
-     *
-     * @param string $locale The locale to use.
-     *
-     * @return string Return 'ltr' or 'rtl'
      */
-    public static function getDirection($locale)
+    public static function getDirection(string $locale): string
     {
         $needle = $locale;
-        $parts = explode('_', $locale);
-        if (count($parts) > 1) {
+        $parts = \explode('_', $locale);
+        if (\count($parts) > 1) {
             $needle = $parts[0];
         }
 
-        return in_array($needle, static::RTL) ? 'rtl' : 'ltr';
+        return \in_array($needle, static::RTL) ? 'rtl' : 'ltr';
     }
 }

@@ -23,7 +23,7 @@ class MockModuleBundle implements BundleInterface, ModuleBundleInterface
 
     // ModuleBundleInterface:
 
-    public function getBundles(KernelInterface $kernel)
+    public function getBundles(KernelInterface $kernel): array
     {
         return $this->bundles;
     }

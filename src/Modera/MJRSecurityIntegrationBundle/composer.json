@@ -18,10 +18,10 @@
     "require": {
         "php": ">=7.4",
         "doctrine/orm": "^2.5",
-        "modera/mjr-integration-bundle": "^5.0",
+        "modera/expander-bundle": "^5.0",
         "modera/foundation-bundle": "^5.0",
-        "modera/security-bundle": "^5.0",
-        "sergeil/expander-bundle": "^1.2"
+        "modera/mjr-integration-bundle": "^5.0",
+        "modera/security-bundle": "^5.0"
     },
     "require-dev": {
         "phake/phake": "^4.0",

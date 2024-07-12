@@ -2,9 +2,9 @@
 
 namespace Modera\ConfigBundle\Listener;
 
-use Doctrine\ORM\Events;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Events;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 use Modera\ConfigBundle\Notifying\NotificationCenter;
 
@@ -14,35 +14,23 @@ use Modera\ConfigBundle\Notifying\NotificationCenter;
  */
 class ConfigurationEntrySubscriber implements EventSubscriber
 {
-    /**
-     * @var NotificationCenter
-     */
-    private $notificationCenter;
+    private NotificationCenter $notificationCenter;
 
-    /**
-     * @param NotificationCenter $notificationCenter
-     */
     public function __construct(NotificationCenter $notificationCenter)
     {
         $this->notificationCenter = $notificationCenter;
     }
 
-    /**
-     * @return array
-     */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
-        return array(
+        return [
             Events::postPersist,
             Events::postUpdate,
             Events::postRemove,
-        );
+        ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
         if ($entity instanceof ConfigurationEntry) {
@@ -50,22 +38,16 @@ class ConfigurationEntrySubscriber implements EventSubscriber
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
         if ($entity instanceof ConfigurationEntry) {
-            //$changeSet = $args->getEntityManager()->getUnitOfWork()->getEntityChangeSet($entity);
+            // $changeSet = $args->getEntityManager()->getUnitOfWork()->getEntityChangeSet($entity);
             $this->notificationCenter->notifyConfigurationEntryUpdated($entity);
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function postRemove(LifecycleEventArgs $args)
+    public function postRemove(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
         if ($entity instanceof ConfigurationEntry) {
