@@ -10,8 +10,8 @@ class ModeraFileUploaderAppKernel extends \Modera\FoundationBundle\Testing\Abstr
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
 
+            new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
             new Modera\FileRepositoryBundle\ModeraFileRepositoryBundle(),
-
             new Modera\FileUploaderBundle\ModeraFileUploaderBundle(),
         );
     }
