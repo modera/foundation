@@ -26,13 +26,8 @@ class ContainerInjectorListener
         $this->container = $container;
     }
 
-    public function postLoad(LifecycleEventArgs $event)
+    public function postLoad($entity, LifecycleEventArgs $event): void
     {
-        if ($event->getEntity() instanceof Repository) {
-            $event->getEntity()->init($this->container);
-        }
-        if ($event->getEntity() instanceof StoredFile) {
-            $event->getEntity()->init($this->container);
-        }
+        $entity->init($this->container);
     }
 }

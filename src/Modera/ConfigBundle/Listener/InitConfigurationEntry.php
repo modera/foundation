@@ -23,20 +23,14 @@ class InitConfigurationEntry
         $this->container = $container;
     }
 
-    public function postLoad(LifecycleEventArgs $args)
+    public function postLoad(ConfigurationEntry $entity, LifecycleEventArgs $args): void
     {
-        $entity = $args->getEntity();
-        if ($entity instanceof ConfigurationEntry) {
-            $this->doInit($entity);
-        }
+        $this->doInit($entity);
     }
 
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(ConfigurationEntry $entity, LifecycleEventArgs $args): void
     {
-        $entity = $args->getEntity();
-        if ($entity instanceof ConfigurationEntry) {
-            $this->doInit($entity);
-        }
+        $this->doInit($entity);
     }
 
     private function doInit(ConfigurationEntry $entity)
