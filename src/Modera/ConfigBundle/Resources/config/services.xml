@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 
 <container xmlns="http://symfony.com/schema/dic/services"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
         <service id="modera_config.init_configuration_entry_listener"
@@ -10,8 +10,15 @@
 
             <argument type="service" id="service_container" />
 
-            <tag name="doctrine.event_listener" event="postLoad" />
-            <tag name="doctrine.event_listener" event="postPersist" />
+            <tag name="doctrine.orm.entity_listener"
+                 event="postLoad"
+                 entity="Modera\ConfigBundle\Entity\ConfigurationEntry"
+                 lazy="true"/>
+
+            <tag name="doctrine.orm.entity_listener"
+                 event="postPersist"
+                 entity="Modera\ConfigBundle\Entity\ConfigurationEntry"
+                 lazy="true"/>
         </service>
 
         <service id="modera_config.config_entries_installer"
@@ -64,12 +71,25 @@
             <argument type="service" id="modera_config.manager.uniquity_validator" />
         </service>
 
-        <service id="modera_config.listener.configuration_entry_subscriber"
-                 class="Modera\ConfigBundle\Listener\ConfigurationEntrySubscriber">
+        <service id="modera_config.listener.configuration_entry_listener"
+                 class="Modera\ConfigBundle\Listener\ConfigurationEntryEventListener">
 
             <argument type="service" id="modera_config.notifying.notification_center" />
 
-            <tag name="doctrine.event_subscriber" />
+            <tag name="doctrine.orm.entity_listener"
+                 event="postPersist"
+                 entity="Modera\ConfigBundle\Entity\ConfigurationEntry"
+                 lazy="true"/>
+
+            <tag name="doctrine.orm.entity_listener"
+                 event="postUpdate"
+                 entity="Modera\ConfigBundle\Entity\ConfigurationEntry"
+                 lazy="true"/>
+
+            <tag name="doctrine.orm.entity_listener"
+                 event="postRemove"
+                 entity="Modera\ConfigBundle\Entity\ConfigurationEntry"
+                 lazy="true"/>
         </service>
 
         <service id="modera_config.notifying.notification_center"
@@ -113,7 +133,7 @@
                  class="Modera\ConfigBundle\Listener\OwnerRelationMappingListener">
 
             <argument>%modera_config.config%</argument>
-            
+
             <!-- see ModeraConfigExtension -->
         </service>
     </services>
