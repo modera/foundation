@@ -668,20 +668,33 @@ class ImportTranslationsCommand extends Command
                 LanguageTranslationToken::class
             )
         );
-        /** @var array<array<int|string, mixed>> $languageTranslationTokens */
+
+        /** @var array{
+         *      0: array{
+         *          'id': int,
+         *          'isNew': bool,
+         *          'translation': string,
+         *      },
+         *      'language': string,
+         *      'translationToken': string,
+         * }[] $languageTranslationTokens
+         */
         $languageTranslationTokens = $query->getResult($query::HYDRATE_ARRAY);
 
         /** @var array<string, array<mixed>> $tmp */
         $tmp = [];
         foreach ($languageTranslationTokens as $ltt) {
-            if (!isset($tmp[$ltt['translationToken']])) {
-                $tmp[$ltt['translationToken']] = [];
+            $languageId = (int) $ltt['language'];
+            $translationTokenId = (int) $ltt['translationToken'];
+
+            if (!isset($tmp[$translationTokenId])) {
+                $tmp[$translationTokenId] = [];
             }
 
             /** @var array<mixed> $arr */
             $arr = $ltt[0];
-            $tmp[$ltt['translationToken']][] = \array_merge($arr, [
-                'language' => $ltt['language'],
+            $tmp[$translationTokenId][] = \array_merge($arr, [
+                'language' => $languageId,
             ]);
         }
 
