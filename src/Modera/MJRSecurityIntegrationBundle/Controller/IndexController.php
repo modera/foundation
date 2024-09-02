@@ -31,6 +31,14 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class IndexController extends Controller
 {
+    private TokenStorageInterface $tokenStorage;
+
+    public function __construct(
+        TokenStorageInterface $tokenStorage
+    ) {
+        $this->tokenStorage = $tokenStorage;
+    }
+
     protected function getContainer(): ContainerInterface
     {
         /** @var ContainerInterface $container */
@@ -139,9 +147,7 @@ class IndexController extends Controller
     {
         $this->initSession($request);
 
-        /** @var TokenStorageInterface $sc */
-        $sc = $this->getContainer()->get('security.token_storage');
-        $token = $sc->getToken();
+        $token = $this->tokenStorage->getToken();
 
         $response = Authenticator::getAuthenticationResponse($token);
 

@@ -24,7 +24,7 @@ class IndexController extends Controller
     public function getConfigAction(): JsonResponse
     {
         /** @var ConfigManager $configManager */
-        $configManager = $this->get('modera_mjr_integration.config.config_manager');
+        $configManager = $this->container->get('modera_mjr_integration.config.config_manager');
 
         return new JsonResponse(\json_encode($configManager->getConfig(), \JSON_PRETTY_PRINT), Response::HTTP_OK, [], true);
     }

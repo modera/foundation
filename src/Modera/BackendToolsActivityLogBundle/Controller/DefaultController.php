@@ -20,12 +20,18 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  */
 class DefaultController extends Controller
 {
+    private AuthorizationCheckerInterface $authorizationChecker;
+
+    public function __construct(
+        AuthorizationCheckerInterface $authorizationChecker
+    ) {
+        $this->authorizationChecker = $authorizationChecker;
+    }
+
     private function checkAccess(): void
     {
-        /** @var AuthorizationCheckerInterface $authorizationChecker */
-        $authorizationChecker = $this->container->get('security.authorization_checker');
         $role = ModeraBackendToolsActivityLogBundle::ROLE_ACCESS_BACKEND_TOOLS_ACTIVITY_LOG_SECTION;
-        if (false === $authorizationChecker->isGranted($role)) {
+        if (false === $this->authorizationChecker->isGranted($role)) {
             throw $this->createAccessDeniedException();
         }
     }

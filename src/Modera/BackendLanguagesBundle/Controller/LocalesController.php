@@ -16,12 +16,18 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  */
 class LocalesController extends AbstractBaseController
 {
+    private AuthorizationCheckerInterface $authorizationChecker;
+
+    public function __construct(
+        AuthorizationCheckerInterface $authorizationChecker
+    ) {
+        $this->authorizationChecker = $authorizationChecker;
+    }
+
     protected function checkAccess(): void
     {
-        /** @var AuthorizationCheckerInterface $authorizationChecker */
-        $authorizationChecker = $this->container->get('security.authorization_checker');
         $role = ModeraMJRSecurityIntegrationBundle::ROLE_BACKEND_USER;
-        if (false === $authorizationChecker->isGranted($role)) {
+        if (false === $this->authorizationChecker->isGranted($role)) {
             throw $this->createAccessDeniedException();
         }
     }

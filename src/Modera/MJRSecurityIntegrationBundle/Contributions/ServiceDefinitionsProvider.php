@@ -21,9 +21,14 @@ class ServiceDefinitionsProvider implements ContributorInterface
 {
     private ContainerInterface $container;
 
-    public function __construct(ContainerInterface $container)
-    {
+    private AuthorizationCheckerInterface $authorizationChecker;
+
+    public function __construct(
+        ContainerInterface $container,
+        AuthorizationCheckerInterface $authorizationChecker
+    ) {
         $this->container = $container;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     /**
@@ -72,9 +77,7 @@ class ServiceDefinitionsProvider implements ContributorInterface
 
         $logoutUrl = $this->getUrl($bundleConfig['logout_url']);
 
-        /** @var AuthorizationCheckerInterface $authorizationChecker */
-        $authorizationChecker = $this->container->get('security.authorization_checker');
-        if ($authorizationChecker->isGranted('ROLE_PREVIOUS_ADMIN')) {
+        if ($this->authorizationChecker->isGranted('ROLE_PREVIOUS_ADMIN')) {
             $switchUserConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY.'.switch_user');
             if ($switchUserConfig) {
                 $logoutUrl = $this->getUrl('modera_mjr_security_integration.index.switch_user_to', [

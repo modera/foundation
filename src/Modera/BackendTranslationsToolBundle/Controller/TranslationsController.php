@@ -29,6 +29,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class TranslationsController extends AbstractCrudController
 {
+    private AuthorizationCheckerInterface $authorizationChecker;
+
+    public function __construct(
+        AuthorizationCheckerInterface $authorizationChecker
+    ) {
+        $this->authorizationChecker = $authorizationChecker;
+    }
+
     protected function getContainer(): ContainerInterface
     {
         /** @var ContainerInterface $container */
@@ -39,10 +47,8 @@ class TranslationsController extends AbstractCrudController
 
     private function checkAccess(): void
     {
-        /** @var AuthorizationCheckerInterface $authorizationChecker */
-        $authorizationChecker = $this->getContainer()->get('security.authorization_checker');
         $role = ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION;
-        if (false === $authorizationChecker->isGranted($role)) {
+        if (false === $this->authorizationChecker->isGranted($role)) {
             throw $this->createAccessDeniedException();
         }
     }
