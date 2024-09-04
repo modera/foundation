@@ -74,11 +74,11 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.PermissionsWi
                         data: [
                             {
                                 id: 0,
-                                name: '-',
+                                name: '-'
                             },
                             {
                                 id: user['id'],
-                                name: user['fullname'] || user['username'],
+                                name: user['fullname'] || user['username']
                             }
                         ]
                     });
