@@ -124,7 +124,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
 
                                 var stl = [
                                     'font-size: 14px;',
-                                    'font-family: ' + glyph.split('@')[1] + ';',
+                                    'font-family: ' + glyph.split('@')[1] + ';'
                                 ].join(' ');
 
                                 var icon = [
