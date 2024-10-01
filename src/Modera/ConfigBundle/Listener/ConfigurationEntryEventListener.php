@@ -26,7 +26,21 @@ class ConfigurationEntryEventListener
 
     public function postUpdate(ConfigurationEntry $entity, LifecycleEventArgs $args): void
     {
-        $this->notificationCenter->notifyConfigurationEntryUpdated($entity);
+        $changesSet = $args->getObjectManager()->getUnitOfWork()->getEntityChangeSet($entity);
+
+        foreach ($changesSet as $field => $changes) {
+            if ('updatedAt' === $field) {
+                continue;
+            }
+
+            $hasValuableChanges = $changes[0] != $changes[1];
+
+            if ($hasValuableChanges) {
+                $this->notificationCenter->notifyConfigurationEntryUpdated($entity);
+
+                return;
+            }
+        }
     }
 
     public function postRemove(ConfigurationEntry $entity, LifecycleEventArgs $args): void
