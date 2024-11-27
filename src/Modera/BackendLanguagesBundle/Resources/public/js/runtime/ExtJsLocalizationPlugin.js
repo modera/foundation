@@ -78,14 +78,18 @@ Ext.define('Modera.backend.languages.runtime.ExtJsLocalizationPlugin', {
             onError: function() {
                 console.error('Url "' + url + '" not loaded!');
 
-                var re = /ext-lang-(\D{2})(_\D{2})\.js/i
+                var re = /ext-lang-(\D{2})(_.*)\.js/i
                 if (url.match(re)) {
                     var tryUrl = url.replace(re, 'ext-lang-$1.js');
                     urls.unshift(tryUrl);
                     console.info('Try to load "' + tryUrl + '"');
                     me.loadScripts(urls, fn);
                 } else {
-                    fn();
+                    if (urls.length > 0) {
+                        me.loadScripts(urls, fn);
+                    } else {
+                        fn();
+                    }
                 }
             }
         });

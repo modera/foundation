@@ -297,7 +297,8 @@ Ext.define('Modera.backend.languages.view.List', {
 
     // private
     formatPrice: function(locale, value) {
-        Ext.apply(Ext.util.Format, Ext.util.Format['_locales'][locale] || {});
+        var locales = Ext.util.Format['_locales'] || {};
+        Ext.apply(Ext.util.Format, locales[locale] || {});
 
         var currencyPrecision = Ext.util.Format.currencyPrecision;
         if (value % 1 === 0) {
@@ -306,7 +307,7 @@ Ext.define('Modera.backend.languages.view.List', {
 
         var price = Ext.util.Format.currency(value, Ext.util.Format.currencySign, currencyPrecision);
 
-        Ext.apply(Ext.util.Format, Ext.util.Format['_default']);
+        Ext.apply(Ext.util.Format, Ext.util.Format['_default'] || {});
 
         return price;
     },
