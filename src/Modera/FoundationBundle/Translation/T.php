@@ -23,7 +23,7 @@ class T
     private static $container;
 
     /**
-     * @see \Symfony\Contracts\Translation\TranslatorInterface::trans
+     * @see TranslatorInterface::trans
      *
      * @param array<string, mixed> $parameters
      */
