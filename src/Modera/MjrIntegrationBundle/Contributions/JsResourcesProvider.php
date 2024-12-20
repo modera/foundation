@@ -94,6 +94,10 @@ class JsResourcesProvider implements ContributorInterface
                 'order' => PHP_INT_MIN + 5,
                 'resource' => '/bundles/moderamjrintegration/js/promisify.js',
             ],
+            [
+                'order' => PHP_INT_MIN + 5,
+                'resource' => '/bundles/moderamjrintegration/js/rpc.js',
+            ],
         ];
     }
 }
