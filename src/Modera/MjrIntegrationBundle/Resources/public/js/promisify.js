@@ -17,7 +17,7 @@
 
             return new Promise(function(resolve, reject) {
                 args.push(function(error, result) {
-                    return error == null ? resolve(result) : reject(error);
+                    return null === error ? resolve(result) : reject(error);
                 });
                 fn.apply(thisArg, args);
             });
@@ -27,9 +27,20 @@
     function promisifyAction(action) {
         return promisify(function() {
             var args = [].slice.call(arguments);
+
             var callback = args.pop();
-            args.push(function(result, event, success, options) {
+
+            var responseHandler = function(result, event, success, options) {
                 callback(null, Ext.apply(function() {
+                    if (Ext.isObject(event.xhr)) {
+                        if (event.xhr.aborted) {
+                            throw new DOMException('', 'AbortError');
+                        }
+                        else if (event.xhr.timedout) {
+                            throw new DOMException('', 'TimeoutError');
+                        }
+                    }
+
                     if ('exception' === event.type) {
                         var error = new Error(event['message'] || 'Undefined exception.');
                         error.type = 'EXCEPTION';
@@ -42,7 +53,7 @@
                         throw error;
                     }
 
-                    if (false === result['success']) {
+                    if (Ext.isObject(result) && false === result['success']) {
                         var error = new Error(result['message'] || 'Undefined error.');
                         var keys = Object.getOwnPropertyNames(error);
                         Ext.Object.each(result, function(key, value) {
@@ -60,7 +71,22 @@
                     success: success,
                     options: options
                 }));
-            });
+            };
+
+            if (action.directCfg.method.ordered) {
+                var len = action.directCfg.method.len;
+                var scope = args[len + 1];
+                var options = args[len + 2];
+
+                args = args.slice(0, action.directCfg.method.len).concat([responseHandler, scope, options]);
+            } else {
+                var data = Ext.apply({}, args[0]);
+                var scope = args[2];
+                var options = args[3];
+
+                args = [data, responseHandler, scope, options];
+            }
+
             action.apply(this, args);
         });
     }
@@ -72,9 +98,18 @@
                     var promisified = promisifyAction(action);
                     actions[name] = Ext.apply(function() {
                         var args = [].slice.call(arguments);
-                        if (0 === args.length || !Ext.isFunction(args[args.length - 1])) {
+
+                        var usePromisified = false;
+                        if (action.directCfg.method.ordered) {
+                            usePromisified = !Ext.isFunction(args[action.directCfg.method.len]);
+                        } else {
+                            usePromisified = !Ext.isFunction(args[1]);
+                        }
+
+                        if (0 === args.length || usePromisified) {
                             return promisified.apply(this, args);
                         }
+
                         action.apply(this, args);
                     }, {
                         promisified: true,
@@ -91,7 +126,7 @@
         var addProvider = Ext.Direct.addProvider;
         Ext.Direct.addProvider = function() {
             var args = [].slice.call(arguments);
-            var provider = addProvider.apply(Ext.Direct, args);
+            var provider = addProvider.apply(this, args);
 
             if ('API' === provider.id && !provider.promisified) {
                 provider.promisified = true;
