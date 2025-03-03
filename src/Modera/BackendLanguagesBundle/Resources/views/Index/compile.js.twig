@@ -135,13 +135,27 @@ if (window['Ext']) {
                         Ext.util.Format.currency = function(value, currencySign, decimals, end, currencySpacer) {
                             var UtilFormat = Ext.util.Format;
 
-                            if ((end || UtilFormat.currencyAtEnd) === true) {
-                                currencySign = Ext.String.format("{0}{1}", currencySpacer || UtilFormat.currencySpacer, currencySign || UtilFormat.currencySign);
-                            } else {
-                                currencySign = Ext.String.format("{0}{1}", currencySign || UtilFormat.currencySign, currencySpacer || UtilFormat.currencySpacer);
+                            var signAtEnd = end;
+                            if (!Ext.isBoolean(signAtEnd)) {
+                                signAtEnd = UtilFormat.currencyAtEnd;
                             }
 
-                            return UtilFormatCurrency(value, currencySign, decimals, end);
+                            var negative = '';
+                            if (value < 0) {
+                                value = -value;
+                                negative = '-';
+                            }
+
+                            var sign = currencySign || UtilFormat.currencySign;
+                            var spacer = currencySpacer || UtilFormat.currencySpacer;
+                            var number = UtilFormatCurrency(value, ' ', decimals).trim();
+
+                            var format = '{0}{1}{2}{3}';
+                            if (signAtEnd === true) {
+                                format = '{0}{3}{2}{1}';
+                            }
+
+                            return Ext.String.format(format, negative, sign, spacer, number);
                         };
                     }
 
