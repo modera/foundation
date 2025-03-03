@@ -99,8 +99,10 @@ class ExtjsClassesExtractor implements ExtractorInterface
             // getting rid of wrapping " '
             if ($this->isStringWrappedBy($value, "'")) {
                 $value = \trim($value, "'");
+                $value = \str_replace("\'", "'", $value);
             } elseif ($this->isStringWrappedBy($value, '"')) {
                 $value = \trim($value, '"');
+                $value = \str_replace('\"', '"', $value);
             } else {
                 continue;
             }
