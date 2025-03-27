@@ -52,6 +52,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                         itemId: 'activitiesGrid',
                         columns: [
                             {
+                                sortable: false,
                                 dataIndex: 'message',
                                 text: this.eventDescriptionColumnHeaderText,
                                 flex: 1,
@@ -61,11 +62,11 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                                 }
                             },
                             {
-                                dataIndex: 'createdAt',
+                                dataIndex: 'id',
                                 text: this.timeColumnHeaderText,
                                 width: 150,
-                                renderer: function(v) {
-                                    return MFC.Date.moment(v).fromNow();
+                                renderer: function(v, metadata, record) {
+                                    return MFC.Date.moment(record.get('createdAt')).fromNow();
                                 }
                             }
                         ],
@@ -76,7 +77,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                                 xtype: 'toolbar',
                                 items: [
                                     {
-                                        width: 300,
+                                        flex: 1,
                                         itemId: 'authorFilter',
                                         xtype: 'combo',
                                         emptyText: this.userLabelText,
@@ -99,7 +100,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                                         })
                                     },
                                     {
-                                        width: 220,
+                                        flex: 1,
                                         itemId: 'typeFilter',
                                         xtype: 'combo',
                                         emptyText: this.eventTypeText,
@@ -122,7 +123,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                                         })
                                     },
                                     {
-                                        flex: 1,
+                                        flex: 2,
                                         itemId: 'messageFilter',
                                         xtype: 'textfield',
                                         emptyText: Ext.String.format('{0}...', this.typeHereToFilterText),
@@ -336,7 +337,7 @@ Ext.define('Modera.backend.tools.activitylog.view.MainPanel', {
                 authorField.getStore().load({
                     params: {
                         queryType: 'exact-user',
-                        query:  values.author
+                        query: '' + values.author
                     },
                     callback: function(records) {
                         authorField.setValue(records[0].get('id'));

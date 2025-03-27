@@ -73,7 +73,7 @@ class DefaultController extends Controller
                     $hydrator = DoctrineEntityHydrator::create(['meta', 'createdAt', 'author']);
 
                     return \array_merge($hydrator($activity, $container), [
-                        'createdAt' => $activity->getCreatedAt()->format(\DateTime::RFC1123),
+                        'createdAt' => $activity->getCreatedAt()->format(\DateTime::W3C),
                         'author' => \json_encode($authorResolver->resolve($activity)),
                     ]);
                 },
@@ -81,7 +81,7 @@ class DefaultController extends Controller
                     $hydrator = DoctrineEntityHydrator::create();
 
                     return \array_merge($hydrator($activity, $container), [
-                        'createdAt' => $activity->getCreatedAt()->format(\DateTime::RFC1123),
+                        'createdAt' => $activity->getCreatedAt()->format(\DateTime::W3C),
                         'author' => $authorResolver->resolve($activity),
                     ]);
                 },

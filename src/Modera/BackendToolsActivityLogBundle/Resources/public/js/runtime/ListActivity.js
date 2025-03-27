@@ -77,7 +77,7 @@ Ext.define('Modera.backend.tools.activitylog.runtime.ListActivity', {
     getDefaultParams: function() {
         return {
             page: 1,
-            'sort-by': 'createdAt',
+            'sort-by': 'id',
             'sort-direction': 'DESC'
         }
     }
