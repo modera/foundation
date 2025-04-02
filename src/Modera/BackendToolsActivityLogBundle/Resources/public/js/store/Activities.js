@@ -10,7 +10,7 @@ Ext.define('Modera.backend.tools.activitylog.store.Activities', {
             remoteSort: true,
             remoteFilter: true,
             fields: [
-                'id', 'author', 'type', 'level', 'message', 'createdAt'
+                'id', 'author', 'type', 'level', 'message', 'createdAt', 'meta'
             ],
             proxy: {
                 type: 'direct',
