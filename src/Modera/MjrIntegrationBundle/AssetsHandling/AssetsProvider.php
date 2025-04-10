@@ -25,10 +25,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *         }
  *     }
  *
- * Support for * will be dropped as of MF 3.0 and all assets will become non-blocking if ! suffix is not used.
- * Please see MF-UPGRADE-3.0.md file from https://github.com/modera/foundation repository for more detailed information
- * about this. Also, take a look at filterRawAssetsByType method.
- *
  * @author Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
@@ -75,9 +71,6 @@ class AssetsProvider implements AssetsProviderInterface
             self::TYPE_NON_BLOCKING => [],
         ];
 
-        // As of release of 3.0 support for * syntax will be dropped and all resources by default will be considered
-        // non-blocking and to mark your resource as blocking you will have to use ! suffix, for example:
-        // !my-blocking-script.js
         foreach ($rawAssets as $resource) {
             $order = 0;
             if (\is_array($resource)) {
@@ -87,16 +80,17 @@ class AssetsProvider implements AssetsProviderInterface
                 $resource = $resource['resource'];
             }
 
-            // if resource filename begins with ! considering it as a signal that given asset can be loaded asynchronously
+            // TODO: refactor
+            $resourceType = self::TYPE_BLOCKING;
             if ('*' === \substr($resource, 0, 1)) {
-                $result[self::TYPE_NON_BLOCKING][$order][] = \substr($resource, 1);
-            } else {
-                if ('!' === \substr($resource, 0, 1)) {
-                    $result[self::TYPE_BLOCKING][$order][] = \substr($resource, 1);
-                } else {
-                    $result[self::TYPE_BLOCKING][$order][] = $resource;
-                }
+                $resource = \substr($resource, 1);
+                $resourceType = self::TYPE_NON_BLOCKING;
+            } elseif ('!' === \substr($resource, 0, 1)) {
+                $resource = \substr($resource, 1);
+                $resourceType = self::TYPE_BLOCKING;
             }
+
+            $result[$resourceType][$order][] = $resource;
         }
 
         $assets = [];
