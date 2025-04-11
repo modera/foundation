@@ -14,10 +14,7 @@
     ],
     "require": {
         "php": ">=7.4",
-        "modera/expander-bundle": "^5.0",
-        "modera/foundation-bundle": "^5.0",
-        "modera/mjr-integration-bundle": "^5.0",
-        "modera/backend-security-bundle": "^5.0"
+        "modera/backend-security-bundle": "^5.0|^6.0"
     },
     "require-dev": {
         "phake/phake": "^4.0",
