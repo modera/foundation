@@ -5,7 +5,6 @@ namespace Modera\ServerCrudBundle\Hydration;
 /**
  * @internal
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class ConfigAnalyzer
@@ -83,7 +82,7 @@ class ConfigAnalyzer
     /**
      * @return callable|string[]|array<string, string>
      */
-    public function getGroupDefinition(string $groupName)
+    public function getGroupDefinition(string $groupName): array|callable
     {
         $groups = \is_array($this->rawConfig['groups']) ? $this->rawConfig['groups'] : [];
 
@@ -96,6 +95,9 @@ class ConfigAnalyzer
             throw $e;
         }
 
-        return $groups[$groupName];
+        /** @var callable|string[]|array<string, string> $group */
+        $group = $groups[$groupName];
+
+        return $group;
     }
 }

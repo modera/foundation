@@ -3,10 +3,8 @@
 namespace Modera\ServerCrudBundle\Controller;
 
 /**
- * Defines a set of methods that crud controllers must have. Expected structure of $params arguments is up to
- * implementations.
+ * Defines a set of methods that crud controllers must have. Expected structure of $params arguments is up to implementations.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 interface CrudControllerInterface

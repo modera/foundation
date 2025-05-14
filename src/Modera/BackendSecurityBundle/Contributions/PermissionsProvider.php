@@ -3,14 +3,15 @@
 namespace Modera\BackendSecurityBundle\Contributions;
 
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Model\Permission;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_security.permissions')]
 class PermissionsProvider implements ContributorInterface
 {
     /**
@@ -25,27 +26,27 @@ class PermissionsProvider implements ContributorInterface
                 new Permission(
                     T::trans('Access Users Manager'),
                     ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
-                    'administration'
+                    'administration',
                 ),
                 new Permission(
                     T::trans('Add and remove User Accounts'),
                     ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS,
-                    'administration'
+                    'administration',
                 ),
                 new Permission(
                     T::trans('Manage User Profiles'),
                     ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES,
-                    'administration'
+                    'administration',
                 ),
                 new Permission(
                     T::trans('Manage User Profile Information'),
                     ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION,
-                    'administration'
+                    'administration',
                 ),
                 new Permission(
                     T::trans('Manage Groups and Permissions'),
                     ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS,
-                    'administration'
+                    'administration',
                 ),
             ];
         }

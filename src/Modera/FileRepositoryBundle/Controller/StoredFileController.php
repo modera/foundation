@@ -6,43 +6,30 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use Modera\FileRepositoryBundle\DependencyInjection\ModeraFileRepositoryExtension;
 use Modera\FileRepositoryBundle\Entity\StoredFile;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Mime\MimeTypes;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2015 Modera Foundation
  */
-class StoredFileController extends Controller
+#[AsController]
+class StoredFileController extends AbstractController
 {
-    protected function getDoctrine(): ManagerRegistry
-    {
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = $this->getContainer()->get('doctrine');
-
-        return $doctrine;
+    public function __construct(
+        private readonly ManagerRegistry $managerRegistry,
+    ) {
     }
 
-    protected function getContainer(): ContainerInterface
-    {
-        /** @var ContainerInterface $container */
-        $container = $this->container;
-
-        return $container;
-    }
-
-    /**
-     * @Route("/{storageKey}", name="modera_file_repository.get_file", requirements={"storageKey" = ".+"})
-     */
+    #[Route(path: '/{storageKey}', name: 'modera_file_repository.get_file', requirements: ['storageKey' => '.+'])]
     public function getAction(Request $request, string $storageKey): Response
     {
         /** @var bool $isEnabled */
-        $isEnabled = $this->getContainer()->getParameter(ModeraFileRepositoryExtension::CONFIG_KEY.'.controller.is_enabled');
+        $isEnabled = $this->getParameter(ModeraFileRepositoryExtension::CONFIG_KEY.'.controller.is_enabled');
 
         if (!$isEnabled) {
             throw $this->createAccessDeniedException();
@@ -57,7 +44,7 @@ class StoredFileController extends Controller
     protected function getFile(string $storageKey): ?StoredFile
     {
         /** @var ObjectRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(StoredFile::class);
+        $repository = $this->managerRegistry->getManager()->getRepository(StoredFile::class);
 
         /** @var ?StoredFile $file */
         $file = $repository->findOneBy([

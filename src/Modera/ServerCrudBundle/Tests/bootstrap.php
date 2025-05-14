@@ -1,7 +1,5 @@
 <?php
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
-
 $loaderFiles = [
     __DIR__.'/../vendor/autoload.php',
     __DIR__.'/../../../../vendor/autoload.php', // monolith repository
@@ -9,7 +7,7 @@ $loaderFiles = [
 
 $enabledLoaderFile = null;
 foreach ($loaderFiles as $loaderFile) {
-    if (file_exists($loaderFile)) {
+    if (\file_exists($loaderFile)) {
         $enabledLoaderFile = $loaderFile;
 
         break;
@@ -17,12 +15,10 @@ foreach ($loaderFiles as $loaderFile) {
 }
 
 if (!$enabledLoaderFile) {
-    throw new \LogicException('Unable to find loader files, looked in these locations: '.implode(', ', $loaderFiles));
+    throw new LogicException('Unable to find loader files, looked in these locations: '.\implode(', ', $loaderFiles));
 }
 
-/* @var \Composer\Autoload\ClassLoader $loader */
+/** @var Composer\Autoload\ClassLoader $loader */
 $loader = require $loaderFile;
 
 $loader->addPsr4('Modera\ServerCrudBundle\Tests\Fixtures\Bundle\\', __DIR__.'/Fixtures/Bundle');
-
-AnnotationRegistry::registerLoader(array($loader, 'loadClass'));

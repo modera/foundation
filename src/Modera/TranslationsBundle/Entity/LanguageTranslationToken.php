@@ -3,67 +3,34 @@
 namespace Modera\TranslationsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\UniqueConstraint;
 use Modera\LanguagesBundle\Entity\Language;
 
 /**
- * @ORM\Entity
- *
- * @ORM\Table(name="modera_translations_languagetranslationtoken", uniqueConstraints={
- *
- *     @UniqueConstraint(name="language_translation_token", columns={"language_id", "translation_token_id"})
- * })
- *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'modera_translations_languagetranslationtoken')]
+#[ORM\UniqueConstraint(name: 'language_translation_token', columns: ['language_id', 'translation_token_id'])]
 class LanguageTranslationToken
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @ORM\Id
-     *
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Modera\LanguagesBundle\Entity\Language", fetch="EAGER")
-     *
-     * @ORM\JoinColumn(name="language_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Language::class, fetch: 'EAGER')]
+    #[ORM\JoinColumn(name: 'language_id', referencedColumnName: 'id')]
     private ?Language $language = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TranslationToken", inversedBy="languageTranslationTokens")
-     *
-     * @ORM\JoinColumn(name="translation_token_id", referencedColumnName="id", onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: TranslationToken::class, inversedBy: 'languageTranslationTokens')]
+    #[ORM\JoinColumn(name: 'translation_token_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private ?TranslationToken $translationToken = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $isNew = true;
 
-    /**
-     * @ORM\Column(type="text", nullable=false)
-     */
-    private ?string $translation = null;
-
-    /**
-     * @deprecated Use native ::class property
-     */
-    public static function clazz(): string
-    {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated. Use native ::class property.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return \get_called_class();
-    }
+    #[ORM\Column(type: 'text')]
+    private string $translation;
 
     public function getId(): ?int
     {
@@ -106,7 +73,7 @@ class LanguageTranslationToken
         return $this;
     }
 
-    public function getTranslation(): ?string
+    public function getTranslation(): string
     {
         return $this->translation;
     }

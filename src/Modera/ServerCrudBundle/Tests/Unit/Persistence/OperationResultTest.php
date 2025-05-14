@@ -4,13 +4,9 @@ namespace Modera\ServerCrudBundle\Tests\Unit\Persistence;
 
 use Modera\ServerCrudBundle\Persistence\OperationResult;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class OperationResultTest extends \PHPUnit\Framework\TestCase
 {
-    public function testMerge()
+    public function testMerge(): void
     {
         $result = new OperationResult();
         $result->reportEntity('FooEntity', 1, OperationResult::TYPE_ENTITY_CREATED);
@@ -26,18 +22,18 @@ class OperationResultTest extends \PHPUnit\Framework\TestCase
 
         $this->assertInstanceOf(OperationResult::class, $mergedResult);
 
-        $this->assertEquals(2, count($mergedResult->getCreatedEntities()));
-        $this->assertEquals(2, count($mergedResult->getUpdatedEntities()));
-        $this->assertEquals(2, count($mergedResult->getRemovedEntities()));
+        $this->assertEquals(2, \count($mergedResult->getCreatedEntities()));
+        $this->assertEquals(2, \count($mergedResult->getUpdatedEntities()));
+        $this->assertEquals(2, \count($mergedResult->getRemovedEntities()));
 
         // making sure that original ones were not touched
         $this->assertEquals(
             3,
-            count(array_merge($result->getCreatedEntities(), $result->getUpdatedEntities(), $result->getRemovedEntities()))
+            \count(\array_merge($result->getCreatedEntities(), $result->getUpdatedEntities(), $result->getRemovedEntities()))
         );
         $this->assertEquals(
             3,
-            count(array_merge($anotherResult->getCreatedEntities(), $anotherResult->getUpdatedEntities(), $anotherResult->getRemovedEntities()))
+            \count(\array_merge($anotherResult->getCreatedEntities(), $anotherResult->getUpdatedEntities(), $anotherResult->getRemovedEntities()))
         );
 
         $this->assertTrue($result !== $mergedResult);

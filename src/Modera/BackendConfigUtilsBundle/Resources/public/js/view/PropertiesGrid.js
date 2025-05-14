@@ -1,7 +1,7 @@
 /**
  * Allows to create a grid where property values can be edited.
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2014 Modera Foundation
  */
 Ext.define('Modera.backend.configutils.view.PropertiesGrid', {
     extend: 'Ext.grid.Panel',

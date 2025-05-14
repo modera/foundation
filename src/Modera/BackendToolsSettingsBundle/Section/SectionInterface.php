@@ -7,7 +7,6 @@ namespace Modera\BackendToolsSettingsBundle\Section;
  *
  * @see Modera.backend.configutils.runtime.SettingsListActivity javascript class
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 interface SectionInterface
@@ -40,11 +39,11 @@ interface SectionInterface
      *
      * For example:
      *
-     *     array(
-     *         'activationParams' => array(
+     *     [
+     *         'activationParams' => [
      *             'category' => 'my-fancy-settings'
-     *         )
-     *     )
+     *         ]
+     *     ]
      *
      * @return array<mixed> Optional metadata this section may have
      */

@@ -5,7 +5,6 @@ namespace Modera\MjrIntegrationBundle\Sections;
 /**
  * Represents a section which can be loaded in backend.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 interface SectionInterface

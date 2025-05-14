@@ -7,18 +7,15 @@ use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2022 Modera Foundation
  */
 class CacheAdapter implements AdapterInterface
 {
     public const CACHE_KEY = 'modera_translations.cache_adapter';
 
-    private CacheAdapterInterface $cache;
-
-    public function __construct(CacheAdapterInterface $cache)
-    {
-        $this->cache = $cache;
+    public function __construct(
+        private readonly CacheAdapterInterface $cache,
+    ) {
     }
 
     public function clear(): void

@@ -2,10 +2,13 @@
 
 namespace Modera\FileRepositoryBundle\Tests\Unit\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
-use Modera\FileRepositoryBundle\Entity\StoredFile;
+use Doctrine\Persistence\ManagerRegistry;
 use Modera\FileRepositoryBundle\Controller\StoredFileController;
 use Modera\FileRepositoryBundle\DependencyInjection\ModeraFileRepositoryExtension;
+use Modera\FileRepositoryBundle\Entity\StoredFile;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class DummyController extends StoredFileController
 {
@@ -16,27 +19,26 @@ class DummyController extends StoredFileController
         return $this->storedFile;
     }
 
-    public function setEnabled($status)
+    public function setEnabled(bool $status): void
     {
-        \Phake::when($this->container)
-            ->getParameter(ModeraFileRepositoryExtension::CONFIG_KEY.'.controller.is_enabled')
+        $containerBag = $this->container->get('parameter_bag');
+        \Phake::when($containerBag)
+            ->get(ModeraFileRepositoryExtension::CONFIG_KEY.'.controller.is_enabled')
             ->thenReturn($status)
         ;
     }
 }
 
-/**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2015 Modera Foundation
- */
 class StoredFileControllerTest extends \PHPUnit\Framework\TestCase
 {
-    private function createStoredFileController()
+    private function createStoredFileController(): DummyController
     {
+        $managerRegistry = \Phake::mock(ManagerRegistry::class);
         $user = \Phake::mock('Symfony\Component\Security\Core\User\UserInterface');
         $container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
         $token = \Phake::mock('Symfony\Component\Security\Core\Authentication\Token\TokenInterface');
         $tokenStorage = \Phake::mock('Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface');
+        $containerBag = \Phake::mock(ContainerBagInterface::class);
 
         \Phake::when($token)->getUser()->thenReturn($user);
         \Phake::when($tokenStorage)->getToken()->thenReturn($token);
@@ -44,27 +46,30 @@ class StoredFileControllerTest extends \PHPUnit\Framework\TestCase
         \Phake::when($container)->has('security.token_storage')->thenReturn(true);
         \Phake::when($container)->get('security.token_storage')->thenReturn($tokenStorage);
 
-        $ctrl = new DummyController();
+        \Phake::when($container)->has('parameter_bag')->thenReturn(true);
+        \Phake::when($container)->get('parameter_bag')->thenReturn($containerBag);
+
+        $ctrl = new DummyController($managerRegistry);
         $ctrl->setContainer($container);
         $ctrl->setEnabled(true);
 
         return $ctrl;
     }
 
-    private function createStoredFile($storageKey, $content)
+    private function createStoredFile($storageKey, $content): ?StoredFile
     {
         if ($storageKey) {
-            $parts = explode('/', $storageKey);
-            if (count($parts) > 1) {
-                $filename = $parts[count($parts) - 1];
+            $parts = \explode('/', $storageKey);
+            if (\count($parts) > 1) {
+                $filename = $parts[\count($parts) - 1];
             } else {
                 $filename = 'foo.txt';
             }
-            list($name, $extension) = explode('.', $filename);
+            list($name, $extension) = \explode('.', $filename);
 
-            $mimeType = array(
+            $mimeType = [
                 'txt' => 'text/plain',
-            );
+            ];
 
             $storedFile = \Phake::mock(StoredFile::class);
 
@@ -74,19 +79,18 @@ class StoredFileControllerTest extends \PHPUnit\Framework\TestCase
             \Phake::when($storedFile)->getExtension()->thenReturn($extension);
             \Phake::when($storedFile)->getCreatedAt()->thenReturn(new \DateTime());
             \Phake::when($storedFile)->getContents()->thenReturn($content);
-            \Phake::when($storedFile)->getSize()->thenReturn(strlen($content));
+            \Phake::when($storedFile)->getSize()->thenReturn(\strlen($content));
 
             return $storedFile;
         }
 
-        return;
+        return null;
     }
 
-    /**
-     * @expectedException Symfony\Component\Security\Core\Exception\AccessDeniedException
-     */
-    public function testGetAction()
+    public function testGetAction(): void
     {
+        $this->expectException(AccessDeniedException::class);
+
         $ctrl = $this->createStoredFileController();
         $request = \Phake::mock('Symfony\Component\HttpFoundation\Request');
 
@@ -115,18 +119,18 @@ class StoredFileControllerTest extends \PHPUnit\Framework\TestCase
         $resp = $ctrl->getAction($request, 'storage-key/repository-name/download-me.txt');
         $this->assertEquals(Response::HTTP_OK, $resp->getStatusCode());
         $this->assertEquals($content, $resp->getContent());
-        $this->assertTrue(in_array($resp->headers->get('content-disposition'), array(
+        $this->assertTrue(in_array($resp->headers->get('content-disposition'), [
             'attachment; filename=download-me.txt',
             'attachment; filename="download-me.txt"',
-        )));
+        ]));
 
         $resp = $ctrl->getAction($request, 'storage-key/foo.txt');
         $this->assertEquals(Response::HTTP_OK, $resp->getStatusCode());
         $this->assertEquals($content, $resp->getContent());
-        $this->assertTrue(in_array($resp->headers->get('content-disposition'), array(
+        $this->assertTrue(in_array($resp->headers->get('content-disposition'), [
             'attachment; filename=foo.txt',
             'attachment; filename="foo.txt"',
-        )));
+        ]));
 
         $ctrl->setEnabled(false);
         $resp = $ctrl->getAction($request, 'Exception');

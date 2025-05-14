@@ -9,7 +9,7 @@ class DirectControllerTest extends WebTestCase
     /**
      * Test getApi method.
      */
-    public function testGetApi()
+    public function testGetApi(): void
     {
         // create test env
         $client = $this->createClient();
@@ -22,7 +22,7 @@ class DirectControllerTest extends WebTestCase
         // test url in direc api
         $this->assertTrue($crawler->filter('html:contains("url")')->count() > 0);
 
-        // test actions in direc api
+        // test actions in direct api
         // @TODO: improve this test
         $this->assertTrue($crawler->filter('html:contains("actions")')->count() > 0);
     }

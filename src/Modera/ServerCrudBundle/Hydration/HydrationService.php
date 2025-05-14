@@ -9,18 +9,15 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 /**
  * Service is responsible for converting given entity/entities to something that can be sent back to client-side.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class HydrationService
 {
-    private ContainerInterface $container;
-
     private PropertyAccessorInterface $accessor;
 
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        private readonly ContainerInterface $container,
+    ) {
         $this->accessor = PropertyAccess::createPropertyAccessor();
     }
 
@@ -30,7 +27,7 @@ class HydrationService
      *
      * @return array<mixed>
      */
-    private function invokeHydrator($hydrator, /* array|object */ $objectOrArray): array
+    private function invokeHydrator($hydrator, array|object $objectOrArray): array
     {
         if (\is_callable($hydrator)) {
             $result = $hydrator($objectOrArray, $this->container);
@@ -40,6 +37,10 @@ class HydrationService
         } elseif (\is_array($hydrator)) {
             $result = [];
 
+            /**
+             * @var int|string $key
+             * @var string     $propertyPath
+             */
             foreach ($hydrator as $key => $propertyPath) {
                 $key = \is_numeric($key) ? $propertyPath : $key;
 
@@ -85,7 +86,7 @@ class HydrationService
      *
      * @return array<mixed>
      */
-    public function hydrate(/* array|object */ $objectOrArray, array $config, string $profileName, ?array $groups = null): array
+    public function hydrate(array|object $objectOrArray, array $config, string $profileName, ?array $groups = null): array
     {
         $configAnalyzer = new ConfigAnalyzer($config);
         $profile = $configAnalyzer->getProfileDefinition($profileName);

@@ -2,13 +2,14 @@
 
 namespace Modera\BackendSecurityBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Sections\Section;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.sections')]
 class SectionsProvider implements ContributorInterface
 {
     /**

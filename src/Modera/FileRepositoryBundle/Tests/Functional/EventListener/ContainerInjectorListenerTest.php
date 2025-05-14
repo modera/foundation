@@ -6,15 +6,9 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Modera\FileRepositoryBundle\Entity\Repository;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 
-/**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
- */
 class ContainerInjectorListenerTest extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $st;
+    private static SchemaTool $st;
 
     public static function doSetUpBeforeClass(): void
     {
@@ -31,19 +25,19 @@ class ContainerInjectorListenerTest extends FunctionalTestCase
         ]);
     }
 
-    public function testHowWellContainerIsInjected()
+    public function testHowWellContainerIsInjected(): void
     {
-        $repository = new Repository('test repo', array(
+        $repository = new Repository('test repo', [
             'filesystem' => '',
             'storage_key_generator' => '',
-        ));
+        ]);
 
         self::$em->persist($repository);
         self::$em->flush();
 
         self::$em->clear();
 
-        /* @var Repository $repository */
+        /** @var Repository $repository */
         $repository = self::$em->getRepository(Repository::class)->find($repository->getId());
 
         $reflClass = new \ReflectionClass($repository);

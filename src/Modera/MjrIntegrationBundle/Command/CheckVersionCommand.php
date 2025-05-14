@@ -3,6 +3,7 @@
 namespace Modera\MjrIntegrationBundle\Command;
 
 use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -10,26 +11,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:mjr-integration:check-version',
+    description: 'Command validated that specified version of MJR is currently installed',
+)]
 class CheckVersionCommand extends Command
 {
-    private ParameterBagInterface $params;
-
-    public function __construct(ParameterBagInterface $params)
-    {
-        $this->params = $params;
-
+    public function __construct(
+        private readonly ParameterBagInterface $params,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('modera:mjr-integration:check-version')
             ->addArgument('required-version', InputArgument::REQUIRED)
-            ->setDescription('Command validated that specified version of MJR is currently installed')
         ;
     }
 
@@ -38,11 +37,11 @@ class CheckVersionCommand extends Command
         /** @var array{'runtime_path': string} $config */
         $config = $this->params->get(ModeraMjrIntegrationExtension::CONFIG_KEY);
 
-        $mjrPath = \implode(DIRECTORY_SEPARATOR, [
+        $mjrPath = \implode(\DIRECTORY_SEPARATOR, [
             \getcwd(), 'web', \substr($config['runtime_path'], 1),
         ]);
 
-        $path = $mjrPath.DIRECTORY_SEPARATOR.'package.json';
+        $path = $mjrPath.\DIRECTORY_SEPARATOR.'package.json';
 
         $packageJson = \file_get_contents($path);
         if (false === $packageJson) {
@@ -69,7 +68,7 @@ class CheckVersionCommand extends Command
                 throw new \RuntimeException("Unable to download MJR from $url");
             }
 
-            $downloadedMjrPath = \getcwd().DIRECTORY_SEPARATOR.'mjr-'.$requiredVersion.'.tar.gz';
+            $downloadedMjrPath = \getcwd().\DIRECTORY_SEPARATOR.'mjr-'.$requiredVersion.'.tar.gz';
 
             \file_put_contents($downloadedMjrPath, $archive);
 
@@ -82,6 +81,6 @@ class CheckVersionCommand extends Command
             $output->writeln('<info>You have latest version of MJR, no need to update it.<info>');
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

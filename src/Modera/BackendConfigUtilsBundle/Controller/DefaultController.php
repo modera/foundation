@@ -5,15 +5,21 @@ namespace Modera\BackendConfigUtilsBundle\Controller;
 use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
 use Modera\ConfigBundle\Config\ConfigurationEntryDefinition;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
-use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsController]
 class DefaultController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly ExtensionProvider $extensionProvider,
+    ) {
+    }
+
     public function getConfig(): array
     {
         return [
@@ -56,12 +62,14 @@ class DefaultController extends AbstractCrudController
 
     private function getEntryDef(ConfigurationEntry $entity): ?ConfigurationEntryDefinition
     {
-        /** @var ContributorInterface $provider */
-        $provider = $this->container->get('modera_config.config_entries_provider');
-        foreach ($provider->getItems() as $entryDef) {
-            /** @var ConfigurationEntryDefinition $entryDef */
-            if ($entity->getName() == $entryDef->getName()) {
-                return $entryDef;
+        $id = 'modera_config.config_entries';
+        if ($this->extensionProvider->has($id)) {
+            $provider = $this->extensionProvider->get($id);
+            foreach ($provider->getItems() as $entryDef) {
+                /** @var ConfigurationEntryDefinition $entryDef */
+                if ($entity->getName() == $entryDef->getName()) {
+                    return $entryDef;
+                }
             }
         }
 

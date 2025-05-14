@@ -12,7 +12,6 @@ use Symfony\Component\Security\Core\AuthenticationEvents;
 use Symfony\Component\Security\Core\Event\AuthenticationEvent;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2021 Modera Foundation
  */
 class AuthenticationSubscriber implements EventSubscriberInterface

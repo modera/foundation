@@ -2,34 +2,26 @@
 
 namespace Modera\DynamicallyConfigurableMJRBundle\Tests\Unit\MJR;
 
+use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
+use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
 use Modera\DynamicallyConfigurableMJRBundle\MJR\MainConfig;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class MainConfigTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var MainConfig
-     */
-    private $mc;
+    private MainConfig $mc;
 
-    private $mgr;
+    private ConfigurationEntriesManagerInterface $mgr;
 
-    /**
-     * {@inheritdoc}
-     */
     public function setUp(): void
     {
-        $this->mgr = \Phake::mock('Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface');
+        $this->mgr = \Phake::mock(ConfigurationEntriesManagerInterface::class);
         $this->mc = new MainConfig($this->mgr);
     }
 
-    private function teachManager($expectedKey, $returnValue)
+    private function teachManager($expectedKey, $returnValue): void
     {
-        $entry = \Phake::mock('Modera\ConfigBundle\Config\ConfigurationEntryInterface');
+        $entry = \Phake::mock(ConfigurationEntryInterface::class);
         \Phake::when($entry)
             ->getValue()
             ->thenReturn($returnValue)
@@ -41,21 +33,21 @@ class MainConfigTest extends \PHPUnit\Framework\TestCase
         ;
     }
 
-    public function testGetTitle()
+    public function testGetTitle(): void
     {
         $this->teachManager(Bundle::CONFIG_TITLE, 'footitle');
 
         $this->assertEquals('footitle', $this->mc->getTitle());
     }
 
-    public function testGetUrl()
+    public function testGetUrl(): void
     {
         $this->teachManager(Bundle::CONFIG_URL, 'foourl');
 
         $this->assertEquals('foourl', $this->mc->getUrl());
     }
 
-    public function testGetHomeSection()
+    public function testGetHomeSection(): void
     {
         $this->teachManager(Bundle::CONFIG_HOME_SECTION, 'foosection');
 

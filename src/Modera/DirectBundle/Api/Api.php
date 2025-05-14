@@ -6,10 +6,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+/**
+ * @copyright 2015 Modera Foundation
+ */
 class Api
 {
-    protected ContainerInterface $container;
-
     /**
      * The ExtDirect JSON API description.
      */
@@ -18,10 +19,9 @@ class Api
     /**
      * Initialize the API.
      */
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-
+    public function __construct(
+        protected readonly ContainerInterface $container,
+    ) {
         $this->api = $this->createApi();
     }
 

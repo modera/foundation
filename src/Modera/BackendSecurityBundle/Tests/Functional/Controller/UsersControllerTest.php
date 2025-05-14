@@ -10,43 +10,31 @@ use Modera\SecurityBundle\Entity\Group;
 use Modera\SecurityBundle\Entity\Permission;
 use Modera\SecurityBundle\Entity\PermissionCategory;
 use Modera\SecurityBundle\Entity\User;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
-/**
- * @author    Alex Plaksin <alex.plaksin@modera.net>
- * @copyright 2016 Modera Foundation
- */
 class UsersControllerTest extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $schemaTool;
+    private static SchemaTool $schemaTool;
 
-    private static $encoder;
+    private static UserPasswordHasherInterface $passwordHasher;
 
-    /**
-     * @var User
-     */
-    private static $user;
+    private static User $user;
 
-    /**
-     * {@inheritdoc}
-     */
     public static function doSetUpBeforeClass(): void
     {
         static::$schemaTool = new SchemaTool(static::$em);
         static::$schemaTool->dropSchema(static::getTablesMetadata());
         static::$schemaTool->createSchema(static::getTablesMetadata());
 
-        static::$encoder = static::getContainer()->get('modera_backend_security.test.encoder_factory');
+        static::$passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
 
         static::$user = new User();
         static::$user->setEmail('test@test.com');
-        static::$user->setPassword(
-            static::$encoder->getEncoder(static::$user)->encodePassword('1234', static::$user->getSalt())
-        );
         static::$user->setUsername('testUser');
+        static::$user->setPassword(
+            static::$passwordHasher->hashPassword(static::$user, '1234')
+        );
 
         $entityPermissionCategory = new PermissionCategory();
         $entityPermissionCategory->setName('backend_user');
@@ -107,24 +95,24 @@ class UsersControllerTest extends FunctionalTestCase
         static::$em->flush();
     }
 
-    public function testListAction()
+    public function testListAction(): void
     {
         $controller = $this->getController();
-        $response = $controller->listAction(array(
-            'hydration' => array(
-                'profile' => 'list'
-            ),
+        $response = $controller->listAction([
+            'hydration' => [
+                'profile' => 'list',
+            ],
             'page' => 1,
             'start' => 0,
             'limit' => 25,
-        ));
+        ]);
 
         $this->assertArrayHasKey('success', $response);
         $this->assertArrayHasKey('total', $response);
         $this->assertArrayHasKey('items', $response);
 
-        //assuming this is first test in file
-        $this->assertGreaterThanOrEqual(1, count($response['items']));
+        // assuming this is first test in file
+        $this->assertGreaterThanOrEqual(1, \count($response['items']));
 
         $hydratedUser = $response['items'][0];
         $this->assertArrayHasKey('id', $hydratedUser);
@@ -142,26 +130,26 @@ class UsersControllerTest extends FunctionalTestCase
         $this->assertCount(1, $hydratedUser['groups']);
     }
 
-    public function testCreateAction()
+    public function testCreateAction(): User
     {
-        $params = array(
-            'record' => array(
+        $params = [
+            'record' => [
                 'id' => '',
                 'firstName' => 'John',
                 'lastName' => 'Doe',
                 'email' => 'john.doe@test.com',
                 'username' => 'john.doe',
-            ),
-        );
+            ],
+        ];
 
         $controller = $this->getController();
         $response = $controller->createAction($params);
 
         $this->assertTrue($response['success']);
 
-        /* @var User[] $userList */
+        /** @var User[] $userList */
         $userList = static::$em->getRepository(User::class)->findAll();
-        $lastUser = array_pop($userList);
+        $lastUser = \array_pop($userList);
 
         $this->assertEquals($params['record']['firstName'], $lastUser->getFirstName());
         $this->assertEquals($params['record']['lastName'], $lastUser->getLastName());
@@ -175,27 +163,25 @@ class UsersControllerTest extends FunctionalTestCase
 
     /**
      * @depends testCreateAction
-     *
-     * @param User $user
      */
-    public function testUpdateAction(User $user)
+    public function testUpdateAction(User $user): void
     {
-        $params = array(
-            'record' => array(
+        $params = [
+            'record' => [
                 'id' => $user->getId(),
                 'firstName' => 'Homer',
                 'lastName' => 'Simpson',
                 'email' => 'homer.simpson@test.com',
                 'username' => 'homer.simpson',
-            ),
-        );
+            ],
+        ];
 
         $controller = $this->getController();
         $response = $controller->updateAction($params);
 
         $this->assertTrue($response['success']);
 
-        /* @var User $userFromDb */
+        /** @var User $userFromDb */
         $userFromDb = static::$em->getRepository(User::class)->find($user->getId());
 
         $this->assertEquals($params['record']['firstName'], $userFromDb->getFirstName());
@@ -211,34 +197,25 @@ class UsersControllerTest extends FunctionalTestCase
         static::getContainer()->get('security.token_storage')->setToken($token);
     }
 
-    /**
-     * @return UsersController
-     */
-    private function getController()
+    private function getController(): UsersController
     {
-        $controller = new UsersController();
-        $controller->setContainer(static::getContainer());
-
-        return $controller;
+        return static::getContainer()->get(UsersController::class);
     }
 
-    /**
-     * @return array
-     */
-    private static function getTablesClasses()
+    private static function getTablesClasses(): array
     {
-        return array(
+        return [
             Permission::class,
             PermissionCategory::class,
             User::class,
             Group::class,
             Activity::class,
-        );
+        ];
     }
 
-    private static function getTablesMetadata()
+    private static function getTablesMetadata(): array
     {
-        $metaData = array();
+        $metaData = [];
 
         foreach (static::getTablesClasses() as $class) {
             $metaData[] = static::$em->getClassMetadata($class);
@@ -247,9 +224,6 @@ class UsersControllerTest extends FunctionalTestCase
         return $metaData;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected static function getIsolationLevel(): string
     {
         return self::IM_CLASS;

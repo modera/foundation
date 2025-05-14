@@ -3,55 +3,59 @@
 namespace Modera\MjrIntegrationBundle\Tests\Unit\Contributions;
 
 use Modera\MjrIntegrationBundle\AssetsHandling\AssetsProvider;
+use Modera\MjrIntegrationBundle\AssetsHandling\AssetsProviderInterface;
 use Modera\MjrIntegrationBundle\Contributions\ServiceDefinitionsProvider;
 use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2015 Modera Foundation
- */
 class ServiceDefinitionsProviderTest extends \PHPUnit\Framework\TestCase
 {
-    private function createMockContainer(array $jsAssets, array $cssAssets, array $bundleConfig = array())
+    private function createMockContainer(array $jsAssets, array $cssAssets, array $bundleConfig = []): ContainerInterface
     {
         $assetsProvider = \Phake::mock(AssetsProvider::class);
         \Phake::when($assetsProvider)->getJavascriptAssets(AssetsProvider::TYPE_NON_BLOCKING)->thenReturn($jsAssets);
         \Phake::when($assetsProvider)->getCssAssets(AssetsProvider::TYPE_NON_BLOCKING)->thenReturn($cssAssets);
 
-        $container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
-        \Phake::when($container)->get('modera_mjr_integration.assets_handling.assets_provider')->thenReturn($assetsProvider);
+        $container = \Phake::mock(ContainerInterface::class);
+        \Phake::when($container)->get(AssetsProviderInterface::class)->thenReturn($assetsProvider);
         \Phake::when($container)->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY)->thenReturn($bundleConfig);
 
         return $container;
     }
 
-    public function testGetItemsNoBlockingAssets()
+    public function testGetItemsNoBlockingAssets(): void
     {
-        $container = $this->createMockContainer(array(), array(), array(
+        $container = $this->createMockContainer([], [], [
             'client_runtime_config_provider_url' => 'foo_url',
-        ));
+        ]);
 
-        $provider = new ServiceDefinitionsProvider($container);
+        $provider = new ServiceDefinitionsProvider(
+            $container->get(AssetsProviderInterface::class),
+            $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY),
+        );
 
         $services = $provider->getItems();
 
-        $this->assertEquals(1, count($services));
+        $this->assertEquals(1, \count($services));
         $this->assertArrayHasKey('config_provider', $services);
         $def = $services['config_provider'];
         $this->assertEquals('foo_url', $def['args'][0]['url']);
     }
 
-    public function testGetItemsWithAssets()
+    public function testGetItemsWithAssets(): void
     {
-        $container = $this->createMockContainer(array('script.js'), array('style.css'), array(
+        $container = $this->createMockContainer(['script.js'], ['style.css'], [
             'client_runtime_config_provider_url' => 'foo_url',
-        ));
+        ]);
 
-        $provider = new ServiceDefinitionsProvider($container);
+        $provider = new ServiceDefinitionsProvider(
+            $container->get(AssetsProviderInterface::class),
+            $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY),
+        );
 
         $services = $provider->getItems();
 
-        $this->assertEquals(3, count($services));
+        $this->assertEquals(3, \count($services));
         $this->assertArrayHasKey('non_blocking_assets_loader', $services);
         $loader = $services['non_blocking_assets_loader'];
         $this->assertArrayHasKey('js', $loader['args'][0]);

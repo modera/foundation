@@ -24,7 +24,7 @@ class ModeraExpanderDummyBundle extends Bundle implements ExtensionPointsAwareBu
     public function getExtensionPointContributions(): array
     {
         return [
-            'modera_expander.dummy_resources_provider' => [
+            'modera_expander.dummy_resources' => [
                 'baz_resource',
             ],
         ];

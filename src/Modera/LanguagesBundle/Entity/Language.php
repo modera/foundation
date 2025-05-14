@@ -8,54 +8,26 @@ use Symfony\Component\Intl\Exception\MissingResourceException;
 use Symfony\Component\Intl\Locales;
 
 /**
- * @ORM\Entity
- *
- * @ORM\Table(name="modera_languages_language", uniqueConstraints={
- *
- *     @ORM\UniqueConstraint(name="locale", columns={"locale"})
- * })
- *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'modera_languages_language')]
+#[ORM\UniqueConstraint(name: 'locale', columns: ['locale'])]
 class Language
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @ORM\Id
-     *
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=false)
-     */
-    private ?string $locale = null;
+    #[ORM\Column(type: 'string')]
+    private string $locale = 'en';
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $isEnabled = false;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $isDefault = false;
-
-    /**
-     * @deprecated Use native ::class property
-     */
-    public static function clazz(): string
-    {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated. Use native ::class property.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return \get_called_class();
-    }
 
     /**
      * Returns the name of a locale.
@@ -115,12 +87,12 @@ class Language
 
     public function getLocale(): string
     {
-        return $this->locale ?: 'en';
+        return $this->locale;
     }
 
     public function setLocale(string $locale): void
     {
-        $this->locale = $locale;
+        $this->locale = $locale ?: 'en';
     }
 
     /**
@@ -133,19 +105,6 @@ class Language
 
     public function isEnabled(): bool
     {
-        return $this->isEnabled;
-    }
-
-    /**
-     * @deprecated Since v3.1.0, use Language::isEnabled() method.
-     */
-    public function getEnabled(): bool
-    {
-        @\trigger_error(sprintf(
-            'The "%s()" method is deprecated. Use Language::isEnabled() method.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
         return $this->isEnabled;
     }
 

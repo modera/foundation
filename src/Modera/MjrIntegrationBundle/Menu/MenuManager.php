@@ -2,21 +2,18 @@
 
 namespace Modera\MjrIntegrationBundle\Menu;
 
-use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 
 /**
  * Manages menu.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class MenuManager
 {
-    private ContributorInterface $provider;
-
-    public function __construct(ContributorInterface $provider)
-    {
-        $this->provider = $provider;
+    public function __construct(
+        private readonly ExtensionProvider $extensionProvider,
+    ) {
     }
 
     /**
@@ -25,7 +22,7 @@ class MenuManager
     public function getAll(): array
     {
         /** @var MenuItemInterface[] $items */
-        $items = $this->provider->getItems();
+        $items = $this->extensionProvider->get('modera_mjr_integration.menu.menu_items')->getItems();
 
         return $items;
     }

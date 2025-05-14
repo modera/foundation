@@ -8,36 +8,44 @@ use Modera\LanguagesBundle\Entity\Language;
 use Modera\TranslationsBundle\Compiler\Adapter\AdapterInterface;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\TranslationsBundle\Service\Translator;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Contracts\Service\Attribute\Required;
 
 /**
  * Takes tokens from database and compiles them back to SF files.
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:translations:compile',
+    description: 'Compile entries from database to resources.',
+)]
 class CompileTranslationsCommand extends Command
 {
     private ContainerInterface $container;
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
 
+    public function __construct(
+        private readonly AdapterInterface $adapter,
+        private readonly Translator $translator,
+    ) {
+        parent::__construct();
+    }
+
     protected function configure(): void
     {
         $this
-            ->setName('modera:translations:compile')
-            ->setDescription('Compile entries from database to resources.')
             ->addOption('adapter', null, InputOption::VALUE_REQUIRED, 'Compiler adapter')
             ->addOption('no-warmup', null, InputOption::VALUE_NONE, 'Do not warm up translations cache')
             ->addOption('only-translated', null, InputOption::VALUE_NONE, 'Compile only translated entries')
@@ -72,7 +80,7 @@ class CompileTranslationsCommand extends Command
             $output->writeln('>>> Nothing to compile');
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
@@ -134,22 +142,18 @@ class CompileTranslationsCommand extends Command
     {
         /** @var string $cacheDir */
         $cacheDir = $this->container->getParameter('kernel.cache_dir');
-        $this->getTranslator()->warmUp($cacheDir);
+        $this->translator->warmUp($cacheDir);
     }
 
     protected function getAdapter(?string $id = null): AdapterInterface
     {
-        /** @var AdapterInterface $adapter */
-        $adapter = $this->container->get($id ?: 'modera_translations.compiler.adapter');
+        if ($id) {
+            /** @var AdapterInterface $adapter */
+            $adapter = $this->container->get($id);
 
-        return $adapter;
-    }
+            return $adapter;
+        }
 
-    protected function getTranslator(): Translator
-    {
-        /** @var Translator $translator */
-        $translator = $this->container->get('modera_translations.service.translator');
-
-        return $translator;
+        return $this->adapter;
     }
 }

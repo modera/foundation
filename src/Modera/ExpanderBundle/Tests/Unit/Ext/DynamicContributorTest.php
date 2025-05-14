@@ -6,7 +6,7 @@ use Modera\ExpanderBundle\Ext\SimpleContributor;
 
 class DynamicContributorTest extends \PHPUnit\Framework\TestCase
 {
-    public function testThemAll()
+    public function testThemAll(): void
     {
         $c1 = new \stdClass();
         $c2 = $c1;

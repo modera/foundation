@@ -9,32 +9,19 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2017 Modera Foundation
  */
 class PasswordManager
 {
-    private PasswordConfigInterface $passwordConfig;
-
-    private UserPasswordHasherInterface $passwordHasher;
-
-    private ValidatorInterface $validator;
-
-    private MailServiceInterface $mailService;
-
     /**
      * @internal Use container service instead
      */
     public function __construct(
-        PasswordConfigInterface $passwordConfig,
-        UserPasswordHasherInterface $passwordHasher,
-        ValidatorInterface $validator,
-        MailServiceInterface $mailService
+        private readonly PasswordConfigInterface $passwordConfig,
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly ValidatorInterface $validator,
+        private readonly MailServiceInterface $mailService,
     ) {
-        $this->passwordConfig = $passwordConfig;
-        $this->passwordHasher = $passwordHasher;
-        $this->validator = $validator;
-        $this->mailService = $mailService;
     }
 
     /**

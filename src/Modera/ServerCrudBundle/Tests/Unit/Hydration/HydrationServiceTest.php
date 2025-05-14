@@ -5,105 +5,103 @@ namespace Modera\ServerCrudBundle\Tests\Unit\Hydration;
 use Modera\ServerCrudBundle\Hydration\HydrationProfile;
 use Modera\ServerCrudBundle\Hydration\HydrationService;
 use Modera\ServerCrudBundle\Hydration\UnknownHydrationProfileException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Author
 {
-    public $firstname;
+    public string $firstname = '';
 
-    public $lastname;
+    public string $lastname = '';
 }
 
 class Article
 {
-    public $title;
+    public string $title = '';
 
-    public $body;
+    public string $body = '';
 
-    public $author;
+    public ?Author $author = null;
 
-    /* @var ArticleComment[] */
-    public $comments = array();
+    /**
+     * @var ArticleComment[]
+     */
+    public array $comments = [];
 }
 
 class ArticleComment
 {
-    public $createdAt;
+    public Author $author;
 
-    public $author;
+    public string $body;
 
-    public $body;
+    public \DateTime $createdAt;
 
-    public function __construct(Author $author, $body)
+    public function __construct(Author $author, string $body)
     {
         $this->author = $author;
         $this->body = $body;
-
         $this->createdAt = new \DateTime('now');
     }
 }
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2013 Modera Foundation
- */
 class HydrationServiceTest extends \PHPUnit\Framework\TestCase
 {
-    private $container;
+    private ContainerInterface $container;
 
-    /* @var HydrationService $service */
-    private $service;
+    private HydrationService $service;
 
-    private $config;
-    private $article;
+    private array $config;
+
+    private Article $article;
 
     // override
     public function setUp(): void
     {
-        $this->container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $this->container = $this->createMock(ContainerInterface::class);
 
         $this->service = new HydrationService($this->container);
 
-        $this->config = array(
-            'groups' => array(
+        $this->config = [
+            'groups' => [
                 'tags' => function () {
                     return [];
                 },
                 'comments' => function (Article $e) {
-                    $result = array();
+                    $result = [];
 
                     foreach ($e->comments as $comment) {
-                        $result[] = array(
+                        $result[] = [
                             'body' => $comment->body,
-                        );
+                        ];
                     }
 
                     return $result;
                 },
-                'form' => array(
+                'form' => [
                     'title', 'body',
-                ),
-                'author' => array(
+                ],
+                'author' => [
                     'firstname' => 'author.firstname',
                     'lastname' => 'author.lastname',
-                ),
+                ],
                 'list' => function (Article $e) {
-                    return array(
+                    return [
                         'title' => substr($e->title, 0, 10),
                         'body' => substr($e->body, 0, 10),
-                    );
+                    ];
                 },
                 'show_stopper' => function () {
                     return new \stdClass();
                 },
-            ),
-            'profiles' => array(
-                'list' => HydrationProfile::create(false)->useGroups(array('list')),
-                'form' => HydrationProfile::create()->useGroups(array('form', 'comments', 'author')),
+            ],
+            'profiles' => [
+                'list' => HydrationProfile::create(false)->useGroups(['list']),
+                'form' => HydrationProfile::create()->useGroups(['form', 'comments', 'author']),
                 'author',
-                'preview' => HydrationProfile::create(false)->useGroups(array('list', 'author')),
-                'kaput' => HydrationProfile::create(false)->useGroups(array('list', 'show_stopper')),
-            ),
-        );
+                'preview' => HydrationProfile::create(false)->useGroups(['list', 'author']),
+                'kaput' => HydrationProfile::create(false)->useGroups(['list', 'show_stopper']),
+            ],
+        ];
 
         $author = new Author();
         $author->firstname = 'Vassily';
@@ -113,67 +111,67 @@ class HydrationServiceTest extends \PHPUnit\Framework\TestCase
         $article->author = $author;
         $article->title = 'Foo title';
         $article->body = 'Bar body';
-        $article->comments = array(
+        $article->comments = [
             new ArticleComment($author, 'Comment1'),
-        );
+        ];
 
         $this->article = $article;
     }
 
-    private function assertValidAuthorResult(array $result)
+    private function assertValidAuthorResult(array $result): void
     {
         $this->assertArrayHasKey('author', $result);
-        $this->assertTrue(is_array($result['author']));
+        $this->assertTrue(\is_array($result['author']));
         $this->assertArrayHasKey('firstname', $result['author']);
         $this->assertEquals($this->article->author->firstname, $result['author']['firstname']);
         $this->assertArrayHasKey('lastname', $result['author']);
         $this->assertEquals($this->article->author->lastname, $result['author']['lastname']);
     }
 
-    private function assertValidFormResult(array $result)
+    private function assertValidFormResult(array $result): void
     {
         $this->assertArrayHasKey('form', $result);
-        $this->assertTrue(is_array($result['form']));
+        $this->assertTrue(\is_array($result['form']));
         $this->assertArrayHasKey('title', $result['form']);
         $this->assertEquals($this->article->title, $result['form']['title']);
         $this->assertArrayHasKey('body', $result['form']);
         $this->assertEquals($this->article->body, $result['form']['body']);
     }
 
-    public function testHydrate()
+    public function testHydrate(): void
     {
         $result = $this->service->hydrate($this->article, $this->config, 'form');
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
 
         $this->assertValidFormResult($result);
 
         $this->assertArrayHasKey('comments', $result);
-        $this->assertTrue(is_array($result['comments']));
-        $this->assertEquals(1, count($result['comments']));
+        $this->assertTrue(\is_array($result['comments']));
+        $this->assertEquals(1, \count($result['comments']));
         $this->assertArrayHasKey(0, $result['comments']);
-        $this->assertTrue(is_array($result['comments'][0]));
+        $this->assertTrue(\is_array($result['comments'][0]));
         $this->assertEquals($this->article->comments[0]->body, $result['comments'][0]['body']);
 
         $this->assertValidAuthorResult($result);
     }
 
-    public function testHydrateWithGroup()
+    public function testHydrateWithGroup(): void
     {
         $result = $this->service->hydrate($this->article, $this->config, 'form', ['comments']);
 
         // when one group is specified then no grouping is used
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertEquals(1, count($result));
         $this->assertArrayHasKey(0, $result);
-        $this->assertTrue(is_array($result[0]));
+        $this->assertTrue(\is_array($result[0]));
         $this->assertArrayHasKey('body', $result[0]);
         $this->assertEquals($this->article->comments[0]->body, $result[0]['body']);
 
         $result = $this->service->hydrate($this->article, $this->config, 'form', ['form', 'author']);
 
-        $this->assertTrue(is_array($result));
-        $this->assertEquals(2, count($result));
+        $this->assertTrue(\is_array($result));
+        $this->assertEquals(2, \count($result));
 
         $this->assertArrayHasKey('form', $result);
         $this->assertValidFormResult($result);
@@ -182,31 +180,31 @@ class HydrationServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertValidAuthorResult($result);
     }
 
-    public function testHydrateWithNoResultGroupingAllowed()
+    public function testHydrateWithNoResultGroupingAllowed(): void
     {
         $result = $this->service->hydrate($this->article, $this->config, 'list');
 
-        $this->assertTrue(is_array($result));
-        $this->assertEquals(2, count($result));
+        $this->assertTrue(\is_array($result));
+        $this->assertEquals(2, \count($result));
         $this->assertArrayHasKey('title', $result);
         $this->assertEquals($this->article->title, $result['title']);
         $this->assertArrayHasKey('body', $result);
         $this->assertEquals($this->article->body, $result['body']);
     }
 
-    public function testHydrateWithNoResultGroupingAllowedButGroupSpecified()
+    public function testHydrateWithNoResultGroupingAllowedButGroupSpecified(): void
     {
         $result = $this->service->hydrate($this->article, $this->config, 'preview', ['list']);
 
-        $expectedResult = array(
+        $expectedResult = [
             'title' => 'Foo title',
             'body' => 'Bar body',
-        );
+        ];
 
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function testHydrateWithBadResult()
+    public function testHydrateWithBadResult(): void
     {
         $thrownException = null;
 
@@ -220,7 +218,7 @@ class HydrationServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Invalid hydrator definition', $thrownException->getMessage());
     }
 
-    public function testWhenUnknownHydrationProfileIsSpecified()
+    public function testWhenUnknownHydrationProfileIsSpecified(): void
     {
         $thrownException = null;
         try {
@@ -233,11 +231,11 @@ class HydrationServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('blahblah', $thrownException->getProfileName());
     }
 
-    public function testHydrateWhenHydrationProfileSpecifiedInShortManner()
+    public function testHydrateWhenHydrationProfileSpecifiedInShortManner(): void
     {
         $result = $this->service->hydrate($this->article, $this->config, 'author');
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('firstname', $result);
         $this->assertArrayHasKey('lastname', $result);
     }

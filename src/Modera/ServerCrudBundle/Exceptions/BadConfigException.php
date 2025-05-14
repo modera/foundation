@@ -5,7 +5,6 @@ namespace Modera\ServerCrudBundle\Exceptions;
 /**
  * This exception can be thrown when an invalid configuration found during executing.
  *
- * @author    Alex Plaksin <alex.plaksin@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class BadConfigException extends \RuntimeException

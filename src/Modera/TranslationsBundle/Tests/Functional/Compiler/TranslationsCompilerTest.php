@@ -2,17 +2,15 @@
 
 namespace Modera\TranslationsBundle\Tests\Functional\Compiler;
 
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Modera\TranslationsBundle\Tests\Functional\AbstractFunctionalTestCase;
+use Doctrine\ORM\EntityManagerInterface;
 use Modera\TranslationsBundle\Compiler\TranslationsCompiler;
+use Modera\TranslationsBundle\Tests\Functional\AbstractFunctionalTestCase;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Smoke test.
- *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
  */
 class TranslationsCompilerTest extends AbstractFunctionalTestCase
 {
@@ -28,19 +26,17 @@ class TranslationsCompilerTest extends AbstractFunctionalTestCase
         self::dropDatabase();
     }
 
-    public function testCompile()
+    public function testCompile(): void
     {
-        /*$this->markTestSkipped(
-            'After migration to Symfony 3.1+ this test started exploding with "PDOException: There is no active transaction"'
-        );*/
+        /** @var EntityManagerInterface $em */
         $em = self::getContainer()->get('doctrine')->getManager();
         $em->getConnection()->beginTransaction();
 
-        /* @var KernelInterface $kernel */
+        /** @var KernelInterface $kernel */
         $kernel = self::getContainer()->get('kernel');
 
-        /* @var TranslationsCompiler $compiler */
-        $compiler = self::getContainer()->get('modera_translations.compiler.translations_compiler');
+        /** @var TranslationsCompiler $compiler */
+        $compiler = self::getContainer()->get('modera_translations.tests.translation_compiler');
 
         $this->launchImportCommand();
 
@@ -49,12 +45,12 @@ class TranslationsCompilerTest extends AbstractFunctionalTestCase
         $translationsDir = $kernel->getProjectDir().'/app/Resources/translations';
 
         $fs = new Filesystem();
-        $discoveredFiles = array();
+        $discoveredFiles = [];
         foreach (Finder::create()->in($translationsDir) as $file) {
             $discoveredFiles[] = $file->getFilename();
             $fs->remove($file->getRealPath());
         }
 
-        $this->assertTrue(in_array('messages.en.yml', $discoveredFiles));
+        $this->assertTrue(\in_array('messages.en.yaml', $discoveredFiles));
     }
 }

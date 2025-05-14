@@ -8,7 +8,6 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  * This exception will be thrown when some required configuration parameters for
  * {@class EntityRepositoryHandler} are not provided.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class MissingConfigurationParameterException extends \RuntimeException

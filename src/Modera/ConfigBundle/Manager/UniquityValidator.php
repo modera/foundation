@@ -11,25 +11,17 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  *
  * @internal
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class UniquityValidator
 {
-    private EntityManagerInterface $em;
-
-    /**
-     * @var array<mixed>
-     */
-    private array $semanticConfig;
-
     /**
      * @param array<mixed> $semanticConfig
      */
-    public function __construct(EntityManagerInterface $em, array $semanticConfig)
-    {
-        $this->em = $em;
-        $this->semanticConfig = $semanticConfig;
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly array $semanticConfig,
+    ) {
     }
 
     public function isValidForSaving(ConfigurationEntry $entry): bool

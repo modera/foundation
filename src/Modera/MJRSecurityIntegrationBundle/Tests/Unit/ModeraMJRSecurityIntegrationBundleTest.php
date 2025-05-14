@@ -3,16 +3,18 @@
 namespace Modera\MJRSecurityIntegrationBundle\Tests\Unit;
 
 use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2015 Modera Foundation
- */
 class ModeraMJRSecurityIntegrationBundleTest extends \PHPUnit\Framework\TestCase
 {
-    public function testBuild()
+    public function testBuild(): void
     {
-        $builder = \Phake::mock('Symfony\Component\DependencyInjection\ContainerBuilder');
+        $builder = \Phake::mock(ContainerBuilder::class);
+        \Phake::when($builder)
+            ->addCompilerPass(\Phake::anyParameters())
+            ->thenReturn($builder)
+        ;
 
         $bundle = new ModeraMJRSecurityIntegrationBundle();
 
@@ -20,7 +22,7 @@ class ModeraMJRSecurityIntegrationBundleTest extends \PHPUnit\Framework\TestCase
 
         \Phake::verify($builder, \Phake::times(1))
             ->addCompilerPass(
-                $this->isInstanceOf('Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface')
+                $this->isInstanceOf(CompilerPassInterface::class)
             )
         ;
     }

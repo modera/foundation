@@ -2,12 +2,11 @@
 
 namespace Modera\MjrIntegrationBundle\AssetsHandling;
 
-use Modera\ExpanderBundle\Ext\ContributorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 
 /**
  * Brings support for differentiation between blocking and non-blocking assets. The difference between these two
- * is that those which are blocking have be be loaded into browser before user can interact with backend and the latter
+ * are that those which are blocking have be loaded into browser before user can interact with backend and the latter
  * ones can be loaded later. To begin with it is going to be used by ModeraMJRSecurityIntegrationBundle
  * bundle, making it possible to load a backend page as fast as possible (just render a login panel) and once page
  * is loaded it will start loading css/javascript which are going to be used only when user has already logged in.
@@ -25,26 +24,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *         }
  *     }
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
 class AssetsProvider implements AssetsProviderInterface
 {
-    private ContributorInterface $cssResourcesProvider;
-
-    private ContributorInterface $jsResourcesProvider;
-
-    public function __construct(ContainerInterface $container)
-    {
-        // we cannot inject them directly, because these services are built dynamically
-
-        /** @var ContributorInterface $cssResourcesProvider */
-        $cssResourcesProvider = $container->get('modera_mjr_integration.css_resources_provider');
-        $this->cssResourcesProvider = $cssResourcesProvider;
-
-        /** @var ContributorInterface $jsResourcesProvider */
-        $jsResourcesProvider = $container->get('modera_mjr_integration.js_resources_provider');
-        $this->jsResourcesProvider = $jsResourcesProvider;
+    public function __construct(
+        private readonly ExtensionProvider $extensionProvider,
+    ) {
     }
 
     private function validateType(string $type): void
@@ -105,7 +91,7 @@ class AssetsProvider implements AssetsProviderInterface
     public function getCssAssets(string $type): array
     {
         /** @var array<string|array{'resource': string, 'order'?: int}> $items */
-        $items = $this->cssResourcesProvider->getItems();
+        $items = $this->extensionProvider->get('modera_mjr_integration.css_resources')->getItems();
 
         return $this->filterRawAssetsByType($type, $items);
     }
@@ -113,7 +99,7 @@ class AssetsProvider implements AssetsProviderInterface
     public function getJavascriptAssets(string $type): array
     {
         /** @var array<string|array{'resource': string, 'order'?: int}> $items */
-        $items = $this->jsResourcesProvider->getItems();
+        $items = $this->extensionProvider->get('modera_mjr_integration.js_resources')->getItems();
 
         return $this->filterRawAssetsByType($type, $items);
     }

@@ -3,19 +3,18 @@
 namespace Modera\ExpanderBundle\Ext;
 
 use Modera\ExpanderBundle\DependencyInjection\CompositeContributorsProviderCompilerPass;
-use Modera\ExpanderBundle\Generation\ContributionGeneratorInterface;
-use Modera\ExpanderBundle\Generation\StandardContributionGenerator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
 /**
- * Class is used to describe your extension point purpose as well as encapsulates compiler-pass
- * creation logic.
+ * Class is used to describe your extension point purpose as well as encapsulates compiler-pass creation logic.
+ *
+ * @copyright 2024 Modera Foundation
  */
 class ExtensionPoint
 {
-    private string $id;
+    private ?string $serviceId = null;
 
-    private string $contributionTag;
+    private ?string $contributionTag = null;
 
     private ?string $category = null;
 
@@ -23,24 +22,18 @@ class ExtensionPoint
 
     private ?string $detailedDescription = null;
 
-    /**
-     * @var array<string, mixed>
-     */
-    private array $generatorConfig;
-
-    /**
-     * @param array<string, mixed> $generatorConfig
-     */
-    public function __construct(string $id, array $generatorConfig = [])
-    {
-        $this->id = $id;
-        $this->contributionTag = $id.'_provider';
-        $this->generatorConfig = $generatorConfig;
+    public function __construct(
+        private string $id,
+    ) {
     }
 
     public function createCompilerPass(): CompilerPassInterface
     {
-        return new CompositeContributorsProviderCompilerPass($this->contributionTag, $this->contributionTag, $this);
+        return new CompositeContributorsProviderCompilerPass(
+            $this->getServiceId(),
+            $this->getContributionTag(),
+            $this,
+        );
     }
 
     public function getId(): string
@@ -48,12 +41,24 @@ class ExtensionPoint
         return $this->id;
     }
 
-    public function getContributionTag(): string
+    public function getServiceId(): string
     {
-        return $this->contributionTag;
+        return $this->serviceId ?? $this->id.'_provider';
     }
 
-    public function setContributionTag(string $contributionTag): self
+    public function setServiceId(?string $serviceId): self
+    {
+        $this->serviceId = $serviceId;
+
+        return $this;
+    }
+
+    public function getContributionTag(): string
+    {
+        return $this->contributionTag ?? $this->id.'_provider';
+    }
+
+    public function setContributionTag(?string $contributionTag): self
     {
         $this->contributionTag = $contributionTag;
 
@@ -96,8 +101,35 @@ class ExtensionPoint
         return $this;
     }
 
-    public function getContributionGenerator(): ?ContributionGeneratorInterface
+    public function __serialize(): array
     {
-        return new StandardContributionGenerator($this->generatorConfig);
+        return [
+            'id' => $this->id,
+            'serviceId' => $this->serviceId,
+            'contributionTag' => $this->contributionTag,
+            'category' => $this->category,
+            'description' => $this->description,
+            'detailedDescription' => $this->detailedDescription,
+        ];
+    }
+
+    /**
+     * @param array{
+     *     'id': string,
+     *     'serviceId'?: string,
+     *     'contributionTag'?: string,
+     *     'category'?: string,
+     *     'description'?: string,
+     *     'detailedDescription'?: string,
+     * } $data
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->id = $data['id'];
+        $this->serviceId = $data['serviceId'] ?? null;
+        $this->contributionTag = $data['contributionTag'] ?? null;
+        $this->category = $data['category'] ?? null;
+        $this->description = $data['description'] ?? null;
+        $this->detailedDescription = $data['detailedDescription'] ?? null;
     }
 }

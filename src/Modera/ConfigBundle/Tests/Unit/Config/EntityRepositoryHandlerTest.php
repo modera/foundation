@@ -2,65 +2,63 @@
 
 namespace Modera\ConfigBundle\Tests\Unit\Config;
 
-use Modera\ConfigBundle\Entity\ConfigurationEntry;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Modera\ConfigBundle\Config\EntityRepositoryHandler;
+use Modera\ConfigBundle\Entity\ConfigurationEntry;
 
 class DummyEntity
 {
-    public $value;
+    public ?string $value = null;
 
-    public $id;
+    public ?string $id = null;
 
-    public function getValue()
+    public function getValue(): ?string
     {
         return $this->value;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 }
 
-/**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
- */
 class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
 {
-    private $ce;
-    private $em;
-    private $entityRepository;
-    /* @var EntityRepositoryHandler $handler */
-    private $handler;
+    private ConfigurationEntry $ce;
+    private EntityManagerInterface $em;
+    private EntityRepository $entityRepository;
+    private EntityRepositoryHandler $handler;
 
     public function setUp(): void
     {
-        $this->em = $this->createMock('Doctrine\ORM\EntityManager', array(), array(), '', false);
-        $this->entityRepository = $this->createMock('Doctrine\ORM\EntityRepository', array(), array(), '', false);
-        $this->ce = $this->createMock(ConfigurationEntry::class, array(), array(), '', false);
+        $this->em = $this->createMock(EntityManagerInterface::class);
+        $this->entityRepository = $this->createMock(EntityRepository::class);
+        $this->ce = $this->createMock(ConfigurationEntry::class);
         $this->handler = new EntityRepositoryHandler($this->em);
     }
 
-    private function teachConfigEntryToReturnServerHandlerConfig(array $overrideConfig = array())
+    private function teachConfigEntryToReturnServerHandlerConfig(array $overrideConfig = []): void
     {
-        $cfg = array_merge(array(
+        $cfg = \array_merge([
             'entityFqcn' => DummyEntity::class,
             'toStringMethodName' => 'getValue',
             'clientValueMethodName' => 'getId',
-        ), $overrideConfig);
+        ], $overrideConfig);
         $this->ce->expects($this->atLeastOnce())
              ->method('getServerHandlerConfig')
              ->will($this->returnValue($cfg));
     }
 
-    private function teachConfigEntryToReturnClientValue($clientValue)
+    private function teachConfigEntryToReturnClientValue($clientValue): void
     {
         $this->ce->expects($this->atLeastOnce())
              ->method('getDenormalizedValue')
              ->will($this->returnValue($clientValue));
     }
 
-    private function teachEntityManagerToExpectForFind($id, $entityInstance)
+    private function teachEntityManagerToExpectForFind($id, $entityInstance): void
     {
         $this->entityRepository
             ->expects($this->any())
@@ -77,7 +75,7 @@ class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
         ;
     }
 
-    public function testGetReadableValue()
+    public function testGetReadableValue(): void
     {
         $id = 10;
         $entityInstance = new DummyEntity();
@@ -90,7 +88,7 @@ class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($entityInstance->value, $this->handler->getReadableValue($this->ce));
     }
 
-    public function testGetValue()
+    public function testGetValue(): void
     {
         $id = 50;
         $entityInstance = new DummyEntity();
@@ -102,7 +100,7 @@ class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($entityInstance, $this->handler->getValue($this->ce));
     }
 
-    public function testConvertToStorageValue()
+    public function testConvertToStorageValue(): void
     {
         $this->teachConfigEntryToReturnServerHandlerConfig();
 
@@ -111,11 +109,11 @@ class EntityRepositoryHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($entity->id, $this->handler->convertToStorageValue($entity, $this->ce));
     }
 
-    public function testConvertToStorageValueWithNewClientValueMethodName()
+    public function testConvertToStorageValueWithNewClientValueMethodName(): void
     {
-        $this->teachConfigEntryToReturnServerHandlerConfig(array(
+        $this->teachConfigEntryToReturnServerHandlerConfig([
             'clientValueMethodName' => 'getValue',
-        ));
+        ]);
 
         $entity = new DummyEntity();
         $entity->value = 'foo';

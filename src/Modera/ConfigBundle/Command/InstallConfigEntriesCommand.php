@@ -3,31 +3,24 @@
 namespace Modera\ConfigBundle\Command;
 
 use Modera\ConfigBundle\Config\ConfigEntriesInstaller;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:config:install-config-entries',
+    description: 'Installs configuration-entries defined through extension-points mechanism',
+)]
 class InstallConfigEntriesCommand extends Command
 {
-    private ConfigEntriesInstaller $installer;
-
-    public function __construct(ConfigEntriesInstaller $installer)
-    {
-        $this->installer = $installer;
-
+    public function __construct(
+        private ConfigEntriesInstaller $installer,
+    ) {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->setName('modera:config:install-config-entries')
-            ->setDescription('Installs configuration-entries defined through extension-points mechanism')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -45,6 +38,6 @@ class InstallConfigEntriesCommand extends Command
             $output->writeln(' >> Done!');
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

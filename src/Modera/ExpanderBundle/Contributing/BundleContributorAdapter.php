@@ -6,23 +6,21 @@ use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
+ * @internal
+ *
  * This class is not part of a public API.
  *
  * This class is used internally by {@class ExtensionPointsAwareBundlesCollectorCompilerPass}.
+ *
+ * @copyright 2024 Modera Foundation
  */
 class BundleContributorAdapter implements ContributorInterface
 {
-    private KernelInterface $kernel;
-
-    private string $bundleName;
-
-    private string $extensionPointName;
-
-    public function __construct(KernelInterface $kernel, string $bundleName, string $extensionPointName)
-    {
-        $this->kernel = $kernel;
-        $this->bundleName = $bundleName;
-        $this->extensionPointName = $extensionPointName;
+    public function __construct(
+        private readonly KernelInterface $kernel,
+        private readonly string $bundleName,
+        private readonly string $extensionPointId,
+    ) {
     }
 
     public function getItems(): array
@@ -31,8 +29,15 @@ class BundleContributorAdapter implements ContributorInterface
         if ($bundle instanceof ExtensionPointsAwareBundleInterface) {
             $contributions = $bundle->getExtensionPointContributions();
 
-            if (\is_array($contributions) && is_array($contributions[$this->extensionPointName] ?? null)) {
-                return $contributions[$this->extensionPointName];
+            if (\is_callable($contributions[$this->extensionPointId] ?? null)) {
+                /** @var mixed[] $contributions */
+                $contributions = $contributions[$this->extensionPointId]($this->kernel->getContainer());
+
+                return $contributions;
+            }
+
+            if (\is_array($contributions[$this->extensionPointId] ?? null)) {
+                return $contributions[$this->extensionPointId];
             }
         } else {
             throw new \InvalidArgumentException(\sprintf("Bundle '%s' doesn't implement ExtensionPointsAwareBundleInterface interface", \get_class($bundle)));

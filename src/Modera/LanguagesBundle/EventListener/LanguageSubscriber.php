@@ -3,12 +3,12 @@
 namespace Modera\LanguagesBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Modera\LanguagesBundle\Entity\Language;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2020 Modera Foundation
  */
 class LanguageSubscriber implements EventSubscriber
@@ -36,16 +36,18 @@ class LanguageSubscriber implements EventSubscriber
         $entity = $args->getObject();
         if ($entity instanceof Language) {
             if ($entity->isDefault()) {
-                $em = $args->getEntityManager();
-                $query = $em->createQuery(
-                    \sprintf(
-                        'UPDATE %s l SET l.isDefault = :status WHERE l.id != :id',
-                        Language::class
-                    )
-                );
-                $query->setParameter('status', false);
-                $query->setParameter('id', $entity->getId());
-                $query->execute();
+                $om = $args->getObjectManager();
+                if ($om instanceof EntityManagerInterface) {
+                    $query = $om->createQuery(
+                        \sprintf(
+                            'UPDATE %s l SET l.isDefault = :status WHERE l.id != :id',
+                            Language::class
+                        )
+                    );
+                    $query->setParameter('status', false);
+                    $query->setParameter('id', $entity->getId());
+                    $query->execute();
+                }
             }
         }
     }

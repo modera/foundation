@@ -2,14 +2,15 @@
 
 namespace Modera\BackendSecurityBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Model\PermissionCategory;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_security.permission_categories')]
 class PermissionCategoriesProvider implements ContributorInterface
 {
     /**
@@ -21,10 +22,9 @@ class PermissionCategoriesProvider implements ContributorInterface
     {
         if (!$this->items) {
             $this->items = [
-                // See notes related to MPFE-963 in CHANGELOG-2.x.md (release 2.55.0)
                 new PermissionCategory(
                     T::trans('Administration'),
-                    'administration'
+                    'administration',
                 ),
             ];
         }

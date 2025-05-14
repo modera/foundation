@@ -11,6 +11,8 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 /**
  * Implementations are responsible for creating/updating files that are needed to create a contribution to a given
  * extension point.
+ *
+ * @copyright 2024 Modera Foundation
  */
 interface ContributionGeneratorInterface
 {
@@ -19,6 +21,6 @@ interface ContributionGeneratorInterface
         ExtensionPoint $extensionPoint,
         InputInterface $input,
         OutputInterface $output,
-        ?HelperSet $helperSet = null
+        ?HelperSet $helperSet = null,
     ): void;
 }

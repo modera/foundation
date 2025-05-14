@@ -3,6 +3,7 @@
 namespace Modera\ServerCrudBundle\Tests\Unit\NewValuesFactory;
 
 use Modera\ServerCrudBundle\NewValuesFactory\DefaultNewValuesFactory;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DummyEntity
 {
@@ -10,40 +11,36 @@ class DummyEntity
 
 class AnotherDummyEntity
 {
-    public static function formatNewValues(array $params, array $config)
+    public static function formatNewValues(array $params, array $config): array
     {
-        return array(
+        return [
             'params' => $params,
             'config' => $config,
-        );
+        ];
     }
 }
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class DefaultNewValuesFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    public function testGetValues()
+    public function testGetValues(): void
     {
-        $container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $container = $this->createMock(ContainerInterface::class);
 
         $nvf = new DefaultNewValuesFactory($container);
 
-        $inputParams = array('input-params');
-        $inputConfig = array('entity' => DummyEntity::class);
+        $inputParams = ['input-params'];
+        $inputConfig = ['entity' => DummyEntity::class];
 
-        $this->assertSame(array(), $nvf->getValues($inputParams, $inputConfig));
+        $this->assertSame([], $nvf->getValues($inputParams, $inputConfig));
 
         // ---
 
-        $inputConfig = array('entity' => AnotherDummyEntity::class);
+        $inputConfig = ['entity' => AnotherDummyEntity::class];
 
-        $expectedResult = array(
+        $expectedResult = [
             'params' => $inputParams,
             'config' => $inputConfig,
-        );
+        ];
 
         $this->assertSame($expectedResult, $nvf->getValues($inputParams, $inputConfig));
     }

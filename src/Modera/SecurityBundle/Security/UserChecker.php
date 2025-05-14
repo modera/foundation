@@ -8,7 +8,6 @@ use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface as CoreUserInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2022 Modera Foundation
  */
 class UserChecker implements UserCheckerInterface

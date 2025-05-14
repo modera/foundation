@@ -2,32 +2,29 @@
 
 namespace Modera\BackendLanguagesBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Provides service definitions for client-side dependency injection container.
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.csdi.service_definitions')]
 class ClientDiServiceDefinitionsProvider implements ContributorInterface
 {
-    private ContainerInterface $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        private readonly ParameterBagInterface $parameterBag,
+        private readonly UrlGeneratorInterface $urlGenerator,
+    ) {
     }
 
     public function getItems(): array
     {
-        /** @var Router $router */
-        $router = $this->container->get('router');
-
-        $runtimeConfig = $this->container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
+        $runtimeConfig = $this->parameterBag->get(ModeraMjrIntegrationExtension::CONFIG_KEY);
         if (!\is_array($runtimeConfig)) {
             $runtimeConfig = [];
         }
@@ -43,7 +40,7 @@ class ClientDiServiceDefinitionsProvider implements ContributorInterface
                     [
                         'urls' => [
                             $extJsPath.'/locale/ext-lang-'.$locale.'.js',
-                            $router->generate('modera_backend_languages_extjs_l10n', ['locale' => $locale]),
+                            $this->urlGenerator->generate('modera_backend_languages_extjs_l10n', ['locale' => $locale]),
                         ],
                     ],
                 ],

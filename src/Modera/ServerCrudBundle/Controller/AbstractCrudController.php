@@ -2,14 +2,10 @@
 
 namespace Modera\ServerCrudBundle\Controller;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Modera\DirectBundle\Annotation\Remote;
 use Modera\DirectBundle\Controller\ControllerTrait;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
-use Modera\ServerCrudBundle\DependencyInjection\ModeraServerCrudExtension;
 use Modera\ServerCrudBundle\EntityFactory\EntityFactoryInterface;
 use Modera\ServerCrudBundle\ExceptionHandling\ExceptionHandlerInterface;
-use Modera\ServerCrudBundle\Exceptions\BadConfigException;
 use Modera\ServerCrudBundle\Exceptions\BadRequestException;
 use Modera\ServerCrudBundle\Exceptions\MoreThanOneResultException;
 use Modera\ServerCrudBundle\Exceptions\NothingFoundException;
@@ -19,11 +15,12 @@ use Modera\ServerCrudBundle\NewValuesFactory\NewValuesFactoryInterface;
 use Modera\ServerCrudBundle\Persistence\ModelManagerInterface;
 use Modera\ServerCrudBundle\Persistence\OperationResult;
 use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
+use Modera\ServerCrudBundle\Service\ConfiguredServiceManager;
 use Modera\ServerCrudBundle\Util\Toolkit;
 use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
 use Modera\ServerCrudBundle\Validation\ValidationResult;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 /**
  * Class provides tools for fulfilling CRUD operations.
@@ -37,37 +34,44 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * For more details on other available configuration properties and general how-tos please refer to the bundle's
  * README.md file.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 abstract class AbstractCrudController extends AbstractController implements CrudControllerInterface
 {
     use ControllerTrait;
 
+    private InterceptorsManager $interceptorsManager;
+
+    private ConfiguredServiceManager $configuredServiceManager;
+
     /**
      * @return array<string, mixed>
      */
     abstract public function getConfig(): array;
 
-    protected function getContainer(): ContainerInterface
+    #[Required]
+    public function setInterceptorsManager(InterceptorsManager $interceptorsManager): void
     {
-        /** @var ContainerInterface $container */
-        $container = $this->container;
-
-        return $container;
+        $this->interceptorsManager = $interceptorsManager;
     }
 
-    protected function em(): EntityManagerInterface
+    #[Required]
+    public function setConfiguredServiceManager(ConfiguredServiceManager $configuredServiceManager): void
     {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated, inject an instance of ManagerRegistry in your controller instead.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
+        $this->configuredServiceManager = $configuredServiceManager;
+    }
 
-        /** @var EntityManagerInterface $em */
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+    /**
+     * @param array<string, mixed> $params
+     */
+    private function interceptAction(string $actionName, array $params): void
+    {
+        $this->interceptorsManager->intercept($actionName, $params, $this);
+    }
 
-        return $em;
+    private function getConfiguredService(string $serviceType): object
+    {
+        return $this->configuredServiceManager->get($serviceType);
     }
 
     /**
@@ -75,45 +79,43 @@ abstract class AbstractCrudController extends AbstractController implements Crud
      */
     public function getPreparedConfig(): array
     {
-        $me = $this;
-
         $defaultConfig = [
-            'create_entity' => function (array $params, array $config, EntityFactoryInterface $defaultFactory, ContainerInterface $container) {
+            'create_entity' => function (array $params, array $config, EntityFactoryInterface $defaultFactory) {
                 return $defaultFactory->create($params, $config);
             },
-            'map_data_on_create' => function (array $params, $entity, DataMapperInterface $defaultMapper, ContainerInterface $container) {
+            'map_data_on_create' => function (array $params, $entity, DataMapperInterface $defaultMapper) {
                 $defaultMapper->mapData($params, $entity);
             },
-            'map_data_on_update' => function (array $params, $entity, DataMapperInterface $defaultMapper, ContainerInterface $container) {
+            'map_data_on_update' => function (array $params, $entity, DataMapperInterface $defaultMapper) {
                 $defaultMapper->mapData($params, $entity);
             },
-            'new_entity_validator' => function (array $params, $mappedEntity, EntityValidatorInterface $defaultValidator, array $config, ContainerInterface $container) {
+            'new_entity_validator' => function (array $params, $mappedEntity, EntityValidatorInterface $defaultValidator, array $config) {
                 return $defaultValidator->validate($mappedEntity, $config);
             },
-            'updated_entity_validator' => function (array $params, $mappedEntity, EntityValidatorInterface $defaultValidator, array $config, ContainerInterface $container) {
+            'updated_entity_validator' => function (array $params, $mappedEntity, EntityValidatorInterface $defaultValidator, array $config) {
                 return $defaultValidator->validate($mappedEntity, $config);
             },
-            'save_entity_handler' => function ($entity, array $params, PersistenceHandlerInterface $defaultHandler, ContainerInterface $container) {
+            'save_entity_handler' => function ($entity, array $params, PersistenceHandlerInterface $defaultHandler) {
                 return $defaultHandler->save($entity);
             },
-            'update_entity_handler' => function ($entity, array $params, PersistenceHandlerInterface $defaultHandler, ContainerInterface $container) {
+            'update_entity_handler' => function ($entity, array $params, PersistenceHandlerInterface $defaultHandler) {
                 return $defaultHandler->update($entity);
             },
-            'batch_update_entities_handler' => function (array $entities, array $params, PersistenceHandlerInterface $defaultHandler, ContainerInterface $container) {
+            'batch_update_entities_handler' => function (array $entities, array $params, PersistenceHandlerInterface $defaultHandler) {
                 return $defaultHandler->updateBatch($entities);
             },
-            'remove_entities_handler' => function (array $entities, array $params, PersistenceHandlerInterface $defaultHandler, ContainerInterface $container) {
+            'remove_entities_handler' => function (array $entities, array $params, PersistenceHandlerInterface $defaultHandler) {
                 return $defaultHandler->remove($entities);
             },
-            'exception_handler' => function (\Exception $e, $operation, ExceptionHandlerInterface $defaultHandler, ContainerInterface $container) {
+            'exception_handler' => function (\Exception $e, $operation, ExceptionHandlerInterface $defaultHandler) {
                 return $defaultHandler->createResponse($e, $operation);
             },
-            'format_new_entity_values' => function (array $params, array $config, NewValuesFactoryInterface $defaultImpl, ContainerInterface $container) {
+            'format_new_entity_values' => function (array $params, array $config, NewValuesFactoryInterface $defaultImpl) {
                 return $defaultImpl->getValues($params, $config);
             },
             // allows to override default data mapper used by this specific controller
-            'create_default_data_mapper' => function (ContainerInterface $container) use ($me) {
-                return $me->getConfiguredService('data_mapper');
+            'create_default_data_mapper' => function () {
+                return $this->getConfiguredService('data_mapper');
             },
             // optional
             'ignore_standard_validator' => false,
@@ -144,27 +146,12 @@ abstract class AbstractCrudController extends AbstractController implements Crud
         $defaultFactory = $this->getEntityFactory();
 
         /** @var ?object $entity */
-        $entity = \call_user_func_array($config['create_entity'], [$params, $config, $defaultFactory, $this->getContainer()]);
+        $entity = \call_user_func_array($config['create_entity'], [$params, $config, $defaultFactory]);
         if (!$entity) {
             throw new \RuntimeException("Configured factory didn't create an object.");
         }
 
         return $entity;
-    }
-
-    private function getConfiguredService(string $serviceType): object
-    {
-        /** @var array<string, string> $config */
-        $config = $this->getContainer()->getParameter(ModeraServerCrudExtension::CONFIG_KEY);
-
-        try {
-            /** @var object $service */
-            $service = $this->getContainer()->get(isset($config[$serviceType]) ? $config[$serviceType] : '');
-
-            return $service;
-        } catch (\Exception $e) {
-            throw BadConfigException::create($serviceType, $config, $e);
-        }
     }
 
     protected function getPersistenceHandler(): PersistenceHandlerInterface
@@ -197,7 +184,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
         $config = $this->getPreparedConfig();
 
         /** @var DataMapperInterface $dataMapper */
-        $dataMapper = \call_user_func($config['create_default_data_mapper'], $this->getContainer());
+        $dataMapper = \call_user_func($config['create_default_data_mapper']);
 
         return $dataMapper;
     }
@@ -240,7 +227,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
      *
      * @return array<string, mixed>
      */
-    final protected function hydrate(/* array|object */ $entity, array $params): array
+    final protected function hydrate(array|object $entity, array $params): array
     {
         /** @var array{'hydration': array{'profile'?: 'string', 'group'?: string}} $params */
         if (!isset($params['hydration']['profile'])) {
@@ -275,7 +262,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
 
         $exceptionHandler = $config['exception_handler'];
 
-        return $exceptionHandler($e, $operation, $this->getExceptionHandler(), $this->getContainer());
+        return $exceptionHandler($e, $operation, $this->getExceptionHandler());
     }
 
     /**
@@ -319,12 +306,12 @@ abstract class AbstractCrudController extends AbstractController implements Crud
         $validator = $config[('create' === $operationType ? 'new' : 'updated').'_entity_validator'];
 
         if ($dataMapper) {
-            $dataMapper($params['record'], $entity, $this->getDataMapper(), $this->getContainer());
+            $dataMapper($params['record'], $entity, $this->getDataMapper());
         }
 
         if ($validator) {
             /** @var ValidationResult $validationResult */
-            $validationResult = $validator($params, $entity, $this->getEntityValidator(), $config, $this->getContainer());
+            $validationResult = $validator($params, $entity, $this->getEntityValidator(), $config);
             if ($validationResult->hasErrors()) {
                 return \array_merge($validationResult->toArray(), [
                     'success' => false,
@@ -333,7 +320,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
         }
 
         /** @var OperationResult $operationResult */
-        $operationResult = $persistenceHandler($entity, $params, $this->getPersistenceHandler(), $this->getContainer());
+        $operationResult = $persistenceHandler($entity, $params, $this->getPersistenceHandler());
 
         $response = [
             'success' => true,
@@ -366,17 +353,6 @@ abstract class AbstractCrudController extends AbstractController implements Crud
         if (0 === \count($entities)) {
             throw new NothingFoundException('Query must return exactly one result, but nothing was returned');
         }
-    }
-
-    /**
-     * @param array<string, mixed> $params
-     */
-    private function interceptAction(string $actionName, array $params): void
-    {
-        /** @var InterceptorsManager $mgr */
-        $mgr = $this->getContainer()->get('modera_server_crud.intercepting.interceptors_manager');
-
-        $mgr->intercept($actionName, $params, $this);
     }
 
     /**
@@ -457,7 +433,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
             $entities = $this->getPersistenceHandler()->query($config['entity'], $params);
 
             /** @var OperationResult $operationResult */
-            $operationResult = $persistenceHandler($entities, $params, $this->getPersistenceHandler(), $this->getContainer());
+            $operationResult = $persistenceHandler($entities, $params, $this->getPersistenceHandler());
 
             return \array_merge(
                 ['success' => true],
@@ -481,7 +457,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
 
             $newValuesFactory = $config['format_new_entity_values'];
 
-            return $newValuesFactory($params, $config, $this->getNewValuesFactory(), $this->getContainer());
+            return $newValuesFactory($params, $config, $this->getNewValuesFactory());
         } catch (\Exception $e) {
             return $this->createExceptionResponse($e, ExceptionHandlerInterface::OPERATION_GET_NEW_RECORD_VALUES);
         }
@@ -561,17 +537,18 @@ abstract class AbstractCrudController extends AbstractController implements Crud
 
             if (\is_array($params['queries'] ?? null) && \is_array($params['record'] ?? null)) {
                 $entities = [];
+                /** @var array<string, mixed> $query */
                 foreach ($params['queries'] as $query) {
                     $entities = \array_merge($entities, $this->getPersistenceHandler()->query($config['entity'], $query));
                 }
 
                 $errors = [];
                 foreach ($entities as $entity) {
-                    $dataMapper($params['record'], $entity, $this->getDataMapper(), $this->getContainer());
+                    $dataMapper($params['record'], $entity, $this->getDataMapper());
 
                     if ($validator) {
                         /** @var ValidationResult $validationResult */
-                        $validationResult = $validator($params, $entity, $this->getEntityValidator(), $config, $this->getContainer());
+                        $validationResult = $validator($params, $entity, $this->getEntityValidator(), $config);
                         if ($validationResult->hasErrors()) {
                             $pkFields = $this->getPersistenceHandler()->resolveEntityPrimaryKeyFields($config['entity']);
 
@@ -589,7 +566,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
                 }
 
                 if (0 === \count($errors)) {
-                    $operationResult = $persistenceHandler($entities, $params, $this->getPersistenceHandler(), $this->getContainer());
+                    $operationResult = $persistenceHandler($entities, $params, $this->getPersistenceHandler());
 
                     return \array_merge($operationResult->toArray($this->getModelManager()), [
                         'success' => true,
@@ -603,6 +580,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
             } elseif (isset($params['records']) && \is_array($params['records'])) {
                 $entities = [];
                 $errors = [];
+                /** @var array<string, bool|float|int|string|null> $recordParams */
                 foreach ($params['records'] as $recordParams) {
                     $missingPkFields = [];
                     $query = [];
@@ -624,7 +602,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
 
                         $entities[] = $entity;
 
-                        $dataMapper($recordParams, $entity, $this->getDataMapper(), $this->getContainer());
+                        $dataMapper($recordParams, $entity, $this->getDataMapper());
 
                         if ($validator) {
                             $_params = $params;
@@ -632,7 +610,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
                             unset($_params['records']);
 
                             /** @var ValidationResult $validationResult */
-                            $validationResult = $validator($_params, $entity, $this->getEntityValidator(), $config, $this->getContainer());
+                            $validationResult = $validator($_params, $entity, $this->getEntityValidator(), $config);
                             if ($validationResult->hasErrors()) {
                                 $pkFields = $this->getPersistenceHandler()->resolveEntityPrimaryKeyFields($config['entity']);
 
@@ -651,7 +629,7 @@ abstract class AbstractCrudController extends AbstractController implements Crud
                 }
 
                 if (0 === \count($errors)) {
-                    $operationResult = $persistenceHandler($entities, $params, $this->getPersistenceHandler(), $this->getContainer());
+                    $operationResult = $persistenceHandler($entities, $params, $this->getPersistenceHandler());
 
                     return \array_merge($operationResult->toArray($this->getModelManager()), [
                         'success' => true,

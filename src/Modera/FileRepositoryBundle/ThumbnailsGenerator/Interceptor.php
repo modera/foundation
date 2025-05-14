@@ -10,23 +10,23 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
- * This interceptors allows to generate thumbnails for files that are uploaded to a repository. This interceptor
+ * These interceptors allow to generate thumbnails for files that are uploaded to a repository. This interceptor
  * attempts to read thumbnail's generation config from repository's config using "thumbnail_sizes" key, every element
  * of which must be an array containing two keys - "width" and "height". This is a sample repository config required
  * for this interceptor to work:.
  *
- *     array(
- *         'thumbnail_sizes' => array(
- *             array('width' => 250, 'height' => 100),
- *             array('width' => 50, 'height' => 50),
- *          ),
- *     ),
+ *     [
+ *         'thumbnail_sizes' => [
+ *             ['width' => 250, 'height' => 100],
+ *             ['width' => 50, 'height' => 50],
+ *          ],
+ *     ],
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class Interceptor extends BaseOperationInterceptor
 {
+    // TODO: remove, BC
     public const ID = 'modera_file_repository.interceptors.thumbnails_generator.interceptor';
 
     // internal; these flags are used to facilitate testing
@@ -35,10 +35,6 @@ class Interceptor extends BaseOperationInterceptor
     public const RESULT_NO_MORE_THUMBNAILS = 'no_more_thumbnails';
     public const RESULT_SCHEDULED = 'scheduled';
 
-    private FileRepository $fileRepository;
-
-    private ThumbnailsGenerator $thumbnailsGenerator;
-
     /**
      * Indexed by original's pathname.
      *
@@ -46,10 +42,10 @@ class Interceptor extends BaseOperationInterceptor
      */
     private array $thumbnailsProgress = [];
 
-    public function __construct(FileRepository $fileRepository, ThumbnailsGenerator $thumbnailsGenerator)
-    {
-        $this->fileRepository = $fileRepository;
-        $this->thumbnailsGenerator = $thumbnailsGenerator;
+    public function __construct(
+        private readonly FileRepository $fileRepository,
+        private readonly ThumbnailsGenerator $thumbnailsGenerator,
+    ) {
     }
 
     private function isAlternative(\SplFileInfo $file): bool

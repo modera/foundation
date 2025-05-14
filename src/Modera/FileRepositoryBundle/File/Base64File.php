@@ -5,7 +5,6 @@ namespace Modera\FileRepositoryBundle\File;
 use Symfony\Component\Mime\MimeTypes;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2021 Modera Foundation
  */
 class Base64File extends \SplFileObject
@@ -69,7 +68,7 @@ class Base64File extends \SplFileObject
 
     public static function extractMimeType(string $base64): ?string
     {
-        /** @var int $length */
+        /** @var int<0, max> $length */
         $length = \strpos($base64, ';');
 
         return \explode(':', \substr($base64, 0, $length))[1] ?? null ?: null;

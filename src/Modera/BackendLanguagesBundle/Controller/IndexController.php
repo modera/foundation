@@ -3,17 +3,24 @@
 namespace Modera\BackendLanguagesBundle\Controller;
 
 use Modera\LanguagesBundle\Helper\LocaleHelper;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Translation\Translator;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2020 Modera Foundation
  */
-class IndexController extends Controller
+#[AsController]
+class IndexController extends AbstractController
 {
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+    ) {
+    }
+
     protected function getDomain(): string
     {
         return 'extjs';
@@ -29,12 +36,12 @@ class IndexController extends Controller
      */
     protected function getTranslations(string $locale): array
     {
-        /** @var Translator $translator */
-        $translator = $this->container->get('translator');
-
         $messages = [];
-        foreach ($translator->getCatalogue($locale)->all($this->getDomain()) as $token => $translation) {
-            $messages[$token] = $translator->trans($token, [], $this->getDomain(), $locale);
+
+        if ($this->translator instanceof Translator) {
+            foreach ($this->translator->getCatalogue($locale)->all($this->getDomain()) as $token => $translation) {
+                $messages[$token] = $this->translator->trans($token, [], $this->getDomain(), $locale);
+            }
         }
 
         return $messages;

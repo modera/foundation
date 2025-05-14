@@ -1,5 +1,5 @@
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
+ * @copyright 2014 Modera Foundation
  */
 Ext.define('Modera.backend.languages.runtime.ExtJsLocalizationPlugin', {
     extend: 'MF.runtime.extensibility.AbstractPlugin',

@@ -1,5 +1,5 @@
 /**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2015 Modera Foundation
  */
 Ext.define('Modera.mjrintegration.runtime.plugin.WorkbenchLoadingBlockingPlugin', {
     extend: 'MF.runtime.extensibility.AbstractPlugin',

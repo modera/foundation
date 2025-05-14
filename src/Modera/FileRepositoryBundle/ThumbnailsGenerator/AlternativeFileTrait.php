@@ -7,7 +7,6 @@ use Modera\FileRepositoryBundle\Entity\StoredFile;
 /**
  * @internal
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 trait AlternativeFileTrait

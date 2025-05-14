@@ -13,28 +13,16 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 
 /**
- * TODO move logic Doctrine's repository ?
- *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class UserService
 {
-    private EntityManagerInterface $em;
-    private RootUserHandlerInterface $rootUserHandler;
-    private ?RoleHierarchyInterface $roleHierarchy;
-    private ?TokenStorageInterface $tokenStorage;
-
     public function __construct(
-        EntityManagerInterface $em,
-        RootUserHandlerInterface $rootUserHandler,
-        ?RoleHierarchyInterface $roleHierarchy = null,
-        ?TokenStorageInterface $tokenStorage = null
+        private readonly EntityManagerInterface $em,
+        private readonly RootUserHandlerInterface $rootUserHandler,
+        private readonly ?RoleHierarchyInterface $roleHierarchy = null,
+        private readonly ?TokenStorageInterface $tokenStorage = null,
     ) {
-        $this->em = $em;
-        $this->rootUserHandler = $rootUserHandler;
-        $this->roleHierarchy = $roleHierarchy;
-        $this->tokenStorage = $tokenStorage;
     }
 
     public function save(UserInterface $user): void
@@ -101,22 +89,12 @@ class UserService
 
     public function getAuthenticatedUser(): ?UserInterface
     {
-        if (null === $this->tokenStorage) {
-            return null;
+        $user = $this->tokenStorage?->getToken()?->getUser();
+        if ($user instanceof UserInterface) {
+            return $user;
         }
 
-        $token = $this->tokenStorage->getToken();
-        if (null === $token) {
-            return null;
-        }
-
-        // @deprecated since 5.4, $user will always be a UserInterface instance
-        if (!\is_object($user = $token->getUser()) || !($user instanceof UserInterface)) {
-            // e.g. anonymous authentication
-            return null;
-        }
-
-        return $user;
+        return null;
     }
 
     public function getRootUser(): UserInterface

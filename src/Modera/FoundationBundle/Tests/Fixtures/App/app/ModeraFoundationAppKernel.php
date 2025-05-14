@@ -1,13 +1,13 @@
 <?php
 
-class ModeraFoundationAppKernel extends \Modera\FoundationBundle\Testing\AbstractFunctionalKernel
+class ModeraFoundationAppKernel extends Modera\FoundationBundle\Testing\AbstractFunctionalKernel
 {
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
-        return array(
+        return [
             new Symfony\Bundle\TwigBundle\TwigBundle(),
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Modera\FoundationBundle\ModeraFoundationBundle(),
-        );
+        ];
     }
 }

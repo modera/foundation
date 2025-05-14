@@ -3,7 +3,6 @@
 namespace Modera\ServerCrudBundle\QueryBuilder\ResolvingAssociatedModelSortingField;
 
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  */
 class ChainSortingFieldResolver implements SortingFieldResolverInterface

@@ -9,7 +9,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * You can use this helper to translate messages right from you PHP classes. When this helper is used
  * then translated tokens will be detected by {@class \Modera\TranslationsBundle\TokenExtraction\PhpClassTokenExtractor}.
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class T
@@ -37,18 +36,5 @@ class T
         }
 
         return $id;
-    }
-
-    /**
-     * @deprecated Use native ::class property
-     */
-    public static function clazz(): string
-    {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated. Use native ::class property.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return \get_called_class();
     }
 }

@@ -1,7 +1,7 @@
 /**
  * This activity assumes that runtime config has "settingsSections" configuration property.
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2014 Modera Foundation
  */
 Ext.define('Modera.backend.tools.settings.runtime.HostActivity', {
     extend: 'MF.activation.activities.AbstractCompositeActivity',

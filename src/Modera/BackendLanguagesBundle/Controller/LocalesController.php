@@ -2,26 +2,26 @@
 
 namespace Modera\BackendLanguagesBundle\Controller;
 
-use Modera\ExpanderBundle\Ext\ContributorInterface;
-use Modera\FoundationBundle\Controller\AbstractBaseController;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 use Modera\LanguagesBundle\Entity\Language;
 use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Intl\Locales;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2018 Modera Foundation
  */
-class LocalesController extends AbstractBaseController
+#[AsController]
+class LocalesController extends AbstractController
 {
-    private AuthorizationCheckerInterface $authorizationChecker;
-
     public function __construct(
-        AuthorizationCheckerInterface $authorizationChecker
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+        private readonly ExtensionProvider $extensionProvider,
+        private readonly RequestStack $requestStack,
     ) {
-        $this->authorizationChecker = $authorizationChecker;
     }
 
     protected function checkAccess(): void
@@ -88,12 +88,14 @@ class LocalesController extends AbstractBaseController
      */
     private function getLocales(): array
     {
-        /** @var ContributorInterface $localesProvider */
-        $localesProvider = $this->container->get('modera_backend_languages.locales_provider');
         $locales = \array_keys(Locales::getNames());
-        /** @var string $locale */
-        foreach ($localesProvider->getItems() as $locale) {
-            $locales[] = $locale;
+
+        $id = 'modera_backend_languages.locales';
+        if ($this->extensionProvider->has($id)) {
+            /** @var string $locale */
+            foreach ($this->extensionProvider->get($id)->getItems() as $locale) {
+                $locales[] = $locale;
+            }
         }
 
         return $locales;
@@ -101,10 +103,6 @@ class LocalesController extends AbstractBaseController
 
     private function getDisplayLocale(): string
     {
-        /** @var RequestStack $rs */
-        $rs = $this->container->get('request_stack');
-        $request = $rs->getCurrentRequest();
-
-        return $request ? $request->getLocale() : 'en';
+        return $this->requestStack->getCurrentRequest()?->getLocale() ?? 'en';
     }
 }

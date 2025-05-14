@@ -15,7 +15,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  *
  * Service is responsible for inspect the data that usually comes from client-side and update the database. All
@@ -31,28 +30,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class EntityDataMapperService
 {
-    private ManagerRegistry $doctrineRegistry;
-
-    private TokenStorageInterface $tokenStorage;
-
-    private JavaBeansObjectFieldsManager $fm;
-
-    private MethodInvocationParametersProviderInterface $paramsProvider;
-
-    private ContributorInterface $complexFiledValueConvertersProvider;
-
     public function __construct(
-        ManagerRegistry $doctrineRegistry,
-        TokenStorageInterface $tokenStorage,
-        JavaBeansObjectFieldsManager $fm,
-        MethodInvocationParametersProviderInterface $paramsProvider,
-        ContributorInterface $complexFieldValueConvertersProvider
+        private readonly ManagerRegistry $doctrineRegistry,
+        private readonly TokenStorageInterface $tokenStorage,
+        private readonly JavaBeansObjectFieldsManager $fm,
+        private readonly MethodInvocationParametersProviderInterface $paramsProvider,
+        private readonly ContributorInterface $complexFieldValueConvertersProvider,
     ) {
-        $this->doctrineRegistry = $doctrineRegistry;
-        $this->tokenStorage = $tokenStorage;
-        $this->fm = $fm;
-        $this->paramsProvider = $paramsProvider;
-        $this->complexFiledValueConvertersProvider = $complexFieldValueConvertersProvider;
     }
 
     private function getAuthenticatedUser(): ?UserInterface
@@ -207,7 +191,7 @@ class EntityDataMapperService
 
                         $convertedValue = null;
                         if (\is_object($value) || \is_array($value)) {
-                            foreach ($this->complexFiledValueConvertersProvider->getItems() as $converter) {
+                            foreach ($this->complexFieldValueConvertersProvider->getItems() as $converter) {
                                 if ($converter instanceof ComplexFieldValueConverterInterface) {
                                     if ($converter->isResponsible($value, $fieldName, $metadata)) {
                                         $convertedValue = $converter->convert($value, $fieldName, $metadata);

@@ -6,25 +6,18 @@ use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
 use Modera\TranslationsBundle\Service\TranslationHandlersChain;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
-/**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class TranslationHandlersChainTest extends \PHPUnit\Framework\TestCase
 {
-    public function testHandlers()
+    public function testHandlers(): void
     {
         $handlersChain = new TranslationHandlersChain();
-        $this->assertEquals(0, count($handlersChain->getHandlers()));
+        $this->assertEquals(0, \count($handlersChain->getHandlers()));
 
         $handlersChain->addHandler(new DummyHandler('test1'));
-        $this->assertEquals(1, count($handlersChain->getHandlers()));
-
-        $handlersChain->addHandler(new \stdClass('test2'));
-        $this->assertEquals(1, count($handlersChain->getHandlers()));
+        $this->assertEquals(1, \count($handlersChain->getHandlers()));
 
         $handlersChain->addHandler(new DummyHandler('test3'));
-        $this->assertEquals(2, count($handlersChain->getHandlers()));
+        $this->assertEquals(2, \count($handlersChain->getHandlers()));
     }
 }
 
@@ -44,12 +37,12 @@ class DummyHandler implements TranslationHandlerInterface
 
     public function getStrategies(): array
     {
-        return array(static::STRATEGY_SOURCE_TREE);
+        return [static::STRATEGY_SOURCE_TREE];
     }
 
     public function getSources(): array
     {
-        return array('test');
+        return ['test'];
     }
 
     public function extract(string $source, string $locale): ?MessageCatalogueInterface

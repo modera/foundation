@@ -5,18 +5,15 @@ namespace Modera\BackendTranslationsToolBundle\Cache;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2019 Modera Foundation
  */
 class CompileNeeded
 {
     private const COMPILE_NEEDED_KEY = 'modera_backend_translations_tool.compile_needed';
 
-    private AdapterInterface $cache;
-
-    public function __construct(AdapterInterface $cache)
-    {
-        $this->cache = $cache;
+    public function __construct(
+        private readonly AdapterInterface $cache,
+    ) {
     }
 
     public function set(bool $value): void

@@ -7,16 +7,9 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
 use Modera\ConfigBundle\Tests\Fixtures\Entities\User;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class AbstractFunctionalTestCase extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $st;
+    private static SchemaTool $st;
 
     public static function doSetUpBeforeClass(): void
     {

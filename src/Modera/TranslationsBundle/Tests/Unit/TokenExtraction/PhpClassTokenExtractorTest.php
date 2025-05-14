@@ -5,13 +5,9 @@ namespace Modera\TranslationsBundle\Tests\Unit\TokenExtraction;
 use Modera\TranslationsBundle\TokenExtraction\PhpClassTokenExtractor;
 use Symfony\Component\Translation\MessageCatalogue;
 
-/**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class PhpClassTokenExtractorTest extends \PHPUnit\Framework\TestCase
 {
-    public function testExtract()
+    public function testExtract(): void
     {
         $extractor = new PhpClassTokenExtractor();
 
@@ -19,10 +15,10 @@ class PhpClassTokenExtractorTest extends \PHPUnit\Framework\TestCase
         $extractor->extract(__DIR__.'/dummy-classes', $catalogue);
 
         $brokenDomain = 'Error! Token value can be either a literal string or variable reference.';
-        $expectedDomains = array('messages', 'foodomain', 'bardomain', $brokenDomain);
-        sort($expectedDomains);
+        $expectedDomains = ['messages', 'foodomain', 'bardomain', $brokenDomain];
+        \sort($expectedDomains);
         $actualDomains = $catalogue->getDomains();
-        sort($actualDomains);
+        \sort($actualDomains);
 
         $this->assertSame($expectedDomains, $actualDomains);
 
@@ -33,8 +29,14 @@ class PhpClassTokenExtractorTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($catalogue->has('We got something for ya, %s!', 'foodomain'));
         $this->assertTrue($catalogue->has('Another token', 'bardomain'));
         $this->assertTrue($catalogue->has('Another %value%', 'foodomain'));
-        $this->assertTrue($catalogue->has('trans "implode" to variable', 'bardomain'));
-        $this->assertTrue($catalogue->has('trans' . PHP_EOL . '"implode"', 'bardomain'));
+        $this->assertTrue($catalogue->has('trans "implode-array" to variable', 'bardomain'));
+        $this->assertTrue($catalogue->has('trans "implode-[]" to variable', 'bardomain'));
+        $this->assertTrue($catalogue->has('trans "\implode-array" to variable', 'bardomain'));
+        $this->assertTrue($catalogue->has('trans "\implode-[]" to variable', 'bardomain'));
+        $this->assertTrue($catalogue->has('trans'.\PHP_EOL.'"implode-array"', 'bardomain'));
+        $this->assertTrue($catalogue->has('trans'.\PHP_EOL.'"implode-[]"', 'bardomain'));
+        $this->assertTrue($catalogue->has('trans'.\PHP_EOL.'"\implode-array"', 'bardomain'));
+        $this->assertTrue($catalogue->has('trans'.\PHP_EOL.'"\implode-[]"', 'bardomain'));
 
         // ---
 
@@ -48,17 +50,23 @@ class PhpClassTokenExtractorTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($catalogue->has('foo: We got something for ya, %s!', 'foodomain'));
         $this->assertTrue($catalogue->has('foo: Another token', 'bardomain'));
         $this->assertTrue($catalogue->has('foo: Another %value%', 'foodomain'));
-        $this->assertTrue($catalogue->has('foo: trans "implode" to variable', 'bardomain'));
-        $this->assertTrue($catalogue->has('foo: trans' . PHP_EOL . '"implode"', 'bardomain'));
+        $this->assertTrue($catalogue->has('foo: trans "implode-array" to variable', 'bardomain'));
+        $this->assertTrue($catalogue->has('foo: trans "implode-[]" to variable', 'bardomain'));
+        $this->assertTrue($catalogue->has('foo: trans "\implode-array" to variable', 'bardomain'));
+        $this->assertTrue($catalogue->has('foo: trans "\implode-[]" to variable', 'bardomain'));
+        $this->assertTrue($catalogue->has('foo: trans'.\PHP_EOL.'"implode-array"', 'bardomain'));
+        $this->assertTrue($catalogue->has('foo: trans'.\PHP_EOL.'"implode-[]"', 'bardomain'));
+        $this->assertTrue($catalogue->has('foo: trans'.\PHP_EOL.'"\implode-array"', 'bardomain'));
+        $this->assertTrue($catalogue->has('foo: trans'.\PHP_EOL.'"\implode-[]"', 'bardomain'));
     }
 
-    public function testExtractMustNotParseFilesWithInvalidUseStmt()
+    public function testExtractMustNotParseFilesWithInvalidUseStmt(): void
     {
         $extractor = new PhpClassTokenExtractor();
 
         $catalogue = new MessageCatalogue('en');
         $extractor->extract(__DIR__.'/dummy-files', $catalogue);
 
-        $this->assertEquals(0, count($catalogue->all()));
+        $this->assertEquals(0, \count($catalogue->all()));
     }
 }

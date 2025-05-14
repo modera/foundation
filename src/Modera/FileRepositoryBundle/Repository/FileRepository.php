@@ -10,19 +10,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class FileRepository
 {
     private EntityManagerInterface $em;
 
-    private ContainerInterface $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-
+    public function __construct(
+        private readonly ContainerInterface $container,
+    ) {
         /** @var EntityManagerInterface $em */
         $em = $container->get('doctrine.orm.entity_manager');
 

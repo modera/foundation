@@ -2,52 +2,31 @@
 
 namespace Modera\MjrIntegrationBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
-use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Provides JavaScript files required for MJR to work.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.js_resources')]
 class JsResourcesProvider implements ContributorInterface
 {
-    private Router $router;
-
     /**
-     * @var array{
+     * @param array{
      *     'extjs_path': string,
      *     'extjs_include_rtl': bool,
      *     'extjs_console_warnings': bool,
      *     'moment_js_version': string,
-     * }
+     * } $bundleConfig
      */
-    private array $bundleConfig;
-
-    private bool $isDevEnv;
-
-    public function __construct(ContainerInterface $container)
-    {
-        /** @var Router $router */
-        $router = $container->get('router');
-        $this->router = $router;
-
-        /** @var array{
-         *     'extjs_path': string,
-         *     'extjs_include_rtl': bool,
-         *     'extjs_console_warnings': bool,
-         *     'moment_js_version': string,
-         * } $bundleConfig */
-        $bundleConfig = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
-        $this->bundleConfig = $bundleConfig;
-
-        /** @var Kernel $kernel */
-        $kernel = $container->get('kernel');
-        $this->isDevEnv = 'dev' === $kernel->getEnvironment();
+    public function __construct(
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly array $bundleConfig,
+        private readonly string $kernelEnvironment,
+    ) {
     }
 
     public function getItems(): array
@@ -60,7 +39,7 @@ class JsResourcesProvider implements ContributorInterface
         if ($this->bundleConfig['extjs_include_rtl']) {
             $extjs .= '-rtl';
         }
-        if ($this->isDevEnv) {
+        if ('dev' === $this->kernelEnvironment) {
             $extjs .= $this->bundleConfig['extjs_console_warnings'] ? '-dev' : '-debug-w-comments';
         }
         $extjs .= '.js';
@@ -80,7 +59,7 @@ class JsResourcesProvider implements ContributorInterface
             ],
             [
                 'order' => PHP_INT_MIN + 5,
-                'resource' => $this->router->generate('modera_font_awesome_js'),
+                'resource' => $this->urlGenerator->generate('modera_font_awesome_js'),
             ],
             [
                 'order' => PHP_INT_MIN + 5,

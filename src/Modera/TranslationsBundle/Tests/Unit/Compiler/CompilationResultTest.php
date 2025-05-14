@@ -4,13 +4,9 @@ namespace Modera\TranslationsBundle\Tests\Unit\Compiler;
 
 use Modera\TranslationsBundle\Compiler\CompilationResult;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class CompilationResultTest extends \PHPUnit\Framework\TestCase
 {
-    public function testGetErrorMessage()
+    public function testGetErrorMessage(): void
     {
         $rawOutput = <<<'LOREM'
 
@@ -38,7 +34,7 @@ LOREM;
         );
     }
 
-    public function testIsSuccessful()
+    public function testIsSuccessful(): void
     {
         $result = new CompilationResult(0, '');
 

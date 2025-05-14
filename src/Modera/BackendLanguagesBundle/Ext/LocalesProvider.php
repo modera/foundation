@@ -5,7 +5,6 @@ namespace Modera\BackendLanguagesBundle\Ext;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2022 Modera Foundation
  */
 class LocalesProvider implements ContributorInterface

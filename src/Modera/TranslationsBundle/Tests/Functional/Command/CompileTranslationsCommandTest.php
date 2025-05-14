@@ -2,20 +2,16 @@
 
 namespace Modera\TranslationsBundle\Tests\Functional\Command;
 
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Translation\MessageCatalogue;
+use Modera\LanguagesBundle\Entity\Language;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\TranslationsBundle\Entity\TranslationToken;
-use Modera\LanguagesBundle\Entity\Language;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Translation\MessageCatalogue;
 
-/**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
 {
-    public function testCompile()
+    public function testCompile(): void
     {
         $fs = new Filesystem();
         $resourcesDir = 'app/Resources';
@@ -28,14 +24,14 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $this->launchCompileCommand();
 
         $this->assertTrue($fs->exists($transPath));
-        $this->assertTrue($fs->exists($transPath.'/messages.en.yml'));
+        $this->assertTrue($fs->exists($transPath.'/messages.en.yaml'));
 
         $catalogue = new MessageCatalogue('en');
-        $loader = self::$kernel->getContainer()->get('modera_translations.translation.reader');
-        $loader->read(dirname($transPath), $catalogue);
+        $loader = self::$kernel->getContainer()->get('modera_translations.tests.translation_reader');
+        $loader->read(\dirname($transPath), $catalogue);
         $messages = $catalogue->all('messages');
 
-        $this->assertEquals(3, count($messages));
+        $this->assertEquals(3, \count($messages));
         $this->assertTrue(isset($messages['Test token']));
         $this->assertEquals('Test token', $messages['Test token']);
 
@@ -49,11 +45,11 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
             foreach (Finder::create()->files()->in($transPath) as $file) {
                 $fs->remove($file->getRealPath());
             }
-            //$fs->remove($transPath);
+            // $fs->remove($transPath);
         }
     }
 
-    public function testCompileTranslated()
+    public function testCompileTranslated(): void
     {
         $fs = new Filesystem();
         $resourcesDir = 'app/Resources';
@@ -70,13 +66,13 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
 
         $this->launchImportCommand();
 
-        /* @var TranslationToken $tt */
+        /** @var TranslationToken $tt */
         $tt = self::$em->getRepository(TranslationToken::class)->findOneBy([
-            'tokenName' => 'Test token'
+            'tokenName' => 'Test token',
         ]);
         foreach ($tt->getLanguageTranslationTokens() as $languageTranslationToken) {
-            /* @var LanguageTranslationToken $languageTranslationToken */
-            if ($languageTranslationToken->getLanguage()->getLocale() == 'et') {
+            /** @var LanguageTranslationToken $languageTranslationToken */
+            if ('et' === $languageTranslationToken->getLanguage()->getLocale()) {
                 $languageTranslationToken->setTranslation('Test token translated EE');
                 self::$em->persist($languageTranslationToken);
                 self::$em->flush();
@@ -86,14 +82,14 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $this->launchCompileCommand();
 
         $this->assertTrue($fs->exists($transPath));
-        $this->assertTrue($fs->exists($transPath.'/messages.et.yml'));
+        $this->assertTrue($fs->exists($transPath.'/messages.et.yaml'));
 
         $catalogue = new MessageCatalogue('et');
-        $loader = self::$kernel->getContainer()->get('modera_translations.translation.reader');
-        $loader->read(dirname($transPath), $catalogue);
+        $loader = self::$kernel->getContainer()->get('modera_translations.tests.translation_reader');
+        $loader->read(\dirname($transPath), $catalogue);
         $messages = $catalogue->all('messages');
 
-        $this->assertEquals(3, count($messages));
+        $this->assertEquals(3, \count($messages));
         $this->assertTrue(isset($messages['Test token']));
         $this->assertEquals('Test token translated EE', $messages['Test token']);
 
@@ -107,7 +103,7 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
             foreach (Finder::create()->files()->in($transPath) as $file) {
                 $fs->remove($file->getRealPath());
             }
-            //$fs->remove($transPath);
+            // $fs->remove($transPath);
         }
     }
 }

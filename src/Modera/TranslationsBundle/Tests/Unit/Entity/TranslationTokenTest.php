@@ -7,13 +7,9 @@ use Modera\LanguagesBundle\Entity\Language;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\TranslationsBundle\Entity\TranslationToken;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2017 Modera Foundation
- */
 class TranslationTokenTest extends \PHPUnit\Framework\TestCase
 {
-    public function testSettersChaining()
+    public function testSettersChaining(): void
     {
         $token = new TranslationToken();
 
@@ -30,7 +26,7 @@ class TranslationTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($token->isObsolete());
     }
 
-    public function testCreateLanguageToken()
+    public function testCreateLanguageToken(): void
     {
         $lang = \Phake::mock(Language::class);
 

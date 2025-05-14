@@ -5,29 +5,19 @@ namespace Modera\ConfigBundle\Tests\Unit\Config;
 use Modera\ConfigBundle\Config\BooleanHandler;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- */
 class BooleanHandlerTest extends \PHPUnit\Framework\TestCase
 {
-    private $entry;
-    /* @var BooleanHandler */
-    private $handler;
+    private ConfigurationEntry $entry;
+
+    private BooleanHandler $handler;
 
     public function setUp(): void
     {
-        $this->entry = $this->createMock(
-            ConfigurationEntry::class,
-            array(),
-            array(),
-            '',
-            null,
-            false
-        );
+        $this->entry = $this->createMock(ConfigurationEntry::class);
         $this->handler = new BooleanHandler();
     }
 
-    public function testGetReadableValueWithNoConfigAnd1IsReturned()
+    public function testGetReadableValueWithNoConfigAnd1IsReturned(): void
     {
         $this->entry->expects($this->once())
                     ->method('getDenormalizedValue')
@@ -36,7 +26,7 @@ class BooleanHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('true', $this->handler->getReadableValue($this->entry));
     }
 
-    public function testGetReadableValueWithNoConfigAnd0IsReturned()
+    public function testGetReadableValueWithNoConfigAnd0IsReturned(): void
     {
         $this->entry->expects($this->once())
             ->method('getDenormalizedValue')
@@ -45,16 +35,9 @@ class BooleanHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('false', $this->handler->getReadableValue($this->entry));
     }
 
-    private function createEntryWithServerConfig($clientValue, array $config)
+    private function createEntryWithServerConfig($clientValue, array $config): ConfigurationEntry
     {
-        $entry = $this->createMock(
-            ConfigurationEntry::class,
-            array(),
-            array(),
-            '',
-            null,
-            false
-        );
+        $entry = $this->createMock(ConfigurationEntry::class);
 
         $entry->expects($this->once())
               ->method('getDenormalizedValue')
@@ -67,20 +50,20 @@ class BooleanHandlerTest extends \PHPUnit\Framework\TestCase
         return $entry;
     }
 
-    public function testGetReadableValueWithConfig()
+    public function testGetReadableValueWithConfig(): void
     {
         $this->assertEquals(
             'Aye!',
-            $this->handler->getReadableValue($this->createEntryWithServerConfig(1, array('true_text' => 'Aye!')))
+            $this->handler->getReadableValue($this->createEntryWithServerConfig(1, ['true_text' => 'Aye!']))
         );
 
         $this->assertEquals(
             'Nein!',
-            $this->handler->getReadableValue($this->createEntryWithServerConfig(0, array('true_text' => 'Nein!')))
+            $this->handler->getReadableValue($this->createEntryWithServerConfig(0, ['true_text' => 'Nein!']))
         );
     }
 
-    public function testGetValue()
+    public function testGetValue(): void
     {
         $this->entry->expects($this->once())
              ->method('getDenormalizedValue')
@@ -89,7 +72,7 @@ class BooleanHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('serverValue', $this->handler->getValue($this->entry));
     }
 
-    public function testConvertToStorageValue()
+    public function testConvertToStorageValue(): void
     {
         $this->assertTrue(false === $this->handler->convertToStorageValue('xxx', $this->entry));
         $this->assertTrue(true === $this->handler->convertToStorageValue(1, $this->entry));

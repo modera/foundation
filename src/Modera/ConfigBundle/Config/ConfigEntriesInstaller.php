@@ -4,30 +4,20 @@ namespace Modera\ConfigBundle\Config;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
-use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 
 /**
  * Collects instances of {@class ConfigurationEntry} from the system and persists them to the database. If a
  * configuration entry already exists it won't be updated.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class ConfigEntriesInstaller
 {
-    private ContributorInterface $provider;
-
-    private EntityManagerInterface $em;
-
-    public function getProvider(): ContributorInterface
-    {
-        return $this->provider;
-    }
-
-    public function __construct(ContributorInterface $provider, EntityManagerInterface $em)
-    {
-        $this->provider = $provider;
-        $this->em = $em;
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly ExtensionProvider $extensionProvider,
+    ) {
     }
 
     private function findEntry(ConfigurationEntryDefinition $entryDef): ?ConfigurationEntry
@@ -42,7 +32,7 @@ class ConfigEntriesInstaller
     {
         $installedEntries = [];
 
-        foreach ($this->provider->getItems() as $entryDef) {
+        foreach ($this->extensionProvider->get('modera_config.config_entries')->getItems() as $entryDef) {
             /** @var ConfigurationEntryDefinition $entryDef */
             $entry = $this->findEntry($entryDef);
             if (!$entry) {

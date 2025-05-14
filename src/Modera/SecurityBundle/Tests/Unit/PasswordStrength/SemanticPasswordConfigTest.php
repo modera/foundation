@@ -4,46 +4,39 @@ namespace Modera\SecurityBundle\Tests\Unit\PasswordStrength;
 
 use Modera\SecurityBundle\PasswordStrength\SemanticPasswordConfig;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2017 Modera Foundation
- */
 class SemanticPasswordConfigTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var SemanticPasswordConfig
-     */
-    private $config;
+    private SemanticPasswordConfig $config;
 
     public function setUp(): void
     {
-        $this->config = new SemanticPasswordConfig(array(
-            'password_strength' => array(
+        $this->config = new SemanticPasswordConfig([
+            'password_strength' => [
                 'enabled' => true,
                 'number_required' => true,
                 'letter_required' => 'test',
                 'rotation_period' => 123,
-            ),
-        ));
+            ],
+        ]);
     }
 
-    public function testIsEnabled()
+    public function testIsEnabled(): void
     {
         $this->assertTrue($this->config->isEnabled());
     }
 
-    public function testNumberRequired()
+    public function testNumberRequired(): void
     {
         $this->assertTrue($this->config->isNumberRequired());
     }
 
-    public function testLetterRequired()
+    public function testLetterRequired(): void
     {
         $this->assertTrue($this->config->isLetterRequired());
         $this->assertEquals('test', $this->config->getLetterRequiredType());
     }
 
-    public function testRotationPeriod()
+    public function testRotationPeriod(): void
     {
         $this->assertEquals(123, $this->config->getRotationPeriodInDays());
     }

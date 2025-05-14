@@ -8,7 +8,7 @@ use Symfony\Component\Translation\Extractor\ExtractorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
 /**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2022 Modera Foundation
  */
 class ExtjsClassesExtractor implements ExtractorInterface
 {

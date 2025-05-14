@@ -10,27 +10,21 @@ use Symfony\Component\Routing\RouteCollection;
 /**
  * Collects dynamically contributed routing resources.
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class Loader implements LoaderInterface
 {
-    private ContributorInterface $resourcesProvider;
-
     private bool $isLoaded = false;
-
-    private LoaderInterface $rootLoader;
 
     protected LoaderResolverInterface $resolver;
 
-    public function __construct(ContributorInterface $resourcesProvider, LoaderInterface $rootLoader)
-    {
-        $this->rootLoader = $rootLoader;
-        $this->resourcesProvider = $resourcesProvider;
+    public function __construct(
+        private readonly ContributorInterface $resourcesProvider,
+        private readonly LoaderInterface $rootLoader,
+    ) {
     }
 
-    public function load($resource, ?string $type = null)
+    public function load(mixed $resource, ?string $type = null)
     {
         if (true === $this->isLoaded) {
             throw new \RuntimeException('Do not add the "modera_routing" loader twice');
@@ -70,7 +64,7 @@ class Loader implements LoaderInterface
         return $collection;
     }
 
-    public function supports($resource, ?string $type = null): bool
+    public function supports(mixed $resource, ?string $type = null): bool
     {
         return 'modera_routing' === $type;
     }

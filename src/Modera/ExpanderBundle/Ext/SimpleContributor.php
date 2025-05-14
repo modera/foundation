@@ -2,6 +2,9 @@
 
 namespace Modera\ExpanderBundle\Ext;
 
+/**
+ * @copyright 2024 Modera Foundation
+ */
 class SimpleContributor implements ContributorInterface
 {
     /**

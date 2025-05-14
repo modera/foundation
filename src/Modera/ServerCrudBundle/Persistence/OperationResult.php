@@ -3,7 +3,6 @@
 namespace Modera\ServerCrudBundle\Persistence;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class OperationResult
@@ -21,10 +20,7 @@ class OperationResult
      */
     private array $entries = [];
 
-    /**
-     * @param int|string $id
-     */
-    public function reportEntity(string $entityClass, $id, string $operation): void
+    public function reportEntity(string $entityClass, int|string $id, string $operation): void
     {
         $this->entries[] = [
             'entity_class' => $entityClass,

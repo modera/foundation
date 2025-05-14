@@ -3,7 +3,6 @@
 namespace Modera\FileRepositoryBundle\Exceptions;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class InvalidRepositoryConfig extends \RuntimeException

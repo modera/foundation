@@ -9,24 +9,17 @@ use Doctrine\Persistence\ManagerRegistry;
 use Modera\ServerCrudBundle\QueryBuilder\ArrayQueryBuilder;
 
 /**
- * This implementation relies of ManagerRegistry so it can support many EntityManagers for entities.
+ * This implementation relies on ManagerRegistry, so it can support many EntityManagers for entities.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class DoctrineRegistryPersistenceHandler implements PersistenceHandlerInterface
 {
-    private ManagerRegistry $doctrineRegistry;
-
-    private ArrayQueryBuilder $queryBuilder;
-
-    private bool $usePaginator;
-
-    public function __construct(ManagerRegistry $doctrineRegistry, ArrayQueryBuilder $queryBuilder, bool $usePaginator = true)
-    {
-        $this->doctrineRegistry = $doctrineRegistry;
-        $this->queryBuilder = $queryBuilder;
-        $this->usePaginator = $usePaginator;
+    public function __construct(
+        private readonly ManagerRegistry $doctrineRegistry,
+        private readonly ArrayQueryBuilder $queryBuilder,
+        private readonly bool $usePaginator = true,
+    ) {
     }
 
     /**
@@ -39,12 +32,9 @@ class DoctrineRegistryPersistenceHandler implements PersistenceHandlerInterface
         return new Paginator($qb->getQuery());
     }
 
-    /**
-     * @return int|string
-     */
-    private function resolveEntityId(object $entity)
+    private function resolveEntityId(object $entity): int|string
     {
-        // TODO improve, resolve PK using entity's metadata - composite, non-surrogate PKs
+        // TODO: improve, resolve PK using entity's metadata - composite, non-surrogate PKs
 
         $entityClass = \get_class($entity);
 
@@ -57,13 +47,16 @@ class DoctrineRegistryPersistenceHandler implements PersistenceHandlerInterface
             throw new \RuntimeException(\sprintf('Class %s must have method "%s()" (it is used to resolve PK).', $entityClass, $method));
         }
 
-        return $entity->{$method}();
+        $id = $entity->{$method}();
+
+        if (null === $id) {
+            throw new \RuntimeException('The entity must be stored and have an identifier.');
+        }
+
+        return $id;
     }
 
-    /**
-     * @param string|object $entityOrClass
-     */
-    private function getEntityManagerForClass($entityOrClass): EntityManagerInterface
+    private function getEntityManagerForClass(string|object $entityOrClass): EntityManagerInterface
     {
         /** @var class-string&string $entityClass */
         $entityClass = \is_object($entityOrClass) ? \get_class($entityOrClass) : $entityOrClass;

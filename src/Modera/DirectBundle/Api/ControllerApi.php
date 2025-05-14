@@ -4,10 +4,11 @@ namespace Modera\DirectBundle\Api;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @copyright 2015 Modera Foundation
+ */
 class ControllerApi
 {
-    protected ContainerInterface $container;
-
     /**
      * Store the controller reflection object.
      */
@@ -26,25 +27,25 @@ class ControllerApi
      */
     protected ?array $api;
 
-    public function __construct(ContainerInterface $container, string $controller)
-    {
-        $this->container = $container;
-
+    public function __construct(
+        protected readonly ContainerInterface $container,
+        string $controller,
+    ) {
         /** @var class-string $reflectionClass */
         $reflectionClass = $controller;
         $this->reflection = new \ReflectionClass($reflectionClass);
 
         /** @var string $remoteAttribute */
-        $remoteAttribute = $this->container->getParameter('direct.api.remote_attribute');
+        $remoteAttribute = $container->getParameter('direct.api.remote_attribute');
 
         /** @var string $formAttribute */
-        $formAttribute = $this->container->getParameter('direct.api.form_attribute');
+        $formAttribute = $container->getParameter('direct.api.form_attribute');
 
         /** @var string $safeAttribute */
-        $safeAttribute = $this->container->getParameter('direct.api.safe_attribute');
+        $safeAttribute = $container->getParameter('direct.api.safe_attribute');
 
         /** @var string $unsafeAttribute */
-        $unsafeAttribute = $this->container->getParameter('direct.api.unsafe_attribute');
+        $unsafeAttribute = $container->getParameter('direct.api.unsafe_attribute');
 
         $this->remoteAttribute = $remoteAttribute;
         $this->formAttribute = $formAttribute;
@@ -56,7 +57,7 @@ class ControllerApi
     /**
      * Check if the controller has any method exposed.
      *
-     * @return bool true if has exposed, otherwise return false
+     * @return bool true if it has exposed, otherwise return false
      */
     public function isExposed(): bool
     {

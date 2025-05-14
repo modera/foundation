@@ -1,0 +1,35 @@
+parameters:
+    db_host: '%env(SYMFONY__DB_HOST)%'
+    db_port: '%env(SYMFONY__DB_PORT)%'
+    db_user: '%env(SYMFONY__DB_USER)%'
+    db_password: '%env(SYMFONY__DB_PASSWORD)%'
+
+framework:
+    test: true
+    secret: Hell yeah!
+    csrf_protection: true
+    session:
+        handler_id: ~
+        storage_factory_id: session.storage.factory.mock_file
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        # http://symfony.com/doc/current/configuration/external_parameters.html
+        driver: pdo_mysql
+        host: '%db_host%'
+        port: '%db_port%'
+        user: '%db_user%'
+        password: '%db_password%'
+        dbname: modera_languages_bundle
+        charset: UTF8
+#        auto_commit: false
+
+    orm:
+        auto_generate_proxy_classes: true
+        auto_mapping: true
+
+modera_languages:
+    - { locale: en }
+    - { locale: ru, is_enabled: false }
+    - { locale: et }

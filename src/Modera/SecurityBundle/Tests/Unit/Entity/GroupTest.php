@@ -4,15 +4,11 @@ namespace Modera\SecurityBundle\Tests\Unit\Entity;
 
 use Modera\SecurityBundle\Entity\Group;
 
-/**
- * @author    Alex Plaksin <alex.plaksin@modera.net>
- * @copyright 2016 Modera Foundation
- */
 class GroupTest extends \PHPUnit\Framework\TestCase
 {
-    public function testNormalizeRefNameString()
+    public function testNormalizeRefName(): void
     {
-        $this->assertEquals('QWERTY', Group::normalizeRefNameString('qwerty'));
-        $this->assertEquals('QT', Group::normalizeRefNameString('!1q34%^&* ~@342T'));
+        $this->assertEquals('QWERTY', Group::normalizeRefName('qwerty'));
+        $this->assertEquals('QT', Group::normalizeRefName('!1q34%^&* ~@342T'));
     }
 }

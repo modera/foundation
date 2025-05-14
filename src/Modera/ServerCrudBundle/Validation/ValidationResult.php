@@ -5,7 +5,6 @@ namespace Modera\ServerCrudBundle\Validation;
 /**
  * Class should be used to report validation errors.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class ValidationResult

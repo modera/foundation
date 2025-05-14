@@ -9,6 +9,7 @@ use Modera\FileRepositoryBundle\ThumbnailsGenerator\EmulatedUploadedFile;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\Interceptor;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\NotImageGivenException;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\ThumbnailsGenerator;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,31 +19,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:file-repository:generate-thumbnails',
+    description: 'Allows to generate thumbnails for already existing files.',
+)]
 class GenerateThumbnailsCommand extends Command
 {
-    private EntityManagerInterface $em;
-
-    private FileRepository $fr;
-
-    private ThumbnailsGenerator $generator;
-
-    public function __construct(EntityManagerInterface $em, FileRepository $fr, ThumbnailsGenerator $generator)
-    {
-        $this->em = $em;
-        $this->fr = $fr;
-        $this->generator = $generator;
-
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly FileRepository $fr,
+        private readonly ThumbnailsGenerator $generator,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('modera:file-repository:generate-thumbnails')
-            ->setDescription('Allows to generate thumbnails for already existing files.')
             ->addArgument('repository', InputArgument::REQUIRED, 'Technical name of a repository')
             ->addOption(
                 'thumbnail',
@@ -98,12 +93,18 @@ class GenerateThumbnailsCommand extends Command
             $alternativesQuery->setParameter(0, $fileData['id']);
 
             foreach ($alternativesQuery->getArrayResult() as $alternativeData) {
-                $isArray = \is_array($alternativeData ?? null) && \is_array($alternativeData['meta'] ?? null);
-                if ($isArray && isset($alternativeData['meta']['thumbnail'])) {
-                    $thumbnailConfig = $alternativeData['meta']['thumbnail'];
+                if (\is_array($alternativeData ?? null) && \is_array($alternativeData['meta'] ?? null)) {
+                    if (\is_array($alternativeData['meta']['thumbnail'] ?? null)) {
+                        /** @var array{
+                         *      'width'?: int|string,
+                         *      'height'?: int|string,
+                         * } $thumbnailConfig
+                         */
+                        $thumbnailConfig = $alternativeData['meta']['thumbnail'];
 
-                    if (isset($thumbnailConfig['width']) && isset($thumbnailConfig['height'])) {
-                        $existingThumbnails[] = $thumbnailConfig['width'].'x'.$thumbnailConfig['height'];
+                        if (isset($thumbnailConfig['width']) && isset($thumbnailConfig['height'])) {
+                            $existingThumbnails[] = $thumbnailConfig['width'].'x'.$thumbnailConfig['height'];
+                        }
                     }
                 }
             }
@@ -123,7 +124,7 @@ class GenerateThumbnailsCommand extends Command
         if (0 === \count($report)) {
             $output->writeln('No thumbnails to generate');
 
-            return 0;
+            return Command::SUCCESS;
         }
 
         if ($input->getOption('dry-run')) {
@@ -145,7 +146,7 @@ class GenerateThumbnailsCommand extends Command
             $table->setRows($rows);
             $table->render();
 
-            return 0;
+            return Command::SUCCESS;
         }
 
         foreach ($report as $id => $entry) {
@@ -157,7 +158,7 @@ class GenerateThumbnailsCommand extends Command
             foreach ($entry['missing'] as $dimensions) {
                 list($width, $height) = \explode('x', $dimensions);
 
-                /** @var string $originalPathname */
+                /** @var non-falsy-string $originalPathname */
                 $originalPathname = \tempnam(\sys_get_temp_dir(), 'file_');
                 \file_put_contents($originalPathname, $originalStoredFile->getContents());
 
@@ -217,8 +218,8 @@ class GenerateThumbnailsCommand extends Command
             if (!is_array($repositoryConfig['interceptors'] ?? null)) {
                 $repositoryConfig['interceptors'] = [];
             }
-            if (!\in_array(Interceptor::ID, $repositoryConfig['interceptors'])) {
-                $repositoryConfig['interceptors'][] = Interceptor::ID;
+            if (!\in_array(Interceptor::ID, $repositoryConfig['interceptors']) && !\in_array(Interceptor::class, $repositoryConfig['interceptors'])) {
+                $repositoryConfig['interceptors'][] = Interceptor::class;
 
                 $isInterceptorAdded = true;
             }
@@ -259,6 +260,6 @@ class GenerateThumbnailsCommand extends Command
             );
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

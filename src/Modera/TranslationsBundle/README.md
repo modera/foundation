@@ -17,7 +17,7 @@ Bundle's has been developed to simplify a process of localizing your bundles, to
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/translations-bundle:5.x-dev
+composer require modera/translations-bundle:6.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -113,14 +113,14 @@ use Modera\TranslationsBundle\Helper\T;
 
 T::trans('Hello');
 
-T::trans('Hello, %name%', array('%name%' => $name'), 'greetings');
+T::trans('Hello, %name%', ['%name%' => $name'], 'greetings');
 
 $domain = 'examples';
 $longMessage = 'This way of defining long translation ';
 $longMessage.= 'messages can be used.';
 $longMessage.= 'For more details please see docblock for T class.';
 
-T::trans($longMessage, array(), $domain);
+T::trans($longMessage, [], $domain);
 ```
 
 Now when you run `modera:translations:import` command these tokens will be extracted:

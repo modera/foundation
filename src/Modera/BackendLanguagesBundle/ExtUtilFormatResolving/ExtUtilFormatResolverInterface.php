@@ -3,7 +3,6 @@
 namespace Modera\BackendLanguagesBundle\ExtUtilFormatResolving;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2020 Modera Foundation
  */
 interface ExtUtilFormatResolverInterface

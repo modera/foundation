@@ -2,11 +2,17 @@
 
 namespace Modera\DirectBundle\DependencyInjection;
 
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
+/**
+ * This is the class that loads and manages your bundle configuration.
+ *
+ * To learn more see {@link https://symfony.com/doc/current/bundles/extension.html}
+ */
 class ModeraDirectExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
@@ -16,24 +22,14 @@ class ModeraDirectExtension extends Extension
 
         $container->setParameter('modera_direct.routes_prefix', $config['routes_prefix']);
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('direct.xml');
+        $loader = new Loader\PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('direct.php');
 
-        if (\interface_exists('Modera\ExpanderBundle\Ext\ContributorInterface')) {
+        if (\interface_exists(ContributorInterface::class)) {
             try {
-                $loader->load('routing.xml');
+                $loader->load('routing.php');
             } catch (\Exception $e) {
             }
         }
-    }
-
-    public function getXsdValidationBasePath()
-    {
-        return __DIR__.'/../Resources/config/schema';
-    }
-
-    public function getNamespace(): string
-    {
-        return 'http://modera.org/schema/dic/direct';
     }
 }

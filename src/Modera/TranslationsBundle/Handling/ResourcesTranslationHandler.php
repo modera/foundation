@@ -7,43 +7,21 @@ use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2023 Modera Foundation
  */
 class ResourcesTranslationHandler implements TranslationHandlerInterface
 {
-    protected ExtractorInterface $extractor;
-
-    protected string $source;
-
-    protected string $bundle;
-
     /**
-     * @var string[]
-     */
-    protected iterable $resources = [];
-
-    /**
-     * @var string[]
-     */
-    protected array $strategies = [];
-
-    /**
-     * @param ?string[] $resources
-     * @param ?string[] $strategies
+     * @param string[] $resources
+     * @param string[] $strategies
      */
     public function __construct(
-        ExtractorInterface $extractor,
-        string $source,
-        string $bundle,
-        ?iterable $resources = null,
-        ?array $strategies = null
+        protected readonly ExtractorInterface $extractor,
+        protected readonly string $source,
+        protected readonly string $bundle,
+        protected readonly iterable $resources = [],
+        protected readonly array $strategies = [self::STRATEGY_SOURCE_TREE],
     ) {
-        $this->extractor = $extractor;
-        $this->source = $source;
-        $this->bundle = $bundle;
-        $this->resources = $resources ?? [];
-        $this->strategies = $strategies ?? [static::STRATEGY_SOURCE_TREE];
     }
 
     public function getBundleName(): string

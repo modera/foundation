@@ -2,21 +2,18 @@
 
 namespace Modera\MjrIntegrationBundle\ClientSideDependencyInjection;
 
-use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 
 /**
- * Provides an access to service side dependency injection container service definitions.
+ * Provides access to service side dependency injection container service definitions.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class ServiceDefinitionsManager
 {
-    private ContributorInterface $provider;
-
-    public function __construct(ContributorInterface $provider)
-    {
-        $this->provider = $provider;
+    public function __construct(
+        private readonly ExtensionProvider $extensionProvider,
+    ) {
     }
 
     /**
@@ -25,7 +22,7 @@ class ServiceDefinitionsManager
     public function getDefinitions(): array
     {
         /** @var array<string, array<string, mixed>> $items */
-        $items = $this->provider->getItems();
+        $items = $this->extensionProvider->get('modera_mjr_integration.csdi.service_definitions')->getItems();
 
         return $items;
     }

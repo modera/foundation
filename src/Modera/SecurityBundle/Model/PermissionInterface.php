@@ -6,7 +6,7 @@ namespace Modera\SecurityBundle\Model;
  * A higher level of abstraction for Symfony security roles, adds some additional information to roles
  * to make them more manageable by non-technical people.
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2014 Modera Foundation
  */
 interface PermissionInterface
 {

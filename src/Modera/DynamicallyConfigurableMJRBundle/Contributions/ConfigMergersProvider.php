@@ -4,20 +4,19 @@ namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
 use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2020 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.config.config_mergers')]
 class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterface
 {
-    private ConfigurationEntriesManagerInterface $mgr;
-
-    public function __construct(ConfigurationEntriesManagerInterface $mgr)
-    {
-        $this->mgr = $mgr;
+    public function __construct(
+        private readonly ConfigurationEntriesManagerInterface $mgr,
+    ) {
     }
 
     public function merge(array $existingConfig): array

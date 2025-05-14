@@ -5,6 +5,7 @@ namespace Modera\LanguagesBundle\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\LanguagesBundle\DependencyInjection\ModeraLanguagesExtension;
 use Modera\LanguagesBundle\Entity\Language;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,29 +15,19 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 /**
  * From config to database.
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:languages:config-sync',
+    description: 'Synchronize languages config with database.',
+)]
 class SyncLanguagesCommand extends Command
 {
-    private EntityManagerInterface $em;
-
-    private ParameterBagInterface $params;
-
-    public function __construct(EntityManagerInterface $em, ParameterBagInterface $params)
-    {
-        $this->em = $em;
-        $this->params = $params;
-
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly ParameterBagInterface $params,
+    ) {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->setName('modera:languages:config-sync')
-            ->setDescription('Synchronize languages config with database.')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -85,7 +76,7 @@ class SyncLanguagesCommand extends Command
         $table->setRows($tableRows);
         $table->render();
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**

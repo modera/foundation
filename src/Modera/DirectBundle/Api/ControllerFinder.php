@@ -5,6 +5,9 @@ namespace Modera\DirectBundle\Api;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
+/**
+ * @copyright 2015 Modera Foundation
+ */
 class ControllerFinder
 {
     /**
@@ -30,7 +33,7 @@ class ControllerFinder
 
                 // we expect classes to follow PSR class-loading standard
                 $controllerName = \substr($file->getPathname(), \strlen($bundle->getPath()) + 1, -1 * \strlen('.php'));
-                $controllerName = \str_replace(DIRECTORY_SEPARATOR, '\\', $controllerName);
+                $controllerName = \str_replace(\DIRECTORY_SEPARATOR, '\\', $controllerName);
 
                 $controllers[] = $bundle->getNamespace().'\\'.$controllerName;
             }

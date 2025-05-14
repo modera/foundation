@@ -3,20 +3,17 @@
 namespace Modera\SecurityBundle\Tests\Functional\DependencyInjection;
 
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
+use Modera\SecurityBundle\RootUserHandling\RootUserHandlerInterface;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class ModeraSecurityExtensionTest extends FunctionalTestCase
 {
-    public function testHowWellHandlerAliasIsEstablished()
+    public function testHowWellHandlerAliasIsEstablished(): void
     {
-        $handler = self::getContainer()->get('modera_security.root_user_handling.handler');
+        $handler = self::getContainer()->get(RootUserHandlerInterface::class);
 
         $this->assertInstanceOf(
-            'Modera\SecurityBundle\RootUserHandling\RootUserHandlerInterface',
-            $handler
+            RootUserHandlerInterface::class,
+            $handler,
         );
     }
 }

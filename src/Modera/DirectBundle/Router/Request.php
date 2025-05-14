@@ -4,6 +4,9 @@ namespace Modera\DirectBundle\Router;
 
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
+/**
+ * @copyright 2015 Modera Foundation
+ */
 class Request
 {
     /**

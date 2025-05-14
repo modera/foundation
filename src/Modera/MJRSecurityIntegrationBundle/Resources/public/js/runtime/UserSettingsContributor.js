@@ -1,5 +1,5 @@
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
+ * @copyright 2019 Modera Foundation
  */
 Ext.define('Modera.mjrsecurityintegration.runtime.UserSettingsContributor', {
     extends: 'MF.runtime.SharedActivitiesProviderInterface',

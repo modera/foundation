@@ -4,25 +4,22 @@ namespace Modera\SecurityBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsController]
 class SecurityController extends Controller
 {
-    private AuthenticationUtils $helper;
-
-    public function __construct(AuthenticationUtils $helper)
-    {
-        $this->helper = $helper;
+    public function __construct(
+        private readonly AuthenticationUtils $helper,
+    ) {
     }
 
-    /**
-     * @Route("/login", name="_security_login")
-     */
+    #[Route(path: '/login', name: '_security_login')]
     public function loginAction(): Response
     {
         return $this->render('@ModeraSecurity/security/login.html.twig', [
@@ -31,17 +28,13 @@ class SecurityController extends Controller
         ]);
     }
 
-    /**
-     * @Route("/login_check", name="_security_check")
-     */
+    #[Route(path: '/login_check', name: '_security_check')]
     public function securityCheckAction(): void
     {
         // The security layer will intercept this request
     }
 
-    /**
-     * @Route("/logout", name="_security_logout")
-     */
+    #[Route(path: '/logout', name: '_security_logout')]
     public function logoutAction(): void
     {
         // The security layer will intercept this request

@@ -7,65 +7,43 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- *
- * @ORM\Table(name="modera_security_permissioncategory")
- *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'modera_security_permissioncategory')]
 class PermissionCategory
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @ORM\Id
-     *
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string")
-     */
-    private ?string $name;
+    #[ORM\Column(type: 'string')]
+    private string $name;
 
-    /**
-     * @ORM\Column(type="string")
-     */
-    private ?string $technicalName;
+    #[ORM\Column(type: 'string')]
+    private string $technicalName;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private int $position = 0;
 
     /**
      * @var Collection<int, Permission>
-     *
-     * @ORM\OneToMany(targetEntity="Permission", mappedBy="category", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: Permission::class, mappedBy: 'category', cascade: ['persist'])]
     private Collection $permissions;
 
     public function __construct(?string $name = null, ?string $technicalName = null)
     {
-        $this->name = $name;
-        $this->technicalName = $technicalName;
+        if ($name) {
+            $this->name = $name;
+        }
+
+        if ($technicalName) {
+            $this->technicalName = $technicalName;
+        }
 
         $this->permissions = new ArrayCollection();
-    }
-
-    /**
-     * @deprecated Use native ::class property
-     */
-    public static function clazz(): string
-    {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated. Use native ::class property.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return \get_called_class();
     }
 
     public function setPosition(int $position): void
@@ -85,7 +63,7 @@ class PermissionCategory
 
     public function getTechnicalName(): string
     {
-        return $this->technicalName ?? '';
+        return $this->technicalName;
     }
 
     /**
@@ -111,7 +89,7 @@ class PermissionCategory
 
     public function getName(): string
     {
-        return $this->name ?? '';
+        return $this->name;
     }
 
     public function setId(int $id): void

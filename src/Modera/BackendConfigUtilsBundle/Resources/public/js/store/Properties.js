@@ -1,6 +1,6 @@
 /**
  * @private
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2014 Modera Foundation
  */
 Ext.define('Modera.backend.configutils.store.Properties', {
     extend: 'Ext.data.Store',

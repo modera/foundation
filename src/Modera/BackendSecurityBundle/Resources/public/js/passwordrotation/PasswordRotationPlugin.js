@@ -1,7 +1,7 @@
 /**
  * @internal
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2017 Modera Foundation
  */
 Ext.define('Modera.backend.security.passwordrotation.PasswordRotationPlugin', {
     extend: 'MF.runtime.extensibility.AbstractPlugin',

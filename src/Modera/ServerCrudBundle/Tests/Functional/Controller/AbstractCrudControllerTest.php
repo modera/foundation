@@ -2,11 +2,13 @@
 
 namespace Modera\ServerCrudBundle\Tests\Functional\Controller;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Tools\SchemaTool;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\Hydration\HydrationProfile;
-use Doctrine\ORM\Mapping as Orm;
+use Modera\ServerCrudBundle\Intercepting\InterceptorsManager;
+use Modera\ServerCrudBundle\Service\ConfiguredServiceManager;
 use Modera\ServerCrudBundle\Tests\Fixtures\Bundle\Contributions\ControllerActionInterceptorsProvider;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -14,40 +16,30 @@ class DummyException extends \RuntimeException
 {
 }
 
-/**
- * @Orm\Entity
- * @Orm\Table("_testing_article")
- * @Orm\HasLifecycleCallbacks
- */
+#[ORM\Entity]
+#[ORM\Table(name: '_testing_article')]
+#[ORM\HasLifecycleCallbacks]
 class DummyArticle
 {
-    /**
-     * @Orm\Column(type="integer")
-     * @Orm\Id
-     * @Orm\GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public ?int $id = null;
 
-    /**
-     * @Orm\Column(type="string")
-     * @Assert\NotBlank
-     */
-    public $title;
+    #[Assert\NotBlank]
+    #[ORM\Column(type: 'string')]
+    public string $title = '';
 
-    /**
-     * @Orm\Column(type="text")
-     * @Assert\NotBlank
-     */
-    public $body;
+    #[Assert\NotBlank]
+    #[ORM\Column(type: 'text')]
+    public string $body = '';
 
-    public static $suicideEngaged = false;
+    public static bool $suicideEngaged = false;
 
-    /**
-     * @Orm\PrePersist
-     * @Orm\PreUpdate
-     * @Orm\PreRemove
-     */
-    public function suicide()
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    #[ORM\PreRemove]
+    public function suicide(): void
     {
         if (self::$suicideEngaged) {
             self::$suicideEngaged = false;
@@ -58,28 +50,28 @@ class DummyArticle
         self::$suicideEngaged = false;
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setBody($body)
+    public function setBody(string $body): void
     {
         $this->body = $body;
     }
 
-    public function setTitle($title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    public static function formatNewValues(array $params, array $config, $container)
+    public static function formatNewValues(array $params, array $config, $container): array
     {
-        return array(
+        return [
             'params' => $params,
             'config' => $config,
             'container' => $container,
-        );
+        ];
     }
 }
 
@@ -87,57 +79,51 @@ class DataController extends AbstractCrudController
 {
     public function getConfig(): array
     {
-        return array(
+        return [
             'entity' => DummyArticle::class,
-            'hydration' => array(
-                'groups' => array(
-                    'form' => array(
+            'hydration' => [
+                'groups' => [
+                    'form' => [
                         'id', 'title', 'body',
-                    ),
+                    ],
                     'list' => function (DummyArticle $e) {
                         if (DummyArticle::$suicideEngaged) {
                             $e->suicide();
                         }
 
-                        return array(
+                        return [
                             'id' => $e->getId(),
-                            'title' => substr($e->title, 0, 10),
-                            'body' => substr($e->body, 0, 10),
-                        );
+                            'title' => \substr($e->title, 0, 10),
+                            'body' => \substr($e->body, 0, 10),
+                        ];
                     },
                     'suicide' => function () {
                         throw new DummyException('suicide');
                     },
-                ),
-                'profiles' => array(
-                    'new_record' => HydrationProfile::create()->useGroups(array('form')),
-                    'get_record' => HydrationProfile::create()->useGroups(array('form')),
-                    'list' => HydrationProfile::create(false)->useGroups(array('list')),
-                    'rotten_profile' => HydrationProfile::create()->useGroups(array('suicide')),
-                ),
-            ),
-        );
+                ],
+                'profiles' => [
+                    'new_record' => HydrationProfile::create()->useGroups(['form']),
+                    'get_record' => HydrationProfile::create()->useGroups(['form']),
+                    'list' => HydrationProfile::create(false)->useGroups(['list']),
+                    'rotten_profile' => HydrationProfile::create()->useGroups(['suicide']),
+                ],
+            ],
+        ];
     }
 }
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2013 Modera Foundation
- */
 class AbstractCrudControllerTest extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $st;
+    private static SchemaTool $st;
 
-    /* @var DataController */
-    private $controller;
+    private DataController $controller;
 
     // override
     public function doSetUp(): void
     {
         $this->controller = new DataController();
+        $this->controller->setInterceptorsManager(self::getContainer()->get(InterceptorsManager::class));
+        $this->controller->setConfiguredServiceManager(self::getContainer()->get(ConfiguredServiceManager::class));
         $this->controller->setContainer(self::getContainer());
 
         DummyArticle::$suicideEngaged = false;
@@ -160,77 +146,74 @@ class AbstractCrudControllerTest extends FunctionalTestCase
         ]);
     }
 
-    /**
-     * @return ControllerActionInterceptorsProvider
-     */
-    private function getDummyInterceptor()
+    private function getDummyInterceptor(): ControllerActionInterceptorsProvider
     {
         return self::getContainer()->get('modera_server_crud_dummy_bundle.contributions.controller_action_interceptors_provider');
     }
 
-    private function assertValidInterceptorInvocation($requestParams, $type)
+    private function assertValidInterceptorInvocation($requestParams, $type): void
     {
         $invocation = $this->getDummyInterceptor()->interceptor->invocations[$type];
 
         $this->assertEquals(
             1,
-            count($invocation),
-            "It is expected that interceptor for '$type' would be invoked only once!"
+            \count($invocation),
+            \sprintf('It is expected that interceptor for "%s" would be invoked only once!', $type)
         );
         $this->assertSame($requestParams, $invocation[0][0]);
         $this->assertSame($this->controller, $invocation[0][1]);
     }
 
-    public function testCreateAction()
+    public function testCreateAction(): void
     {
-        $requestParams = array(
-            'record' => array(
+        $requestParams = [
+            'record' => [
                 'body' => 'Some text goes here',
-            ),
-        );
+            ],
+        ];
 
         // validation for "title" field should fail
         $result = $this->controller->createAction($requestParams);
 
         $this->assertValidInterceptorInvocation($requestParams, 'create');
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('success', $result);
         $this->assertFalse($result['success']);
         $this->assertArrayHasKey('field_errors', $result);
-        $this->assertTrue(is_array($result['field_errors']));
-        $this->assertEquals(1, count($result['field_errors']));
+        $this->assertTrue(\is_array($result['field_errors']));
+        $this->assertEquals(1, \count($result['field_errors']));
         $this->assertArrayHasKey('title', $result['field_errors']);
-        $this->assertTrue(is_array($result['field_errors']['title']));
-        $this->assertEquals(1, count($result['field_errors']['title']));
+        $this->assertTrue(\is_array($result['field_errors']['title']));
+        $this->assertEquals(1, \count($result['field_errors']['title']));
 
         // validation should pass and record should be saved
 
-        $result = $this->controller->createAction(array(
-            'hydration' => array(
+        $result = $this->controller->createAction([
+            'hydration' => [
                 'profile' => 'new_record',
-            ),
-            'record' => array(
+            ],
+            'record' => [
                 'title' => 'Some title',
                 'body' => 'Some text goes here',
-            ),
-        ));
+            ],
+        ]);
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
 
         $this->assertArrayHasKey('success', $result);
         $this->assertTrue($result['success']);
 
         $this->assertArrayHasKey('created_models', $result);
-        $this->assertTrue(is_array($result['created_models']));
-        $this->assertEquals(1, count($result['created_models']));
+        $this->assertTrue(\is_array($result['created_models']));
+        $this->assertEquals(1, \count($result['created_models']));
         $this->assertFalse(isset($result['updated_models']));
         $this->assertFalse(isset($result['removed_models']));
 
         $this->assertArrayHasKey('result', $result);
-        $this->assertTrue(is_array($result['result']));
+        $this->assertTrue(\is_array($result['result']));
         $this->assertArrayHasKey('form', $result['result']);
-        $this->assertTrue(is_array($result['result']['form']));
+        $this->assertTrue(\is_array($result['result']['form']));
         $this->assertArrayHasKey('id', $result['result']['form']);
         $form = $result['result']['form'];
         $this->assertNotNull($form['id']);
@@ -239,38 +222,38 @@ class AbstractCrudControllerTest extends FunctionalTestCase
         $this->assertArrayHasKey('body', $form);
         $this->assertEquals('Some text goes here', $form['body']);
 
-        /* @var DummyArticle $article */
+        /** @var DummyArticle $article */
         $article = self::$em->getRepository(DummyArticle::class)->find($form['id']);
         $this->assertInstanceOf(DummyArticle::class, $article);
         $this->assertEquals('Some title', $article->title);
         $this->assertEquals('Some text goes here', $article->body);
     }
 
-    public function testCreateActionWithException()
+    public function testCreateActionWithException(): void
     {
         $this->expectException(DummyException::class);
 
         DummyArticle::$suicideEngaged = true;
 
-        $result = $this->controller->createAction(array(
-            'record' => array(
+        $result = $this->controller->createAction([
+            'record' => [
                 'title' => 'opa',
                 'body' => 'hola',
-            ),
-        ));
+            ],
+        ]);
     }
 
     /**
      * @return DummyArticle[]
      */
-    private function loadDummyData()
+    private function loadDummyData(): array
     {
-        $result = array();
+        $result = [];
 
         for ($i = 0; $i < 5; ++$i) {
             $article = new DummyArticle();
-            $article->title = str_repeat('t', 15);
-            $article->body = str_repeat('b', 15);
+            $article->title = \str_repeat('t', 15);
+            $article->body = \str_repeat('b', 15);
 
             $result[] = $article;
 
@@ -281,56 +264,54 @@ class AbstractCrudControllerTest extends FunctionalTestCase
         return $result;
     }
 
-    public function testListAction()
+    public function testListAction(): void
     {
-        $this->assertEquals(0, count(self::$em->getRepository(DummyArticle::class)->findAll()));
+        $this->assertEquals(0, \count(self::$em->getRepository(DummyArticle::class)->findAll()));
 
         $this->loadDummyData();
 
-        $requestParams = array(
+        $requestParams = [
             'limit' => 3,
-            'sort' => array(
-                array('property' => 'id', 'direction' => 'DESC'),
-            ),
-            'filter' => array(
-                array(
+            'sort' => [
+                ['property' => 'id', 'direction' => 'DESC'],
+            ],
+            'filter' => [
+                [
                     'property' => 'id',
                     'value' => 'notIn:6',
-                ),
-            ),
-            'hydration' => array(
+                ],
+            ],
+            'hydration' => [
                 'profile' => 'list',
-            ),
-        );
+            ],
+        ];
 
         $result = $this->controller->listAction($requestParams);
 
         $this->assertValidInterceptorInvocation($requestParams, 'list');
 
-        $me = $this;
-
-        $assertValidItem = function ($items, $index) use ($me) {
-            $me->assertArrayHasKey($index, $items);
+        $assertValidItem = function ($items, $index) {
+            $this->assertArrayHasKey($index, $items);
 
             $item = $items[$index];
 
-            $me->assertArrayHasKey('id', $item);
-            $me->assertArrayHasKey('title', $item);
-            $me->assertArrayHasKey('body', $item);
+            $this->assertArrayHasKey('id', $item);
+            $this->assertArrayHasKey('title', $item);
+            $this->assertArrayHasKey('body', $item);
         };
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('success', $result);
         $this->assertTrue($result['success']);
         $this->assertArrayHasKey('items', $result);
-        $this->assertTrue(is_array($result['items']));
-        $this->assertEquals(3, count($result['items']));
+        $this->assertTrue(\is_array($result['items']));
+        $this->assertEquals(3, \count($result['items']));
         $assertValidItem($result['items'], 0);
         $assertValidItem($result['items'], 1);
         $assertValidItem($result['items'], 2);
     }
 
-    public function testListActionWithException()
+    public function testListActionWithException(): void
     {
         $this->loadDummyData();
 
@@ -338,110 +319,110 @@ class AbstractCrudControllerTest extends FunctionalTestCase
 
         DummyArticle::$suicideEngaged = true;
 
-        $result = $this->controller->listAction(array(
-            'hydration' => array(
+        $result = $this->controller->listAction([
+            'hydration' => [
                 'profile' => 'list',
-            ),
-        ));
+            ],
+        ]);
     }
 
-    public function testRemoveAction()
+    public function testRemoveAction(): void
     {
         $articles = $this->loadDummyData();
 
-        $ids = array(
+        $ids = [
             $articles[0]->getId(),
             $articles[1]->getId(),
-        );
+        ];
 
-        $requestParams = array(
-            'filter' => array(
-                array(
+        $requestParams = [
+            'filter' => [
+                [
                     'property' => 'id',
-                    'value' => 'in:'.implode(', ', $ids),
-                ),
-            ),
-        );
+                    'value' => 'in:'.\implode(', ', $ids),
+                ],
+            ],
+        ];
 
         $result = $this->controller->removeAction($requestParams);
 
         $this->assertValidInterceptorInvocation($requestParams, 'remove');
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('success', $result);
         $this->assertArrayHasKey('removed_models', $result);
-        $this->assertTrue(is_array($result['removed_models']));
-        $this->assertEquals(1, count($result['removed_models']));
+        $this->assertTrue(\is_array($result['removed_models']));
+        $this->assertEquals(1, \count($result['removed_models']));
 
         $removedModels = $result['removed_models'];
-        $modelName = key($removedModels);
+        $modelName = \key($removedModels);
 
-        $this->assertTrue(is_array($removedModels[$modelName]));
-        $this->assertEquals(2, count($removedModels[$modelName]));
-        $this->assertTrue(in_array($ids[0], $removedModels[$modelName]));
-        $this->assertTrue(in_array($ids[1], $removedModels[$modelName]));
+        $this->assertTrue(\is_array($removedModels[$modelName]));
+        $this->assertEquals(2, \count($removedModels[$modelName]));
+        $this->assertTrue(\in_array($ids[0], $removedModels[$modelName]));
+        $this->assertTrue(\in_array($ids[1], $removedModels[$modelName]));
 
         $this->assertNull(self::$em->getRepository(DummyArticle::class)->find($ids[0]));
         $this->assertNull(self::$em->getRepository(DummyArticle::class)->find($ids[1]));
     }
 
-    public function testRemoveActionWithException()
+    public function testRemoveActionWithException(): void
     {
         $articles = $this->loadDummyData();
 
-        $ids = array(
+        $ids = [
             $articles[0]->getId(),
             $articles[1]->getId(),
-        );
+        ];
 
         $this->expectException(DummyException::class);
 
         DummyArticle::$suicideEngaged = true;
 
-        $result = $this->controller->removeAction(array(
-            'filter' => array(
-                array(
+        $result = $this->controller->removeAction([
+            'filter' => [
+                [
                     'property' => 'id',
-                    'value' => 'in:'.implode(', ', $ids),
-                ),
-            ),
-        ));
+                    'value' => 'in:'.\implode(', ', $ids),
+                ],
+            ],
+        ]);
     }
 
-    public function testGetAction()
+    public function testGetAction(): void
     {
         $articles = $this->loadDummyData();
 
-        $requestParams = array(
-            'hydration' => array(
+        $requestParams = [
+            'hydration' => [
                 'profile' => 'get_record',
-            ),
-            'filter' => array(
-                array(
+            ],
+            'filter' => [
+                [
                     'property' => 'id',
                     'value' => 'eq:'.$articles[0]->getId(),
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         $result = $this->controller->getAction($requestParams);
 
         $this->assertValidInterceptorInvocation($requestParams, 'get');
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('success', $result);
         $this->assertTrue($result['success']);
         $this->assertArrayHasKey('result', $result);
         $this->assertArrayHasKey('form', $result['result']);
         $form = $result['result']['form'];
-        $this->assertTrue(is_array($form));
+        $this->assertTrue(\is_array($form));
         $this->assertArrayHasKey('id', $form);
         $this->assertEquals($articles[0]->getId(), $form['id']);
         $this->assertArrayHasKey('title', $form);
         $this->assertArrayHasKey('body', $form);
     }
 
-    public function testGetActionWithException()
+    public function testGetActionWithException(): void
     {
         $articles = $this->loadDummyData();
 
@@ -449,17 +430,17 @@ class AbstractCrudControllerTest extends FunctionalTestCase
 
         DummyArticle::$suicideEngaged = true;
 
-        $requestParams = array(
-            'hydration' => array(
+        $requestParams = [
+            'hydration' => [
                 'profile' => 'rotten_profile',
-            ),
-            'filter' => array(
-                array(
+            ],
+            'filter' => [
+                [
                     'property' => 'id',
                     'value' => 'eq:'.$articles[0]->getId(),
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
         $result = $this->controller->getAction($requestParams);
     }
 
@@ -472,62 +453,62 @@ class AbstractCrudControllerTest extends FunctionalTestCase
         self::$em->persist($article);
         self::$em->flush();
 
-        $requestParams = array(
-            'record' => array(
+        $requestParams = [
+            'record' => [
                 'id' => $article->id,
                 'title' => '',
-            ),
-        );
+            ],
+        ];
         $result = $this->controller->updateAction($requestParams);
 
         $this->assertValidInterceptorInvocation($requestParams, 'update');
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('success', $result);
         $this->assertFalse($result['success']);
         $this->assertArrayHasKey('field_errors', $result);
         $this->assertArrayHasKey('title', $result['field_errors']);
-        $this->assertTrue(is_array($result['field_errors']));
-        $this->assertEquals(1, count($result['field_errors']));
+        $this->assertTrue(\is_array($result['field_errors']));
+        $this->assertEquals(1, \count($result['field_errors']));
         $this->assertArrayHasKey('title', $result['field_errors']);
-        $this->assertTrue(is_array($result['field_errors']['title']));
-        $this->assertEquals(1, count($result['field_errors']['title']));
+        $this->assertTrue(\is_array($result['field_errors']['title']));
+        $this->assertEquals(1, \count($result['field_errors']['title']));
 
         // ---
 
         self::$em->clear();
 
-        /* @var DummyArticle $fetchedArticle */
+        /** @var DummyArticle $fetchedArticle */
         $fetchedArticle = self::$em->getRepository(DummyArticle::class)->find($article->id);
 
         $this->assertEquals('title, yo', $fetchedArticle->title);
         $this->assertEquals($article->body, $fetchedArticle->body);
 
-        $result = $this->controller->updateAction(array(
-            'hydration' => array(
+        $result = $this->controller->updateAction([
+            'hydration' => [
                 'profile' => 'get_record',
-            ),
-            'record' => array(
+            ],
+            'record' => [
                 'id' => $fetchedArticle->id,
                 'title' => 'new title',
                 'body' => 'new body',
-            ),
-        ));
+            ],
+        ]);
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('success', $result);
         $this->assertTrue($result['success']);
         $this->assertArrayHasKey('updated_models', $result);
-        $this->assertTrue(is_array($result['updated_models']));
-        $this->assertEquals(1, count($result['updated_models']));
+        $this->assertTrue(\is_array($result['updated_models']));
+        $this->assertEquals(1, \count($result['updated_models']));
         $this->assertArrayHasKey('result', $result);
-        $this->assertTrue(is_array($result['result']));
+        $this->assertTrue(\is_array($result['result']));
         $this->assertArrayHasKey('form', $result['result']);
-        $this->assertTrue(is_array($result['result']['form']));
+        $this->assertTrue(\is_array($result['result']['form']));
 
         self::$em->clear();
 
-        /* @var DummyArticle $updatedArticle */
+        /** @var DummyArticle $updatedArticle */
         $updatedArticle = self::$em->getRepository(DummyArticle::class)->find($article->id);
 
         $this->assertNotNull($updatedArticle);
@@ -535,10 +516,10 @@ class AbstractCrudControllerTest extends FunctionalTestCase
         $this->assertEquals('new body', $updatedArticle->body);
     }
 
-    private function createDummyArticles($total)
+    private function createDummyArticles($total): array
     {
-        /* @var DummyArticle[] $entities */
-        $entities = array();
+        /** @var DummyArticle[] $entities */
+        $entities = [];
         for ($i = 0; $i < $total; ++$i) {
             $article = new DummyArticle();
             $article->body = 'body'.$i;
@@ -553,40 +534,37 @@ class AbstractCrudControllerTest extends FunctionalTestCase
         return $entities;
     }
 
-    /**
-     * @group MPFE-586-1
-     */
-    public function testBatchUpdateActionWithRecords()
+    public function testBatchUpdateActionWithRecords(): void
     {
         $entities = $this->createDummyArticles(2);
 
-        $requestParams = array(
-            'records' => array(
-                array(
+        $requestParams = [
+            'records' => [
+                [
                     'id' => $entities[0]->id,
                     'body' => 'body0_foo',
                     'title' => 'title0_foo',
-                ),
-                array(
+                ],
+                [
                     'id' => $entities[1]->id,
                     'body' => 'body1_foo',
                     'title' => 'title1_foo',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
         $result = $this->controller->batchUpdateAction($requestParams);
 
         $this->assertValidInterceptorInvocation($requestParams, 'batchUpdate');
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('success', $result);
         $this->assertTrue($result['success']);
         $this->assertArrayHasKey('updated_models', $result);
-        $this->assertEquals(1, count($result['updated_models']));
-        $updatedModels = array_values($result['updated_models']);
-        $this->assertEquals(2, count($updatedModels[0]));
-        $this->assertTrue(in_array($entities[0]->id, $updatedModels[0]));
-        $this->assertTrue(in_array($entities[1]->id, $updatedModels[0]));
+        $this->assertEquals(1, \count($result['updated_models']));
+        $updatedModels = \array_values($result['updated_models']);
+        $this->assertEquals(2, \count($updatedModels[0]));
+        $this->assertTrue(\in_array($entities[0]->id, $updatedModels[0]));
+        $this->assertTrue(\in_array($entities[1]->id, $updatedModels[0]));
 
         self::$em->clear();
 
@@ -599,35 +577,32 @@ class AbstractCrudControllerTest extends FunctionalTestCase
         $this->assertEquals('title1_foo', $article2->title);
     }
 
-    /**
-     * @group MPFE-586
-     */
-    public function testBatchUpdateActionWithRecordsErrorHandling()
+    public function testBatchUpdateActionWithRecordsErrorHandling(): void
     {
         $entities = $this->createDummyArticles(2);
 
-        $result = $this->controller->batchUpdateAction(array(
-            'records' => array(
-                array(
+        $result = $this->controller->batchUpdateAction([
+            'records' => [
+                [
                     'id' => $entities[0]->id,
                     'body' => 'body0_foo',
                     'title' => '',
-                ),
-                array(
+                ],
+                [
                     'id' => $entities[1]->id,
                     'body' => 'body1_foo',
                     'title' => 'title1_foo',
-                ),
-            ),
-        ));
+                ],
+            ],
+        ]);
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('success', $result);
         $this->assertFalse($result['success']);
 
         $this->assertArrayHasKey('errors', $result);
-        $this->assertTrue(is_array($result['errors']));
-        $this->assertEquals(1, count($result['errors']));
+        $this->assertTrue(\is_array($result['errors']));
+        $this->assertEquals(1, \count($result['errors']));
         $error = $result['errors'][0];
 
         $this->assertArrayHasKey('id', $error);
@@ -648,50 +623,47 @@ class AbstractCrudControllerTest extends FunctionalTestCase
         $this->assertEquals('title1', $article2->title);
     }
 
-    /**
-     * @group MPFE-586
-     */
-    public function testBatchUpdateActionWithQueriesAndRecord()
+    public function testBatchUpdateActionWithQueriesAndRecord(): void
     {
         $entities = $this->createDummyArticles(3);
 
-        $requestParams = array(
-            'queries' => array(
-                array(
-                    'filter' => array(
-                        array(
+        $requestParams = [
+            'queries' => [
+                [
+                    'filter' => [
+                        [
                             'property' => 'id',
                             'value' => 'eq:'.$entities[0]->id,
-                        ),
-                    ),
-                ),
-                array(
-                    'filter' => array(
-                        array(
+                        ],
+                    ],
+                ],
+                [
+                    'filter' => [
+                        [
                             'property' => 'title',
                             'value' => 'eq:'.$entities[2]->title,
-                        ),
-                    ),
-                ),
-            ),
-            'record' => array(
+                        ],
+                    ],
+                ],
+            ],
+            'record' => [
                 'title' => 'hello',
-            ),
-        );
+            ],
+        ];
         $result = $this->controller->batchUpdateAction($requestParams);
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('success', $result);
         $this->assertTrue($result['success']);
 
         $this->assertArrayHasKey('updated_models', $result);
-        $this->assertEquals(1, count($result['updated_models']));
-        $updatedModels = array_values($result['updated_models']);
-        $this->assertTrue(is_array($updatedModels));
-        $this->assertEquals(1, count($updatedModels));
-        $this->assertEquals(2, count($updatedModels[0]));
-        $this->assertTrue(in_array($entities[0]->id, $updatedModels[0]));
-        $this->assertTrue(in_array($entities[2]->id, $updatedModels[0]));
+        $this->assertEquals(1, \count($result['updated_models']));
+        $updatedModels = \array_values($result['updated_models']);
+        $this->assertTrue(\is_array($updatedModels));
+        $this->assertEquals(1, \count($updatedModels));
+        $this->assertEquals(2, \count($updatedModels[0]));
+        $this->assertTrue(\in_array($entities[0]->id, $updatedModels[0]));
+        $this->assertTrue(\in_array($entities[2]->id, $updatedModels[0]));
 
         self::$em->clear();
 
@@ -709,56 +681,56 @@ class AbstractCrudControllerTest extends FunctionalTestCase
         $this->assertEquals($entities[1]->body, $article2->body);
     }
 
-    public function testBatchUpdateActionWithQueriesAndRecordErrorHandling()
+    public function testBatchUpdateActionWithQueriesAndRecordErrorHandling(): void
     {
         $entities = $this->createDummyArticles(3);
 
-        $result = $this->controller->batchUpdateAction(array(
-            'queries' => array(
-                array(
-                    'filter' => array(
-                        array(
+        $result = $this->controller->batchUpdateAction([
+            'queries' => [
+                [
+                    'filter' => [
+                        [
                             'property' => 'id',
                             'value' => 'eq:'.$entities[0]->id,
-                        ),
-                    ),
-                ),
-                array(
-                    'filter' => array(
-                        array(
+                        ],
+                    ],
+                ],
+                [
+                    'filter' => [
+                        [
                             'property' => 'title',
                             'value' => 'eq:'.$entities[2]->title,
-                        ),
-                    ),
-                ),
-            ),
-            'record' => array(
+                        ],
+                    ],
+                ],
+            ],
+            'record' => [
                 'title' => '',
-            ),
-        ));
+            ],
+        ]);
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('success', $result);
         $this->assertFalse($result['success']);
         $this->assertArrayHasKey('errors', $result);
-        $this->assertTrue(is_array($result['errors']));
-        $this->assertEquals(2, count($result['errors']));
+        $this->assertTrue(\is_array($result['errors']));
+        $this->assertEquals(2, \count($result['errors']));
 
         $errors = $result['errors'];
 
         $this->assertArrayHasKey('id', $errors[0]);
-        $this->assertTrue(is_array($errors[0]));
+        $this->assertTrue(\is_array($errors[0]));
         $this->assertArrayHasKey('id', $errors[0]['id']);
         $this->assertEquals($entities[0]->id, $errors[0]['id']['id']);
 
         $this->assertArrayHasKey('id', $errors[1]);
-        $this->assertTrue(is_array($errors[1]));
+        $this->assertTrue(\is_array($errors[1]));
         $this->assertArrayHasKey('id', $errors[1]['id']);
         $this->assertEquals($entities[2]->id, $errors[1]['id']['id']);
     }
 
     // this test will result in having EM closed
-    public function testUpdateActionWithException()
+    public function testUpdateActionWithException(): void
     {
         $articles = $this->loadDummyData();
 
@@ -766,30 +738,30 @@ class AbstractCrudControllerTest extends FunctionalTestCase
 
         DummyArticle::$suicideEngaged = true;
 
-        $result = $this->controller->updateAction(array(
-            'record' => array(
+        $result = $this->controller->updateAction([
+            'record' => [
                 'id' => $articles[0]->id,
                 'title' => 'yo',
                 'body' => 'ogo',
-            ),
-        ));
+            ],
+        ]);
     }
 
-    public function testGetNewRecordValuesAction()
+    public function testGetNewRecordValuesAction(): void
     {
-        $requestParams = array('params');
+        $requestParams = ['params'];
 
         $output = $this->controller->getNewRecordValuesAction($requestParams);
 
         $this->assertValidInterceptorInvocation($requestParams, 'getNewRecordValues');
 
-        $this->assertTrue(is_array($output));
+        $this->assertTrue(\is_array($output));
         $this->assertArrayHasKey('params', $output);
         $this->assertSame($requestParams, $output['params']);
         $this->assertArrayHasKey('config', $output);
-        $this->assertTrue(is_array($output['config']));
+        $this->assertTrue(\is_array($output['config']));
         // we can't do just values comparison here because it goes to some kind of recursion
-        $this->assertSame(array_keys($this->controller->getPreparedConfig()), array_keys($output['config']));
+        $this->assertSame(\array_keys($this->controller->getPreparedConfig()), \array_keys($output['config']));
         $this->assertArrayHasKey('container', $output);
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerInterface', $output['container']);
     }

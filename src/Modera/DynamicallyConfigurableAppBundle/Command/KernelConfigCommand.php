@@ -5,6 +5,7 @@ namespace Modera\DynamicallyConfigurableAppBundle\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 use Modera\DynamicallyConfigurableAppBundle\KernelConfig;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,28 +13,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2019 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:dynamically-configurable-app:kernel-config',
+    description: 'Kernel config read/write command.',
+)]
 class KernelConfigCommand extends Command
 {
-    private EntityManagerInterface $em;
-
-    private ParameterBagInterface $params;
-
-    public function __construct(EntityManagerInterface $em, ParameterBagInterface $params)
-    {
-        $this->em = $em;
-        $this->params = $params;
-
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly ParameterBagInterface $params,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('modera:dynamically-configurable-app:kernel-config')
-            ->setDescription('Kernel config read/write command.')
             ->addArgument('json', InputArgument::OPTIONAL, 'kernel config in json format')
         ;
     }
@@ -71,7 +68,7 @@ class KernelConfigCommand extends Command
     }
 
     /**
-     * @return array{'debug': bool, 'env': string}
+     * @return array{'debug': bool, 'env': string, '_comment'?: string}
      */
     private function kernelConfigRead(): array
     {

@@ -2,16 +2,12 @@
 
 namespace Modera\ServerCrudBundle\Tests\Fixtures\Bundle\Contributions;
 
-use Modera\ServerCrudBundle\Tests\Fixtures\DummyInterceptor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ServerCrudBundle\Tests\Fixtures\DummyInterceptor;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class ControllerActionInterceptorsProvider implements ContributorInterface
 {
-    public $interceptor;
+    public DummyInterceptor $interceptor;
 
     public function __construct()
     {

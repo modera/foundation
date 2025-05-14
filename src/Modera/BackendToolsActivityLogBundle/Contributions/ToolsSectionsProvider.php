@@ -4,6 +4,7 @@ namespace Modera\BackendToolsActivityLogBundle\Contributions;
 
 use Modera\BackendToolsActivityLogBundle\ModeraBackendToolsActivityLogBundle;
 use Modera\BackendToolsBundle\Section\Section;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -11,23 +12,21 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 /**
  * Contributes a section to Backend/Tools.
  *
- * @internal Since 2.56.0
+ * @internal
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2017 Modera Foundation
  */
+#[AsContributorFor('modera_backend_tools.sections')]
 class ToolsSectionsProvider implements ContributorInterface
 {
-    private AuthorizationCheckerInterface $authorizationChecker;
-
     /**
      * @var Section[]
      */
     private ?array $items = null;
 
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
-    {
-        $this->authorizationChecker = $authorizationChecker;
+    public function __construct(
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+    ) {
     }
 
     public function getItems(): array
@@ -42,7 +41,7 @@ class ToolsSectionsProvider implements ContributorInterface
                     T::trans('See what activities recently have happened on the site'),
                     '',
                     '',
-                    'modera-backend-tools-activity-log-icon'
+                    'modera-backend-tools-activity-log-icon',
                 );
             }
         }

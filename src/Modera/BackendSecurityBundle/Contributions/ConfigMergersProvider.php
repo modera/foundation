@@ -3,31 +3,26 @@
 namespace Modera\BackendSecurityBundle\Contributions;
 
 use Modera\BackendSecurityBundle\Section\SectionInterface;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 
 /**
  * @internal
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2017 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.config.config_mergers')]
 class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterface
 {
     /**
-     * @var array<string, mixed>
-     */
-    private array $semanticConfig;
-
-    private ContributorInterface $sectionsProvider;
-
-    /**
      * @param array<string, mixed> $semanticConfig
      */
-    public function __construct(ContributorInterface $sectionsProvider, array $semanticConfig = [])
-    {
-        $this->sectionsProvider = $sectionsProvider;
-        $this->semanticConfig = $semanticConfig;
+    public function __construct(
+        private readonly ExtensionProvider $extensionProvider,
+        private readonly array $semanticConfig = [],
+    ) {
     }
 
     public function merge(array $existingConfig): array
@@ -39,7 +34,7 @@ class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterfa
             ],
         ]);
 
-        foreach ($this->sectionsProvider->getItems() as $section) {
+        foreach ($this->extensionProvider->get('modera_backend_security.sections')->getItems() as $section) {
             if ($section instanceof SectionInterface) {
                 $existingConfig['modera_backend_security']['sections'][] = [
                     'sectionConfig' => [

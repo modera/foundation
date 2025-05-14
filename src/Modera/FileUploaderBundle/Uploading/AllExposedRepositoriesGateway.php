@@ -8,16 +8,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class AllExposedRepositoriesGateway implements UploadGatewayInterface
 {
-    private FileRepository $fileRepository;
-
-    public function __construct(FileRepository $fileRepository)
-    {
-        $this->fileRepository = $fileRepository;
+    public function __construct(
+        private readonly FileRepository $fileRepository,
+    ) {
     }
 
     protected function getRepositoryName(Request $request): ?string

@@ -17,3 +17,4 @@ parameters:
         - '#Parameter \$event of method .* has invalid type Composer\\Script\\Event.#'
         - '#Property .* has unknown class Composer\\Installer\\PackageEvent as its type.#'
         - '#Method Doctrine\\Persistence\\ObjectManager::flush\(\) invoked with 1 parameter, 0 required#'
+        - '#Trait Modera\\DirectBundle\\Controller\\ControllerTrait is used zero times and is not analysed.#'

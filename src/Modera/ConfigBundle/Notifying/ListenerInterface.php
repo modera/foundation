@@ -7,7 +7,6 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
 /**
  * By implementing this interface you can perform additional operations.
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2021 Modera Foundation
  */
 interface ListenerInterface

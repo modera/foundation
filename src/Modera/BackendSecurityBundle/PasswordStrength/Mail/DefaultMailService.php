@@ -11,33 +11,16 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2022 Modera Foundation
  */
 class DefaultMailService implements MailServiceInterface
 {
-    private EntityManagerInterface $em;
-
-    private MailerInterface $mailer;
-
-    private string $defaultLocale = 'en';
-
-    private string $mailSender = 'no-reply@no-reply';
-
-    public function __construct(EntityManagerInterface $em, MailerInterface $mailer)
-    {
-        $this->em = $em;
-        $this->mailer = $mailer;
-    }
-
-    public function setDefaultLocale(string $locale): void
-    {
-        $this->defaultLocale = $locale;
-    }
-
-    public function setMailSender(string $mailSender): void
-    {
-        $this->mailSender = $mailSender;
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly MailerInterface $mailer,
+        private readonly string $defaultLocale = 'en',
+        private readonly string $mailSender = 'no-reply@no-reply',
+    ) {
     }
 
     public function sendPassword(UserInterface $user, string $plainPassword): void

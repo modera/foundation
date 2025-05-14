@@ -2,26 +2,20 @@
 
 namespace Modera\ConfigBundle\Tests\Functional\Manager;
 
-use Modera\ConfigBundle\Manager\ConfigurationEntriesManager;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
+use Modera\ConfigBundle\Manager\ConfigurationEntriesManager;
+use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
 use Modera\ConfigBundle\Tests\Fixtures\Entities\User;
 use Modera\ConfigBundle\Tests\Functional\AbstractFunctionalTestCase;
-use Symfony\Component\Serializer\Exception\RuntimeException;
 
-/**
- * @author Sergei Lissovski <sergei.lissovski@gmail.org>
- */
 class ConfigurationEntriesManagerTest extends AbstractFunctionalTestCase
 {
-    /**
-     * @return ConfigurationEntriesManager
-     */
-    private function getManager()
+    private function getManager(): ConfigurationEntriesManager
     {
-        return self::getContainer()->get('modera_config.configuration_entries_manager');
+        return self::getContainer()->get(ConfigurationEntriesManagerInterface::class);
     }
 
-    public function testFindOneByName()
+    public function testFindOneByName(): void
     {
         $vasya = new User('vasya');
 
@@ -59,15 +53,13 @@ class ConfigurationEntriesManagerTest extends AbstractFunctionalTestCase
         $this->assertEquals('cf_1', $foundCe1->getName());
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testFindOneByNameOrDie_notFound()
+    public function testFindOneByNameOrDieNotFound(): void
     {
+        $this->expectException(\RuntimeException::class);
         $this->getManager()->findOneByNameOrDie('cf_1');
     }
 
-    public function testFindOneByNameOrDie()
+    public function testFindOneByNameOrDie(): void
     {
         $vasya = new User('vasya');
 
@@ -85,11 +77,9 @@ class ConfigurationEntriesManagerTest extends AbstractFunctionalTestCase
         $this->assertEquals('cf_1', $ce->getName());
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testFindOneByNameOrDie_notFoundWithUserGiven()
+    public function testFindOneByNameOrDieNotFoundWithUserGiven(): void
     {
+        $this->expectException(\RuntimeException::class);
         $vasya = new User('vasya');
 
         self::$em->persist($vasya);
@@ -98,7 +88,7 @@ class ConfigurationEntriesManagerTest extends AbstractFunctionalTestCase
         $this->getManager()->findOneByNameOrDie('cf_1', $vasya);
     }
 
-    public function testFindOneByNameOrDie_withUserGiven()
+    public function testFindOneByNameOrDieWithUserGiven(): void
     {
         $vasya = new User('vasya');
 
@@ -116,7 +106,7 @@ class ConfigurationEntriesManagerTest extends AbstractFunctionalTestCase
         $this->assertEquals('cf_1', $ce->getName());
     }
 
-    public function testFindAllExposed()
+    public function testFindAllExposed(): void
     {
         $ce1 = new ConfigurationEntry('cf_1');
         $ce1->setValue('foo');
@@ -134,7 +124,7 @@ class ConfigurationEntriesManagerTest extends AbstractFunctionalTestCase
 
         $result = $this->getManager()->findAllExposed();
 
-        $this->assertEquals(2, count($result));
+        $this->assertEquals(2, \count($result));
         $this->assertEquals('cf_1', $result[0]->getName());
         $this->assertEquals('cf_2', $result[1]->getName());
 
@@ -150,14 +140,14 @@ class ConfigurationEntriesManagerTest extends AbstractFunctionalTestCase
         $this->getManager()->save($ce1);
 
         $result = $this->getManager()->findAllExposed();
-        $this->assertEquals(1, count($result));
+        $this->assertEquals(1, \count($result));
         $this->assertEquals('cf_2', $result[0]->getName());
 
         // ---
 
         $result = $this->getManager()->findAllExposed($vasya);
 
-        $this->assertEquals(1, count($result));
+        $this->assertEquals(1, \count($result));
         $this->assertEquals('cf_1', $result[0]->getName());
     }
 }

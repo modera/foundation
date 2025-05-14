@@ -8,7 +8,7 @@ filesystem abstraction layer.
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/file-repository-bundle:5.x-dev
+composer require modera/file-repository-bundle:6.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -68,11 +68,11 @@ Once low-level filesystem is configured you can create a repository that will ma
 <?php
 
 /** @var \Modera\FileRepositoryBundle\Repository\FileRepository $fr */
-$fr = $container->get('modera_file_repository.repository.file_repository');
+$fr = $container->get(\Modera\FileRepositoryBundle\Repository\FileRepository::class);
 
-$repositoryConfig = array(
-    'filesystem' => 'local_fs'
-);
+$repositoryConfig = [
+    'filesystem' => 'local_fs',
+];
 
 $fr->createRepository('my_repository', $repositoryConfig, 'My dummy repository');
 
@@ -123,31 +123,30 @@ Bundle ships commands that allow you to perform some standards operations on you
 ### Thumbnails generation
 
 Bundle contains an interceptor that you can use to have thumbnails automatically generated for images when they
-are stored in a repository, to enable this feature when creating a new repository you need to use
-**modera_file_repository.interceptors.thumbnails_generator.interceptor** interceptor:
+are stored in a repository, to enable this feature when creating a new repository you need to use interceptor:
 
 ``` php
 <?php
 
 /** @var \Modera\FileRepositoryBundle\Repository\FileRepository $fr */
-$fr = $container->get('modera_file_repository.repository.file_repository');
+$fr = $container->get(\Modera\FileRepositoryBundle\Repository\FileRepository::class);
 
-$repositoryConfig = array(
+$repositoryConfig = [
     'filesystem' => 'local_fs',
     'interceptors' => [
-        \Modera\FileRepositoryBundle\ThumbnailsGenerator\Interceptor::ID,
+        \Modera\FileRepositoryBundle\ThumbnailsGenerator\Interceptor::class,
     ],
-    'thumbnail_sizes' => array(
-        array(
+    'thumbnail_sizes' => [
+        [
             'width' => 300,
             'height' => 150
-        ),
-        array(
+        ],
+        [
             'width' => 32,
             'height' => 32
-        )
-    )
-);
+        ],
+    ],
+];
 
 $fr->createRepository('vacation_pictures', $repositoryConfig, 'Pictures from vacation');
 ```

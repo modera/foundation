@@ -4,13 +4,9 @@ namespace Modera\FoundationBundle\Tests\Unit\Testing;
 
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class FunctionalTestCaseTest extends \PHPUnit\Framework\TestCase
 {
-    public function testCreateKernel()
+    public function testCreateKernel(): void
     {
         global $_SERVER;
 

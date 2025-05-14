@@ -9,13 +9,12 @@ use Symfony\Component\HttpKernel\KernelInterface;
 /**
  * Standard version resolver will try to do the following things in order to resolve currently installed MF version:.
  *
- *  * at first it will try use bundle semantic config's configuration property "version"
+ *  * at first it will try to use bundle semantic config's configuration property "version"
  *   ( see \Modera\MJRCacheAwareClassLoaderBundle\DependencyInjection\Configuration )
  *  * if no version is configured using bundle semantic configuration then it will try to locate "modera-version.txt" file
  *    which is located one level above where AppKernel class resides
  *  * if neither of the ways worked out then a default "1.0.0" version will be returned
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class StandardVersionResolver implements VersionResolverInterface

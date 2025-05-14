@@ -4,15 +4,11 @@ namespace Modera\TranslationsBundle\Tests\Unit\TokenExtraction;
 
 use Modera\FoundationBundle\Translation\T;
 
-/**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class FooClass
 {
-    public function method1()
+    public function method1(): void
     {
-        T::trans('Broken domain', array(), rand(100));
+        T::trans('Broken domain', [], \rand(100));
 
         T::trans('Default domain', [], null);
 
@@ -23,7 +19,7 @@ class FooClass
         $message = 'hello ';
         $message .= 'world';
 
-        T::trans('We got something for ya, %s!', array('name' => 'Vassily', 'xxx' => $fn()), 'foodomain');
+        T::trans('We got something for ya, %s!', ['name' => 'Vassily', 'xxx' => $fn()], 'foodomain');
 
         T::trans('Another token', [], $barDomain);
 
@@ -31,11 +27,26 @@ class FooClass
 
         T::trans($message);
 
-        $parameters = array();
-        $transImplode = implode(' ', array('trans', '"implode"', 'to', 'variable'));
+        $parameters = [];
 
-        T::trans($transImplode, $parameters, $barDomain);
+        $transImplode1 = implode(' ', array('trans', '"implode-array"', 'to', 'variable'));
+        T::trans($transImplode1, $parameters, $barDomain);
 
-        T::trans(implode(PHP_EOL, array('trans', '"implode"')), $parameters, $barDomain);
+        $transImplode2 = implode(' ', ['trans', '"implode-[]"', 'to', 'variable']);
+        T::trans($transImplode2, $parameters, $barDomain);
+
+        $transImplode3 = \implode(' ', array('trans', '"\implode-array"', 'to', 'variable'));
+        T::trans($transImplode3, $parameters, $barDomain);
+
+        $transImplode4 = \implode(' ', ['trans', '"\implode-[]"', 'to', 'variable']);
+        T::trans($transImplode4, $parameters, $barDomain);
+
+        T::trans(implode(PHP_EOL, array('trans', '"implode-array"')), $parameters, $barDomain);
+
+        T::trans(implode(PHP_EOL, ['trans', '"implode-[]"']), $parameters, $barDomain);
+
+        T::trans(\implode(PHP_EOL, array('trans', '"\implode-array"')), $parameters, $barDomain);
+
+        T::trans(\implode(PHP_EOL, ['trans', '"\implode-[]"']), $parameters, $barDomain);
     }
 }

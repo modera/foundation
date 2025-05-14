@@ -2,11 +2,11 @@
 
 namespace Modera\SecurityBundle\DependencyInjection;
 
+use Modera\SecurityBundle\PasswordStrength\Mail\MailServiceInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2017 Modera Foundation
  */
 class MailServiceAliasCompilerPass implements CompilerPassInterface
@@ -16,9 +16,6 @@ class MailServiceAliasCompilerPass implements CompilerPassInterface
         /** @var array{'password_strength': array{'mail': array{'service': string}}} $config */
         $config = $container->getParameter(ModeraSecurityExtension::CONFIG_KEY);
 
-        $aliasConfig = [];
-        $aliasConfig['modera_security.password_strength.mail.mail_service'] = $config['password_strength']['mail']['service'];
-
-        $container->addAliases($aliasConfig);
+        $container->setAlias(MailServiceInterface::class, $config['password_strength']['mail']['service']);
     }
 }

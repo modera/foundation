@@ -2,33 +2,23 @@
 
 namespace Modera\SecurityBundle\Tests\Unit\EventListener;
 
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Modera\SecurityBundle\Entity\User;
 use Modera\SecurityBundle\EventListener\RootUserHandlerInjectionListener;
+use Modera\SecurityBundle\RootUserHandling\RootUserHandlerInterface;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class RootUserHandlerInjectionListenerTest extends \PHPUnit\Framework\TestCase
 {
-    private $container;
-
-    private $rootUserHandler;
+    private RootUserHandlerInterface $rootUserHandler;
 
     public function setUp(): void
     {
-        $this->rootUserHandler = \Phake::mock('Modera\SecurityBundle\RootUserHandling\RootUserHandlerInterface');
-
-        $this->container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
-        \Phake::when($this->container)
-            ->get('modera_security.root_user_handling.handler')
-            ->thenReturn($this->rootUserHandler)
-        ;
+        $this->rootUserHandler = \Phake::mock(RootUserHandlerInterface::class);
     }
 
-    private function createEvent($object = null)
+    private function createEvent($object = null): LifecycleEventArgs
     {
-        $event = \Phake::mock('Doctrine\Persistence\Event\LifecycleEventArgs');
+        $event = \Phake::mock(LifecycleEventArgs::class);
 
         \Phake::when($event)
             ->getObject()
@@ -38,13 +28,13 @@ class RootUserHandlerInjectionListenerTest extends \PHPUnit\Framework\TestCase
         return $event;
     }
 
-    public function testPostLoadWithEntity()
+    public function testPostLoadWithEntity(): void
     {
         $user = \Phake::mock(User::class);
 
         $event = $this->createEvent($user);
 
-        $listener = new RootUserHandlerInjectionListener($this->container);
+        $listener = new RootUserHandlerInjectionListener($this->rootUserHandler);
         $listener->postLoad($user, $event);
 
         \Phake::verify($user)->init($this->rootUserHandler);

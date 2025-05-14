@@ -2,14 +2,15 @@
 
 namespace Modera\BackendTranslationsToolBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Model\PermissionCategory;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2017 Modera Foundation
  */
+#[AsContributorFor('modera_security.permission_categories')]
 class PermissionCategoriesProvider implements ContributorInterface
 {
     /**
@@ -23,7 +24,7 @@ class PermissionCategoriesProvider implements ContributorInterface
             $this->items = [
                 new PermissionCategory(
                     T::trans('Administration'),
-                    'administration'
+                    'administration',
                 ),
             ];
         }

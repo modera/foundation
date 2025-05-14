@@ -5,7 +5,6 @@ namespace Modera\ConfigBundle\Manager;
 use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 interface ConfigurationEntriesManagerInterface

@@ -2,15 +2,19 @@
 
 namespace Modera\DynamicallyConfigurableAppBundle\Contributions;
 
+use Modera\ConfigBundle\Config\BooleanHandler;
 use Modera\ConfigBundle\Config\ConfigurationEntryDefinition as CED;
+use Modera\ConfigBundle\Config\DictionaryHandler;
 use Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBundle as Bundle;
+use Modera\DynamicallyConfigurableAppBundle\ValueHandling\KernelConfigWriter;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_config.config_entries')]
 class ConfigEntriesProvider implements ContributorInterface
 {
     public function getItems(): array
@@ -23,8 +27,8 @@ class ConfigEntriesProvider implements ContributorInterface
         $no = T::trans('no');
 
         $kernelDebugServer = [
-            'handler' => 'modera_config.boolean_handler',
-            'update_handler' => 'modera_dynamically_configurable_app.value_handling.kernel_config_writer',
+            'handler' => BooleanHandler::class,
+            'update_handler' => KernelConfigWriter::class,
             'true_text' => $yes,
             'false_text' => $no,
         ];
@@ -35,8 +39,8 @@ class ConfigEntriesProvider implements ContributorInterface
         ];
 
         $kernelEnvServer = [
-            'handler' => 'modera_config.dictionary_handler',
-            'update_handler' => 'modera_dynamically_configurable_app.value_handling.kernel_config_writer',
+            'handler' => DictionaryHandler::class,
+            'update_handler' => KernelConfigWriter::class,
             'dictionary' => [
                 'prod' => $yes,
                 'dev' => $no,

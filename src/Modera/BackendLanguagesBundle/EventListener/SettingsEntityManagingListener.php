@@ -7,7 +7,6 @@ use Modera\BackendLanguagesBundle\Entity\UserSettings;
 use Modera\SecurityBundle\Entity\User;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class SettingsEntityManagingListener

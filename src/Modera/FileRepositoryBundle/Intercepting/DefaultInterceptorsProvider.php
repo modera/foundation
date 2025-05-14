@@ -2,7 +2,9 @@
 
 namespace Modera\FileRepositoryBundle\Intercepting;
 
+use Modera\FileRepositoryBundle\Authoring\AuthoringInterceptor;
 use Modera\FileRepositoryBundle\Entity\Repository;
+use Modera\FileRepositoryBundle\Validation\FilePropertiesValidationInterceptor;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -15,16 +17,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @internal
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
 class DefaultInterceptorsProvider implements InterceptorsProviderInterface
 {
-    private ContainerInterface $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        private readonly ContainerInterface $container,
+    ) {
     }
 
     public function getInterceptors(Repository $repository): array
@@ -32,13 +31,14 @@ class DefaultInterceptorsProvider implements InterceptorsProviderInterface
         $interceptors = [];
 
         $ids = [
-            'modera_file_repository.validation.file_properties_validation_interceptor',
-            'modera_file_repository.intercepting.mime_saver_interceptor',
-            'modera_file_repository.authoring.authoring_interceptor', // since 2.56.0
+            FilePropertiesValidationInterceptor::class,
+            MimeSaverInterceptor::class,
+            AuthoringInterceptor::class,
         ];
 
         $config = $repository->getConfig();
         if (isset($config['interceptors']) && \is_array($config['interceptors'])) {
+            /** @var string[] $ids */
             $ids = \array_merge($ids, $config['interceptors']);
         }
 

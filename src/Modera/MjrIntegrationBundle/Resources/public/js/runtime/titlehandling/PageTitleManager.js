@@ -1,7 +1,7 @@
 /**
  * Allows to manage page's title, supports dynamic parameters using a template language provided by Ext.XTemplate.
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2016 Modera Foundation
  */
 Ext.define('Modera.mjrintegration.runtime.titlehandling.PageTitleManager', {
 

@@ -8,16 +8,13 @@ use Twig\TwigFilter;
 /**
  * Base twig extensions used throughout the foundation.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 final class Extension extends AbstractExtension
 {
-    private string $publicDir;
-
-    public function __construct(string $publicDir)
-    {
-        $this->publicDir = $publicDir;
+    public function __construct(
+        private readonly string $publicDir,
+    ) {
     }
 
     public function getFilters(): array

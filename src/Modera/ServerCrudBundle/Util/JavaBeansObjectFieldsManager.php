@@ -2,6 +2,11 @@
 
 namespace Modera\ServerCrudBundle\Util;
 
+/**
+ * @internal
+ *
+ * @copyright 2024 Modera Foundation
+ */
 class JavaBeansObjectFieldsManager implements ObjectFieldsManagerInterface
 {
     /**
@@ -39,7 +44,7 @@ class JavaBeansObjectFieldsManager implements ObjectFieldsManagerInterface
         return $this->reflections[$index];
     }
 
-    public function get(object $object, string $key, array $args = [])
+    public function get(object $object, string $key, array $args = []): mixed
     {
         $methodName = $this->formatGetterName($key);
         $reflectionClass = $this->getReflectionClass($object);
@@ -47,9 +52,11 @@ class JavaBeansObjectFieldsManager implements ObjectFieldsManagerInterface
         if ($reflectionClass->hasMethod($methodName) && $reflectionClass->getMethod($methodName)->isPublic()) {
             return $reflectionClass->getMethod($methodName)->invokeArgs($object, $args);
         }
+
+        return null;
     }
 
-    public function set(object $object, string $key, array $args = [])
+    public function set(object $object, string $key, array $args = []): mixed
     {
         $methodName = $this->formatSetterName($key);
         $reflectionClass = $this->getReflectionClass($object);
@@ -57,5 +64,7 @@ class JavaBeansObjectFieldsManager implements ObjectFieldsManagerInterface
         if ($reflectionClass->hasMethod($methodName) && $reflectionClass->getMethod($methodName)->isPublic()) {
             return $reflectionClass->getMethod($methodName)->invokeArgs($object, $args);
         }
+
+        return null;
     }
 }

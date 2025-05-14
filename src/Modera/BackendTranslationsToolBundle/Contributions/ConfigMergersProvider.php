@@ -2,20 +2,19 @@
 
 namespace Modera\BackendTranslationsToolBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.config.config_mergers')]
 class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterface
 {
-    private FiltersProvider $filtersProvider;
-
-    public function __construct(FiltersProvider $filtersProvider)
-    {
-        $this->filtersProvider = $filtersProvider;
+    public function __construct(
+        private readonly FiltersProvider $filtersProvider,
+    ) {
     }
 
     public function merge(array $existingConfig): array

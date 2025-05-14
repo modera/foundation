@@ -2,46 +2,54 @@
 
 namespace Modera\BackendConfigUtilsBundle\Tests\Unit\Controller;
 
-use Modera\ExpanderBundle\Ext\ContributorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Modera\BackendConfigUtilsBundle\Controller\DefaultController;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionPoint;
+use Modera\ExpanderBundle\Ext\ExtensionPointManager;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class DefaultControllerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var DefaultController
-     */
-    private $c;
+    private DefaultController $c;
 
     public function setUp(): void
     {
-        $this->c = new DefaultController();
-
         $provider = \Phake::mock(ContributorInterface::class);
         \Phake::when($provider)
             ->getItems()
-            ->thenReturn(array())
+            ->thenReturn([])
         ;
 
         $container = \Phake::mock(ContainerInterface::class);
+        \Phake::when($container)
+            ->has('modera_config.config_entries_provider')
+            ->thenReturn(true)
+        ;
         \Phake::when($container)
             ->get('modera_config.config_entries_provider')
             ->thenReturn($provider)
         ;
 
-        $this->c->setContainer($container);
+        $extensionPointManager = \Phake::mock(ExtensionPointManager::class);
+        \Phake::when($extensionPointManager)
+            ->has('modera_config.config_entries')
+            ->thenReturn(true)
+        ;
+        \Phake::when($extensionPointManager)
+            ->get('modera_config.config_entries')
+            ->thenReturn(new ExtensionPoint('modera_config.config_entries'))
+        ;
+
+        $this->c = new DefaultController(new ExtensionProvider($container, $extensionPointManager));
     }
 
-    public function testGetConfigHydration()
+    public function testGetConfigHydration(): void
     {
         $config = $this->c->getConfig();
 
-        $this->assertTrue(is_array($config));
+        $this->assertTrue(\is_array($config));
         $this->assertTrue(isset($config['hydration']['groups']['list']));
 
         $hydrator = $config['hydration']['groups']['list'];
@@ -60,7 +68,7 @@ class DefaultControllerTest extends \PHPUnit\Framework\TestCase
 
         $result = $hydrator($entry);
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         foreach (['id', 'name', 'readableName', 'readableValue', 'value', 'isReadOnly', 'editorConfig'] as $key) {
             $this->assertArrayHasKey($key, $result);
         }
@@ -73,21 +81,19 @@ class DefaultControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['foo_ch'], $result['editorConfig']);
     }
 
-    public function testGetConfigMapDataOnUpdate()
+    public function testGetConfigMapDataOnUpdate(): void
     {
         $config = $this->c->getConfig();
 
-        $this->assertTrue(is_array($config));
+        $this->assertTrue(\is_array($config));
         $this->assertArrayHasKey('map_data_on_update', $config);
-        $this->assertTrue(is_callable($config['map_data_on_update']));
-
-        $mapper = $config['map_data_on_update'];
+        $this->assertTrue(\is_callable($config['map_data_on_update']));
 
         $entry = \Phake::mock(ConfigurationEntry::class);
         $this->teachEntry($entry, 'isReadOnly', true);
     }
 
-    private function teachEntry($mock, $methodName, $returnValue)
+    private function teachEntry($mock, $methodName, $returnValue): void
     {
         \Phake::when($mock)
             ->$methodName()

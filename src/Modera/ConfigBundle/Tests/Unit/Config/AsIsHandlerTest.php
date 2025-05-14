@@ -5,29 +5,19 @@ namespace Modera\ConfigBundle\Tests\Unit\Config;
 use Modera\ConfigBundle\Config\AsIsHandler;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 
-/**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
- */
 class AsIsHandlerTest extends \PHPUnit\Framework\TestCase
 {
-    private $entry;
-    /* @var AsIsHandler */
-    private $handler;
+    private ConfigurationEntry $entry;
+
+    private AsIsHandler $handler;
 
     public function setUp(): void
     {
-        $this->entry = $this->createMock(
-            ConfigurationEntry::class,
-            array(),
-            array(),
-            '',
-            null,
-            false
-        );
+        $this->entry = $this->createMock(ConfigurationEntry::class);
         $this->handler = new AsIsHandler();
     }
 
-    public function testGetReadableValue()
+    public function testGetReadableValue(): void
     {
         $this->entry->expects($this->once())
              ->method('getDenormalizedValue')
@@ -36,7 +26,7 @@ class AsIsHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('clientValue', $this->handler->getReadableValue($this->entry));
     }
 
-    public function testGetValue()
+    public function testGetValue(): void
     {
         $this->entry->expects($this->once())
              ->method('getDenormalizedValue')
@@ -45,7 +35,7 @@ class AsIsHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('serverValue', $this->handler->getValue($this->entry));
     }
 
-    public function testConvertToStorageValue()
+    public function testConvertToStorageValue(): void
     {
         $this->assertEquals('xxx', $this->handler->convertToStorageValue('xxx', $this->entry));
     }

@@ -5,7 +5,6 @@ namespace Modera\FoundationBundle\Process;
 use Symfony\Component\Process\Process;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2018 Modera Foundation
  */
 class BackgroundProcess extends Process

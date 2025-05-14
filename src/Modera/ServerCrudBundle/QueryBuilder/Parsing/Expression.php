@@ -3,7 +3,6 @@
 namespace Modera\ServerCrudBundle\QueryBuilder\Parsing;
 
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  */
 class Expression
@@ -24,7 +23,7 @@ class Expression
      *     'hidden'?: bool,
      * }
      */
-    private $expression;
+    private string|array $expression;
 
     private bool $hidden;
 
@@ -36,7 +35,7 @@ class Expression
      * } $expression
      * @param ?string $alias Alias should only be provided when expression is used in SELECT
      */
-    public function __construct($expression, ?string $alias = null)
+    public function __construct(string|array $expression, ?string $alias = null)
     {
         if (\is_array($expression) && \is_string($expression['function'] ?? null) && \strlen($expression['function']) > 0) {
             $this->validateFunctionName($expression['function']);
@@ -82,7 +81,7 @@ class Expression
      *     'hidden'?: bool,
      * }
      */
-    public function getExpression()
+    public function getExpression(): string|array
     {
         return $this->expression;
     }

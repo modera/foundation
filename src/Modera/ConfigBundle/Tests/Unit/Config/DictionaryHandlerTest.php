@@ -5,40 +5,29 @@ namespace Modera\ConfigBundle\Tests\Unit\Config;
 use Modera\ConfigBundle\Config\DictionaryHandler;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class DictionaryHandlerTest extends \PHPUnit\Framework\TestCase
 {
-    private $entry;
-    /* @var DictionaryHandler */
-    private $handler;
+    private ConfigurationEntry $entry;
+
+    private DictionaryHandler $handler;
 
     public function setUp(): void
     {
         $this->handler = new DictionaryHandler();
 
-        $config = array(
-            'dictionary' => array(
+        $config = [
+            'dictionary' => [
                 'foo' => 'foo-val',
-            ),
-        );
-        $this->entry = $this->createMock(
-            ConfigurationEntry::class,
-            array(),
-            array(),
-            '',
-            null,
-            false
-        );
+            ],
+        ];
+        $this->entry = $this->createMock(ConfigurationEntry::class);
         $this->entry
              ->expects($this->any())
              ->method('getServerHandlerConfig')
              ->will($this->returnValue($config));
     }
 
-    public function testGetReadableValue()
+    public function testGetReadableValue(): void
     {
         $this->entry
              ->expects($this->atLeastOnce())
@@ -48,7 +37,7 @@ class DictionaryHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('foo-val', $this->handler->getReadableValue($this->entry));
     }
 
-    public function testGetValue()
+    public function testGetValue(): void
     {
         $this->entry
              ->expects($this->atLeastOnce())
@@ -58,7 +47,7 @@ class DictionaryHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('mega-value', $this->handler->getValue($this->entry));
     }
 
-    public function testConvertToStorageValue()
+    public function testConvertToStorageValue(): void
     {
         $this->assertEquals('blah', $this->handler->convertToStorageValue('blah', $this->entry));
     }

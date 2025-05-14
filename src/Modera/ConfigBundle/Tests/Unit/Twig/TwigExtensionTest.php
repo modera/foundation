@@ -2,39 +2,30 @@
 
 namespace Modera\ConfigBundle\Tests\Unit\Twig;
 
+use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
 use Modera\ConfigBundle\Twig\TwigExtension;
-use SensioLabs\Security\Exception\RuntimeException;
+use Twig\TwigFunction;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class TwigExtensionTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var TwigExtension
-     */
-    private $ext;
+    private TwigExtension $ext;
 
-    private $configEntriesManager;
+    private ConfigurationEntriesManagerInterface $configEntriesManager;
 
-    /**
-     * {@inheritdoc}
-     */
     public function setUp(): void
     {
-        $this->configEntriesManager = \Phake::mock('Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface');
+        $this->configEntriesManager = \Phake::mock(ConfigurationEntriesManagerInterface::class);
 
         $this->ext = new TwigExtension($this->configEntriesManager);
     }
 
-    public function testGetFunctions()
+    public function testGetFunctions(): void
     {
-        /* @var \Twig\TwigFunction[] $functions*/
+        /** @var TwigFunction[] $functions */
         $functions = $this->ext->getFunctions();
 
-        $this->assertEquals(2, count($functions));
-        $this->assertInstanceOf('Twig\TwigFunction', $functions[0]);
+        $this->assertEquals(2, \count($functions));
+        $this->assertInstanceOf(TwigFunction::class, $functions[0]);
 
         $configValue = $functions[0];
 
@@ -51,7 +42,7 @@ class TwigExtensionTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('getModeraConfigOwnerValue', $callable[1]);
     }
 
-    public function testTwigModeraConfigValueNotStrict()
+    public function testTwigModeraConfigValueNotStrict(): void
     {
         $value = $this->ext->twigModeraConfigValue('fooproperty', false);
 
@@ -77,11 +68,9 @@ class TwigExtensionTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('barvalue', $this->ext->twigModeraConfigValue('barproperty', false));
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testTwigModeraConfigValueStrict()
+    public function testTwigModeraConfigValueStrict(): void
     {
+        $this->expectException(\RuntimeException::class);
         \Phake::when($this->configEntriesManager)
             ->findOneByNameOrDie('foo', null)
             ->thenThrow(new \RuntimeException('ololo'))

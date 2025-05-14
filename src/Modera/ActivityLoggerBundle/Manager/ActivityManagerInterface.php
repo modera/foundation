@@ -12,7 +12,6 @@ use Psr\Log\LoggerInterface;
  * who caused given activity. For example:
  *     $activityMgr->info('User has logged in', array('type' => 'security', 'author' => $user->getId()));.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 interface ActivityManagerInterface extends LoggerInterface

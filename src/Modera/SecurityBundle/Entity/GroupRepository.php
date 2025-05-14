@@ -5,7 +5,6 @@ namespace Modera\SecurityBundle\Entity;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * @author    Alex Plaksin <alex.plaksin@modera.net>
  * @copyright 2016 Modera Foundation
  */
 class GroupRepository extends EntityRepository

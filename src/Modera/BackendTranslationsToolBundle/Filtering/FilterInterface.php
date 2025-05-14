@@ -3,7 +3,6 @@
 namespace Modera\BackendTranslationsToolBundle\Filtering;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 interface FilterInterface
@@ -21,16 +20,13 @@ interface FilterInterface
     /**
      * Returns filtered data.
      *
-     * Example:
-     * array(
-     *     'success' => boolean,
-     *     'items'   => Object[],
-     *     'total'   => int
-     * )
-     *
      * @param array<mixed> $params
      *
-     * @return array<mixed>
+     * @return array{
+     *     'success': boolean,
+     *     'items': object[],
+     *     'total': int,
+     * }
      */
     public function getResult(array $params): array;
 

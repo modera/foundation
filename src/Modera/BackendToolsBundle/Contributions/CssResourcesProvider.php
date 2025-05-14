@@ -2,12 +2,13 @@
 
 namespace Modera\BackendToolsBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2013 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.css_resources')]
 class CssResourcesProvider implements ContributorInterface
 {
     public function getItems(): array

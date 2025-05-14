@@ -2,14 +2,17 @@
 
 namespace Modera\ServerCrudBundle\DataMapping\MethodInvocation;
 
-use Doctrine\Common\Annotations\Annotation;
-
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
- *
- * @Annotation
  */
-final class Params extends Annotation
+#[\Attribute(\Attribute::TARGET_METHOD)]
+final class Params
 {
+    /**
+     * @param string[] $data
+     */
+    public function __construct(
+        public readonly array $data,
+    ) {
+    }
 }

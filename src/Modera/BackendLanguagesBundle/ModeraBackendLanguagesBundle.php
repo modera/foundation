@@ -8,7 +8,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class ModeraBackendLanguagesBundle extends Bundle implements ExtensionPointsAwareBundleInterface
@@ -34,7 +33,7 @@ class ModeraBackendLanguagesBundle extends Bundle implements ExtensionPointsAwar
     public function getExtensionPointContributions(): array
     {
         return [
-            'modera_mjr_integration.css_resources_provider' => [
+            'modera_mjr_integration.css_resources' => [
                 '/bundles/moderabackendlanguages/css/styles.css',
             ],
         ];

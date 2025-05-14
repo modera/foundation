@@ -8,7 +8,7 @@ defines some sort of extension-points architecture that leverages CompilerPass a
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/expander-bundle:5.x-dev
+composer require modera/expander-bundle:6.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained

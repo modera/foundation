@@ -5,21 +5,19 @@ namespace Modera\BackendTranslationsToolBundle\Filtering\Filter;
 use Modera\BackendTranslationsToolBundle\Filtering\FilterInterface;
 use Modera\ServerCrudBundle\DependencyInjection\ModeraServerCrudExtension;
 use Modera\ServerCrudBundle\Exceptions\BadConfigException;
+use Modera\ServerCrudBundle\Persistence\DoctrineRegistryPersistenceHandler;
 use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
 use Modera\TranslationsBundle\Entity\TranslationToken;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 abstract class AbstractTranslationTokensFilter implements FilterInterface
 {
-    protected ContainerInterface $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        protected readonly ContainerInterface $container,
+    ) {
     }
 
     protected function getPersistenceHandler(): PersistenceHandlerInterface
@@ -29,7 +27,7 @@ abstract class AbstractTranslationTokensFilter implements FilterInterface
             $config = [];
         }
 
-        $serviceId = 'modera_server_crud.persistence.doctrine_registry_handler';
+        $serviceId = DoctrineRegistryPersistenceHandler::class;
         if (isset($config[$serviceType = 'persistence_handler'])) {
             $serviceId = $config[$serviceType];
         }

@@ -2,60 +2,48 @@
 
 namespace Modera\ServerCrudBundle\Tests\Functional\DataMapping;
 
+use Doctrine\ORM\Mapping as ORM;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Modera\ServerCrudBundle\DataMapping\DefaultDataMapper;
-use Doctrine\ORM\Mapping as Orm;
 
-/**
- * @Orm\Entity
- */
+#[ORM\Entity]
 class DummyUser
 {
-    /**
-     * @Orm\Column(type="integer")
-     * @Orm\Id
-     * @Orm\GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public ?int $id = null;
 
-    /**
-     * @Orm\Column(type="string")
-     */
-    public $firstname;
+    #[ORM\Column(type: 'string')]
+    public string $firstname = '';
 
-    /**
-     * @Orm\Column(type="string")
-     */
-    public $lastname;
+    #[ORM\Column(type: 'string')]
+    public string $lastname = '';
 
-    public function setFirstname($firstname)
+    public function setFirstname(string $firstname): void
     {
         $this->firstname = $firstname;
     }
 
-    public function setLastname($lastname)
+    public function setLastname(string $lastname): void
     {
         $this->lastname = $lastname;
     }
 }
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2013 Modera Foundation
- */
 class DefaultDataMapperTest extends FunctionalTestCase
 {
     public function testMapData()
     {
-        /* @var DefaultDataMapper $mapper */
-        $mapper = self::getContainer()->get('modera_server_crud.data_mapping.default_data_mapper');
+        /** @var DefaultDataMapper $mapper */
+        $mapper = self::getContainer()->get(DefaultDataMapper::class);
 
         $this->assertInstanceOf(DefaultDataMapper::class, $mapper);
 
-        $params = array(
+        $params = [
             'firstname' => 'Vassily',
             'lastname' => 'Pupkin',
-        );
+        ];
 
         $user = new DummyUser();
 

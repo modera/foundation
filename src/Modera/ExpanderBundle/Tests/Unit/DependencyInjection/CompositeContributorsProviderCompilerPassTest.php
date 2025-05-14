@@ -8,14 +8,14 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class CompositeContributorsProviderCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
-    public function test__Construct()
+    public function testConstruct(): void
     {
         $cp = new CompositeContributorsProviderCompilerPass('foo');
         $this->assertSame('foo', $cp->getProviderServiceId());
         $this->assertSame('foo', $cp->getContributorServiceTagName());
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $cb = new MockContainerBuilder();
         $cb->services = [
@@ -39,7 +39,7 @@ class CompositeContributorsProviderCompilerPassTest extends \PHPUnit\Framework\T
         $this->assertContributor($calls[1], 'service2bar');
     }
 
-    private function assertContributor(array $methodCall, $refServiceId)
+    private function assertContributor(array $methodCall, $refServiceId): void
     {
         $this->assertEquals(2, \count($methodCall));
         $this->assertEquals('addContributor', $methodCall[0]);

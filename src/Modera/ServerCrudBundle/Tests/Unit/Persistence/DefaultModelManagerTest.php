@@ -4,21 +4,16 @@ namespace Modera\ServerCrudBundle\Tests\Unit\Persistence;
 
 use Modera\ServerCrudBundle\Persistence\DefaultModelManager;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2013 Modera Foundation
- */
 class DefaultModelManagerTest extends \PHPUnit\Framework\TestCase
 {
-    /* @var DefaultModelManager $mgr */
-    private $mgr;
+    private DefaultModelManager $mgr;
 
     public function setUp(): void
     {
         $this->mgr = new DefaultModelManager();
     }
 
-    public function testGenerateModelIdFromEntityClass()
+    public function testGenerateModelIdFromEntityClass(): void
     {
         $this->assertEquals(
             'modera.admin_generator.foo',
@@ -31,7 +26,7 @@ class DefaultModelManagerTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testGenerateEntityClassFromModelId()
+    public function testGenerateEntityClassFromModelId(): void
     {
         $this->assertEquals(
             'Modera\AdminGeneratorBundle\Entity\Foo',

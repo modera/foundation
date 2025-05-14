@@ -1,5 +1,5 @@
 /**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2013 Modera Foundation
  */
 Ext.define('Modera.backend.tools.runtime.Section', {
     extend: 'MF.runtime.Section',

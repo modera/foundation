@@ -3,7 +3,6 @@
 namespace Modera\ServerCrudBundle\QueryBuilder\Parsing;
 
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  */
 class Filters implements \Iterator, \Countable, \ArrayAccess
@@ -164,10 +163,7 @@ class Filters implements \Iterator, \Countable, \ArrayAccess
 
     // Iterator:
 
-    /**
-     * @return Filter|OrFilter
-     */
-    public function current()
+    public function current(): Filter|OrFilter
     {
         return $this->filters[$this->iteratorIndex];
     }
@@ -207,10 +203,7 @@ class Filters implements \Iterator, \Countable, \ArrayAccess
         return isset($this->filters[$offset]);
     }
 
-    /**
-     * @return Filter|OrFilter
-     */
-    public function offsetGet($offset)
+    public function offsetGet($offset): Filter|OrFilter
     {
         return $this->filters[$offset];
     }

@@ -1,5 +1,5 @@
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
+ * @copyright 2014 Modera Foundation
  */
 Ext.define('Modera.backend.translationstool.toolscontribution.runtime.EditTranslationWindowActivity', {
     extend: 'MF.activation.activities.AbstractActivity',

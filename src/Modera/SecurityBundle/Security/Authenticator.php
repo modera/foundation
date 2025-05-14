@@ -19,7 +19,6 @@ use Symfony\Component\Security\Http\HttpUtils;
 /**
  * @internal
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class Authenticator implements AuthenticationFailureHandlerInterface, AuthenticationSuccessHandlerInterface
@@ -31,7 +30,7 @@ class Authenticator implements AuthenticationFailureHandlerInterface, Authentica
     public function __construct(
         HttpUtils $httpUtils,
         HttpKernelInterface $httpKernel,
-        ?LoggerInterface $logger = null
+        ?LoggerInterface $logger = null,
     ) {
         $this->successHandler = new DefaultAuthenticationSuccessHandler($httpUtils);
         $this->failureHandler = new DefaultAuthenticationFailureHandler($httpKernel, $httpUtils, [], $logger);

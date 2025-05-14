@@ -4,6 +4,7 @@ namespace Modera\BackendSecurityBundle\Contributions;
 
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\BackendToolsBundle\Section\Section;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -11,21 +12,19 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 /**
  * Contributes a section to Backend/Tools.
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_backend_tools.sections')]
 class ToolsSectionsProvider implements ContributorInterface
 {
-    private AuthorizationCheckerInterface $authorizationChecker;
-
     /**
      * @var Section[]
      */
     private ?array $items = null;
 
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
-    {
-        $this->authorizationChecker = $authorizationChecker;
+    public function __construct(
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+    ) {
     }
 
     public function getItems(): array
@@ -40,7 +39,7 @@ class ToolsSectionsProvider implements ContributorInterface
                     T::trans('Control permissions of users/groups.'),
                     '',
                     '',
-                    'modera-backend-security-tools-icon'
+                    'modera-backend-security-tools-icon',
                 );
             }
         }

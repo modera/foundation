@@ -2,26 +2,21 @@
 
 namespace Modera\MJRThemeIntegrationBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
-use Modera\MJRThemeIntegrationBundle\DependencyInjection\ModeraMJRThemeIntegrationExtension;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.js_resources')]
 class JsResourcesProvider implements ContributorInterface
 {
     /**
-     * @var array{'theme_path': string}
+     * @param array{'theme_path': string} $themeIntegrationConfig
      */
-    private array $themeIntegrationConfig;
-
-    public function __construct(ContainerInterface $container)
-    {
-        /** @var array{'theme_path': string} $themeIntegrationConfig */
-        $themeIntegrationConfig = $container->getParameter(ModeraMJRThemeIntegrationExtension::CONFIG_KEY);
-        $this->themeIntegrationConfig = $themeIntegrationConfig;
+    public function __construct(
+        private readonly array $themeIntegrationConfig,
+    ) {
     }
 
     public function getItems(): array

@@ -8,22 +8,15 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
 
 /**
  * @internal
- *
- * @author Sergei Lissovski <sergei.lissovski@gmail.org>
  */
 class OwnerRelationMappingListener
 {
     /**
-     * @var array{'owner_entity': string}
-     */
-    private array $semanticConfig;
-
-    /**
      * @param array{'owner_entity': string} $semanticConfig
      */
-    public function __construct(array $semanticConfig)
-    {
-        $this->semanticConfig = $semanticConfig;
+    public function __construct(
+        private readonly array $semanticConfig,
+    ) {
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $args): void

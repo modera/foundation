@@ -1,5 +1,5 @@
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
+ * @copyright 2014 Modera Foundation
  */
 Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow', {
     extend: 'MFC.window.NewAndEditRecordWindow',
@@ -22,9 +22,9 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.PasswordWindow',
     passwordRotationNeededText: 'It has been a while since you have changed your password last time, for keeping your account secure please change it now.',
 
     newUser: false,
-    passwordRotation: false, // since 2.56.0
-    hideSendPassword: false, // since 2.56.0
-    hideGeneratePassword: false, // since 2.56.0
+    passwordRotation: false,
+    hideSendPassword: false,
+    hideGeneratePassword: false,
 
     // override
     constructor: function(config) {

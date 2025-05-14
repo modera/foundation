@@ -3,7 +3,6 @@
 namespace Modera\SecurityBundle\PasswordStrength;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2017 Modera Foundation
  */
 class SemanticPasswordConfig implements PasswordConfigInterface
@@ -16,8 +15,9 @@ class SemanticPasswordConfig implements PasswordConfigInterface
     /**
      * @param array<string, mixed> $bundleSemanticConfig
      */
-    public function __construct(array $bundleSemanticConfig)
-    {
+    public function __construct(
+        array $bundleSemanticConfig,
+    ) {
         /** @var array<string, mixed> $semanticConfig */
         $semanticConfig = $bundleSemanticConfig['password_strength'];
         $this->semanticConfig = $semanticConfig;

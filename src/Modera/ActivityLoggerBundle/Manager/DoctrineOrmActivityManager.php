@@ -10,18 +10,14 @@ use Psr\Log\AbstractLogger;
 /**
  * This implementation uses Doctrine's ORM to store activities to database.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class DoctrineOrmActivityManager extends AbstractLogger implements ActivityManagerInterface
 {
-    private EntityManagerInterface $om;
-    private ArrayQueryBuilder $queryBuilder;
-
-    public function __construct(EntityManagerInterface $om, ArrayQueryBuilder $queryBuilder)
-    {
-        $this->om = $om;
-        $this->queryBuilder = $queryBuilder;
+    public function __construct(
+        private readonly EntityManagerInterface $om,
+        private readonly ArrayQueryBuilder $queryBuilder,
+    ) {
     }
 
     protected function createActivity(): Activity
@@ -29,7 +25,7 @@ class DoctrineOrmActivityManager extends AbstractLogger implements ActivityManag
         return new Activity();
     }
 
-    public function log($level, $message, array $context = []): void
+    public function log(mixed $level, string|\Stringable $message, array $context = []): void
     {
         $activity = $this->createActivity();
         $activity->setMessage($message);
@@ -38,16 +34,18 @@ class DoctrineOrmActivityManager extends AbstractLogger implements ActivityManag
             $activity->setLevel($level);
         }
 
-        if (isset($context['author']) && \is_string($context['author'])) {
-            $activity->setAuthor($context['author']);
+        if (isset($context['author']) && (\is_string($context['author']) || \is_int($context['author']))) {
+            $activity->setAuthor((string) $context['author']);
         }
 
         if (isset($context['type']) && \is_string($context['type'])) {
             $activity->setType($context['type']);
         }
 
-        if (isset($context['meta']) && \is_array($context)) {
-            $activity->setMeta($context['meta']);
+        if (isset($context['meta']) && \is_array($context['meta'])) {
+            /** @var array<string, mixed> $meta */
+            $meta = $context['meta'];
+            $activity->setMeta($meta);
         }
 
         $this->om->persist($activity);

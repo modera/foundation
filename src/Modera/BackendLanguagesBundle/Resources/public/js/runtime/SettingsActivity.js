@@ -1,5 +1,5 @@
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
+ * @copyright 2018 Modera Foundation
  */
 Ext.define('Modera.backend.languages.runtime.SettingsActivity', {
     extend: 'Modera.backend.languages.runtime.ListActivity',
@@ -9,7 +9,6 @@ Ext.define('Modera.backend.languages.runtime.SettingsActivity', {
         return 'settings';
     },
 
-    // TODO: MPFE-819
     handleAction: function(actionName, sourceComponent, params) {
         var me = this;
 

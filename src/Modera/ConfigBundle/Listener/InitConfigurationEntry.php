@@ -2,7 +2,7 @@
 
 namespace Modera\ConfigBundle\Listener;
 
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -11,16 +11,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @internal
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class InitConfigurationEntry
 {
-    private ContainerInterface $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        private readonly ContainerInterface $container,
+    ) {
     }
 
     public function postLoad(ConfigurationEntry $entity, LifecycleEventArgs $args): void

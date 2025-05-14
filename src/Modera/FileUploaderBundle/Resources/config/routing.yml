@@ -1,4 +1,0 @@
-modera_file_uploader:
-    resource: "@ModeraFileUploaderBundle/Controller/"
-    type:     annotation
-    prefix:   /

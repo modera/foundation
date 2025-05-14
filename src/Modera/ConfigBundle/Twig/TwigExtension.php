@@ -11,16 +11,13 @@ use Twig\TwigFunction;
  *
  * @private
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class TwigExtension extends AbstractExtension
 {
-    private ConfigurationEntriesManagerInterface $configEntriesManager;
-
-    public function __construct(ConfigurationEntriesManagerInterface $configEntriesManager)
-    {
-        $this->configEntriesManager = $configEntriesManager;
+    public function __construct(
+        private readonly ConfigurationEntriesManagerInterface $configEntriesManager,
+    ) {
     }
 
     public function getName(): string
@@ -43,20 +40,16 @@ class TwigExtension extends AbstractExtension
      *
      * @param string $propertyName "name" of ConfigurationEntry
      * @param bool   $strict       If FALSE is given and property is not found then no exception will be thrown
-     *
-     * @return mixed|null
      */
-    public function twigModeraConfigValue(string $propertyName, bool $strict = true)
+    public function twigModeraConfigValue(string $propertyName, bool $strict = true): mixed
     {
         return $this->getModeraConfigOwnerValue($propertyName, null, $strict);
     }
 
     /**
      * @private
-     *
-     * @return mixed|null
      */
-    public function getModeraConfigOwnerValue(string $propertyName, ?object $owner = null, bool $strict = true)
+    public function getModeraConfigOwnerValue(string $propertyName, ?object $owner = null, bool $strict = true): mixed
     {
         $mgr = $this->configEntriesManager;
 
@@ -65,7 +58,7 @@ class TwigExtension extends AbstractExtension
         } else {
             $property = $mgr->findOneByName($propertyName, $owner);
 
-            return $property ? $property->getValue() : null;
+            return $property?->getValue();
         }
     }
 }

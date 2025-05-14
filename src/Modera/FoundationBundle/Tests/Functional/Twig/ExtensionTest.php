@@ -2,28 +2,25 @@
 
 namespace Modera\FoundationBundle\Tests\Functional\Twig;
 
-use Modera\FoundationBundle\Twig\Extension;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
+use Modera\FoundationBundle\Twig\Extension;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2013 Modera Foundation
- */
 class ExtensionTest extends FunctionalTestCase
 {
-    public function testHasExtension()
+    public function testHasExtension(): void
     {
-        /* @var \Twig\Environment $twig */
+        /** @var \Twig\Environment $twig */
         $twig = self::getContainer()->get('twig');
 
         $this->assertTrue($twig->hasExtension(Extension::class));
     }
 
-    public function testHasFilters()
+    public function testHasFilters(): void
     {
-        /* @var \Twig\Environment $twig */
+        /** @var \Twig\Environment $twig */
         $twig = self::getContainer()->get('twig');
 
         $this->assertInstanceOf('Twig\TwigFilter', $twig->getFilter('mf_prepend_every_line'));
+        $this->assertInstanceOf('Twig\TwigFilter', $twig->getFilter('mf_modification_time'));
     }
 }

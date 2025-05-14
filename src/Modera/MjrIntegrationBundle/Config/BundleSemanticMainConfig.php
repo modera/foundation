@@ -2,29 +2,21 @@
 
 namespace Modera\MjrIntegrationBundle\Config;
 
-use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
  * This implementation will read config from bundle's semantic config.
  *
  * @see \Modera\MjrIntegrationBundle\DependencyInjection\Configuration
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class BundleSemanticMainConfig implements MainConfigInterface
 {
     /**
-     * @var array{'deployment_name'?: string, 'deployment_url'?: string, 'home_section': string}
+     * @param array{'deployment_name'?: string, 'deployment_url'?: string, 'home_section': string} $config
      */
-    private array $config;
-
-    public function __construct(ContainerInterface $container)
-    {
-        /** @var array{'deployment_name'?: string, 'deployment_url'?: string, 'home_section': string} $config */
-        $config = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
-        $this->config = $config;
+    public function __construct(
+        private readonly array $config,
+    ) {
     }
 
     public function getTitle(): ?string

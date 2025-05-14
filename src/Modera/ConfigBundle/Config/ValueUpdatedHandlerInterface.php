@@ -6,7 +6,6 @@ namespace Modera\ConfigBundle\Config;
  * Implementations of this interface will have a chance to do some additional processing when configuration entry
  * is updated.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 interface ValueUpdatedHandlerInterface

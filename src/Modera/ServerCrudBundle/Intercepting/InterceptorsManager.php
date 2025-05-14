@@ -8,16 +8,13 @@ use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 /**
  * Handles interceptors invoking process.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class InterceptorsManager
 {
-    private ContributorInterface $interceptorsProvider;
-
-    public function __construct(ContributorInterface $interceptorsProvider)
-    {
-        $this->interceptorsProvider = $interceptorsProvider;
+    public function __construct(
+        private readonly ContributorInterface $interceptorsProvider,
+    ) {
     }
 
     /**

@@ -19,7 +19,7 @@ class ExpressionManagerTest extends AbstractTestCase
         $this->exprMgr = new ExpressionManager(DummyUser::class, self::$em);
     }
 
-    public function testIsValidExpression()
+    public function testIsValidExpression(): void
     {
         $this->assertTrue($this->exprMgr->isValidExpression('address.zip'));
         $this->assertTrue($this->exprMgr->isValidExpression('address.street'));
@@ -31,27 +31,26 @@ class ExpressionManagerTest extends AbstractTestCase
         $this->assertFalse($this->exprMgr->isValidExpression('bar'));
     }
 
-    public function testResolveUnexistingAlias()
+    public function testResolveUnexistingAlias(): void
     {
         $this->assertNull($this->exprMgr->resolveAliasToExpression('jx'));
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testAllocateAliasForNotExistingAssociation()
+    public function testAllocateAliasForNotExistingAssociation(): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->exprMgr->allocateAlias('address.foo');
     }
 
-    public function testAllocateAliasAndThenResolveAliasToExpression()
+    public function testAllocateAliasAndThenResolveAliasToExpression(): void
     {
         $alias = $this->exprMgr->allocateAlias('address.country');
         $this->assertNotNull($alias);
         $this->assertSame('address.country', $this->exprMgr->resolveAliasToExpression($alias));
     }
 
-    public function testAllocateSeveralAliasesWhichShareTheSameRoot()
+    public function testAllocateSeveralAliasesWhichShareTheSameRoot(): void
     {
         $countryAlias = $this->exprMgr->allocateAlias('address.country');
         $this->assertNotNull($countryAlias);
@@ -60,29 +59,25 @@ class ExpressionManagerTest extends AbstractTestCase
         $this->assertNotNull($capitalAlias);
 
         $aliases = $this->exprMgr->getAllocatedAliasMap();
-        $aliasesWitNoDuplicates = array_unique($aliases);
+        $aliasesWitNoDuplicates = \array_unique($aliases);
 
         $addressAlias = $this->exprMgr->allocateAlias('address');
         $this->assertNotNull($addressAlias);
 
-        $this->assertEquals(count($aliases), count($aliasesWitNoDuplicates));
+        $this->assertEquals(\count($aliases), \count($aliasesWitNoDuplicates));
     }
 
-    public function testGetDqlPropertyName()
+    public function testGetDqlPropertyName(): void
     {
         $this->assertEquals('e.firstname', $this->exprMgr->getDqlPropertyName('firstname'));
         $this->assertEquals('j1.name', $this->exprMgr->getDqlPropertyName('address.country.name'));
         $this->assertEquals('j0.zip', $this->exprMgr->getDqlPropertyName('address.zip'));
     }
 
-    /**
-     * @group joining
-     */
-    public function testInjectJoins()
+    public function testInjectJoins(): void
     {
         $qb = self::$em->createQueryBuilder();
-        $qb->select('e')
-           ->from(DummyUser::class, 'e');
+        $qb->select('e')->from(DummyUser::class, 'e');
 
         $addressCountryNameAlias = $this->exprMgr->getDqlPropertyName('address.country.name');
         $this->assertNotNull($addressCountryNameAlias);
@@ -92,42 +87,38 @@ class ExpressionManagerTest extends AbstractTestCase
         $dqlParts = $qb->getDQLParts();
 
         $this->assertArrayHasKey('e', $dqlParts['join']);
-        $this->assertEquals(2, count($dqlParts['join']['e']));
-        $this->assertEquals(3, count($dqlParts['select']));
+        $this->assertEquals(2, \count($dqlParts['join']['e']));
+        $this->assertEquals(3, \count($dqlParts['select']));
 
-        $injectedFetchAliases = array();
+        $injectedFetchAliases = [];
         foreach ($dqlParts['select'] as $select) {
-            $injectedFetchAliases[] = (string)$select;
-        };
+            $injectedFetchAliases[] = (string) $select;
+        }
 
         $this->assertTrue(
-            in_array($this->exprMgr->resolveExpressionToAlias('address'), $injectedFetchAliases)
+            \in_array($this->exprMgr->resolveExpressionToAlias('address'), $injectedFetchAliases)
         );
         $this->assertTrue(
-            in_array($this->exprMgr->resolveExpressionToAlias('address.country'), $injectedFetchAliases)
+            \in_array($this->exprMgr->resolveExpressionToAlias('address.country'), $injectedFetchAliases)
         );
     }
 
-    public function testInjectJoinsWhenNoFetchingIsUsed()
+    public function testInjectJoinsWhenNoFetchingIsUsed(): void
     {
         $qb = self::$em->createQueryBuilder();
-        $qb->select('e')
-            ->from(DummyUser::class, 'e');
+        $qb->select('e')->from(DummyUser::class, 'e');
 
         $this->exprMgr->getDqlPropertyName('address.country.name');
         $this->exprMgr->injectJoins($qb, false);
 
         $dqlParts = $qb->getDQLParts();
 
-        $this->assertEquals(2, count($dqlParts['join']['e']));
-        $this->assertEquals(1, count($dqlParts['select']));
-        $this->assertEquals($this->exprMgr->getRootAlias(), (string)$dqlParts['select'][0]);
+        $this->assertEquals(2, \count($dqlParts['join']['e']));
+        $this->assertEquals(1, \count($dqlParts['select']));
+        $this->assertEquals($this->exprMgr->getRootAlias(), (string) $dqlParts['select'][0]);
     }
 
-    /**
-     * @group MPFE-839
-     */
-    public function testInjectJoinsWithOneSegment()
+    public function testInjectJoinsWithOneSegment(): void
     {
         $qb = self::$em->createQueryBuilder();
         $qb->select('e')->from(DummyUser::class, 'e');
@@ -138,61 +129,60 @@ class ExpressionManagerTest extends AbstractTestCase
 
         $dqlParts = $qb->getDQLParts();
 
-        $this->assertEquals(2, count($dqlParts['join']['e']));
-        $this->assertEquals(1, count($dqlParts['select']));
-        $this->assertEquals($this->exprMgr->getRootAlias(), (string)$dqlParts['select'][0]);
+        $this->assertEquals(2, \count($dqlParts['join']['e']));
+        $this->assertEquals(1, \count($dqlParts['select']));
+        $this->assertEquals($this->exprMgr->getRootAlias(), (string) $dqlParts['select'][0]);
 
-        /* @var Join $ccJoin */
+        /** @var Join $ccJoin */
         $ccJoin = $dqlParts['join']['e'][1];
 
-        $this->assertNotEquals('.', substr($ccJoin->getJoin(), 0, 1));
+        $this->assertNotEquals('.', \substr($ccJoin->getJoin(), 0, 1));
     }
 
-    public function testInjectFetchJoins()
+    public function testInjectFetchJoins(): void
     {
         $qb = self::$em->createQueryBuilder();
-        $qb->select('e')
-            ->from(DummyUser::class, 'e');
+        $qb->select('e')->from(DummyUser::class, 'e');
 
-        $this->exprMgr->injectFetchSelects($qb, array(new Expression('address.country')));
+        $this->exprMgr->injectFetchSelects($qb, [new Expression('address.country')]);
 
         $dqlParts = $qb->getDQLParts();
 
-        $this->assertEquals(3, count($dqlParts['select']));
-        $this->assertEquals(1, count($dqlParts['join']));
+        $this->assertEquals(3, \count($dqlParts['select']));
+        $this->assertEquals(1, \count($dqlParts['join']));
         $this->assertArrayHasKey($this->exprMgr->getRootAlias(), $dqlParts['join']);
-        $this->assertEquals(2, count($dqlParts['join']['e']));
+        $this->assertEquals(2, \count($dqlParts['join']['e']));
     }
 
-    public function testGetMapping()
+    public function testGetMapping(): void
     {
         $addressMapping = $this->exprMgr->getMapping('address');
-        $addressCountry  = $this->exprMgr->getMapping('address.country');
+        $addressCountry = $this->exprMgr->getMapping('address.country');
         $addressZip = $this->exprMgr->getMapping('address.zip');
         $firstname = $this->exprMgr->getMapping('firstname');
 
         $this->assertNotNull($addressMapping);
-        $this->assertTrue(is_array($addressMapping));
+        $this->assertTrue(\is_array($addressMapping));
         $this->assertArrayHasKey('targetEntity', $addressMapping);
         $this->assertEquals(DummyAddress::class, $addressMapping['targetEntity']);
 
         $this->assertNotNull($addressCountry);
-        $this->assertTrue(is_array($addressCountry));
+        $this->assertTrue(\is_array($addressCountry));
         $this->assertArrayHasKey('targetEntity', $addressCountry);
         $this->assertEquals(DummyCountry::class, $addressCountry['targetEntity']);
 
         $this->assertNotNull($addressZip);
-        $this->assertTrue(is_array($addressZip));
+        $this->assertTrue(\is_array($addressZip));
         $this->assertArrayHasKey('fieldName', $addressZip);
         $this->assertEquals('zip', $addressZip['fieldName']);
 
         $this->assertNotNull($firstname);
-        $this->assertTrue(is_array($firstname));
+        $this->assertTrue(\is_array($firstname));
         $this->assertArrayHasKey('fieldName', $firstname);
         $this->assertEquals('firstname', $firstname['fieldName']);
     }
 
-    public function testIsAssociation()
+    public function testIsAssociation(): void
     {
         $this->assertTrue($this->exprMgr->isAssociation('address'));
         $this->assertTrue($this->exprMgr->isAssociation('address.country'));

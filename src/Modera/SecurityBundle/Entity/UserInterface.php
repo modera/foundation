@@ -9,14 +9,11 @@ use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterfac
 use Symfony\Component\Security\Core\User\UserInterface as SymfonyUserInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2022 Modera Foundation
  */
 interface UserInterface extends EquatableInterface, PasswordAuthenticatedUserInterface, SymfonyUserInterface, ModeraUserInterface
 {
     public function getId(): ?int;
-
-    public function isActive(): bool;
 
     public function setActive(bool $isActive): void;
 

@@ -12,7 +12,7 @@
 set -eu
 
 is_daemon=false
-php_version=7.4
+php_version=8.1
 
 for i in "$@"; do
 case $i in
@@ -38,27 +38,27 @@ if ! type docker > /dev/null; then
 fi
 
 if [ ! -d "vendor" ]; then
-  echo "# No vendor dir detected, installing dependencies first then"
+    echo "# No vendor dir detected, installing dependencies first then"
 
-  docker run \
-      -it \
-      --rm \
-      -w /mnt/tmp \
-      -v `pwd`:/mnt/tmp \
-      -e COMPOSER_MEMORY_LIMIT=-1 \
-      modera/php:${php_version} "composer install"
+    docker run \
+        -it \
+        --rm \
+        -w /mnt/tmp \
+        -v `pwd`:/mnt/tmp \
+        -e COMPOSER_MEMORY_LIMIT=-1 \
+        modera/php:${php_version} "composer install"
 fi
 
 if [[ `docker ps` != *"mtr_mysql"* ]]; then
-  if [ "$is_daemon" = true ] ; then
-    echo "# Starting database for functional tests (as daemon)"
-  else
-    echo "# Starting database for functional tests"
-  fi
+    if [ "$is_daemon" = true ] ; then
+      echo "# Starting database for functional tests (as daemon)"
+    else
+      echo "# Starting database for functional tests"
+    fi
 
-  docker run -d -e MYSQL_ROOT_PASSWORD=123123 --name mtr_mysql mysql:5 > /dev/null
+    docker run -d -e MYSQL_ROOT_PASSWORD=123123 --name mtr_mysql mysql:5 > /dev/null
 else
-  echo "# MySQL container is already running, reusing it"
+    echo "# MySQL container is already running, reusing it"
 fi
 
 echo ""
@@ -76,7 +76,7 @@ docker run \
 exit_code=$?
 
 if [ "$is_daemon" = false ] ; then
-  docker rm -fv mtr_mysql > /dev/null
+    docker rm -fv mtr_mysql > /dev/null
 fi
 
 exit $exit_code

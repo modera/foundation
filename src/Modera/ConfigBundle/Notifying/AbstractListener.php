@@ -7,7 +7,6 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
 /**
  * By extending this class you prevent to overwrite your class, if new method added.
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2021 Modera Foundation
  */
 abstract class AbstractListener implements ListenerInterface

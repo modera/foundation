@@ -3,7 +3,6 @@
 namespace Modera\DynamicallyConfigurableAppBundle;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2018 Modera Foundation
  */
 interface KernelConfigInterface

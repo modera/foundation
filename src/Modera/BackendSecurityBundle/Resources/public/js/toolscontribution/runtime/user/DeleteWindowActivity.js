@@ -1,5 +1,5 @@
 /**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2014 Modera Foundation
  */
 Ext.define('Modera.backend.security.toolscontribution.runtime.user.DeleteWindowActivity', {
     extend: 'MF.activation.activities.BasicDeleteRecordWindowActivity',

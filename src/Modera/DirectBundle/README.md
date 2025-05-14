@@ -7,7 +7,7 @@ ModeraDirectBundle is an implementation of ExtDirect specification to Symfony fr
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/direct-bundle:5.x-dev
+composer require modera/direct-bundle:6.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -35,7 +35,7 @@ return [
 // config/routes.yaml
 
 direct:
-    resource: "@ModeraDirectBundle/Resources/config/routing.yml"
+    resource: '@ModeraDirectBundle/Resources/config/routing.yaml'
 ```
 
 ## How to use
@@ -63,32 +63,29 @@ Or if you are not using a template engine:
 namespace Acme\DemoBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Modera\DirectBundle\Annotation\Remote;
-use Modera\DirectBundle\Annotation\Form;
 
 class ExampleController extends AbstractController
 {
    /**
     * Single exposed method.
     *
-    * @Remote    // this annotation expose the method to API
+    * @Remote // this annotation expose the method to API
     *
-    * @param  array $params
-    * @return string
+    * @param array<string, mixed> $params
     */
-    public function indexAction(array $params)
+    public function indexAction(array $params): string
     {
-        return 'Hello ' . $params['name'];
+        return 'Hello '.$params['name'];
     }
 
     /**
      * An action to handle forms.
      *
-     * @Remote   // this annotation expose the method to API
-     * @Form     // this annotation expose the method to API with formHandler option
+     * @Remote // this annotation expose the method to API
+     * @Form   // this annotation expose the method to API with formHandler option
      *
-     * @param array $params Form submitted values
-     * @param array $files  Uploaded files like $_FILES
+     * @param array<string, mixed> $params Form submitted values
+     * @param array<mixed> $files Uploaded files like $_FILES
      */
     public function testFormAction(array $params, array $files)
     {

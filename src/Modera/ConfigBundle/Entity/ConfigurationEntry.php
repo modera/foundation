@@ -13,21 +13,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Do not rely on methods exposed by this class outside this bundle, instead use methods declared by
  * {@class ConfigurationEntryInterface}.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
- *
- * @ORM\Entity
- *
- * @ORM\Table(
- *     name="modera_config_configurationproperty",
- *     indexes={
- *
- *         @ORM\Index(name="name_idx", columns={"name"})
- *     }
- * )
- *
- * @ORM\HasLifecycleCallbacks
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'modera_config_configurationproperty')]
+#[ORM\Index(name: 'name_idx', columns: ['name'])]
+#[ORM\HasLifecycleCallbacks]
 class ConfigurationEntry implements ConfigurationEntryInterface
 {
     public const TYPE_STRING = 0;
@@ -49,34 +40,27 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         self::TYPE_BOOL => 'bool',
     ];
 
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @ORM\Id
-     *
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     /**
      * Technical name that you will use in your code to reference this configuration entry.
-     *
-     * @ORM\Column(type="string")
      */
-    private ?string $name = null;
+    #[ORM\Column(type: 'string')]
+    private string $name;
 
     /**
      * User understandable name for this configuration-entry.
-     *
-     * @ORM\Column(type="string", nullable=true)
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $readableName = null;
 
     /**
      * Optional name of category this configuration property should belong to.
-     *
-     * @ORM\Column(type="string", nullable=true)
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $category = null;
 
     /**
@@ -90,86 +74,65 @@ class ConfigurationEntry implements ConfigurationEntryInterface
      *  * update_handler  -- DI service ID that implements {@class ValueUpdatedHandlerInterface} that must be invoked
      *                       when configuration entry is updated
      * * handler -- DI service ID of a class that implements {@class \Modera\ConfigBundle\Config\HandlerInterface}
-     *
-     * @ORM\Column(type="json")
      */
+    #[ORM\Column(type: 'json')]
     private array $serverHandlerConfig = [];
 
     /**
      * @var array<mixed>
      *
      * Optional configuration that will be used on client-side ( frontend ) to configure editor for this configuration entry
-     *
-     * @ORM\Column(type="json")
      */
+    #[ORM\Column(type: 'json')]
     private array $clientHandlerConfig = [];
 
-    /**
-     * @ORM\Column(type="string")
-     */
-    private ?string $savedAs = null;
+    #[ORM\Column(type: 'string')]
+    private string $savedAs = '';
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $stringValue = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $textValue = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $intValue = null;
 
-    /**
-     * @ORM\Column(type="decimal", precision=20, scale=4, nullable=true)
-     */
+    #[ORM\Column(type: 'decimal', precision: 20, scale: 4, nullable: true)]
     private ?string $floatValue = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $boolValue = null;
 
     /**
-     * @var array<mixed>
-     *
-     * @ORM\Column(type="json")
+     * @var ?array<mixed>
      */
-    private ?array $arrayValue = [];
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $arrayValue = null;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
     private ?ContainerInterface $container = null;
 
     /**
      * Only those configuration properties will be shown in UI which have this property set to TRUE.
-     *
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private bool $isExposed = true;
 
     /**
      * We won't allow to edit configuration properties whose isReadOnly field is set to FALSE.
-     *
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private bool $isReadOnly = false;
 
     /**
      * Field is mapped dynamically if modera_config/owner_entity is defined.
      *
      * @see OwnerRelationMappingListener
-     *
-     * @var mixed Mixed value
      */
-    private $owner;
+    private ?object $owner = null;
 
     public function __construct(string $name)
     {
@@ -200,19 +163,6 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         return $this->container;
     }
 
-    /**
-     * @deprecated Use native ::class property
-     */
-    public static function clazz(): string
-    {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated. Use native ::class property.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return \get_called_class();
-    }
-
     public function setExposed(bool $isExposed): void
     {
         $this->isExposed = $isExposed;
@@ -240,11 +190,9 @@ class ConfigurationEntry implements ConfigurationEntryInterface
 
     /**
      * @private
-     *
-     * @ORM\PrePersist
-     *
-     * @ORM\PreUpdate
      */
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
     public function updateUpdatedAt(): void
     {
         if (null !== $this->id) {
@@ -252,9 +200,7 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         }
     }
 
-    /**
-     * @ORM\PreUpdate
-     */
+    #[ORM\PreUpdate]
     public function invokeUpdateHandler(): void
     {
         if ($this->getContainer() && \is_string($this->serverHandlerConfig['update_handler'] ?? null)) {
@@ -264,14 +210,11 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         }
     }
 
-    /**
-     * @ORM\PrePersist
-     *
-     * @ORM\PreUpdate
-     */
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
     public function validate(): void
     {
-        if (null === $this->getSavedAs()) {
+        if (!\strlen($this->getSavedAs())) {
             throw new \DomainException(\sprintf('ConfigurationProperty "%s" is not fully configured ( did you set a value for it ? )', $this->getName()));
         }
     }
@@ -303,7 +246,7 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         return $handler;
     }
 
-    public function setDenormalizedValue($value): int
+    public function setDenormalizedValue(mixed $value): int
     {
         $this->{$this->getStorageFieldNameFromValue($value)} = $value;
         $this->savedAs = (string) $this->getFieldType($value);
@@ -311,7 +254,7 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         return (int) $this->savedAs;
     }
 
-    public function getDenormalizedValue()
+    public function getDenormalizedValue(): mixed
     {
         if (!isset(self::$fieldsMapping[$this->getSavedAs()])) {
             throw new \RuntimeException(\sprintf('Unable to resolve storage type "%s" for configuration-entry "%s"', $this->getSavedAs(), $this->getName()));
@@ -330,7 +273,7 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         return $result;
     }
 
-    public function setValue($value)
+    public function setValue(mixed $value): mixed
     {
         $this->reset();
 
@@ -341,7 +284,7 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         return $this->setDenormalizedValue($value);
     }
 
-    public function getValue()
+    public function getValue(): mixed
     {
         if ($this->hasServerHandler()) {
             return $this->getHandler()->getValue($this);
@@ -350,7 +293,7 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         }
     }
 
-    public function getReadableValue()
+    public function getReadableValue(): mixed
     {
         if ($this->hasServerHandler()) {
             return $this->getHandler()->getReadableValue($this);
@@ -367,7 +310,6 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         foreach (self::$fieldsMapping as $type => $name) {
             $this->{$name.'Value'} = null;
         }
-        $this->arrayValue = [];
     }
 
     /**
@@ -418,10 +360,10 @@ class ConfigurationEntry implements ConfigurationEntryInterface
 
     public function getName(): string
     {
-        return $this->name ?? '';
+        return $this->name;
     }
 
-    public function getSavedAs(): ?string
+    public function getSavedAs(): string
     {
         return $this->savedAs;
     }
@@ -478,18 +420,12 @@ class ConfigurationEntry implements ConfigurationEntryInterface
         return $this->category;
     }
 
-    /**
-     * @return mixed Mixed value
-     */
-    public function getOwner()
+    public function getOwner(): ?object
     {
         return $this->owner;
     }
 
-    /**
-     * @param mixed $owner Mixed value
-     */
-    public function setOwner($owner): void
+    public function setOwner(?object $owner): void
     {
         $this->owner = $owner;
     }

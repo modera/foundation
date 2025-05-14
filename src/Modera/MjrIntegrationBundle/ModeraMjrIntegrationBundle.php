@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 /**
  * Bundle ships basic utilities which simplify integration of Modera JavaScript runtime ( MJR ).
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class ModeraMjrIntegrationBundle extends Bundle
@@ -62,20 +61,20 @@ This extension point allows you to contribute new menu items to backend section.
 also have an option to define a namespace/path mapping that will be used to configure extjs class loader. Typical
 menu item contribution could look like this:
 
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Menu\MenuItem;
 use Modera\MjrIntegrationBundle\Menu\MenuItemInterface;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
-use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class MenuItemsProvider implements ContributorInterface
 {
     public function getItems(): array
     {
         return [
-            new MenuItem('Dashboard', 'Modera.backend.dashboard.runtime.Section', 'dashboard', [
-                MenuItemInterface::META_NAMESPACE => 'Modera.backend.dashboard',
-                MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackenddashboard/js',
-            ], FontAwesome::resolve('cog', 'fas')),
+            new MenuItem('Welcome', 'App.welcome.runtime.Section', 'welcome', [
+                MenuItemInterface::META_NAMESPACE => 'App.welcome',
+                MenuItemInterface::META_NAMESPACE_PATH => '/app/welcome/js',
+            ], FontAwesome::resolve('symfony', 'fab')),
         ];
     }
 }
@@ -100,8 +99,8 @@ class ClientDiServiceDefinitionsProvider implements ContributorInterface
     public function getItems(): array
     {
         return [
-            'modera_backend_dashboard.user_dashboard_settings_window_contributor' => [
-                'className' => 'Modera.backend.dashboard.runtime.UserDashboardSettingsWindowContributor',
+            'app.welcome.window_contributor' => [
+                'className' => 'App.welcome.runtime.WindowContributor',
                 'args' => ['@application'],
                 'tags' => ['shared_activities_provider'],
             ],
@@ -119,17 +118,17 @@ Allows to contribute new sections ( implementations of MJR's MF.runtime.Section 
 when you need a place where you can play with your activities but don't want to contribute a separate menu-item. Optionally
 you can configure extjs-class loader. This is how contribution could look like:
 
-use Modera\MjrIntegrationBundle\Sections\Section;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\MjrIntegrationBundle\Sections\Section;
 
 class SectionsProvider implements ContributorInterface
 {
     public function getItems(): array
     {
         return [
-            new Section('tools.modules', 'Modera.backend.module.toolscontribution.runtime.Section', [
-                Section::META_NAMESPACE => 'Modera.backend.module',
-                Section::META_NAMESPACE_PATH => '/bundles/moderabackendmodule/js',
+            new Section('tools', 'App.tools.runtime.Section', [
+                Section::META_NAMESPACE => 'App.tools',
+                Section::META_NAMESPACE_PATH => '/app/tools/js',
             ])
         ];
     }
@@ -152,7 +151,7 @@ class CssResourcesProvider implements ContributorInterface
     public function getItems(): array
     {
         return [
-            '/bundles/moderabackendmodule/css/styles.css',
+            '/app/tools/css/styles.css',
         ];
     }
 }
@@ -173,7 +172,7 @@ class ClassLoaderMappingsProvider implements ContributorInterface
     public function getItems(): array
     {
         return [
-            'Modera.backend.configutils' => '/bundles/moderabackendconfigutils/js',
+            'App.settings' => '/app/settings/js',
         ];
     }
 }

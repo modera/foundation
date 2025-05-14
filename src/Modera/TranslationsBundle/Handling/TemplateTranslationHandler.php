@@ -10,34 +10,21 @@ use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\MessageCatalogueInterface;
-use Symfony\Component\Translation\Reader\TranslationReader;
+use Symfony\Component\Translation\Reader\TranslationReaderInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class TemplateTranslationHandler implements TranslationHandlerInterface
 {
     public const SOURCE_NAME = 'template';
 
-    protected string $bundle;
-
-    protected KernelInterface $kernel;
-
-    protected ExtractorInterface $extractor;
-
-    protected TranslationReader $loader;
-
     public function __construct(
-        KernelInterface $kernel,
-        TranslationReader $loader,
-        ExtractorInterface $extractor,
-        string $bundle
+        protected readonly KernelInterface $kernel,
+        protected readonly TranslationReaderInterface $loader,
+        protected readonly ExtractorInterface $extractor,
+        protected readonly string $bundle,
     ) {
-        $this->kernel = $kernel;
-        $this->loader = $loader;
-        $this->extractor = $extractor;
-        $this->bundle = $bundle;
     }
 
     public function getBundleName(): string

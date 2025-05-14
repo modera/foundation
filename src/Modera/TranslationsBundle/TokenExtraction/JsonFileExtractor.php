@@ -6,19 +6,15 @@ use Symfony\Component\Translation\Extractor\ExtractorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2023 Modera Foundation
  */
 class JsonFileExtractor implements ExtractorInterface
 {
-    private string $locale = 'en';
-
     private string $prefix = '';
 
     public function __construct(
-        ?string $locale = null
+        private readonly string $locale = 'en',
     ) {
-        $this->locale = $locale ?? 'en';
     }
 
     public function setPrefix(string $prefix): void
@@ -53,6 +49,9 @@ class JsonFileExtractor implements ExtractorInterface
                 $messages = \json_decode($content, true);
                 if (\is_array($messages)) {
                     foreach ($messages as $token => $translation) {
+                        if (!\is_string($token) || !\is_string($translation)) {
+                            continue;
+                        }
                         $catalogue->set($token, $this->prefix.$translation, $domain);
                     }
                 }

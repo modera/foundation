@@ -1,10 +1,10 @@
 <?php
 
-class ModeraSecurityAppKernel extends \Modera\FoundationBundle\Testing\AbstractFunctionalKernel
+class ModeraSecurityAppKernel extends Modera\FoundationBundle\Testing\AbstractFunctionalKernel
 {
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
-        return array(
+        return [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
@@ -12,6 +12,6 @@ class ModeraSecurityAppKernel extends \Modera\FoundationBundle\Testing\AbstractF
             new Modera\FoundationBundle\ModeraFoundationBundle(),
             new Modera\TranslationsBundle\ModeraTranslationsBundle(),
             new Modera\SecurityBundle\ModeraSecurityBundle(),
-        );
+        ];
     }
 }

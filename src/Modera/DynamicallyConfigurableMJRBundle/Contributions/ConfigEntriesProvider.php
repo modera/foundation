@@ -4,12 +4,13 @@ namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
 use Modera\ConfigBundle\Config\ConfigurationEntryDefinition as CED;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_config.config_entries')]
 class ConfigEntriesProvider implements ContributorInterface
 {
     public function getItems(): array

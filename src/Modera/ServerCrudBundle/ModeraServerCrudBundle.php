@@ -6,6 +6,9 @@ use Modera\ExpanderBundle\Ext\ExtensionPoint;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+/**
+ * @copyright 2013 Modera Foundation
+ */
 class ModeraServerCrudBundle extends Bundle
 {
     public function build(ContainerBuilder $container): void

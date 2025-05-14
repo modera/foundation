@@ -16,28 +16,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Every repository is associated with one underlying Gaufrette filesystem.
  *
- * @ORM\Entity
- *
- * @ORM\Table(
- *     name="modera_filerepository_repository",
- *     indexes={
- *
- *         @ORM\Index(name="name_idx", columns={"name"})
- *     }
- * )
- *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'modera_filerepository_repository')]
+#[ORM\Index(name: 'name_idx', columns: ['name'])]
 class Repository
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @ORM\Id
-     *
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     /**
@@ -47,32 +35,24 @@ class Repository
      *                   this repository.
      *  * storage_key_generator -- DI service ID of class which implements {@class StorageKeyGeneratorInterface}.
      *
-     * @ORM\Column(type="json")
-     *
      * @var array<mixed>
      */
+    #[ORM\Column(type: 'json')]
     private array $config = [];
 
-    /**
-     * @ORM\Column(type="string")
-     */
-    private ?string $name = null;
+    #[ORM\Column(type: 'string')]
+    private string $name;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $label = null;
 
     /**
      * @var Collection<int, StoredFile>
-     *
-     * @ORM\OneToMany(targetEntity="StoredFile", mappedBy="repository", cascade={"PERSIST", "REMOVE"})
      */
-    private ?Collection $files = null;
+    #[ORM\OneToMany(targetEntity: StoredFile::class, mappedBy: 'repository', cascade: ['PERSIST', 'REMOVE'])]
+    private Collection $files;
 
-    /**
-     * @ORM\Column(name="internal", type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $internal = false;
 
     private ?ContainerInterface $container = null;
@@ -84,7 +64,7 @@ class Repository
     {
         $this->name = $name;
         $this->setConfig($config);
-        $this->getFiles();
+        $this->setFiles(new ArrayCollection());
     }
 
     /**
@@ -169,23 +149,10 @@ class Repository
         }
     }
 
-    /**
-     * @deprecated Use native ::class property
-     */
-    public static function clazz(): string
-    {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated. Use native ::class property.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return \get_called_class();
-    }
-
     public function getFilesystem(): Filesystem
     {
         /** @var FilesystemMapInterface $map */
-        $map = $this->getContainer()->get('modera_file_repository.filesystem_map');
+        $map = $this->getContainer()->get(FilesystemMapInterface::class);
 
         /** @var string $filesystem */
         $filesystem = $this->config['filesystem'] ?? '';
@@ -272,7 +239,7 @@ class Repository
 
     public function getName(): string
     {
-        return $this->name ?? '';
+        return $this->name;
     }
 
     /**
@@ -288,10 +255,6 @@ class Repository
      */
     public function getFiles(): Collection
     {
-        if (null === $this->files) {
-            $this->files = new ArrayCollection();
-        }
-
         return $this->files;
     }
 

@@ -4,6 +4,7 @@ namespace Modera\FileRepositoryBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\FileRepositoryBundle\Repository\FileRepository;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -13,28 +14,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:file-repository:delete-repository',
+    description: 'Deletes a repository with all its files',
+)]
 class DeleteRepositoryCommand extends Command
 {
-    private EntityManagerInterface $em;
-
-    private FileRepository $fr;
-
-    public function __construct(EntityManagerInterface $em, FileRepository $fr)
-    {
-        $this->em = $em;
-        $this->fr = $fr;
-
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly FileRepository $fr,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('modera:file-repository:delete-repository')
-            ->setDescription('Deletes a repository with all its files')
             ->addArgument('repository', InputArgument::REQUIRED)
         ;
     }
@@ -82,6 +79,6 @@ class DeleteRepositoryCommand extends Command
             $output->writeln('Done!');
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

@@ -2,19 +2,15 @@
 
 namespace Modera\DynamicallyConfigurableMJRBundle\Tests\Unit\Contributions;
 
+use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
 use Modera\BackendToolsSettingsBundle\Section\StandardSection;
 use Modera\DynamicallyConfigurableMJRBundle\Contributions\SettingsSectionsProvider;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
 use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class SettingsSectionsProviderTest extends \PHPUnit\Framework\TestCase
 {
-    public function testGetItems()
+    public function testGetItems(): void
     {
         $authorizationChecker = \Phake::mock(AuthorizationCheckerInterface::class);
         \Phake::when($authorizationChecker)
@@ -26,24 +22,24 @@ class SettingsSectionsProviderTest extends \PHPUnit\Framework\TestCase
         $items = $provider->getItems();
 
         $this->assertTrue(is_array($items));
-        $this->assertEquals(1, count($items));
+        $this->assertEquals(1, \count($items));
 
-        /* @var StandardSection $section */
+        /** @var StandardSection $section */
         $section = $items[0];
         $this->assertInstanceOf('Modera\BackendToolsSettingsBundle\Section\StandardSection', $items[0]);
         $this->assertEquals('general', $section->getId());
         $this->assertEquals('General', $section->getName());
         $this->assertEquals('Modera.backend.dcmjr.runtime.GeneralSiteSettingsActivity', $section->getActivityClass());
 
-        $expectedMeta = array(
-            'activationParams' => array(
+        $expectedMeta = [
+            'activationParams' => [
                 'category' => 'general',
-            ),
-        );
+            ],
+        ];
         $this->assertEquals($expectedMeta, $section->getMeta());
     }
 
-    public function testGetItemsWithoutAccess()
+    public function testGetItemsWithoutAccess(): void
     {
         $authorizationChecker = \Phake::mock(AuthorizationCheckerInterface::class);
         \Phake::when($authorizationChecker)
@@ -55,6 +51,6 @@ class SettingsSectionsProviderTest extends \PHPUnit\Framework\TestCase
         $items = $provider->getItems();
 
         $this->assertTrue(is_array($items));
-        $this->assertEquals(0, count($items));
+        $this->assertEquals(0, \count($items));
     }
 }

@@ -4,6 +4,7 @@ namespace Modera\SecurityBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\SecurityBundle\Entity\User;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,28 +14,24 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:security:create-user',
+    description: 'Allows to create a user that you can later user to authenticate.',
+)]
 class CreateUserCommand extends Command
 {
-    private EntityManagerInterface $em;
-
-    private UserPasswordHasherInterface $hasher;
-
-    public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $hasher)
-    {
-        $this->em = $em;
-        $this->hasher = $hasher;
-
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly UserPasswordHasherInterface $hasher,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('modera:security:create-user')
-            ->setDescription('Allows to create a user that you can later user to authenticate.')
             ->addOption('no-interactions', null, InputOption::VALUE_NONE)
             ->addOption('username', null, InputOption::VALUE_OPTIONAL)
             ->addOption('email', null, InputOption::VALUE_OPTIONAL)
@@ -92,7 +89,7 @@ class CreateUserCommand extends Command
             $user->getUsername()
         ));
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     private function createHiddenQuestion(string $text): Question

@@ -3,7 +3,6 @@
 namespace Modera\BackendSecurityBundle\Section;
 
 /**
- * @author    Artem Brovko <artem.brovko@modera.com>
  * @copyright 2021 Modera Foundation
  */
 interface SectionInterface

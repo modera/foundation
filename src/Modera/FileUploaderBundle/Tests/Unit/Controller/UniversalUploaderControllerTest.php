@@ -5,38 +5,38 @@ namespace Modera\FileUploaderBundle\Tests\Unit\Controller;
 use Modera\FileRepositoryBundle\Exceptions\FileValidationException;
 use Modera\FileUploaderBundle\Controller\UniversalUploaderController;
 use Modera\FileUploaderBundle\Uploading\WebUploader;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2015 Modera Foundation
- */
 class UniversalUploaderControllerTest extends \PHPUnit\Framework\TestCase
 {
-    private $container;
+    private ContainerInterface $container;
 
-    /**
-     * @var UniversalUploaderController
-     */
-    private $ctr;
+    private UniversalUploaderController $ctr;
 
-    private $webUploader;
+    private WebUploader $webUploader;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
-        $this->container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $this->container = \Phake::mock(ContainerInterface::class);
         $this->webUploader = \Phake::mock(WebUploader::class);
 
-        $this->ctr = new UniversalUploaderController();
+        $this->ctr = new UniversalUploaderController($this->webUploader);
         $this->ctr->setContainer($this->container);
+
+        $containerBag = \Phake::mock(ContainerBagInterface::class);
+        \Phake::when($containerBag)
+            ->get('modera_file_uploader.is_enabled')
+            ->thenReturn(false)
+        ;
+        \Phake::when($this->container)->has('parameter_bag')->thenReturn(true);
+        \Phake::when($this->container)->get('parameter_bag')->thenReturn($containerBag);
     }
 
-    public function testUploadActionWhenNotEnabled()
+    public function testUploadActionWhenNotEnabled(): void
     {
         $thrownException = null;
         try {
@@ -49,8 +49,11 @@ class UniversalUploaderControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(404, $thrownException->getStatusCode());
     }
 
-    private function teachContainer(Request $request, $isUploaderEnabled, $uploaderResult)
-    {
+    private function teachContainer(
+        Request $request,
+        bool $isUploaderEnabled,
+        \Exception|JsonResponse|null $uploaderResult = null,
+    ): void {
         if ($uploaderResult instanceof \Exception) {
             \Phake::when($this->webUploader)
                 ->upload($request)
@@ -62,42 +65,37 @@ class UniversalUploaderControllerTest extends \PHPUnit\Framework\TestCase
                 ->thenReturn($uploaderResult)
             ;
         }
-
-        \Phake::when($this->container)
-            ->getParameter('modera_file_uploader.is_enabled')
+        $containerBag = $this->container->get('parameter_bag');
+        \Phake::when($containerBag)
+            ->get('modera_file_uploader.is_enabled')
             ->thenReturn($isUploaderEnabled)
-        ;
-
-        \Phake::when($this->container)
-            ->get('modera_file_uploader.uploading.web_uploader')
-            ->thenReturn($this->webUploader)
         ;
     }
 
-    public function testUploadActionWhenNoUploadHandledRequest()
+    public function testUploadActionWhenNoUploadHandledRequest(): void
     {
         $request = new Request();
 
-        $this->teachContainer($request, true, null);
+        $this->teachContainer($request, true);
 
         $response = $this->ctr->uploadAction($request);
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\JsonResponse', $response);
 
-        $content = json_decode($response->getContent(), true);
+        $content = \json_decode($response->getContent(), true);
         $this->assertArrayHasKey('success', $content);
         $this->assertFalse($content['success']);
         $this->assertArrayHasKey('error', $content);
-        $this->assertContains('Unable', $content['error']);
+        $this->assertEquals('Unable to find an upload gateway that is able to process this file upload.', $content['error']);
     }
 
-    public function testUploadActionSuccess()
+    public function testUploadActionSuccess(): void
     {
         $request = new Request();
 
-        $result = array(
+        $result = [
             'success' => true,
             'blah' => 'foo',
-        );
+        ];
 
         $this->teachContainer($request, true, new JsonResponse($result));
 
@@ -107,7 +105,7 @@ class UniversalUploaderControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($result, json_decode($response->getContent(), true));
     }
 
-    public function testUploadActionWithValidationException()
+    public function testUploadActionWithValidationException(): void
     {
         $request = new Request();
 
@@ -118,13 +116,13 @@ class UniversalUploaderControllerTest extends \PHPUnit\Framework\TestCase
         $response = $this->ctr->uploadAction($request);
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\JsonResponse', $response);
 
-        $content = json_decode($response->getContent(), true);
+        $content = \json_decode($response->getContent(), true);
         $this->assertArrayHasKey('success', $content);
         $this->assertFalse($content['success']);
         $this->assertArrayHasKey('error', $content);
         $this->assertArrayHasKey('errors', $content);
         $this->assertTrue(is_array($content['errors']));
-        $this->assertEquals(1, count($content['errors']));
-        $this->assertContains('some error', $content['errors'][0]);
+        $this->assertEquals(1, \count($content['errors']));
+        $this->assertEquals('some error', $content['errors'][0]);
     }
 }

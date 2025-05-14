@@ -2,16 +2,15 @@
 
 namespace Modera\FileRepositoryBundle\Tests\Unit\Intercepting;
 
+use Modera\FileRepositoryBundle\Authoring\AuthoringInterceptor;
 use Modera\FileRepositoryBundle\Entity\Repository;
 use Modera\FileRepositoryBundle\Intercepting\DefaultInterceptorsProvider;
+use Modera\FileRepositoryBundle\Intercepting\MimeSaverInterceptor;
+use Modera\FileRepositoryBundle\Validation\FilePropertiesValidationInterceptor;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2015 Modera Foundation
- */
 class DefaultInterceptorsProviderTest extends \PHPUnit\Framework\TestCase
 {
-    public function testGetInterceptors()
+    public function testGetInterceptors(): void
     {
         $dummyFilePropertiesValidationInterceptor = new \stdClass();
         $dummyAuthoringInterceptor = new \stdClass();
@@ -20,15 +19,15 @@ class DefaultInterceptorsProviderTest extends \PHPUnit\Framework\TestCase
 
         $container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
         \Phake::when($container)
-            ->get('modera_file_repository.validation.file_properties_validation_interceptor')
+            ->get(FilePropertiesValidationInterceptor::class)
             ->thenReturn($dummyFilePropertiesValidationInterceptor)
         ;
         \Phake::when($container)
-            ->get('modera_file_repository.authoring.authoring_interceptor')
+            ->get(AuthoringInterceptor::class)
             ->thenReturn($dummyAuthoringInterceptor)
         ;
         \Phake::when($container)
-            ->get('modera_file_repository.intercepting.mime_saver_interceptor')
+            ->get(MimeSaverInterceptor::class)
             ->thenReturn($mimeInterceptor)
         ;
         \Phake::when($container)
@@ -42,7 +41,7 @@ class DefaultInterceptorsProviderTest extends \PHPUnit\Framework\TestCase
 
         $result = $provider->getInterceptors($repository);
 
-        $this->assertEquals(3, count($result));
+        $this->assertEquals(3, \count($result));
         $this->assertSame($dummyFilePropertiesValidationInterceptor, $result[0]);
         $this->assertSame($mimeInterceptor, $result[1]);
         $this->assertSame($dummyAuthoringInterceptor, $result[2]);
@@ -51,12 +50,12 @@ class DefaultInterceptorsProviderTest extends \PHPUnit\Framework\TestCase
 
         \Phake::when($repository)
             ->getConfig()
-            ->thenReturn(array('interceptors' => ['foo_interceptor']))
+            ->thenReturn(['interceptors' => ['foo_interceptor']])
         ;
 
         $result = $provider->getInterceptors($repository);
 
-        $this->assertEquals(4, count($result));
+        $this->assertEquals(4, \count($result));
         $this->assertSame($dummyFilePropertiesValidationInterceptor, $result[0]);
         $this->assertSame($mimeInterceptor, $result[1]);
         $this->assertSame($dummyAuthoringInterceptor, $result[2]);

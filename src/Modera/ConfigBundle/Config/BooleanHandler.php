@@ -9,12 +9,11 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  * - true_text
  * - false_text.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class BooleanHandler implements HandlerInterface
 {
-    public function getReadableValue(ConfigurationEntry $entry)
+    public function getReadableValue(ConfigurationEntry $entry): mixed
     {
         $cfg = $entry->getServerHandlerConfig();
 
@@ -24,12 +23,12 @@ class BooleanHandler implements HandlerInterface
         return 1 == $entry->getDenormalizedValue() ? $trueValue : $falseValue;
     }
 
-    public function getValue(ConfigurationEntry $entry)
+    public function getValue(ConfigurationEntry $entry): mixed
     {
         return $entry->getDenormalizedValue();
     }
 
-    public function convertToStorageValue($value, ConfigurationEntry $entry)
+    public function convertToStorageValue(mixed $value, ConfigurationEntry $entry): mixed
     {
         return \in_array($value, [1, 'true']);
     }

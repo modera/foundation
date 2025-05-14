@@ -7,18 +7,14 @@ use Modera\ConfigBundle\Manager\UniquityValidator;
 use Modera\ConfigBundle\Tests\Fixtures\Entities\User;
 use Modera\ConfigBundle\Tests\Functional\AbstractFunctionalTestCase;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class UniquityValidatorTest extends AbstractFunctionalTestCase
 {
-    public function testIsValidForSaving_withoutOwner()
+    public function testIsValidForSavingWithoutOwner(): void
     {
         $ce1 = new ConfigurationEntry('cf_1');
         $ce1->setValue('foo');
 
-        $uv = new UniquityValidator(self::$em, array('owner_entity' => null));
+        $uv = new UniquityValidator(self::$em, ['owner_entity' => null]);
         $this->assertTrue($uv->isValidForSaving($ce1));
 
         self::$em->persist($ce1);
@@ -27,7 +23,7 @@ class UniquityValidatorTest extends AbstractFunctionalTestCase
         $this->assertTrue($uv->isValidForSaving($ce1));
     }
 
-    public function testIsValidForSaving_withOwner()
+    public function testIsValidForSavingWithOwner(): void
     {
         $vasya = new User('vasya');
 
@@ -38,7 +34,7 @@ class UniquityValidatorTest extends AbstractFunctionalTestCase
         $ce1->setValue('foo');
         $ce1->setOwner($vasya);
 
-        $uv = new UniquityValidator(self::$em, array('owner_entity' => get_class($vasya)));
+        $uv = new UniquityValidator(self::$em, ['owner_entity' => \get_class($vasya)]);
         $this->assertTrue($uv->isValidForSaving($ce1));
 
         self::$em->persist($ce1);
@@ -47,7 +43,7 @@ class UniquityValidatorTest extends AbstractFunctionalTestCase
         $this->assertTrue($uv->isValidForSaving($ce1));
     }
 
-    public function testIsValidForSaving_changeName()
+    public function testIsValidForSavingChangeName(): void
     {
         $ce1 = new ConfigurationEntry('cf_1');
         $ce1->setValue('foo');
@@ -61,11 +57,11 @@ class UniquityValidatorTest extends AbstractFunctionalTestCase
 
         $ce2->setName('cf_1');
 
-        $uv = new UniquityValidator(self::$em, array('owner_entity' => null));
+        $uv = new UniquityValidator(self::$em, ['owner_entity' => null]);
         $this->assertFalse($uv->isValidForSaving($ce2));
     }
 
-    public function testIsValidForSaving_changeNameWithOwner()
+    public function testIsValidForSavingChangeNameWithOwner(): void
     {
         $vasya = new User('vasya');
 
@@ -82,7 +78,7 @@ class UniquityValidatorTest extends AbstractFunctionalTestCase
 
         $ce2->setName('cf_1');
 
-        $uv = new UniquityValidator(self::$em, array('owner_entity' => get_class($vasya)));
+        $uv = new UniquityValidator(self::$em, ['owner_entity' => \get_class($vasya)]);
         $this->assertFalse($uv->isValidForSaving($ce2));
     }
 }

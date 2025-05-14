@@ -39,7 +39,6 @@ use Symfony\Component\Translation\MessageCatalogue;
  *    When tokens are being extracted from code it is being statically analyzed when when functions are invoked
  *    their values will be resolved during execution phase.
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class PhpClassTokenExtractor implements ExtractorInterface
@@ -206,8 +205,10 @@ class PhpClassTokenExtractor implements ExtractorInterface
 
         $indexShift = 0;
 
-        if (\is_array($tokens[0]) && \T_STRING === $tokens[0][0] && 'implode' === $tokens[0][1]) {
-            $indexShift += (int) \array_search(')', $tokens, true) + 1;
+        if (\is_array($tokens[0]) && (\T_STRING === $tokens[0][0] || \T_NAME_FULLY_QUALIFIED === $tokens[0][0])) {
+            if (\in_array($tokens[0][1], ['implode', '\implode'])) {
+                $indexShift += (int) \array_search(')', $tokens, true) + ('[' === $tokens[4] ? 0 : 1);
+            }
         }
 
         $isParamsArgSpecified = isset($tokens[$indexShift + 1])
@@ -298,8 +299,11 @@ class PhpClassTokenExtractor implements ExtractorInterface
             throw new \RuntimeException('$glue must be a string');
         }
 
+        $offset = '[' === $tokens[4] ? 5 : 6;
+        $length = '[' === $tokens[4] ? -3 : -2;
+
         $pieces = [];
-        foreach (\array_slice($tokens, 6, -2) as $val) {
+        foreach (\array_slice($tokens, $offset, $length) as $val) {
             if (\is_array($val)) {
                 $pieces[] = \substr((string) $val[1], 1, -1);
             }
@@ -319,8 +323,8 @@ class PhpClassTokenExtractor implements ExtractorInterface
             $value = (string) $valueToken[1];
 
             return \trim($value, $value[0]);
-        } elseif (\T_STRING === $valueToken[0]) {
-            if ('implode' === $valueToken[1]) {
+        } elseif (\T_STRING === $valueToken[0] || \T_NAME_FULLY_QUALIFIED === $valueToken[0]) {
+            if (\in_array($valueToken[1], ['implode', '\implode'])) {
                 /** @var int $startIndex */
                 $startIndex = $invocation['start_index'];
                 /** @var array<int, string|array<int, int|string>> $tokens */
@@ -379,8 +383,8 @@ class PhpClassTokenExtractor implements ExtractorInterface
                                             && \T_CONSTANT_ENCAPSED_STRING === $variableValueTokenValue[0]
                         ;
 
-                        if (!$isValidVarValueToken && \T_STRING === $variableValueTokenValue[0]) {
-                            if ('implode' === $variableValueTokenValue[1]) {
+                        if (!$isValidVarValueToken && (\T_STRING === $variableValueTokenValue[0] || \T_NAME_FULLY_QUALIFIED === $variableValueTokenValue[0])) {
+                            if (\in_array($variableValueTokenValue[1], ['implode', '\implode'])) {
                                 $offset = $i + 2;
                                 $limit = \array_search(')', \array_slice($parentTokens, $offset), true) + 2;
                                 $variableValueTokenValue = $this->resolveImplodeFn(\array_slice($parentTokens, $offset, $limit));

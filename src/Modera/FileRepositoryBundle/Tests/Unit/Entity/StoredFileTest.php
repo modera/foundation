@@ -2,29 +2,27 @@
 
 namespace Modera\FileRepositoryBundle\Tests\Unit\Entity;
 
-use Modera\FileRepositoryBundle\Entity\Repository;
-use Symfony\Component\HttpFoundation\File\File;
 use Modera\FileRepositoryBundle\DependencyInjection\ModeraFileRepositoryExtension;
+use Modera\FileRepositoryBundle\Entity\Repository;
 use Modera\FileRepositoryBundle\Entity\StoredFile;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\RouterInterface;
 
-/**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
- */
 class StoredFileTest extends \PHPUnit\Framework\TestCase
 {
-    public function test__construct()
+    public function testConstruct(): void
     {
-        $filename = uniqid().'.txt';
-        $filePath = sys_get_temp_dir().DIRECTORY_SEPARATOR.$filename;
-        file_put_contents($filePath, 'blah');
+        $filename = \uniqid().'.txt';
+        $filePath = \sys_get_temp_dir().\DIRECTORY_SEPARATOR.$filename;
+        \file_put_contents($filePath, 'blah');
 
         $file = new File($filePath);
 
-        $context = array('foo');
+        $context = ['foo'];
         $dummyStorageKey = 'storage-key';
 
-        $repository = $this->createMock('Modera\FileRepositoryBundle\Entity\Repository', array(), array(), '', false);
+        $repository = $this->createMock('Modera\FileRepositoryBundle\Entity\Repository');
         $repository->expects($this->atLeastOnce())
                    ->method('generateStorageKey')
                    ->with($this->equalTo($file), $this->equalTo($context))
@@ -38,15 +36,15 @@ class StoredFileTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('text/plain', $storedFile->getMimeType());
     }
 
-    public function test__construct_settingAuthorAndOwnerFields()
+    public function testConstructSettingAuthorAndOwnerFields(): void
     {
         $dummyStorageKey = 'storage-key';
 
         $file = new File(__FILE__);
-        $context = array(
+        $context = [
             'author' => 'foo-author',
             'owner' => 'foo-owner',
-        );
+        ];
 
         $repo = \Phake::mock(Repository::class);
         \Phake::when($repo)
@@ -60,9 +58,9 @@ class StoredFileTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($context['owner'], $storedFile->getOwner());
     }
 
-    public function testGetUrl()
+    public function testGetUrl(): void
     {
-        $container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $container = \Phake::mock(ContainerInterface::class);
 
         \Phake::when($container)
             ->getParameter(ModeraFileRepositoryExtension::CONFIG_KEY.'.default_url_generator')
@@ -71,10 +69,10 @@ class StoredFileTest extends \PHPUnit\Framework\TestCase
 
         \Phake::when($container)
             ->getParameter(ModeraFileRepositoryExtension::CONFIG_KEY.'.url_generators')
-            ->thenReturn(array(
+            ->thenReturn([
                 'foo' => 'foo_url_generator',
                 'bar' => 'bar_url_generator',
-            ))
+            ])
         ;
 
         $defaultUrlGenerator = \Phake::mock('Modera\FileRepositoryBundle\UrlGeneration\UrlGeneratorInterface');
@@ -83,9 +81,9 @@ class StoredFileTest extends \PHPUnit\Framework\TestCase
         $fooUrlGenerator = \Phake::mock('Modera\FileRepositoryBundle\UrlGeneration\UrlGeneratorInterface');
         \Phake::when($container)->get('foo_url_generator')->thenReturn($fooUrlGenerator);
 
-        \Phake::when($container)->get('bar_url_generator')->thenReturn('not_url_generator');
+        \Phake::when($container)->get('bar_url_generator')->thenReturn(new \stdClass());
 
-        $context = array();
+        $context = [];
         $splFile = new \SplFileInfo(__FILE__);
         $repository = \Phake::mock('Modera\FileRepositoryBundle\Entity\Repository');
         \Phake::when($repository)->generateStorageKey($splFile, $context)->thenReturn('storage-key');
@@ -95,13 +93,13 @@ class StoredFileTest extends \PHPUnit\Framework\TestCase
         \Phake::when($defaultUrlGenerator)->generateUrl($storedFile, RouterInterface::NETWORK_PATH)->thenReturn('default_url');
         \Phake::when($fooUrlGenerator)->generateUrl($storedFile, RouterInterface::NETWORK_PATH)->thenReturn('foo_url');
 
-        \Phake::when($repository)->getConfig()->thenReturn(array('filesystem' => 'foo'));
+        \Phake::when($repository)->getConfig()->thenReturn(['filesystem' => 'foo']);
         $this->assertEquals('foo_url', $storedFile->getUrl());
 
-        \Phake::when($repository)->getConfig()->thenReturn(array('filesystem' => 'bar'));
+        \Phake::when($repository)->getConfig()->thenReturn(['filesystem' => 'bar']);
         $this->assertEquals('default_url', $storedFile->getUrl());
 
-        \Phake::when($repository)->getConfig()->thenReturn(array('filesystem' => 'baz'));
+        \Phake::when($repository)->getConfig()->thenReturn(['filesystem' => 'baz']);
         $this->assertEquals('default_url', $storedFile->getUrl());
     }
 }

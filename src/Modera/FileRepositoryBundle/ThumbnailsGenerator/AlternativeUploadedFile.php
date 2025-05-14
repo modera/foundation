@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  *
  * Marker class, used in Interceptor class
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class AlternativeUploadedFile extends UploadedFile
@@ -19,24 +18,9 @@ class AlternativeUploadedFile extends UploadedFile
 
     private ?int $size = null;
 
-    /**
-     * Returns the file size.
-     *
-     * It is extracted from the request from which the file has been uploaded.
-     * Then it should not be considered as a safe value.
-     *
-     * @deprecated since Symfony 4.1, use getSize() instead.
-     */
-    public function getClientSize(): ?int
+    public function getSize(): int|false
     {
-        @\trigger_error(\sprintf('The "%s()" method is deprecated since Symfony 4.1. Use getSize() instead.', __METHOD__), E_USER_DEPRECATED);
-
-        $size = $this->size ?: $this->getSize();
-        if (false === $size) {
-            $size = null;
-        }
-
-        return $size;
+        return $this->size ?: $this->getSize();
     }
 
     /**

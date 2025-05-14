@@ -10,7 +10,6 @@ use Modera\SecurityBundle\Model\PermissionCategory;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class ModeraBackendToolsActivityLogBundle extends Bundle implements ExtensionPointsAwareBundleInterface
@@ -20,26 +19,26 @@ class ModeraBackendToolsActivityLogBundle extends Bundle implements ExtensionPoi
     public function getExtensionPointContributions(): array
     {
         return [
-            'modera_mjr_integration.css_resources_provider' => [
+            'modera_mjr_integration.css_resources' => [
                 '/bundles/moderabackendtoolsactivitylog/css/styles.css',
             ],
-            'modera_mjr_integration.sections_provider' => [
+            'modera_mjr_integration.sections' => [
                 new MJRSection('tools.activitylog', 'Modera.backend.tools.activitylog.runtime.Section', [
                     MJRSection::META_NAMESPACE => 'Modera.backend.tools.activitylog',
                     MJRSection::META_NAMESPACE_PATH => '/bundles/moderabackendtoolsactivitylog/js',
                 ]),
             ],
-            'modera_security.permission_categories_provider' => [
+            'modera_security.permission_categories' => [
                 new PermissionCategory(
                     T::trans('Administration'),
-                    'administration'
+                    'administration',
                 ),
             ],
-            'modera_security.permissions_provider' => [
+            'modera_security.permissions' => [
                 new Permission(
                     T::trans('Access Activity Log'),
                     self::ROLE_ACCESS_BACKEND_TOOLS_ACTIVITY_LOG_SECTION,
-                    'administration'
+                    'administration',
                 ),
             ],
         ];

@@ -3,6 +3,7 @@
 namespace Modera\FileRepositoryBundle\Command;
 
 use Modera\FileRepositoryBundle\Repository\FileRepository;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -10,25 +11,23 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:file-repository:create',
+    description: 'Command allows to create a file repository',
+)]
 class CreateRepositoryCommand extends Command
 {
-    private FileRepository $fr;
-
-    public function __construct(FileRepository $fr)
-    {
-        $this->fr = $fr;
-
+    public function __construct(
+        private readonly FileRepository $fr,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('modera:file-repository:create')
-            ->setDescription('Command allows to create a file repository')
             ->addArgument('name', InputArgument::REQUIRED)
             ->addArgument('filesystem', InputArgument::REQUIRED)
             ->addArgument('label', InputArgument::OPTIONAL)
@@ -74,7 +73,7 @@ class CreateRepositoryCommand extends Command
                 '<error>Options --key-generator and --preserve-extensions are mutually exclusive, use only one of them.</error>'
             );
 
-            return 1;
+            return Command::FAILURE;
         }
 
         if ($preserveExtensions) {
@@ -119,6 +118,6 @@ class CreateRepositoryCommand extends Command
             ' <info>Success!</info> Repository has been successfully created! Its internal is #'.$repository->getId()
         );
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

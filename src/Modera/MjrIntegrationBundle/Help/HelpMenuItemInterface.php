@@ -6,7 +6,6 @@ namespace Modera\MjrIntegrationBundle\Help;
  * Help menu item will trigger either action through activating activity, dispatching intent OR opening a provided
  * URL, but not all at the same time.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 interface HelpMenuItemInterface

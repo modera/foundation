@@ -2,19 +2,18 @@
 
 namespace Modera\BackendToolsSettingsBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.config.config_mergers')]
 class ConfigMergersProvider implements ContributorInterface
 {
-    private SectionsConfigMerger $merger;
-
-    public function __construct(SectionsConfigMerger $merger)
-    {
-        $this->merger = $merger;
+    public function __construct(
+        private readonly SectionsConfigMerger $merger,
+    ) {
     }
 
     public function getItems(): array

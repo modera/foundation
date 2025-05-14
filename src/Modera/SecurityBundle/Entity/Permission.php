@@ -8,87 +8,60 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
- *
- * @ORM\Table(name="modera_security_permission")
- *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2014 Modera Foundation
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'modera_security_permission')]
 class Permission
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @ORM\Id
-     *
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     /**
      * Name of symfony security role, something like "ROLE_USER".
-     *
-     * @Assert\NotBlank
-     *
-     * @ORM\Column(type="string")
      */
-    private ?string $roleName = null;
+    #[Assert\NotBlank]
+    #[ORM\Column(type: 'string')]
+    private string $roleName;
 
     /**
      * A name of this role that can be easily understood by administrator, for instance - "Access admin section".
-     *
-     * @ORM\Column(type="string", nullable=true)
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $description = null;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private int $position = 0;
 
     /**
      * @var Collection<int, Permission>
-     *
-     * @ORM\ManyToMany(targetEntity="Permission", cascade={"persist"})
-     *
-     * @ORM\JoinTable(
-     *     name="modera_security_rolehierarchy",
-     *     joinColumns={@ORM\JoinColumn(name="permission_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="child_id", referencedColumnName="id")}
-     * )
      */
+    #[ORM\ManyToMany(targetEntity: Permission::class, cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'modera_security_rolehierarchy')]
+    #[ORM\JoinColumn(name: 'permission_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'child_id', referencedColumnName: 'id')]
     private Collection $roles;
 
     /**
-     * @var Collection<int, UserInterface>
-     *
-     * @ORM\ManyToMany(targetEntity="User", inversedBy="permissions", cascade={"persist"})
-     *
-     * @ORM\JoinTable(
-     *     name="modera_security_permissionusers"
-     * )
+     * @var Collection<int, User>
      */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'permissions', cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'modera_security_permissionusers')]
     private Collection $users;
 
     /**
      * @var Collection<int, Group>
-     *
-     * @ORM\ManyToMany(targetEntity="Group", inversedBy="permissions", cascade={"persist"})
-     *
-     * @ORM\JoinTable(
-     *     name="modera_security_permissiongroups"
-     * )
      */
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'permissions', cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'modera_security_permissiongroups')]
     private Collection $groups;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="PermissionCategory", inversedBy="permissions", cascade={"persist"})
-     */
+    #[ORM\ManyToOne(targetEntity: PermissionCategory::class, inversedBy: 'permissions', cascade: ['persist'])]
     private ?PermissionCategory $category = null;
 
     public function __construct()
@@ -98,20 +71,7 @@ class Permission
         $this->groups = new ArrayCollection();
     }
 
-    /**
-     * @deprecated Use native ::class property
-     */
-    public static function clazz(): string
-    {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated. Use native ::class property.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return \get_called_class();
-    }
-
-    public function addUser(UserInterface $user): void
+    public function addUser(User $user): void
     {
         if (!$this->users->contains($user)) {
             $this->users[] = $user;
@@ -215,7 +175,7 @@ class Permission
     }
 
     /**
-     * @param Collection<int, UserInterface> $users
+     * @param Collection<int, User> $users
      */
     public function setUsers(Collection $users): void
     {
@@ -223,7 +183,7 @@ class Permission
     }
 
     /**
-     * @return Collection<int, UserInterface>
+     * @return Collection<int, User>
      */
     public function getUsers(): Collection
     {

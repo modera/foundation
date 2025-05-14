@@ -5,7 +5,6 @@ namespace Modera\MjrIntegrationBundle\Model;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class FontAwesome
@@ -94,7 +93,7 @@ class FontAwesome
      */
     private static function getCache(): array
     {
-        if (null !== self::$cache) {
+        if (\is_array(self::$cache)) {
             return self::$cache;
         }
 
@@ -145,9 +144,28 @@ class FontAwesome
             ]));
         }
 
-        self::$cache = require $cachePathname;
+        /** @var array{
+         *     'metadata': array{
+         *         'icons': array<
+         *             string,
+         *             array{
+         *                 'unicode': string,
+         *                 'styles': string[],
+         *                 'search'?: array{'terms'?: string[]}
+         *             },
+         *         >,
+         *         'shims': array<string, array{'name'?: string, 'prefix'?: string}>,
+         *     },
+         *     'css': array{
+         *         'brands': string,
+         *         'light': false|string,
+         *         'regular': string,
+         *         'solid': string,
+         *     },
+         * } $cache */
+        $cache = self::$cache = require $cachePathname;
 
-        return self::$cache;
+        return $cache;
     }
 
     /**

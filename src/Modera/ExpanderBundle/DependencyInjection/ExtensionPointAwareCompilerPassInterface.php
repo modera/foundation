@@ -4,6 +4,9 @@ namespace Modera\ExpanderBundle\DependencyInjection;
 
 use Modera\ExpanderBundle\Ext\ExtensionPoint;
 
+/**
+ * @copyright 2024 Modera Foundation
+ */
 interface ExtensionPointAwareCompilerPassInterface
 {
     /**

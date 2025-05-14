@@ -5,21 +5,17 @@ namespace Modera\MJRSecurityIntegrationBundle\Tests\Unit\DependencyInjection;
 use Modera\MJRSecurityIntegrationBundle\DependencyInjection\ModeraMJRSecurityIntegrationExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2015 Modera Foundation
- */
 class ModeraMJRSecurityIntegrationExtensionTest extends \PHPUnit\Framework\TestCase
 {
-    public function testLoad()
+    public function testLoad(): void
     {
-        $semanticConfig = array(
-            'modera_mjr_security_integration' => array(
+        $semanticConfig = [
+            'modera_mjr_security_integration' => [
                 'login_url' => '/login',
                 'logout_url' => '/logout',
                 'is_authenticated_url' => '/isAuthenticated',
-            ),
-        );
+            ],
+        ];
 
         $builder = new ContainerBuilder();
 

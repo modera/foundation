@@ -7,6 +7,8 @@ namespace Modera\ExpanderBundle\Ext;
  * interface. If there are several providers that have the same order specified, then LIFO method is used to resolve
  * the best one. If some providers do not implement this interface, then they will be appended to the end of all
  * providers ( when #getItems() method is invoked ).
+ *
+ * @copyright 2024 Modera Foundation
  */
 class ChainMergeContributorsProvider implements ChainContributorsProviderInterface
 {

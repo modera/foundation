@@ -8,15 +8,15 @@ use Modera\ServerCrudBundle\QueryBuilder\Parsing\OrFilter;
 
 class FiltersTest extends \PHPUnit\Framework\TestCase
 {
-    public function testHowWellItWorks()
+    public function testHowWellItWorks(): void
     {
-        $input = array(
-            array('property' => 'orderTotal', 'value' => 'gt:30'),
-            array('property' => 'orderTotal', 'value' => 'lt:100'),
-            array('property' => 'currency', 'value' => 'eq:2'),
-            array('property' => 'paidAt' ,'value' => 'isNotNull'),
-            array('property' => 'shippedAt', 'value' => 'isNull')
-        );
+        $input = [
+            ['property' => 'orderTotal', 'value' => 'gt:30'],
+            ['property' => 'orderTotal', 'value' => 'lt:100'],
+            ['property' => 'currency', 'value' => 'eq:2'],
+            ['property' => 'paidAt', 'value' => 'isNotNull'],
+            ['property' => 'shippedAt', 'value' => 'isNull'],
+        ];
 
         $filters = new Filters($input);
 
@@ -30,8 +30,8 @@ class FiltersTest extends \PHPUnit\Framework\TestCase
 
         $orderTotalFilters = $filters->findByProperty('orderTotal');
 
-        $this->assertTrue(is_array($orderTotalFilters));
-        $this->assertEquals(2, count($orderTotalFilters));
+        $this->assertTrue(\is_array($orderTotalFilters));
+        $this->assertEquals(2, \count($orderTotalFilters));
         $this->assertInstanceOf(Filter::class, $orderTotalFilters[0]);
         $this->assertInstanceOf(Filter::class, $orderTotalFilters[1]);
         $this->assertEquals(30, $orderTotalFilters[0]->getValue());
@@ -57,55 +57,55 @@ class FiltersTest extends \PHPUnit\Framework\TestCase
 
         $compiled = $filters->compile();
 
-        $this->assertTrue(is_array($compiled));
-        $this->assertEquals(4, count($compiled));
+        $this->assertTrue(\is_array($compiled));
+        $this->assertEquals(4, \count($compiled));
 
-        $filters->addFilter(new Filter(array('property' => 'address', 'value' => 'like:%Tallinn%')));
+        $filters->addFilter(new Filter(['property' => 'address', 'value' => 'like:%Tallinn%']));
 
         $compiled = $filters->compile();
 
-        $this->assertTrue(is_array($compiled));
-        $this->assertEquals(5, count($compiled));
+        $this->assertTrue(\is_array($compiled));
+        $this->assertEquals(5, \count($compiled));
 
         // --- iterator
 
-        $iteratedFilters = array();
+        $iteratedFilters = [];
         foreach ($filters as $filter) {
             $iteratedFilters[] = $filter;
         }
 
-        $this->assertEquals(5, count($iteratedFilters));
+        $this->assertEquals(5, \count($iteratedFilters));
     }
 
-    public function testHowWellItWorksWithMixedFilters()
+    public function testHowWellItWorksWithMixedFilters(): void
     {
-        $input = array(
-            array('property' => 'orderTotal', 'value' => array('eq:10', 'eq:20')),
-            array(
-                array('property' => 'user.firstname', 'value' => 'like:Se%'),
-                array('property' => 'user.lastname', 'value' => 'like:Li%')
-            )
-        );
+        $input = [
+            ['property' => 'orderTotal', 'value' => ['eq:10', 'eq:20']],
+            [
+                ['property' => 'user.firstname', 'value' => 'like:Se%'],
+                ['property' => 'user.lastname', 'value' => 'like:Li%'],
+            ],
+        ];
 
         $filters = new Filters($input);
 
-        $this->assertEquals(2, count($filters));
+        $this->assertEquals(2, \count($filters));
         $this->assertInstanceOf(Filter::class, $filters[0]);
         $this->assertInstanceOf(OrFilter::class, $filters[1]);
         $this->assertEquals('orderTotal', $filters[0]->getProperty());
         $this->assertNull($filters[0]->getComparator());
         $this->assertSame(
-            array(
-                array('comparator' => 'eq', 'value' => '10'),
-                array('comparator' => 'eq', 'value' => '20')
-            ),
+            [
+                ['comparator' => 'eq', 'value' => '10'],
+                ['comparator' => 'eq', 'value' => '20'],
+            ],
             $filters[0]->getValue()
         );
 
-        /* @var Filter[] $subFilters */
+        /** @var Filter[] $subFilters */
         $subFilters = $filters[1]->getFilters();
 
-        $this->assertTrue(is_array($subFilters));
-        $this->assertEquals(2, count($subFilters));
+        $this->assertTrue(\is_array($subFilters));
+        $this->assertEquals(2, \count($subFilters));
     }
 }

@@ -2,11 +2,10 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 use Modera\MjrIntegrationBundle\Help\HelpMenuItemInterface;
-use Modera\MJRSecurityIntegrationBundle\DependencyInjection\ModeraMJRSecurityIntegrationExtension;
-use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Firewall\SwitchUserListener;
@@ -14,21 +13,26 @@ use Symfony\Component\Security\Http\Firewall\SwitchUserListener;
 /**
  * Provides service definitions for client-side dependency injection container.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.csdi.service_definitions')]
 class ServiceDefinitionsProvider implements ContributorInterface
 {
-    private ContainerInterface $container;
-
-    private AuthorizationCheckerInterface $authorizationChecker;
-
+    /**
+     * @param array{
+     *     'login_url': string,
+     *     'logout_url': string,
+     *     'is_authenticated_url': string,
+     * } $bundleConfig,
+     * @param array<string, mixed>|bool $switchUserConfig
+     */
     public function __construct(
-        ContainerInterface $container,
-        AuthorizationCheckerInterface $authorizationChecker
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly ExtensionProvider $extensionProvider,
+        private readonly array $bundleConfig,
+        private readonly array|bool $switchUserConfig,
     ) {
-        $this->container = $container;
-        $this->authorizationChecker = $authorizationChecker;
     }
 
     /**
@@ -37,10 +41,7 @@ class ServiceDefinitionsProvider implements ContributorInterface
     private function getUrl(string $route, array $parameters = []): string
     {
         if ('/' !== $route[0]) {
-            /** @var UrlGeneratorInterface $router */
-            $router = $this->container->get('router');
-
-            return $router->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
+            return $this->urlGenerator->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
         }
 
         return $route;
@@ -51,8 +52,7 @@ class ServiceDefinitionsProvider implements ContributorInterface
      */
     private function getSerializedHelpMenuItems(): array
     {
-        /** @var ContributorInterface $helpMenuItemsProvider */
-        $helpMenuItemsProvider = $this->container->get('modera_mjr_integration.help_menu_items_provider');
+        $helpMenuItemsProvider = $this->extensionProvider->get('modera_mjr_integration.help_menu_items');
 
         $result = [];
         /** @var HelpMenuItemInterface $item */
@@ -72,14 +72,10 @@ class ServiceDefinitionsProvider implements ContributorInterface
 
     public function getItems(): array
     {
-        /** @var array{'login_url': string, 'logout_url': string, 'is_authenticated_url': string} $bundleConfig */
-        $bundleConfig = $this->container->getParameter(ModeraMJRSecurityIntegrationExtension::CONFIG_KEY);
-
-        $logoutUrl = $this->getUrl($bundleConfig['logout_url']);
+        $logoutUrl = $this->getUrl($this->bundleConfig['logout_url']);
 
         if ($this->authorizationChecker->isGranted('ROLE_PREVIOUS_ADMIN')) {
-            $switchUserConfig = $this->container->getParameter(ModeraSecurityExtension::CONFIG_KEY.'.switch_user');
-            if ($switchUserConfig) {
+            if ($this->switchUserConfig) {
                 $logoutUrl = $this->getUrl('modera_mjr_security_integration.index.switch_user_to', [
                     'username' => SwitchUserListener::EXIT_VALUE,
                 ]);
@@ -92,8 +88,8 @@ class ServiceDefinitionsProvider implements ContributorInterface
                 'args' => [
                     [
                         'urls' => [
-                            'login' => $this->getUrl($bundleConfig['login_url']),
-                            'isAuthenticated' => $this->getUrl($bundleConfig['is_authenticated_url']),
+                            'login' => $this->getUrl($this->bundleConfig['login_url']),
+                            'isAuthenticated' => $this->getUrl($this->bundleConfig['is_authenticated_url']),
                             'logout' => $logoutUrl,
                         ],
                         'authorizationMgr' => '@authorization_mgr',

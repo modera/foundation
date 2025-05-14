@@ -20,59 +20,45 @@ use Symfony\Component\Routing\RouterInterface;
  * Instances of this class are not meant to be created directly, please use
  * {@class \Modera\FileRepositoryBundle\Repository\FileRepository::put} instead.
  *
- * @ORM\Entity
- *
- * @ORM\Table("modera_filerepository_storedfile")
- *
- * @ORM\HasLifecycleCallbacks
- *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'modera_filerepository_storedfile')]
+#[ORM\HasLifecycleCallbacks]
 class StoredFile
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @ORM\Id
-     *
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Repository", inversedBy="files")
-     */
-    private ?Repository $repository = null;
+    #[ORM\ManyToOne(targetEntity: Repository::class, inversedBy: 'files')]
+    private ?Repository $repository;
 
     /**
      * This is a filename that is used to identify this file in "filesystem".
-     *
-     * @ORM\Column(type="string", length=255, unique=true)
      */
-    private ?string $storageKey = null;
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    private string $storageKey;
 
     /**
      * Full filename. For example - /dir1/dir2/file.txt.
-     *
-     * @ORM\Column(type="string")
      */
-    private ?string $filename = null;
+    #[ORM\Column(type: 'string')]
+    private string $filename;
 
     /**
      * Some additional metadata you may want to associate with this file.
      *
      * @var array<string, mixed>
-     *
-     * @ORM\Column(type="json")
      */
+    #[ORM\Column(type: 'json')]
     private array $meta = [];
 
     /**
      * Some value that your application logic can understand and identify a user. It could be user entity id, for example.
-     *
-     * @ORM\Column(type="string", nullable=true)
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $author = null;
 
     /**
@@ -83,21 +69,16 @@ class StoredFile
      */
     private $owner;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private ?\DateTimeInterface $createdAt = null;
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $createdAt;
 
     /**
      * File extension. For example, for file "file.jpg" this field will contain "jpg".
-     *
-     * @ORM\Column(type="string", nullable=true)
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $extension = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $mimeType = null;
 
     private ?ContainerInterface $container = null;
@@ -107,19 +88,17 @@ class StoredFile
      * For example, an original full size picture may have different size thumbnails linked to it.
      *
      * @see addAlternative()
-     *
-     * @ORM\ManyToOne(targetEntity="StoredFile", inversedBy="alternatives", cascade={"PERSIST"})
      */
+    #[ORM\ManyToOne(targetEntity: StoredFile::class, inversedBy: 'alternatives', cascade: ['PERSIST'])]
     private ?StoredFile $alternativeOf = null;
 
     /**
      * @see addAlternative()
      *
      * @var Collection<int, StoredFile>
-     *
-     * @ORM\OneToMany(targetEntity="StoredFile", mappedBy="alternativeOf", cascade={"PERSIST", "REMOVE"})
      */
-    private ?Collection $alternatives = null;
+    #[ORM\OneToMany(targetEntity: StoredFile::class, mappedBy: 'alternativeOf', cascade: ['PERSIST', 'REMOVE'])]
+    private Collection $alternatives;
 
     /**
      * Sometimes it might happen that a physical file has already been deleted when an entity
@@ -130,9 +109,7 @@ class StoredFile
      */
     private bool $isMissingFileIgnoredOnDelete = true;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private int $position = 0;
 
     /**
@@ -140,8 +117,8 @@ class StoredFile
      */
     public function __construct(Repository $repository, \SplFileInfo $file, array $context = [])
     {
-        $this->getAlternatives();
-        $this->getCreatedAt();
+        $this->alternatives = new ArrayCollection();
+        $this->createdAt = new \DateTime('now');
 
         $this->repository = $repository;
 
@@ -188,10 +165,6 @@ class StoredFile
      */
     public function getAlternatives(): Collection
     {
-        if (null === $this->alternatives) {
-            $this->alternatives = new ArrayCollection();
-        }
-
         return $this->alternatives;
     }
 
@@ -243,25 +216,11 @@ class StoredFile
     }
 
     /**
-     * @deprecated Use native ::class property
-     */
-    public static function clazz(): string
-    {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated. Use native ::class property.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return \get_called_class();
-    }
-
-    /**
      * This method is not meant to be used directly.
      *
      * @internal
-     *
-     * @ORM\PreRemove
      */
+    #[ORM\PreRemove]
     public function onRemove(): void
     {
         if (!$this->repository || !$this->storageKey) {
@@ -324,10 +283,6 @@ class StoredFile
 
     public function getCreatedAt(): \DateTimeInterface
     {
-        if (!$this->createdAt) {
-            $this->createdAt = new \DateTime('now');
-        }
-
         return $this->createdAt;
     }
 
@@ -343,7 +298,7 @@ class StoredFile
 
     public function getFilename(): string
     {
-        return $this->filename ?? '';
+        return $this->filename;
     }
 
     public function getId(): ?int
@@ -399,7 +354,7 @@ class StoredFile
 
     public function getStorageKey(): string
     {
-        return $this->storageKey ?? '';
+        return $this->storageKey;
     }
 
     public function setAuthor(?string $author): void

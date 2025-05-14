@@ -4,13 +4,9 @@ namespace Modera\ServerCrudBundle\Tests\Unit\ExceptionHandling;
 
 use Modera\ServerCrudBundle\ExceptionHandling\BypassExceptionHandler;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class BypassExceptionHandlerTest extends \PHPUnit\Framework\TestCase
 {
-    public function testCreateResponse()
+    public function testCreateResponse(): void
     {
         $e = new \Exception('Foo');
 
@@ -23,7 +19,7 @@ class BypassExceptionHandlerTest extends \PHPUnit\Framework\TestCase
             $thrownException = $e;
         }
 
-        $this->assertEquals('Exception', get_class($thrownException));
+        $this->assertEquals('Exception', \get_class($thrownException));
         $this->assertEquals('Foo', $thrownException->getMessage());
     }
 }

@@ -3,14 +3,15 @@
 namespace Modera\BackendTranslationsToolBundle\Contributions;
 
 use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Model\Permission;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2017 Modera Foundation
  */
+#[AsContributorFor('modera_security.permissions')]
 class PermissionsProvider implements ContributorInterface
 {
     /**
@@ -25,7 +26,7 @@ class PermissionsProvider implements ContributorInterface
                 new Permission(
                     T::trans('Access Translations Tool'),
                     ModeraBackendTranslationsToolBundle::ROLE_ACCESS_BACKEND_TOOLS_TRANSLATIONS_SECTION,
-                    'administration'
+                    'administration',
                 ),
             ];
         }

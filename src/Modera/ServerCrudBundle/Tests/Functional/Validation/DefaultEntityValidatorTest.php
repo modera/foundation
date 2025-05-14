@@ -10,23 +10,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class DummyEntityToValidate
 {
-    /**
-     * @Assert\NotBlank
-     */
-    public $id;
+    #[Assert\NotBlank]
+    public ?int $id = null;
 }
 
 class DummyEntityToValidationWithMethod
 {
-    /**
-     * @Assert\NotBlank
-     */
-    public $id;
+    #[Assert\NotBlank]
+    public ?int $id = null;
 
-    public $givenValidationResult;
-    public $givenContainer;
+    public ValidationResult $givenValidationResult;
+    public ContainerInterface $givenContainer;
 
-    public function validateIt(ValidationResult $validationResult, ContainerInterface $container)
+    public function validateIt(ValidationResult $validationResult, ContainerInterface $container): void
     {
         $this->givenValidationResult = $validationResult;
         $this->givenContainer = $container;
@@ -35,34 +31,29 @@ class DummyEntityToValidationWithMethod
     }
 }
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2013 Modera Foundation
- */
 class DefaultEntityValidatorTest extends FunctionalTestCase
 {
-    /* @var DefaultEntityValidator */
-    private $validator;
+    private DefaultEntityValidator $validator;
 
     // override
     public function doSetUp(): void
     {
-        $this->validator = self::getContainer()->get('modera_server_crud.validation.default_entity_validator');
+        $this->validator = self::getContainer()->get(DefaultEntityValidator::class);
     }
 
-    public function testIfServiceExists()
+    public function testIfServiceExists(): void
     {
         $this->assertInstanceOf(DefaultEntityValidator::class, $this->validator);
     }
 
-    public function testValidateBySymfonyServices()
+    public function testValidateBySymfonyServices(): void
     {
         $entity = new DummyEntityToValidate();
 
-        $config = array(
+        $config = [
             'entity_validation_method' => 'validateIt',
             'ignore_standard_validator' => false,
-        );
+        ];
 
         $result = $this->validator->validate($entity, $config);
 
@@ -71,46 +62,46 @@ class DefaultEntityValidatorTest extends FunctionalTestCase
 
         $fieldErrors = $result->getFieldErrors('id');
 
-        $this->assertTrue(is_array($fieldErrors));
-        $this->assertEquals(1, count($fieldErrors));
+        $this->assertTrue(\is_array($fieldErrors));
+        $this->assertEquals(1, \count($fieldErrors));
         $this->assertEquals('This value should not be blank.', $fieldErrors[0]);
     }
 
-    public function testValidateWithEntityMethodOnly()
+    public function testValidateWithEntityMethodOnly(): void
     {
         $entity = new DummyEntityToValidationWithMethod();
 
-        $config = array(
+        $config = [
             'entity_validation_method' => 'validateIt',
             'ignore_standard_validator' => true,
-        );
+        ];
 
         $result = $this->validator->validate($entity, $config);
 
         $this->assertInstanceOf(ValidationResult::class, $result);
         $this->assertTrue($result->hasErrors());
-        $this->assertTrue(in_array('an error', $result->getGeneralErrors()));
+        $this->assertTrue(\in_array('an error', $result->getGeneralErrors()));
         $this->assertInstanceOf(ValidationResult::class, $entity->givenValidationResult);
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerInterface', $entity->givenContainer);
     }
 
-    public function testValidateBoth()
+    public function testValidateBoth(): void
     {
         $entity = new DummyEntityToValidationWithMethod();
 
-        $config = array(
+        $config = [
             'entity_validation_method' => 'validateIt',
             'ignore_standard_validator' => false,
-        );
+        ];
 
         $result = $this->validator->validate($entity, $config);
 
         $this->assertInstanceOf(ValidationResult::class, $result);
         $this->assertTrue($result->hasErrors());
-        $this->assertTrue(in_array('an error', $result->getGeneralErrors()));
+        $this->assertTrue(\in_array('an error', $result->getGeneralErrors()));
         $this->assertInstanceOf(ValidationResult::class, $entity->givenValidationResult);
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerInterface', $entity->givenContainer);
 
-        $this->assertEquals(1, count($result->getFieldErrors('id')));
+        $this->assertEquals(1, \count($result->getFieldErrors('id')));
     }
 }

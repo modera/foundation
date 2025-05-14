@@ -4,31 +4,19 @@ namespace Modera\MjrIntegrationBundle\Tests\Unit\Config;
 
 use Modera\MjrIntegrationBundle\Config\CallbackConfigMerger;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class CallbackConfigMergerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function test__constructWithBadParameter()
-    {
-        new CallbackConfigMerger('opa');
-    }
-
-    public function testHowWellItWorks()
+    public function testHowWellItWorks(): void
     {
         $merger = new CallbackConfigMerger(function (array $input) {
-            return array_merge($input, array(
+            return \array_merge($input, [
                 'another' => 'value',
-            ));
+            ]);
         });
 
-        $result = $merger->merge(array('foo' => 'bar'));
+        $result = $merger->merge(['foo' => 'bar']);
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('foo', $result);
         $this->assertEquals('bar', $result['foo']);
         $this->assertArrayHasKey('another', $result);

@@ -2,37 +2,30 @@
 
 namespace Modera\ServerCrudBundle\Tests\Functional\Persistence;
 
-use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
 use Modera\ServerCrudBundle\Persistence\DoctrineRegistryPersistenceHandler;
 use Modera\ServerCrudBundle\Persistence\OperationResult;
+use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
 use Modera\ServerCrudBundle\Tests\Functional\AbstractTestCase;
-use Modera\ServerCrudBundle\Tests\Functional\DummyUser;
 use Modera\ServerCrudBundle\Tests\Functional\DummyNote;
+use Modera\ServerCrudBundle\Tests\Functional\DummyUser;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class DoctrineRegistryPersistenceHandlerTest extends AbstractTestCase
 {
-    /**
-     * @return PersistenceHandlerInterface
-     */
-    protected function getHandler()
+    protected function getHandler(): PersistenceHandlerInterface
     {
-        return self::getContainer()->get('modera_server_crud.persistence.doctrine_registry_handler');
+        return self::getContainer()->get(DoctrineRegistryPersistenceHandler::class);
     }
 
-    public function testServiceExistence()
+    public function testServiceExistence(): void
     {
         $this->assertInstanceOf(DoctrineRegistryPersistenceHandler::class, $this->getHandler());
     }
 
-    public function testSave()
+    public function testSave(): void
     {
         $repository = self::$em->getRepository(DummyUser::class);
 
-        $this->assertEquals(0, count($repository->findAll()));
+        $this->assertEquals(0, \count($repository->findAll()));
 
         $user = new DummyUser();
         $user->firstname = 'Vassily';
@@ -41,11 +34,11 @@ class DoctrineRegistryPersistenceHandlerTest extends AbstractTestCase
         $result = $this->getHandler()->save($user);
 
         $this->assertInstanceOf(OperationResult::class, $result);
-        $this->assertEquals(1, count($result->getCreatedEntities()));
+        $this->assertEquals(1, \count($result->getCreatedEntities()));
 
         $this->assertNotNull($user->id);
 
-        $this->assertEquals(1, count($repository->findAll()));
+        $this->assertEquals(1, \count($repository->findAll()));
 
         $fetchedUser = $repository->find($user->getId());
 
@@ -54,7 +47,7 @@ class DoctrineRegistryPersistenceHandlerTest extends AbstractTestCase
         $this->assertSame($user->lastname, $fetchedUser->lastname);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $user = new DummyUser();
         $user->firstname = 'Vassily';
@@ -68,7 +61,7 @@ class DoctrineRegistryPersistenceHandlerTest extends AbstractTestCase
         $result = $this->getHandler()->update($user);
 
         $updatedEntities = $result->getUpdatedEntities();
-        $this->assertEquals(1, count($updatedEntities));
+        $this->assertEquals(1, \count($updatedEntities));
         $this->assertArrayHasKey(0, $updatedEntities);
         $this->assertArrayHasKey('entity_class', $updatedEntities[0]);
         $this->assertEquals(DummyUser::class, $updatedEntities[0]['entity_class']);
@@ -79,9 +72,9 @@ class DoctrineRegistryPersistenceHandlerTest extends AbstractTestCase
     /**
      * @return DummyUser[]
      */
-    private function loadSomeData()
+    private function loadSomeData(): array
     {
-        $users = array();
+        $users = [];
 
         for ($i = 0; $i < 10; ++$i) {
             $user = new DummyUser();
@@ -97,14 +90,12 @@ class DoctrineRegistryPersistenceHandlerTest extends AbstractTestCase
         return $users;
     }
 
-
-
     /**
      * @return DummyUser[]
      */
-    private function loadSomeNotes(DummyUser $user)
+    private function loadSomeNotes(DummyUser $user): array
     {
-        $notes = array();
+        $notes = [];
 
         for ($i = 0; $i < 3; ++$i) {
             $note = new DummyNote();
@@ -120,51 +111,51 @@ class DoctrineRegistryPersistenceHandlerTest extends AbstractTestCase
         return $notes;
     }
 
-    public function testQuery()
+    public function testQuery(): void
     {
-        $query = array(
+        $query = [
             'page' => 2,
             'start' => 0,
             'limit' => 5,
-        );
+        ];
 
         $users = $this->loadSomeData();
 
-        /* @var DummyUser[] $result */
+        /** @var DummyUser[] $result */
         $result = $this->getHandler()->query(DummyUser::class, $query);
 
-        $this->assertTrue(is_array($result));
-        $this->assertEquals(5, count($result));
+        $this->assertTrue(\is_array($result));
+        $this->assertEquals(5, \count($result));
         $this->assertEquals(8, $result[0]->id);
 
         foreach ($users as $user) {
             $this->loadSomeNotes($user);
         }
 
-        $query['filter'] = array(
-            array(
-                array(
+        $query['filter'] = [
+            [
+                [
                     'property' => 'notes.text',
                     'value' => 'like:%Note%',
-                ),
-            )
-        );
+                ],
+            ],
+        ];
 
-        /* @var DummyUser[] $result */
+        /** @var DummyUser[] $result */
         $result = $this->getHandler()->query(DummyUser::class, $query);
 
-        $this->assertTrue(is_array($result));
-        $this->assertEquals(5, count($result));
+        $this->assertTrue(\is_array($result));
+        $this->assertEquals(5, \count($result));
         $this->assertEquals(8, $result[0]->id);
     }
 
-    public function testGetCount()
+    public function testGetCount(): void
     {
-        $query = array(
+        $query = [
             'page' => 2,
             'start' => 0,
             'limit' => 5,
-        );
+        ];
 
         $this->assertEquals(0, $this->getHandler()->getCount(DummyUser::class, $query));
 
@@ -176,42 +167,42 @@ class DoctrineRegistryPersistenceHandlerTest extends AbstractTestCase
             $this->loadSomeNotes($user);
         }
 
-        $query['filter'] = array(
-            array(
-                array(
+        $query['filter'] = [
+            [
+                [
                     'property' => 'notes.text',
                     'value' => 'like:%Note%',
-                ),
-            )
-        );
+                ],
+            ],
+        ];
 
         $this->assertEquals(10, $this->getHandler()->getCount(DummyUser::class, $query));
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $users = $this->loadSomeData();
 
         $result = $this->getHandler()->remove($users);
 
         $this->assertInstanceOf(OperationResult::class, $result);
-        $this->assertEquals(10, count($result->getRemovedEntities()));
+        $this->assertEquals(10, \count($result->getRemovedEntities()));
 
         foreach ($result->getRemovedEntities() as $entry) {
             $this->assertNull(self::$em->getRepository($entry['entity_class'])->find($entry['id']));
         }
     }
 
-    public function testResolveEntityPrimaryKeyFields()
+    public function testResolveEntityPrimaryKeyFields(): void
     {
         $fields = $this->getHandler()->resolveEntityPrimaryKeyFields(DummyUser::class);
 
-        $this->assertTrue(is_array($fields));
-        $this->assertEquals(1, count($fields));
-        $this->assertTrue(in_array('id', $fields));
+        $this->assertTrue(\is_array($fields));
+        $this->assertEquals(1, \count($fields));
+        $this->assertTrue(\in_array('id', $fields));
     }
 
-    public function testUpdateBatch()
+    public function testUpdateBatch(): void
     {
         $users = $this->loadSomeData();
 
@@ -222,17 +213,17 @@ class DoctrineRegistryPersistenceHandlerTest extends AbstractTestCase
         $result = $this->getHandler()->updateBatch($users);
 
         $updatedEntities = $result->getUpdatedEntities();
-        $this->assertEquals(count($users), count($updatedEntities));
+        $this->assertEquals(count($users), \count($updatedEntities));
 
         self::$em->clear();
 
-        $ids = array();
+        $ids = [];
         foreach ($users as $user) {
             $ids[] = $user->id;
         }
 
         foreach ($users as $user) {
-            $this->assertTrue(in_array($user->id, $ids));
+            $this->assertTrue(\in_array($user->id, $ids));
 
             $dbUser = self::$em->find(DummyUser::class, $user->id);
 

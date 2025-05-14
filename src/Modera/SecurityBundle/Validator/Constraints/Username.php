@@ -7,11 +7,9 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @internal
  *
- * @Annotation
- *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2017 Modera Foundation
  */
+#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
 class Username extends Constraint
 {
     public string $service = 'modera_security.validator.username';

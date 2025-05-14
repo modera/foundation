@@ -4,19 +4,16 @@ namespace Modera\SecurityBundle\RootUserHandling;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
-use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
 use Modera\SecurityBundle\Entity\Permission;
 use Modera\SecurityBundle\Entity\User;
 use Modera\SecurityBundle\Entity\UserInterface;
 use Modera\SecurityBundle\ModeraSecurityBundle;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * This implementation will use semantic bundle configuration to retrieve information about root user.
  *
  * @see \Modera\SecurityBundle\DependencyInjection\Configuration
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class SemanticConfigRootUserHandler implements RootUserHandlerInterface
@@ -26,27 +23,22 @@ class SemanticConfigRootUserHandler implements RootUserHandlerInterface
      */
     private array $config;
 
-    private EntityManagerInterface $em;
-
-    public function __construct(ContainerInterface $container)
-    {
-        /** @var array{
-         *     'root_user': array<string, mixed>,
-         *     'switch_user'?: array{'role': string}
-         * } $config
-         */
-        $config = $container->getParameter(ModeraSecurityExtension::CONFIG_KEY);
-
-        $this->config = $config['root_user'];
+    /**
+     * @param array{
+     *     'root_user': array<string, mixed>,
+     *     'switch_user'?: array{'role': string},
+     *  } $bundleConfig
+     */
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        array $bundleConfig,
+    ) {
+        $this->config = $bundleConfig['root_user'];
 
         $this->config['switch_user_role'] = null;
-        if (\is_array($config['switch_user'] ?? null)) {
-            $this->config['switch_user_role'] = $config['switch_user']['role'];
+        if (\is_array($bundleConfig['switch_user'] ?? null)) {
+            $this->config['switch_user_role'] = $bundleConfig['switch_user']['role'];
         }
-
-        /** @var EntityManagerInterface $em */
-        $em = $container->get('doctrine.orm.entity_manager');
-        $this->em = $em;
     }
 
     public function isRootUser(UserInterface $user): bool

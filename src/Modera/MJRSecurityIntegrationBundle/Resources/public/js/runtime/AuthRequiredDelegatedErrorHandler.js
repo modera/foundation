@@ -1,10 +1,8 @@
 /**
- * MPFE-817
- *
  * If server-response resembles to an error when user's authentication session has expired then this handler
  * will show a window informing a user about this and offer an option to login again.
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2015 Modera Foundation
  */
 Ext.define('Modera.mjrsecurityintegration.runtime.AuthRequiredDelegatedErrorHandler', {
     extend: 'MF.runtime.servererrorhandling.AbstractDelegatedErrorHandler',

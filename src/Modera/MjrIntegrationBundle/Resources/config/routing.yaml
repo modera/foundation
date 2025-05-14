@@ -1,0 +1,15 @@
+
+modera_mjr_integration:
+    resource: '@ModeraMjrIntegrationBundle/Controller/'
+    prefix: '%modera_mjr_integration.routes_prefix%'
+    type: attribute
+
+modera_font_awesome_js:
+    path: /font-awesome.js
+    defaults:
+        _controller: Modera\MjrIntegrationBundle\Controller\IndexController::fontAwesomeJsAction
+
+modera_font_awesome_css:
+    path: /font-awesome.css
+    defaults:
+        _controller: Modera\MjrIntegrationBundle\Controller\IndexController::fontAwesomeCssAction

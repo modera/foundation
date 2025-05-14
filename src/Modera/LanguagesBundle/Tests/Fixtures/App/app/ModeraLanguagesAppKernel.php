@@ -1,15 +1,15 @@
 <?php
 
-class ModeraLanguagesAppKernel extends \Modera\FoundationBundle\Testing\AbstractFunctionalKernel
+class ModeraLanguagesAppKernel extends Modera\FoundationBundle\Testing\AbstractFunctionalKernel
 {
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
-        return array(
+        return [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
 
             new Modera\LanguagesBundle\ModeraLanguagesBundle(),
             new Modera\LanguagesBundle\Tests\Fixtures\Bundle\ModeraLanguagesDummyBundle(),
-        );
+        ];
     }
 }

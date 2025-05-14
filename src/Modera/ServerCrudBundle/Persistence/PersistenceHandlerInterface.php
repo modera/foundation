@@ -5,7 +5,6 @@ namespace Modera\ServerCrudBundle\Persistence;
 /**
  * Implementations are responsible for persisting and querying data.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 interface PersistenceHandlerInterface

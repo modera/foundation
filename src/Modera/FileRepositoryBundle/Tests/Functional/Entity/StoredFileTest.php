@@ -10,13 +10,9 @@ use Modera\FileRepositoryBundle\Repository\FileRepository;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Symfony\Component\HttpFoundation\File\File;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2017 Modera Foundation
- */
 class StoredFileTest extends FunctionalTestCase
 {
-    private static $st;
+    private static SchemaTool $st;
 
     public static function doSetUpBeforeClass(): void
     {
@@ -35,22 +31,19 @@ class StoredFileTest extends FunctionalTestCase
         ]);
     }
 
-    /**
-     * @group MPFE-1027
-     */
-    public function testDeletingEntityWithoutPhysicalFile()
+    public function testDeletingEntityWithoutPhysicalFile(): void
     {
-        /* @var FileRepository $fr */
-        $fr = self::getContainer()->get('modera_file_repository.repository.file_repository');
+        /** @var FileRepository $fr */
+        $fr = self::getContainer()->get(FileRepository::class);
 
         $repoName = 'dummy_repository2';
 
         $this->assertNull($fr->getRepository($repoName));
 
-        $repositoryConfig = array(
+        $repositoryConfig = [
             'storage_key_generator' => 'modera_file_repository.repository.uniqid_key_generator',
             'filesystem' => 'dummy_tmp_fs',
-        );
+        ];
 
         $this->assertFalse($fr->repositoryExists($repoName));
 
@@ -67,22 +60,19 @@ class StoredFileTest extends FunctionalTestCase
         self::$em->flush(); // no exception has been thrown
     }
 
-    /**
-     * @group MPFE-1027
-     */
-    public function testDeletingEntityWithoutPhysicalFileDenied()
+    public function testDeletingEntityWithoutPhysicalFileDenied(): void
     {
-        /* @var FileRepository $fr */
-        $fr = self::getContainer()->get('modera_file_repository.repository.file_repository');
+        /** @var FileRepository $fr */
+        $fr = self::getContainer()->get(FileRepository::class);
 
         $repoName = 'dummy_repository3';
 
         $this->assertNull($fr->getRepository($repoName));
 
-        $repositoryConfig = array(
+        $repositoryConfig = [
             'storage_key_generator' => 'modera_file_repository.repository.uniqid_key_generator',
             'filesystem' => 'dummy_tmp_fs',
-        );
+        ];
 
         $this->assertFalse($fr->repositoryExists($repoName));
 
@@ -112,19 +102,19 @@ class StoredFileTest extends FunctionalTestCase
         self::$em->clear();
     }
 
-    private function createAndPersistStoredFile(FileRepository $fr, Repository $repository)
+    private function createAndPersistStoredFile(FileRepository $fr, Repository $repository): StoredFile
     {
         $fileContents = 'bar contents';
-        $filePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'our-bar-dummy-file.txt';
-        file_put_contents($filePath, $fileContents);
+        $filePath = \sys_get_temp_dir().\DIRECTORY_SEPARATOR.'our-bar-dummy-file.txt';
+        \file_put_contents($filePath, $fileContents);
 
         $file = new File($filePath);
 
-        $storedFile = $fr->put($repository->getName(), $file, array());
+        $storedFile = $fr->put($repository->getName(), $file);
 
         self::$em->clear(); // this way we will make sure that data is actually persisted in database
 
-        /* @var StoredFile $storedFile */
+        /** @var StoredFile $storedFile */
         $storedFile = self::$em->find(StoredFile::class, $storedFile->getId());
         $this->assertInstanceOf(StoredFile::class, $storedFile);
 

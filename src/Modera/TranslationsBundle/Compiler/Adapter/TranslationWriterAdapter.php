@@ -10,22 +10,15 @@ use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Translation\Writer\TranslationWriter;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2019 Modera Foundation
  */
 class TranslationWriterAdapter implements AdapterInterface
 {
-    private TranslationWriter $writer;
-
-    private string $translationsDir;
-
-    private string $cacheDir;
-
-    public function __construct(TranslationWriter $writer, string $translationsDir, string $cacheDir)
-    {
-        $this->writer = $writer;
-        $this->translationsDir = $translationsDir;
-        $this->cacheDir = $cacheDir;
+    public function __construct(
+        private readonly TranslationWriter $writer,
+        private readonly string $translationsDir,
+        private readonly string $cacheDir,
+    ) {
     }
 
     public function clear(): void
@@ -47,7 +40,7 @@ class TranslationWriterAdapter implements AdapterInterface
             return;
         }
 
-        $outputFormat = 'yml';
+        $outputFormat = 'yaml';
 
         // check format
         $supportedFormats = $this->writer->getFormats();
@@ -76,7 +69,6 @@ class TranslationWriterAdapter implements AdapterInterface
                 return 0 === \strpos($file->getBasename(), $prefix);
             };
 
-            /** @var \SplFileInfo $file */
             foreach (Finder::create()->files()->filter($filter)->in($this->cacheDir) as $file) {
                 $fs->remove($file->getRealPath());
             }

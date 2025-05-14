@@ -4,45 +4,43 @@ namespace Modera\ServerCrudBundle\Tests\Unit\Persistence;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Modera\ServerCrudBundle\Persistence\DoctrineRegistryPersistenceHandler;
-use Modera\ServerCrudBundle\Tests\Functional\DummyUser;
-use Modera\ServerCrudBundle\QueryBuilder\ArrayQueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Modera\ServerCrudBundle\Persistence\DoctrineRegistryPersistenceHandler;
+use Modera\ServerCrudBundle\QueryBuilder\ArrayQueryBuilder;
+use Modera\ServerCrudBundle\Tests\Functional\DummyUser;
 
 class DummyAddress
 {
-    public $id;
+    public ?string $id = null;
 
-    public function __construct($id = null)
+    public function __construct(?string $id = null)
     {
         $this->id = $id;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 }
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class DoctrineRegistryPersistenceHandlerTest extends \PHPUnit\Framework\TestCase
 {
-    public function testUpdateBatch()
+    public function testUpdateBatch(): void
     {
         $user1 = new DummyUser();
+        $user1->id = 1;
+
         $address1 = new DummyAddress('foo-address');
         $address2 = new DummyAddress('bar-address');
 
         $em1 = $this->createDummyEntityManager(); // responsible for user1
         $em2 = $this->createDummyEntityManager(); // responsible for address1, address2
 
-        $registry = $this->createDummyRegistry(array(
-            get_class($user1) => $em1,
-            get_class($address1) => $em2,
-        ));
+        $registry = $this->createDummyRegistry([
+            \get_class($user1) => $em1,
+            \get_class($address1) => $em2,
+        ]);
 
         $handler = new DoctrineRegistryPersistenceHandler($registry, \Phake::mock(ArrayQueryBuilder::class));
 
@@ -68,19 +66,21 @@ class DoctrineRegistryPersistenceHandlerTest extends \PHPUnit\Framework\TestCase
         ;
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $user1 = new DummyUser();
+        $user1->id = 1;
+
         $address1 = new DummyAddress('foo-address');
         $address2 = new DummyAddress('bar-address');
 
         $em1 = $this->createDummyEntityManager(); // responsible for user1
         $em2 = $this->createDummyEntityManager(); // responsible for address1, address2
 
-        $registry = $this->createDummyRegistry(array(
-            get_class($user1) => $em1,
-            get_class($address1) => $em2,
-        ));
+        $registry = $this->createDummyRegistry([
+            \get_class($user1) => $em1,
+            \get_class($address1) => $em2,
+        ]);
 
         $handler = new DoctrineRegistryPersistenceHandler($registry, \Phake::mock(ArrayQueryBuilder::class));
 
@@ -106,7 +106,7 @@ class DoctrineRegistryPersistenceHandlerTest extends \PHPUnit\Framework\TestCase
         ;
     }
 
-    private function createDummyRegistry(array $classToEntityManagersMapping)
+    private function createDummyRegistry(array $classToEntityManagersMapping): ManagerRegistry
     {
         $r = \Phake::mock(ManagerRegistry::class);
 
@@ -131,7 +131,7 @@ class DoctrineRegistryPersistenceHandlerTest extends \PHPUnit\Framework\TestCase
         return $r;
     }
 
-    private function createDummyEntityManager()
+    private function createDummyEntityManager(): EntityManagerInterface
     {
         return \Phake::mock(EntityManagerInterface::class);
     }

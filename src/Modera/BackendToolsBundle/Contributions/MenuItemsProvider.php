@@ -3,7 +3,9 @@
 namespace Modera\BackendToolsBundle\Contributions;
 
 use Modera\BackendToolsBundle\ModeraBackendToolsBundle;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 use Modera\FoundationBundle\Translation\T;
 use Modera\MjrIntegrationBundle\Menu\MenuItem;
 use Modera\MjrIntegrationBundle\Menu\MenuItemInterface;
@@ -13,30 +15,21 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 /**
  * Contributes js-runtime menu items.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.menu.menu_items')]
 class MenuItemsProvider implements ContributorInterface
 {
-    private AuthorizationCheckerInterface $authorizationChecker;
-
-    private ContributorInterface $sectionsProvider;
-
-    private int $tabOrder;
-
     /**
      * @var MenuItem[]
      */
     private ?array $items = null;
 
     public function __construct(
-        AuthorizationCheckerInterface $authorizationChecker,
-        ContributorInterface $sectionsProvider,
-        int $tabOrder
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+        private readonly ExtensionProvider $extensionProvider,
+        private readonly int $tabOrder,
     ) {
-        $this->authorizationChecker = $authorizationChecker;
-        $this->sectionsProvider = $sectionsProvider;
-        $this->tabOrder = $tabOrder;
     }
 
     public function getItems(): array
@@ -45,7 +38,7 @@ class MenuItemsProvider implements ContributorInterface
             $this->items = [];
 
             if ($this->authorizationChecker->isGranted(ModeraBackendToolsBundle::ROLE_ACCESS_TOOLS_SECTION)) {
-                if (\count($this->sectionsProvider->getItems())) {
+                if (\count($this->extensionProvider->get('modera_backend_tools.sections')->getItems())) {
                     $this->items[] = new MenuItem(
                         T::trans('Tools'),
                         'Modera.backend.tools.runtime.Section',
@@ -54,7 +47,7 @@ class MenuItemsProvider implements ContributorInterface
                             MenuItemInterface::META_NAMESPACE => 'Modera.backend.tools',
                             MenuItemInterface::META_NAMESPACE_PATH => '/bundles/moderabackendtools/js',
                         ],
-                        FontAwesome::resolve('wrench', 'fas')
+                        FontAwesome::resolve('wrench', 'fas'),
                     );
                 }
             }

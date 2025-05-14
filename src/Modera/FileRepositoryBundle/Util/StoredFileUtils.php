@@ -3,7 +3,6 @@
 namespace Modera\FileRepositoryBundle\Util;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2015 Modera Foundation
  */
 class StoredFileUtils

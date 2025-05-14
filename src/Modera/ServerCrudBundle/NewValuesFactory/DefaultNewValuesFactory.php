@@ -10,35 +10,32 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * $params, $config and instance of ContainerInterface. The static method must return a serializable data
  * structure that eventually will be sent bank to client-side.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class DefaultNewValuesFactory implements NewValuesFactoryInterface
 {
-    private ContainerInterface $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        private readonly ContainerInterface $container,
+    ) {
     }
 
     public function getValues(array $params, array $config): array
     {
-        /** @var string $entityClass */
+        /** @var class-string $entityClass */
         $entityClass = $config['entity'];
 
         $methodName = 'formatNewValues';
 
         if (\method_exists($entityClass, $methodName)) {
-            /** @var class-string $entityClass */
-            $entityClass = $entityClass;
-            $reflClass = new \ReflectionClass($entityClass);
-            $reflMethod = $reflClass->getMethod($methodName);
-            if ($reflMethod->isStatic()) {
-                $result = $reflMethod->invokeArgs(null, [$params, $config, $this->container]);
-                /** @var array<string, mixed> $result */
+            $refClass = new \ReflectionClass($entityClass);
+            $refMethod = $refClass->getMethod($methodName);
+            if ($refMethod->isStatic()) {
+                $result = $refMethod->invokeArgs(null, [$params, $config, $this->container]);
                 if (\is_array($result)) {
-                    return $result;
+                    /** @var array<string, mixed> $arr */
+                    $arr = $result;
+
+                    return $arr;
                 }
             }
         }

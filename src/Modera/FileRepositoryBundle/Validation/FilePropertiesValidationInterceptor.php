@@ -17,16 +17,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *
  * @internal
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
 class FilePropertiesValidationInterceptor extends BaseOperationInterceptor
 {
-    private ValidatorInterface $validator;
-
-    public function __construct(ValidatorInterface $validator)
-    {
-        $this->validator = $validator;
+    public function __construct(
+        private readonly ValidatorInterface $validator,
+    ) {
     }
 
     public function beforePut(\SplFileInfo $file, Repository $repository, array $context = []): void

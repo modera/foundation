@@ -2,11 +2,13 @@
 
 namespace Modera\ExpanderBundle\DependencyInjection;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ChainMergeContributorsProvider;
 use Modera\ExpanderBundle\Ext\ExtensionPoint;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -14,26 +16,22 @@ use Symfony\Component\DependencyInjection\Reference;
  *
  * The compiler pass will collect services from the constructor with a defined tag, and create a new service which may
  * be used later to get an aggregated value of their getItems method
+ *
+ * @copyright 2024 Modera Foundation
  */
 class CompositeContributorsProviderCompilerPass implements CompilerPassInterface, ExtensionPointAwareCompilerPassInterface
 {
-    private string $providerServiceId;
-
-    private ?string $contributorServiceTagName;
-
-    private ?ExtensionPoint $extensionPoint;
-
     /**
      * @param string  $providerServiceId         This compiler class will contribute a new service with this ID to the
      *                                           container, it will be an instance of the ChainMergeContributorsProvider class
      * @param ?string $contributorServiceTagName And the aforementioned instance will collect services from the
      *                                           container which were tagger with this ID
      */
-    public function __construct(string $providerServiceId, ?string $contributorServiceTagName = null, ?ExtensionPoint $extensionPoint = null)
-    {
-        $this->providerServiceId = $providerServiceId;
-        $this->contributorServiceTagName = $contributorServiceTagName ?: $providerServiceId;
-        $this->extensionPoint = $extensionPoint;
+    public function __construct(
+        private readonly string $providerServiceId,
+        private readonly ?string $contributorServiceTagName = null,
+        private readonly ?ExtensionPoint $extensionPoint = null,
+    ) {
     }
 
     public function getProviderServiceId(): string
@@ -41,9 +39,9 @@ class CompositeContributorsProviderCompilerPass implements CompilerPassInterface
         return $this->providerServiceId;
     }
 
-    public function getContributorServiceTagName(): ?string
+    public function getContributorServiceTagName(): string
     {
-        return $this->contributorServiceTagName;
+        return $this->contributorServiceTagName ?? $this->providerServiceId;
     }
 
     public function getExtensionPoint(): ?ExtensionPoint
@@ -59,11 +57,27 @@ class CompositeContributorsProviderCompilerPass implements CompilerPassInterface
             $this->getProviderServiceId() => $providerDef,
         ]);
 
-        if ($this->getContributorServiceTagName()) {
-            $contributors = $container->findTaggedServiceIds($this->getContributorServiceTagName());
-            foreach ($contributors as $id => $attributes) {
-                $providerDef->addMethodCall('addContributor', [new Reference($id)]);
+        $extensionPoint = $this->getExtensionPoint();
+        if ($extensionPoint) {
+            foreach ($container->findTaggedServiceIds('modera_expander.contributor', true) as $id => $tags) {
+                $def = $container->getDefinition($id);
+                $class = $def->getClass() ?? $id;
+                if (!$reflectionClass = $container->getReflectionClass($class)) {
+                    throw new InvalidArgumentException(\sprintf('Class "%s" used for service "%s" cannot be found.', $class, $id));
+                }
+
+                $attribute = $reflectionClass->getAttributes(AsContributorFor::class)[0] ?? null;
+                /** @var ?AsContributorFor $asContributorFor */
+                $asContributorFor = $attribute?->newInstance();
+                if ($asContributorFor && $asContributorFor->id === $extensionPoint->getId()) {
+                    $providerDef->addMethodCall('addContributor', [new Reference($id)]);
+                }
             }
+        }
+
+        $contributors = $container->findTaggedServiceIds($this->getContributorServiceTagName());
+        foreach ($contributors as $id => $tags) {
+            $providerDef->addMethodCall('addContributor', [new Reference($id)]);
         }
     }
 }

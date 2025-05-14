@@ -1,14 +1,14 @@
 # ModeraRoutingBundle
 
 This bundle makes it possible for bundles to dynamically include routing files so you don't need to manually register
-them in root `app/config/routing.yml` file.
+them in root `app/config/routing.yaml` file.
 
 ## Installation
 
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/routing-bundle:5.x-dev
+composer require modera/routing-bundle:6.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -37,7 +37,7 @@ return [
 // config/routes.yaml
 
 _modera_routing:
-    resource: "@ModeraRoutingBundle/Resources/config/routing.yml"
+    resource: '@ModeraRoutingBundle/Resources/config/routing.yaml'
 ```
 
 ## Documentation
@@ -46,7 +46,7 @@ Internally `ModeraRoutingBundle` relies on `ModeraExpanderBundle` to leverage a 
 points. Shortly speaking, in order for a bundle to contribute routing resources it has to do two things:
 
  1. Create a contributor class which implements \Modera\ExpanderBundle\Ext\ContributorInterface
- 2. Register it in a service container with tag `modera_routing.routing_resources_provider`.
+ 2. Add attribute `#[AsContributorFor('modera_routing.routing_resources')]`.
 
 This is how your contributor class may look like:
 
@@ -55,48 +55,44 @@ This is how your contributor class may look like:
 
 namespace Modera\ExampleBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
+#[AsContributorFor('modera_routing.routing_resources')]
 class RoutingResourcesProvider implements ContributorInterface
 {
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            '@ModeraExampleBundle/Resources/config/routing.yml'
-        );
+        return [
+            '@ModeraExampleBundle/Resources/config/routing.yaml',
+        ];
     }
 }
 ```
 
 And here we have its service container definition:
 
-``` xml
-<services>
-    <service id="modera_example.contributions.routing_resources_provider"
-             class="Modera\ExampleBundle\Contributions\RoutingResourcesProvider">
-
-        <tag name="modera_routing.routing_resources_provider" />
-    </service>
-</services>
+``` yaml
+services:
+    Modera\ExampleBundle\Contributions\RoutingResourcesProvider:
+        autoconfigure: true
 ```
 
-Since version v1.1 a simplified way of contributing new routing resources has been added (which
-doesn't require adding intermediate files). Instead of having getItems() method return a path
-to a routing file you can now return normalized file's content:
+Instead of having getItems() method return a path to a routing file, you can return normalized file's content:
 
 ``` php
 <?php
 
 class RoutingResourcesProvider implements ContributorInterface
 {
-    public function getItems()
+    public function getItems(): array
     {
-        return array(
-            array(
+        return [
+            [
                 'resource' => '@ModeraExampleBundle/Controller/DefaultController.php',
-                'type' => 'annotation',
-            ),
-        );
+                'type' => 'attribute',
+            ],
+        ];
     }
 }
 ```

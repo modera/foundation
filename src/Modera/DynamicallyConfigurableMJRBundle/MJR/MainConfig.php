@@ -11,19 +11,14 @@ use Modera\MjrIntegrationBundle\Config\MainConfigInterface;
  * This implementation read configuration properties stored in central settings storage provided by
  * {@class \Modera\ConfigBundle\ModeraConfigBundle}.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class MainConfig implements MainConfigInterface
 {
-    private ConfigurationEntriesManagerInterface $mgr;
-
-    private ?ValueResolverInterface $resolver;
-
-    public function __construct(ConfigurationEntriesManagerInterface $mgr, ?ValueResolverInterface $resolver = null)
-    {
-        $this->mgr = $mgr;
-        $this->resolver = $resolver;
+    public function __construct(
+        private readonly ConfigurationEntriesManagerInterface $mgr,
+        private readonly ?ValueResolverInterface $resolver = null,
+    ) {
     }
 
     public function getTitle(): ?string

@@ -2,6 +2,8 @@
 
 namespace Modera\BackendSecurityBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Modera\ActivityLoggerBundle\Manager\ActivityManagerInterface;
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Entity\User;
@@ -18,16 +20,23 @@ use Modera\ServerCrudBundle\QueryBuilder\Parsing\Filter;
 use Modera\ServerCrudBundle\QueryBuilder\Parsing\Filters;
 use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
 use Modera\ServerCrudBundle\Validation\ValidationResult;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsController]
 class UsersController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly ActivityManagerInterface $activityManager,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly PasswordManager $passwordManager,
+        private readonly UserService $userService,
+    ) {
+    }
+
     public function getConfig(): array
     {
         return [
@@ -192,71 +201,71 @@ class UsersController extends AbstractCrudController
                     'modera-backend-security-group-groupusers' => HydrationProfile::create(false)->useGroups(['compact-list']),
                 ],
             ],
-            'map_data_on_create' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) {
+            'map_data_on_create' => function (array $params, User $user, DataMapperInterface $defaultMapper) {
                 $defaultMapper->mapData($params, $user);
 
                 if (isset($params['plainPassword']) && $params['plainPassword']) {
                     $plainPassword = $params['plainPassword'];
                 } else {
-                    $plainPassword = $this->getPasswordManager()->generatePassword();
+                    $plainPassword = $this->passwordManager->generatePassword();
                 }
 
                 try {
                     if (isset($params['sendPassword']) && '' != $params['sendPassword']) {
-                        $this->getPasswordManager()->encodeAndSetPasswordAndThenEmailIt($user, $plainPassword);
+                        $this->passwordManager->encodeAndSetPasswordAndThenEmailIt($user, $plainPassword);
                     } else {
-                        $this->getPasswordManager()->encodeAndSetPassword($user, $plainPassword);
+                        $this->passwordManager->encodeAndSetPassword($user, $plainPassword);
                     }
                 } catch (BadPasswordException $e) {
                     throw new BadPasswordException($e->getErrors()[0], 0, $e);
                 }
             },
-            'map_data_on_update' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) {
+            'map_data_on_update' => function (array $params, User $user, DataMapperInterface $defaultMapper) {
                 $ignoreMapping = ['active', 'plainPassword', 'sendPassword'];
                 $params = \array_intersect_key($params, \array_flip($this->getAllowedFieldsToEdit($user)));
                 $params = \array_diff_key($params, \array_flip($ignoreMapping));
                 $defaultMapper->mapData($params, $user);
             },
-            'update_entity_handler' => function (User $user, array $params, PersistenceHandlerInterface $defaultHandler, ContainerInterface $container) {
+            'update_entity_handler' => function (User $user, array $params, PersistenceHandlerInterface $defaultHandler) {
                 $params = $params['record'];
 
                 if (isset($params['active'])) {
                     if ($params['active']) {
-                        $this->getUserService()->enable($user);
+                        $this->userService->enable($user);
                         $activityMsg = T::trans('Profile enabled for user "%user%".', ['%user%' => $user->getUsername()]);
                         $activityContext = [
                             'type' => 'user.profile_enabled',
-                            'author' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
+                            'author' => $this->getUser() instanceof User ? (string) $this->getUser()->getId() : null,
                         ];
                     } else {
-                        $this->getUserService()->disable($user);
+                        $this->userService->disable($user);
                         $activityMsg = T::trans('Profile disabled for user "%user%".', ['%user%' => $user->getUsername()]);
                         $activityContext = [
                             'type' => 'user.profile_disabled',
-                            'author' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
+                            'author' => $this->getUser() instanceof User ? (string) $this->getUser()->getId() : null,
                         ];
                     }
-                    $this->getActivityManager()->info($activityMsg, $activityContext);
+                    $this->activityManager->info($activityMsg, $activityContext);
                 } elseif (isset($params['plainPassword']) && $params['plainPassword']) {
                     // Password encoding and setting is done in "updated_entity_validator"
                     $activityMsg = T::trans('Password has been changed for user "%user%".', ['%user%' => $user->getUsername()]);
                     $activityContext = [
                         'type' => 'user.password_changed',
-                        'author' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
+                        'author' => $this->getUser() instanceof User ? (string) $this->getUser()->getId() : null,
                     ];
-                    $this->getActivityManager()->info($activityMsg, $activityContext);
+                    $this->activityManager->info($activityMsg, $activityContext);
                 } else {
                     $activityMsg = T::trans('Profile data is changed for user "%user%".', ['%user%' => $user->getUsername()]);
                     $activityContext = [
                         'type' => 'user.profile_updated',
-                        'author' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
+                        'author' => $this->getUser() instanceof User ? (string) $this->getUser()->getId() : null,
                     ];
-                    $this->getActivityManager()->info($activityMsg, $activityContext);
+                    $this->activityManager->info($activityMsg, $activityContext);
                 }
 
                 return $defaultHandler->update($user);
             },
-            'updated_entity_validator' => function (array $params, User $user, EntityValidatorInterface $validator, array $config, ContainerInterface $container) {
+            'updated_entity_validator' => function (array $params, User $user, EntityValidatorInterface $validator, array $config) {
                 if (!isset($params['record'])) {
                     $result = new ValidationResult();
                     $result->addGeneralError('Bad request.');
@@ -281,7 +290,7 @@ class UsersController extends AbstractCrudController
                         if (
                             ($loggedInUser = $this->getUser()) instanceof User
                             && $loggedInUser->getId() !== $user->getId()
-                            && $this->getUserService()->isRootUser($user)
+                            && $this->userService->isRootUser($user)
                         ) {
                             $message = T::trans('Unable to change password for ROOT user.');
                             $e = new BadPasswordException($message);
@@ -290,9 +299,9 @@ class UsersController extends AbstractCrudController
                         }
 
                         if (isset($params['sendPassword']) && '' !== $params['sendPassword']) {
-                            $this->getPasswordManager()->encodeAndSetPasswordAndThenEmailIt($user, $params['plainPassword']);
+                            $this->passwordManager->encodeAndSetPasswordAndThenEmailIt($user, $params['plainPassword']);
                         } else {
-                            $this->getPasswordManager()->encodeAndSetPassword($user, $params['plainPassword']);
+                            $this->passwordManager->encodeAndSetPassword($user, $params['plainPassword']);
                         }
                     } catch (BadPasswordException $e) {
                         $result->addFieldError('plainPassword', $e->getErrors()[0]);
@@ -301,12 +310,12 @@ class UsersController extends AbstractCrudController
 
                 return $result;
             },
-            'remove_entities_handler' => function ($entities, $params, $defaultHandler, ContainerInterface $container) {
+            'remove_entities_handler' => function ($entities, $params, $defaultHandler) {
                 $operationResult = new OperationResult();
 
                 /** @var User[] $entities */
                 foreach ($entities as $entity) {
-                    $this->getUserService()->remove($entity);
+                    $this->userService->remove($entity);
                     $operationResult->reportEntity(
                         User::class,
                         $entity->getId() ?? 0,
@@ -331,11 +340,10 @@ class UsersController extends AbstractCrudController
         /** @var User $authenticatedUser */
         $authenticatedUser = $this->getUser();
 
-        $targetUser = null;
         if (isset($params['userId'])) {
             /** @var ?User $requestedUser */
             $requestedUser = $this
-                ->em()
+                ->entityManager
                 ->getRepository(User::class)
                 ->find($params['userId'])
             ;
@@ -356,7 +364,7 @@ class UsersController extends AbstractCrudController
         return [
             'success' => true,
             'result' => [
-                'plainPassword' => $this->getPasswordManager()->generatePassword($targetUser),
+                'plainPassword' => $this->passwordManager->generatePassword($targetUser),
             ],
         ];
     }
@@ -376,7 +384,7 @@ class UsersController extends AbstractCrudController
             && !$this->isGranted('ROLE_PREVIOUS_ADMIN')
             && !$this->isGranted(ModeraSecurityBundle::ROLE_ROOT_USER)
         ) {
-            $isRotationNeeded = $this->getPasswordManager()->isItTimeToRotatePassword($user);
+            $isRotationNeeded = $this->passwordManager->isItTimeToRotatePassword($user);
         }
 
         return [
@@ -385,30 +393,6 @@ class UsersController extends AbstractCrudController
                 'isRotationNeeded' => $isRotationNeeded,
             ],
         ];
-    }
-
-    private function getPasswordManager(): PasswordManager
-    {
-        /** @var PasswordManager $passwordManager */
-        $passwordManager = $this->container->get('modera_security.password_strength.password_manager');
-
-        return $passwordManager;
-    }
-
-    private function getUserService(): UserService
-    {
-        /** @var UserService $userService */
-        $userService = $this->container->get('modera_security.service.user_service');
-
-        return $userService;
-    }
-
-    private function getActivityManager(): LoggerInterface
-    {
-        /** @var LoggerInterface $activityManager */
-        $activityManager = $this->container->get('modera_activity_logger.manager.activity_manager');
-
-        return $activityManager;
     }
 
     /**

@@ -13,13 +13,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *
  * @see http://symfony.com/doc/current/book/validation.html#file-constraints
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
 class FileWrapper
 {
-    protected \SplFileInfo $file;
-
     /**
      * @var Constraint[]
      */
@@ -29,9 +26,10 @@ class FileWrapper
      * @param \SplFileInfo $file        A file that is being uploaded to a repository
      * @param Constraint[] $constraints Instances of \Symfony\Component\Validator\Constraint
      */
-    public function __construct(\SplFileInfo $file, array $constraints = [])
-    {
-        $this->file = $file;
+    public function __construct(
+        protected readonly \SplFileInfo $file,
+        array $constraints = [],
+    ) {
         self::$constraints = $constraints;
     }
 

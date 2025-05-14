@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 /**
  * This is the class that loads and manages your bundle configuration.
  *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
+ * To learn more see {@link https://symfony.com/doc/current/bundles/extension.html}
  */
 class ModeraBackendToolsExtension extends Extension
 {
@@ -21,8 +21,9 @@ class ModeraBackendToolsExtension extends Extension
 
         $container->setParameter('modera_backend_tools.tab_order', $config['tab_order']);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('controller.xml');
-        $loader->load('services.xml');
+        $loader = new Loader\PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('controller.php');
+        $loader->load('services.php');
+        $loader->load('translations.php');
     }
 }

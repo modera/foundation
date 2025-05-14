@@ -14,16 +14,13 @@ use Modera\ConfigBundle\Entity\ConfigurationEntry;
  * - clientValueMethodName : Default value is 'getId', a method name to use to get a value
  *                           that will be stored in {@class ConfigurationEntry}.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class EntityRepositoryHandler implements HandlerInterface
 {
-    private EntityManagerInterface $em;
-
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em = $em;
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+    ) {
     }
 
     /**
@@ -42,7 +39,7 @@ class EntityRepositoryHandler implements HandlerInterface
         return $className;
     }
 
-    public function getReadableValue(ConfigurationEntry $entry)
+    public function getReadableValue(ConfigurationEntry $entry): mixed
     {
         $cfg = $entry->getServerHandlerConfig();
         if (!isset($cfg['toStringMethodName'])) {
@@ -58,12 +55,12 @@ class EntityRepositoryHandler implements HandlerInterface
         return $entity->{$cfg['toStringMethodName']}();
     }
 
-    public function getValue(ConfigurationEntry $entry)
+    public function getValue(ConfigurationEntry $entry): mixed
     {
         return $this->em->getRepository($this->getEntityFqcn($entry))->find($entry->getDenormalizedValue());
     }
 
-    public function convertToStorageValue($value, ConfigurationEntry $entry)
+    public function convertToStorageValue(mixed $value, ConfigurationEntry $entry): mixed
     {
         /** @var object $value */
         if (!\is_a($value, $this->getEntityFqcn($entry))) {

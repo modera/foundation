@@ -9,25 +9,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class VersionInjectorEventListenerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var VersionResolverInterface
-     */
-    private $versionResolver;
+    private VersionResolverInterface $versionResolver;
 
-    /**
-     * @var Response
-     */
-    private $response;
+    private Response $response;
 
-    private $mockRequest;
+    private Request $mockRequest;
 
-    private $mockEvent;
+    private ResponseEvent $mockEvent;
 
     public function setUp(): void
     {
@@ -43,21 +33,21 @@ class VersionInjectorEventListenerTest extends \PHPUnit\Framework\TestCase
 
         $kernel = \Phake::mock(HttpKernelInterface::class);
 
-        $this->mockEvent = new ResponseEvent($kernel, $this->mockRequest, HttpKernelInterface::MASTER_REQUEST, $this->response);
+        $this->mockEvent = new ResponseEvent($kernel, $this->mockRequest, HttpKernelInterface::MAIN_REQUEST, $this->response);
     }
 
-    public function testOnKernelResponse_happyPath()
+    public function testOnKernelResponseHappyPath(): void
     {
         \Phake::when($this->mockRequest)
             ->getPathInfo()
             ->thenReturn('/backend/direct')
         ;
 
-        $listener = new VersionInjectorEventListener($this->versionResolver, array(
-            'listener_response_paths' => array(
+        $listener = new VersionInjectorEventListener($this->versionResolver, [
+            'listener_response_paths' => [
                 'backend.*',
-            ),
-        ));
+            ],
+        ]);
 
         $listener->onKernelResponse($this->mockEvent);
 
@@ -69,18 +59,18 @@ class VersionInjectorEventListenerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('resolved-foo-version', $headers[$headerName][0]);
     }
 
-    public function testOnKernelResponse_pathDoesNotMatch()
+    public function testOnKernelResponsePathDoesNotMatch(): void
     {
         \Phake::when($this->mockRequest)
             ->getPathInfo()
             ->thenReturn('/products/sections')
         ;
 
-        $listener = new VersionInjectorEventListener($this->versionResolver, array(
-            'listener_response_paths' => array(
+        $listener = new VersionInjectorEventListener($this->versionResolver, [
+            'listener_response_paths' => [
                 'backend.*',
-            ),
-        ));
+            ],
+        ]);
 
         $listener->onKernelResponse($this->mockEvent);
 

@@ -4,38 +4,21 @@ namespace Modera\BackendSecurityBundle\Tests\Unit\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use Modera\ActivityLoggerBundle\Manager\ActivityManagerInterface;
 use Modera\BackendSecurityBundle\Controller\UsersController;
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\SecurityBundle\Entity\User;
-use Modera\SecurityBundle\PasswordStrength\PasswordGenerator;
 use Modera\SecurityBundle\PasswordStrength\PasswordManager;
+use Modera\SecurityBundle\Service\UserService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-/**
- * Refactored to be a Unit test.
- *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class UsersControllerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var UsersController
-     */
-    private $controller;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUp(): void
-    {
-        $this->controller = new UsersController();
-    }
-
-    public function testGeneratePasswordAction_forAuthenticatedUser()
+    public function testGeneratePasswordActionForAuthenticatedUser(): void
     {
         $userMock = \Phake::mock(User::class);
 
@@ -63,7 +46,7 @@ class UsersControllerTest extends \PHPUnit\Framework\TestCase
         ;
         $containerMock = \Phake::mock(ContainerInterface::class);
         \Phake::when($containerMock)
-            ->get('modera_security.password_strength.password_manager')
+            ->get(PasswordManager::class)
             ->thenReturn($passwordManager)
         ;
 
@@ -77,26 +60,31 @@ class UsersControllerTest extends \PHPUnit\Framework\TestCase
             ->thenReturn($tokenStorageMock)
         ;
 
-        $this->controller->setContainer($containerMock);
-
-        $result = $this->controller->generatePasswordAction(array());
-
-        $expectedResult = array(
-            'success' => true,
-            'result' => array(
-                'plainPassword' => 'foo-pwd',
-            ),
+        $controller = new UsersController(
+            \Phake::mock(ActivityManagerInterface::class),
+            \Phake::mock(EntityManagerInterface::class),
+            $passwordManager,
+            \Phake::mock(UserService::class),
         );
+        $controller->setContainer($containerMock);
+
+        $result = $controller->generatePasswordAction([]);
+
+        $expectedResult = [
+            'success' => true,
+            'result' => [
+                'plainPassword' => 'foo-pwd',
+            ],
+        ];
         $this->assertSame($expectedResult, $result);
     }
 
     /**
-     * Because $authenticatedUser != $anotherUser and no admin privileges
-     *
-     * @expectedException Symfony\Component\Security\Core\Exception\AccessDeniedException
+     * Because $authenticatedUser != $anotherUser and no admin privileges.
      */
-    public function testGeneratePasswordAction_whenIdExplicitlyProvided_noMatch_notAdmin()
+    public function testGeneratePasswordActionWhenIdExplicitlyProvidedNoMatchNotAdmin(): void
     {
+        $this->expectException(AccessDeniedException::class);
         $authenticatedUser = \Phake::mock(User::class);
 
         $tokenMock = \Phake::mock(UsernamePasswordToken::class);
@@ -162,8 +150,22 @@ class UsersControllerTest extends \PHPUnit\Framework\TestCase
             ->thenReturn($doctrineMock)
         ;
 
-        $this->controller->setContainer($containerMock);
+        $controller = new UsersController(
+            \Phake::mock(ActivityManagerInterface::class),
+            $doctrineMock,
+            \Phake::mock(PasswordManager::class),
+            \Phake::mock(UserService::class),
+        );
+        $controller->setContainer($containerMock);
 
-        $result = $this->controller->generatePasswordAction(array('userId' => 123));
+        $result = $controller->generatePasswordAction(['userId' => 123]);
+
+        $expectedResult = [
+            'success' => true,
+            'result' => [
+                'plainPassword' => 'foo-pwd',
+            ],
+        ];
+        $this->assertSame($expectedResult, $result);
     }
 }

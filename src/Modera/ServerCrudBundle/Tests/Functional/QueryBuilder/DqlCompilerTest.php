@@ -28,27 +28,25 @@ class DqlCompilerTest extends AbstractTestCase
         $this->compiler = new DqlCompiler($this->exprMgr);
     }
 
-    public function testCompileSimple()
+    public function testCompileSimple(): void
     {
         $compileExpression = $this->compiler->compile(new Expression(':firstname', 'fn'), $this->binder);
 
         $this->assertEquals('e.firstname AS fn', $compileExpression);
     }
 
-    public function testCompileFunction()
+    public function testCompileFunction(): void
     {
-        $rawExpr = array(
+        $rawExpr = [
             'function' => 'CONCAT',
-            'args' => array(
+            'args' => [
                 ':firstname',
-                array(
+                [
                     'function' => 'CONCAT',
-                    'args' => array(
-                        ' ', ':lastname'
-                    )
-                )
-            )
-        );
+                    'args' => [' ', ':lastname'],
+                ],
+            ],
+        ];
         $expr = new Expression($rawExpr, 'fullname');
 
         $compiledExpression = $this->compiler->compile($expr, $this->binder);
@@ -56,15 +54,15 @@ class DqlCompilerTest extends AbstractTestCase
         $this->assertEquals('CONCAT(e.firstname, CONCAT(?0, e.lastname)) AS fullname', $compiledExpression);
     }
 
-    public function testCompileHiddenFunction()
+    public function testCompileHiddenFunction(): void
     {
-        $rawExpr = array(
+        $rawExpr = [
             'function' => 'CEIL',
-            'args' => array(
-                ':price'
-            ),
+            'args' => [
+                ':price',
+            ],
             'hidden' => true,
-        );
+        ];
         $expr = new Expression($rawExpr, 'int_price');
 
         $compiledExpression = $this->compiler->compile($expr, $this->binder);

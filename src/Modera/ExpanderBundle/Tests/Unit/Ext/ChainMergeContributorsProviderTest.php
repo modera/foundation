@@ -37,10 +37,10 @@ class ChainMergeContributorsProviderTest extends \PHPUnit\Framework\TestCase
         $this->p = new ChainMergeContributorsProvider();
     }
 
-    public function testAddContributorAndThenGetContributors()
+    public function testAddContributorAndThenGetContributors(): void
     {
-        $c1 = $this->createMock(ContributorInterface::CLAZZ);
-        $c2 = $this->createMock(ContributorInterface::CLAZZ);
+        $c1 = $this->createMock(ContributorInterface::class);
+        $c2 = $this->createMock(ContributorInterface::class);
 
         $this->p->addContributor($c1);
         $this->p->addContributor($c2);
@@ -48,14 +48,14 @@ class ChainMergeContributorsProviderTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([$c1, $c2], $this->p->getContributors());
     }
 
-    public function testGetItems()
+    public function testGetItems(): void
     {
-        $c1 = $this->createMock(ContributorInterface::CLAZZ);
+        $c1 = $this->createMock(ContributorInterface::class);
         $c1->expects($this->any())
            ->method('getItems')
            ->will($this->returnValue(['foo1', 'foo2']));
 
-        $c2 = $this->createMock(ContributorInterface::CLAZZ);
+        $c2 = $this->createMock(ContributorInterface::class);
         $c2->expects($this->any())
            ->method('getItems')
            ->will($this->returnValue(['bar1', 'bar2']));
@@ -67,11 +67,11 @@ class ChainMergeContributorsProviderTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(\is_array($result));
     }
 
-    public function testGetItemsWithOrder()
+    public function testGetItemsWithOrder(): void
     {
         $c1 = new MockOrderAwareContributor(100, ['foo']);
 
-        $c2 = \Phake::mock(ContributorInterface::CLAZZ);
+        $c2 = \Phake::mock(ContributorInterface::class);
         \Phake::when($c2)->getItems()->thenReturn(['baz']);
 
         $c3 = new MockOrderAwareContributor(50, ['bar']);
@@ -83,13 +83,13 @@ class ChainMergeContributorsProviderTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(['bar', 'foo', 'baz'], $this->p->getItems());
     }
 
-    public function testGetItemsWithSameOrder()
+    public function testGetItemsWithSameOrder(): void
     {
         $c1 = new MockOrderAwareContributor(1, ['foo']);
 
         $c2 = new MockOrderAwareContributor(1, ['bar']);
 
-        $c3 = \Phake::mock(ContributorInterface::CLAZZ);
+        $c3 = \Phake::mock(ContributorInterface::class);
         \Phake::when($c3)->getItems()->thenReturn(['baz']);
 
         $this->p->addContributor($c1);

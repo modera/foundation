@@ -8,13 +8,9 @@ use Modera\SecurityBundle\Entity\Permission;
 use Modera\SecurityBundle\Entity\User;
 use Modera\SecurityBundle\PasswordStrength\PasswordManager;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class UserTest extends \PHPUnit\Framework\TestCase
 {
-    public function testFirstLastMiddleName()
+    public function testFirstLastMiddleName(): void
     {
         $user = new User();
 
@@ -35,11 +31,11 @@ class UserTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Middle - Name', $user->getMiddleName());
     }
 
-    public function testGetRawRoles()
+    public function testGetRawRoles(): void
     {
         $user = new User();
 
-        $this->assertEquals(0, count($user->getRawRoles()));
+        $this->assertEquals(0, \count($user->getRawRoles()));
 
         // ---
 
@@ -57,12 +53,12 @@ class UserTest extends \PHPUnit\Framework\TestCase
 
         $userRoles = $user->getRawRoles();
 
-        $this->assertEquals(2, count($userRoles));
+        $this->assertEquals(2, \count($userRoles));
         $this->assertSame($groupPermission, $userRoles[0]);
         $this->assertSame($userPermission, $userRoles[1]);
     }
 
-    public function testGetRoles()
+    public function testGetRoles(): void
     {
         $user = new User();
 
@@ -93,7 +89,7 @@ class UserTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['ROLE_FOO', 'ROLE_BAR'], $user->getRoles());
     }
 
-    public function testValidateAndSetPassword()
+    public function testValidateAndSetPassword(): void
     {
         $pm = \Phake::mock(PasswordManager::class);
 
@@ -105,7 +101,7 @@ class UserTest extends \PHPUnit\Framework\TestCase
         ;
     }
 
-    public function testGetFullName()
+    public function testGetFullName(): void
     {
         $user = new User();
         $user->setFirstName('First');
@@ -118,6 +114,6 @@ class UserTest extends \PHPUnit\Framework\TestCase
         $user->setFirstName('');
         $user->setLastName('');
         $user->setMiddleName('');
-        $this->assertSame('johnsnow', $user->getFullName());
+        $this->assertSame(null, $user->getFullName());
     }
 }

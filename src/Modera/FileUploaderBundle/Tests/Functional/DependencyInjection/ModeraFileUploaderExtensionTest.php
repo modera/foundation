@@ -6,16 +6,11 @@ use Modera\FileUploaderBundle\DependencyInjection\ModeraFileUploaderExtension;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class ModeraFileUploaderExtensionTest extends FunctionalTestCase
 {
-    private $ext;
+    private ModeraFileUploaderExtension $ext;
 
-    /* @var ContainerBuilder */
-    private $cb;
+    private ContainerBuilder $cb;
 
     public function doSetUp(): void
     {
@@ -23,12 +18,12 @@ class ModeraFileUploaderExtensionTest extends FunctionalTestCase
         $this->cb = new ContainerBuilder();
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
-        $this->ext->load(array(), $this->cb);
+        $this->ext->load([], $this->cb);
 
         $cfg = $this->cb->getParameter(ModeraFileUploaderExtension::CONFIG_KEY);
-        $this->assertTrue(is_array($cfg));
+        $this->assertTrue(\is_array($cfg));
         $this->assertArrayHasKey('is_enabled', $cfg);
         $this->assertArrayHasKey('url', $cfg);
         $this->assertArrayHasKey('expose_all_repositories', $cfg);
@@ -41,13 +36,13 @@ class ModeraFileUploaderExtensionTest extends FunctionalTestCase
         $this->assertNotNull($provider);
     }
 
-    public function testLoadWhenRepositoriesAreNotExposed()
+    public function testLoadWhenRepositoriesAreNotExposed(): void
     {
-        $config = array(
-            array(
+        $config = [
+            [
                 'expose_all_repositories' => false,
-            ),
-        );
+            ],
+        ];
 
         $this->ext->load($config, $this->cb);
 

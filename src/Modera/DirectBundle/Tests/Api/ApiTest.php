@@ -10,11 +10,11 @@ class ApiTest extends WebTestCase
     /**
      * Test Api->__toString() method.
      */
-    public function test__toString()
+    public function testToString(): void
     {
         $client = $this->createClient();
         $api = new Api($client->getContainer());
 
-        $this->assertRegExp('/Actions/', $api->__toString());
+        $this->assertMatchesRegularExpression('/Actions/', $api->__toString());
     }
 }

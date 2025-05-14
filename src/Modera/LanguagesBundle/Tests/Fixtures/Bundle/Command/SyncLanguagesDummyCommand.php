@@ -2,15 +2,11 @@
 
 namespace Modera\LanguagesBundle\Tests\Fixtures\Bundle\Command;
 
+use Modera\LanguagesBundle\Command\SyncLanguagesCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Modera\LanguagesBundle\Command\SyncLanguagesCommand;
 
-/**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class SyncLanguagesDummyCommand extends SyncLanguagesCommand
 {
     private $dummyInput;
@@ -26,6 +22,7 @@ class SyncLanguagesDummyCommand extends SyncLanguagesCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->dummyInput = $input;
+
         return parent::execute($input, $output);
     }
 
@@ -41,7 +38,7 @@ class SyncLanguagesDummyCommand extends SyncLanguagesCommand
 
             return $config;
         } else {
-            return array();
+            return [];
         }
     }
 }

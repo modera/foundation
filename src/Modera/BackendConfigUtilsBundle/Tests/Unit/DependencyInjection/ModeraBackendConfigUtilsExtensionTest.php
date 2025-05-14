@@ -2,24 +2,27 @@
 
 namespace Modera\BackendConfigUtilsBundle\Tests\Unit\DependencyInjection;
 
+use Modera\BackendConfigUtilsBundle\Contributions\ClassLoaderMappingsProvider;
 use Modera\BackendConfigUtilsBundle\DependencyInjection\ModeraBackendConfigUtilsExtension;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class ModeraBackendConfigUtilsExtensionTest extends \PHPUnit\Framework\TestCase
 {
-    public function testLoad()
+    public function testLoad(): void
     {
         $ext = new ModeraBackendConfigUtilsExtension();
 
         $builder = new ContainerBuilder();
 
-        $ext->load(array(), $builder);
+        $ext->load([], $builder);
 
-        $classLoaderMappingProvider = $builder->getDefinition('modera_backend_config_utils.contributions.class_loader_mappings_provider');
-        $this->assertEquals(1, count($classLoaderMappingProvider->getTag('modera_mjr_integration.class_loader_mappings_provider')));
+        $classLoaderMappingProvider = $builder->getDefinition(ClassLoaderMappingsProvider::class);
+        $class = $classLoaderMappingProvider->getClass() ?? ClassLoaderMappingsProvider::class;
+        $reflectionClass = $builder->getReflectionClass($class);
+        $attribute = $reflectionClass->getAttributes(AsContributorFor::class)[0] ?? null;
+        /** @var ?AsContributorFor $asContributorFor */
+        $asContributorFor = $attribute?->newInstance();
+        $this->assertEquals('modera_mjr_integration.class_loader_mappings', $asContributorFor?->id);
     }
 }

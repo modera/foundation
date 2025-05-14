@@ -4,7 +4,7 @@
  *
  * @see Modera.mjrintegration.runtime.titlehandling.PageTitleManager
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2016 Modera Foundation
  */
 Ext.define('Modera.mjrintegration.runtime.titlehandling.MonitoringPlugin', {
     extend: 'MF.runtime.extensibility.AbstractPlugin',

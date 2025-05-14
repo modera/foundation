@@ -7,18 +7,18 @@ use Modera\ServerCrudBundle\QueryBuilder\Parsing\OrFilter;
 
 class OrFilterTest extends \PHPUnit\Framework\TestCase
 {
-    public function testHowWellItWorksWithValidInput()
+    public function testHowWellItWorksWithValidInput(): void
     {
-        $f = new OrFilter(array(
-            array('property' => 'user.firstname', 'value' => 'like:Se%'),
-            array('property' => 'user.lastname', 'value' => 'like:Li%')
-        ));
+        $f = new OrFilter([
+            ['property' => 'user.firstname', 'value' => 'like:Se%'],
+            ['property' => 'user.lastname', 'value' => 'like:Li%'],
+        ]);
 
         $this->assertTrue($f->isValid());
 
         $filters = $f->getFilters();
 
-        $this->assertEquals(2, count($filters));
+        $this->assertEquals(2, \count($filters));
         $this->assertInstanceOf(Filter::class, $filters[0]);
         $this->assertInstanceOf(Filter::class, $filters[1]);
         $this->assertEquals('user.firstname', $filters[0]->getProperty());
@@ -30,23 +30,22 @@ class OrFilterTest extends \PHPUnit\Framework\TestCase
 
         $compiled = $f->compile();
 
-        $this->assertTrue(is_array($compiled));
-
+        $this->assertTrue(\is_array($compiled));
     }
 
-    public function testHowWellBadInputIsHandled()
+    public function testHowWellBadInputIsHandled(): void
     {
-        $f = new OrFilter(array(
-            array('property' => 'firstname'),
-            array('value' => 'like:foo%'),
-            array('property' => 'lastname', 'value' => 'foo'),
-            array('property' => 'id', 'value' => 'eq:1')
-        ));
+        $f = new OrFilter([
+            ['property' => 'firstname'],
+            ['value' => 'like:foo%'],
+            ['property' => 'lastname', 'value' => 'foo'],
+            ['property' => 'id', 'value' => 'eq:1'],
+        ]);
 
         $this->assertFalse($f->isValid());
 
         $filters = $f->getFilters();
 
-        $this->assertEquals(4, count($filters));
+        $this->assertEquals(4, \count($filters));
     }
 }

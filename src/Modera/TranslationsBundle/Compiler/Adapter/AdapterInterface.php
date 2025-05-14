@@ -5,7 +5,6 @@ namespace Modera\TranslationsBundle\Compiler\Adapter;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2019 Modera Foundation
  */
 interface AdapterInterface

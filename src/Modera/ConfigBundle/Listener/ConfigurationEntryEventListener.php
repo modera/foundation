@@ -2,21 +2,19 @@
 
 namespace Modera\ConfigBundle\Listener;
 
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 use Modera\ConfigBundle\Notifying\NotificationCenter;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2021 Modera Foundation
  */
 class ConfigurationEntryEventListener
 {
-    private NotificationCenter $notificationCenter;
-
-    public function __construct(NotificationCenter $notificationCenter)
-    {
-        $this->notificationCenter = $notificationCenter;
+    public function __construct(
+        private readonly NotificationCenter $notificationCenter,
+    ) {
     }
 
     public function postPersist(ConfigurationEntry $entity, LifecycleEventArgs $args): void
@@ -26,20 +24,24 @@ class ConfigurationEntryEventListener
 
     public function postUpdate(ConfigurationEntry $entity, LifecycleEventArgs $args): void
     {
-        $changesSet = $args->getObjectManager()->getUnitOfWork()->getEntityChangeSet($entity);
+        $om = $args->getObjectManager();
+        if ($om instanceof EntityManagerInterface) {
+            $changesSet = $om->getUnitOfWork()->getEntityChangeSet($entity);
 
-        foreach ($changesSet as $field => $changes) {
-            if ('updatedAt' === $field) {
-                continue;
+            foreach ($changesSet as $field => $changes) {
+                if ('updatedAt' === $field) {
+                    continue;
+                }
+
+                $hasValuableChanges = $changes[0] != $changes[1];
+                if ($hasValuableChanges) {
+                    $this->notificationCenter->notifyConfigurationEntryUpdated($entity);
+
+                    return;
+                }
             }
-
-            $hasValuableChanges = $changes[0] != $changes[1];
-
-            if ($hasValuableChanges) {
-                $this->notificationCenter->notifyConfigurationEntryUpdated($entity);
-
-                return;
-            }
+        } else {
+            $this->notificationCenter->notifyConfigurationEntryUpdated($entity);
         }
     }
 

@@ -2,14 +2,15 @@
 
 namespace Modera\BackendSecurityBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @internal
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2017 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.csdi.service_definitions')]
 class ServiceDefinitionsProvider implements ContributorInterface
 {
     public function getItems(): array

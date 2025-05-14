@@ -13,7 +13,6 @@ use Symfony\Component\Security\Http\Firewall\SwitchUserListener;
 use Symfony\Component\Security\Http\SecurityEvents;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2019 Modera Foundation
  */
 class SwitchUserSubscriber implements EventSubscriberInterface

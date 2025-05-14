@@ -2,6 +2,9 @@
 
 namespace Modera\DirectBundle\Router;
 
+/**
+ * @copyright 2015 Modera Foundation
+ */
 class Response
 {
     /**

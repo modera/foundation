@@ -6,40 +6,32 @@ use Modera\DynamicallyConfigurableMJRBundle\Contributions\ClassLoaderMappingsPro
 use Modera\DynamicallyConfigurableMJRBundle\Contributions\ConfigEntriesProvider;
 use Modera\DynamicallyConfigurableMJRBundle\Contributions\SettingsSectionsProvider;
 use Modera\DynamicallyConfigurableMJRBundle\DependencyInjection\ModeraDynamicallyConfigurableMJRExtension;
-use Modera\DynamicallyConfigurableMJRBundle\MJR\MainConfig;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class ModeraDynamicallyConfigurableMJRExtensionTest extends \PHPUnit\Framework\TestCase
 {
-    public function testLoad()
+    public function testLoad(): void
     {
         $ext = new ModeraDynamicallyConfigurableMJRExtension();
 
         $builder = new ContainerBuilder();
 
-        $ext->load(array(), $builder);
+        $ext->load([], $builder);
 
-        $classLoaderMappingsProvider = $builder->getDefinition('modera_dynamically_configurable_mjr.contributions.class_loader_mappings_provider');
-        $this->assertEquals(1, count($classLoaderMappingsProvider->getTag('modera_mjr_integration.class_loader_mappings_provider')));
-        $this->assertEquals(ClassLoaderMappingsProvider::class, $classLoaderMappingsProvider->getClass());
+        $this->assertAsContributorFor($builder, ClassLoaderMappingsProvider::class, 'modera_mjr_integration.class_loader_mappings');
+        $this->assertAsContributorFor($builder, ConfigEntriesProvider::class, 'modera_config.config_entries');
+        $this->assertAsContributorFor($builder, SettingsSectionsProvider::class, 'modera_backend_tools_settings.contributions.sections');
+    }
 
-        $configEntriesProvider = $builder->getDefinition('modera_dynamically_configurable_mjr.contributions.config_entries_provider');
-        $this->assertEquals(1, count($configEntriesProvider->getTag('modera_config.config_entries_provider')));
-        $this->assertEquals(ConfigEntriesProvider::class, $configEntriesProvider->getClass());
-
-        $settingsSectionsProvider = $builder->getDefinition('modera_dynamically_configurable_mjr.contributions.settings_sections_provider');
-        $this->assertEquals(1, count($settingsSectionsProvider->getTag('modera_backend_tools_settings.contributions.sections_provider')));
-        $this->assertEquals(SettingsSectionsProvider::class, $settingsSectionsProvider->getClass());
-
-        $mainConfig = $builder->getDefinition('modera_dynamically_configurable_mjr.mjr.main_config');
-        $this->assertEquals(MainConfig::class, $mainConfig->getClass());
-        /* @var Reference $arg */
-        $arg = $mainConfig->getArgument(0);
-        $this->assertEquals('modera_config.configuration_entries_manager', (string) $arg);
+    private function assertAsContributorFor(ContainerBuilder $builder, string $serviceId, string $extensionPointId): void
+    {
+        $def = $builder->getDefinition($serviceId);
+        $class = $def->getClass() ?? $serviceId;
+        $reflectionClass = $builder->getReflectionClass($class);
+        $attribute = $reflectionClass->getAttributes(AsContributorFor::class)[0] ?? null;
+        /** @var ?AsContributorFor $asContributorFor */
+        $asContributorFor = $attribute?->newInstance();
+        $this->assertEquals($extensionPointId, $asContributorFor?->id);
     }
 }

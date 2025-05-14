@@ -3,16 +3,21 @@
 namespace Modera\BackendToolsBundle\Controller;
 
 use Modera\BackendToolsBundle\Section\Section;
-use Modera\DirectBundle\Annotation\Remote;
-use Modera\ExpanderBundle\Ext\ContributorInterface;
-use Modera\FoundationBundle\Controller\AbstractBaseController;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
-class DefaultController extends AbstractBaseController
+#[AsController]
+class DefaultController extends AbstractController
 {
+    public function __construct(
+        private readonly ExtensionProvider $extensionProvider,
+    ) {
+    }
+
     /**
      * @Remote
      *
@@ -22,12 +27,8 @@ class DefaultController extends AbstractBaseController
      */
     public function getSectionsAction(array $params): array
     {
-        /** @var ContributorInterface $sectionsProvider */
-        $sectionsProvider = $this->container->get('modera_backend_tools.sections_provider');
-
         $result = [];
-        /** @var Section $section */
-        foreach ($sectionsProvider->getItems() as $section) {
+        foreach ($this->getSections() as $section) {
             $result[] = [
                 'name' => $section->getName(),
                 'glyph' => $section->getGlyph(),
@@ -40,5 +41,23 @@ class DefaultController extends AbstractBaseController
         }
 
         return $result;
+    }
+
+    /**
+     * @return Section[]
+     */
+    private function getSections(): array
+    {
+        $id = 'modera_backend_tools.sections';
+        if ($this->extensionProvider->has($id)) {
+            $provider = $this->extensionProvider->get($id);
+
+            /** @var Section[] $sections */
+            $sections = $provider->getItems();
+
+            return $sections;
+        }
+
+        return [];
     }
 }

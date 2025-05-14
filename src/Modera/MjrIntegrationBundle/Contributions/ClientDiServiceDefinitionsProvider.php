@@ -2,22 +2,21 @@
 
 namespace Modera\MjrIntegrationBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\MainConfigInterface;
 
 /**
  * @internal
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.csdi.service_definitions')]
 class ClientDiServiceDefinitionsProvider implements ContributorInterface
 {
-    private MainConfigInterface $config;
-
-    public function __construct(MainConfigInterface $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        private readonly MainConfigInterface $config,
+    ) {
     }
 
     public function getItems(): array

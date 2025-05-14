@@ -5,11 +5,12 @@ namespace Modera\BackendTranslationsToolBundle\Controller;
 use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 use Modera\LanguagesBundle\Entity\Language;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsController]
 class LanguagesController extends AbstractCrudController
 {
     public function getConfig(): array

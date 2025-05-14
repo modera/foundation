@@ -6,6 +6,9 @@ use Modera\ExpanderBundle\Ext\ExtensionPoint;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+/**
+ * @copyright 2014 Modera Foundation
+ */
 class ModeraFileUploaderBundle extends Bundle
 {
     public function build(ContainerBuilder $container): void

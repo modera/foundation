@@ -9,7 +9,6 @@ use Symfony\Component\Security\Http\Event\LogoutEvent;
 /**
  * @internal
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class LogoutSuccessHandler implements EventSubscriberInterface

@@ -4,19 +4,15 @@ namespace Modera\DynamicallyConfigurableAppBundle\Tests\Unit\ValueHandling;
 
 use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
 use Modera\DynamicallyConfigurableAppBundle\KernelConfigInterface;
-use Modera\DynamicallyConfigurableAppBundle\ValueHandling\KernelConfigWriter;
 use Modera\DynamicallyConfigurableAppBundle\ModeraDynamicallyConfigurableAppBundle as Bundle;
+use Modera\DynamicallyConfigurableAppBundle\ValueHandling\KernelConfigWriter;
 
-/**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2018 Modera Foundation
- */
 class KernelConfigWriterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider onUpdateDataProvider
      */
-    public function testOnUpdate($name, $value, $keyToCheck)
+    public function testOnUpdate($name, $value, $keyToCheck): void
     {
         $expectedValue = $value;
 
@@ -27,31 +23,23 @@ class KernelConfigWriterTest extends \PHPUnit\Framework\TestCase
 
         $result = DummyKernelConfig::read();
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('debug', $result);
         $this->assertArrayHasKey('env', $result);
         $this->assertEquals($expectedValue, $result[$keyToCheck]);
     }
 
-    /**
-     * @return array
-     */
-    public function onUpdateDataProvider()
+    public static function onUpdateDataProvider(): array
     {
         return [
-            'set env to "dev"'     => [Bundle::CONFIG_KERNEL_ENV, 'dev', 'env'],
-            'enable kernel debug'  => [Bundle::CONFIG_KERNEL_DEBUG, true, 'debug'],
-            'set env to "prod"'    => [Bundle::CONFIG_KERNEL_ENV, 'prod', 'env'],
+            'set env to "dev"' => [Bundle::CONFIG_KERNEL_ENV, 'dev', 'env'],
+            'enable kernel debug' => [Bundle::CONFIG_KERNEL_DEBUG, true, 'debug'],
+            'set env to "prod"' => [Bundle::CONFIG_KERNEL_ENV, 'prod', 'env'],
             'disable kernel debug' => [Bundle::CONFIG_KERNEL_DEBUG, false, 'debug'],
         ];
     }
 
-    /**
-     * @param string $name
-     * @param string $value
-     * @return mixed
-     */
-    private function createMockEntry($name, $value)
+    private function createMockEntry(string $name, string $value): object
     {
         $entry = \Phake::mock(ConfigurationEntryInterface::class);
         \Phake::when($entry)
@@ -69,25 +57,16 @@ class KernelConfigWriterTest extends \PHPUnit\Framework\TestCase
 
 class DummyKernelConfig implements KernelConfigInterface
 {
-    /**
-     * @var array
-     */
-    private static $mode = array(
-        'env'   => 'prod',
+    private static array $mode = [
+        'env' => 'prod',
         'debug' => false,
-    );
+    ];
 
-    /**
-     * {@inheritdoc}
-     */
     public static function write(array $mode): void
     {
-        static::$mode = array_merge(static::read(), $mode);
+        static::$mode = \array_merge(static::read(), $mode);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function read(): array
     {
         return static::$mode;

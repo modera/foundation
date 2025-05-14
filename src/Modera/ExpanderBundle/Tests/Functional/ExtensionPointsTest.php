@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ExtensionPointsTest extends WebTestCase
 {
-    public function testHowWellItWorks()
+    public function testHowWellItWorks(): void
     {
         self::bootKernel();
 

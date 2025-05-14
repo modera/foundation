@@ -2,43 +2,34 @@
 
 namespace Modera\MJRCacheAwareClassLoaderBundle\Tests\Unit\VersionResolving;
 
-use Symfony\Component\HttpKernel\KernelInterface;
 use Modera\MJRCacheAwareClassLoaderBundle\DependencyInjection\ModeraMJRCacheAwareClassLoaderExtension;
 use Modera\MJRCacheAwareClassLoaderBundle\VersionResolving\StandardVersionResolver;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
-// TODO: remove in v5.x
-interface MockKernelInterface extends KernelInterface
-{
-    public function getProjectDir();
-}
-
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class StandardVersionResolverTest extends \PHPUnit\Framework\TestCase
 {
-    private $container;
+    private ContainerInterface $container;
 
     // override
     public function setUp(): void
     {
-        $this->container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $this->container = \Phake::mock(ContainerInterface::class);
     }
 
     // override
     public function tearDown(): void
     {
-        @unlink(__DIR__.'/../modera-version.txt');
+        @\unlink(__DIR__.'/../modera-version.txt');
     }
 
-    public function testResolveWithSemanticConfig()
+    public function testResolveWithSemanticConfig(): void
     {
-        $config = array(
+        $config = [
             'version' => 'foo-bar',
-        );
+        ];
 
-        $kernel = \Phake::mock(MockKernelInterface::class);
+        $kernel = \Phake::mock(KernelInterface::class);
         \Phake::when($this->container)->get('kernel')->thenReturn($kernel);
         \Phake::when($this->container)->getParameter(ModeraMJRCacheAwareClassLoaderExtension::CONFIG_KEY)->thenReturn($config);
 
@@ -47,26 +38,26 @@ class StandardVersionResolverTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('foo-bar', $resolver->resolve());
     }
 
-    public function testResolveWithFile()
+    public function testResolveWithFile(): void
     {
-        file_put_contents(__DIR__.'/../modera-version.txt', 'ololo');
+        \file_put_contents(__DIR__.'/../modera-version.txt', 'ololo');
 
-        $kernel = \Phake::mock(MockKernelInterface::class);
+        $kernel = \Phake::mock(KernelInterface::class);
         \Phake::when($kernel)->getProjectDir()->thenReturn(\dirname(__DIR__));
         \Phake::when($this->container)->get('kernel')->thenReturn($kernel);
-        \Phake::when($this->container)->getParameter(ModeraMJRCacheAwareClassLoaderExtension::CONFIG_KEY)->thenReturn(array());
+        \Phake::when($this->container)->getParameter(ModeraMJRCacheAwareClassLoaderExtension::CONFIG_KEY)->thenReturn([]);
 
         $resolver = new StandardVersionResolver($this->container);
 
         $this->assertEquals('ololo', $resolver->resolve());
     }
 
-    public function testResolve()
+    public function testResolve(): void
     {
-        $kernel = \Phake::mock(MockKernelInterface::class);
+        $kernel = \Phake::mock(KernelInterface::class);
         \Phake::when($kernel)->getProjectDir()->thenReturn(\dirname(__DIR__));
         \Phake::when($this->container)->get('kernel')->thenReturn($kernel);
-        \Phake::when($this->container)->getParameter(ModeraMJRCacheAwareClassLoaderExtension::CONFIG_KEY)->thenReturn(array());
+        \Phake::when($this->container)->getParameter(ModeraMJRCacheAwareClassLoaderExtension::CONFIG_KEY)->thenReturn([]);
 
         $resolver = new StandardVersionResolver($this->container);
 

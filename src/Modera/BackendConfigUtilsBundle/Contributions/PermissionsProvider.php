@@ -3,16 +3,17 @@
 namespace Modera\BackendConfigUtilsBundle\Contributions;
 
 use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Model\Permission;
 
 /**
- * @internal Since 2.56.0
+ * @internal
  *
- * @author  Alexander Ivanitsa <alexander.ivanitsa@modera.net>
  * @copyright 2017 Modera Foundation
  */
+#[AsContributorFor('modera_security.permissions')]
 class PermissionsProvider implements ContributorInterface
 {
     /**
@@ -27,7 +28,7 @@ class PermissionsProvider implements ContributorInterface
                 new Permission(
                     T::trans('Access System Settings'),
                     ModeraBackendConfigUtilsBundle::ROLE_ACCESS_BACKEND_SYSTEM_SETTINGS,
-                    'administration'
+                    'administration',
                 ),
             ];
         }

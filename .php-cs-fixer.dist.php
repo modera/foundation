@@ -5,9 +5,10 @@ $finder = PhpCsFixer\Finder::create()
         'tools',
         'vendor',
         'src/Modera/MjrIntegrationBundle/Resources/cache/font-awesome',
+        'src/Modera/TranslationsBundle/Tests/Unit/TokenExtraction/dummy-classes',
     ])
     ->in(__DIR__)
-    ->notPath('#src/Modera/.*/Tests#')
+    //->notPath('#src/Modera/.*/Tests#')
 ;
 
 $config = new PhpCsFixer\Config();

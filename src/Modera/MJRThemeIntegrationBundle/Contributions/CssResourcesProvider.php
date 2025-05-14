@@ -2,43 +2,24 @@
 
 namespace Modera\MJRThemeIntegrationBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
-use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
-use Modera\MJRThemeIntegrationBundle\DependencyInjection\ModeraMJRThemeIntegrationExtension;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Kernel;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.css_resources')]
 class CssResourcesProvider implements ContributorInterface
 {
-    private bool $isDevEnv;
-
     /**
-     * @var array{'theme_path': string}
+     * @param array{'theme_path': string}                              $themeIntegrationConfig
+     * @param array{'runtime_path': string, 'extjs_include_rtl': bool} $mjrIntegrationConfig
      */
-    private array $themeIntegrationConfig;
-
-    /**
-     * @var array{'runtime_path': string, 'extjs_include_rtl': bool}
-     */
-    private array $mjrIntegrationConfig;
-
-    public function __construct(ContainerInterface $container)
-    {
-        /** @var Kernel $kernel */
-        $kernel = $container->get('kernel');
-        $this->isDevEnv = 'dev' === $kernel->getEnvironment();
-
-        /** @var array{'theme_path': string} $themeIntegrationConfig */
-        $themeIntegrationConfig = $container->getParameter(ModeraMJRThemeIntegrationExtension::CONFIG_KEY);
-        $this->themeIntegrationConfig = $themeIntegrationConfig;
-
-        /** @var array{'runtime_path': string, 'extjs_include_rtl': bool} $mjrIntegrationConfig */
-        $mjrIntegrationConfig = $container->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY);
-        $this->mjrIntegrationConfig = $mjrIntegrationConfig;
+    public function __construct(
+        private readonly array $themeIntegrationConfig,
+        private readonly array $mjrIntegrationConfig,
+        private readonly string $kernelEnvironment,
+    ) {
     }
 
     public function getItems(): array
@@ -47,7 +28,7 @@ class CssResourcesProvider implements ContributorInterface
         if ($this->mjrIntegrationConfig['extjs_include_rtl']) {
             $suffix .= '-rtl';
         }
-        if ($this->isDevEnv) {
+        if ('dev' === $this->kernelEnvironment) {
             $suffix .= '-debug';
         }
         $suffix .= '.css';

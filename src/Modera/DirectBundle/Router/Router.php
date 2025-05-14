@@ -3,33 +3,28 @@
 namespace Modera\DirectBundle\Router;
 
 use Modera\DirectBundle\Api\ControllerApi;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+/**
+ * @copyright 2015 Modera Foundation
+ */
 class Router
 {
     protected Request $request;
 
     protected Response $response;
 
-    protected ContainerInterface $container;
-
     protected string $defaultAccess;
 
-    /**
-     * @var mixed Mixed value
-     */
-    protected $session;
+    protected mixed $session;
 
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-
+    public function __construct(
+        protected readonly ContainerInterface $container,
+    ) {
         /** @var RequestStack $requestStack */
         $requestStack = $container->get('request_stack');
 
@@ -121,31 +116,10 @@ class Router
 
     /**
      * Resolve the called controller from action.
-     *
-     * @return mixed Mixed value
      */
-    private function resolveController(string $action)
+    private function resolveController(string $action): mixed
     {
-        $class = $this->getControllerClass($action);
-
-        try {
-            if ($this->container->has($class)) {
-                return $this->container->get($class);
-            }
-
-            $controller = new $class();
-
-            if ($controller instanceof ContainerAwareInterface) {
-                $controller->setContainer($this->container);
-            } elseif ($controller instanceof AbstractController) {
-                $controller->setContainer($this->container);
-            }
-
-            return $controller;
-        } catch (\Exception $e) {
-            // TODO: handle exception
-            throw $e;
-        }
+        return $this->container->get($this->getControllerClass($action));
     }
 
     /**

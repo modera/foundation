@@ -3,7 +3,6 @@
 namespace Modera\DynamicallyConfigurableAppBundle;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class KernelConfig implements KernelConfigInterface
@@ -12,12 +11,10 @@ class KernelConfig implements KernelConfigInterface
     {
         $refKernel = null;
 
-        if (\class_exists($kernelClass = 'App\Kernel')) {
-            /** @var class-string $kernelClass */
-            $refKernel = new \ReflectionClass($kernelClass);
-        } elseif (\class_exists($kernelClass = 'AppKernel')) {
-            /** @var class-string $kernelClass */
-            $refKernel = new \ReflectionClass($kernelClass);
+        if (\class_exists(\App\Kernel::class)) {
+            $refKernel = new \ReflectionClass(\App\Kernel::class);
+        } elseif (\class_exists(\AppKernel::class)) {
+            $refKernel = new \ReflectionClass(\AppKernel::class);
         }
 
         if (null === $refKernel || !$refKernel->getFileName()) {
@@ -29,7 +26,7 @@ class KernelConfig implements KernelConfigInterface
 
     protected static function getKernelJsonPath(): string
     {
-        return static::getRootDir().DIRECTORY_SEPARATOR.'kernel.json';
+        return static::getRootDir().\DIRECTORY_SEPARATOR.'kernel.json';
     }
 
     public static function write(array $mode): void
@@ -53,7 +50,7 @@ class KernelConfig implements KernelConfigInterface
             return $defaultMode;
         } else {
             $mode = \json_decode($mode, true);
-            if (\is_array($mode) && isset($mode['env']) && isset($mode['debug'])) {
+            if (\is_array($mode) && \is_string($mode['env'] ?? null) && \is_bool($mode['debug'] ?? null)) {
                 return $mode;
             } else {
                 return $defaultMode;

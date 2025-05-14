@@ -2,37 +2,31 @@
 
 namespace Modera\DirectBundle\Controller;
 
-use Modera\DirectBundle\Api\Api;
+use Modera\DirectBundle\Api\ApiFactory;
 use Modera\DirectBundle\Router\RouterFactoryInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
-class DirectController extends Controller
+/**
+ * @copyright 2015 Modera Foundation
+ */
+#[AsController]
+class DirectController extends AbstractController
 {
-    private RouterFactoryInterface $routerFactory;
-
-    public function __construct(RouterFactoryInterface $routerFactory)
-    {
-        $this->routerFactory = $routerFactory;
-    }
-
-    protected function getContainer(): ContainerInterface
-    {
-        /** @var ContainerInterface $container */
-        $container = $this->container;
-
-        return $container;
+    public function __construct(
+        private readonly ApiFactory $apiFactory,
+        private readonly RouterFactoryInterface $routerFactory,
+    ) {
     }
 
     protected function isDebug(): bool
     {
-        /** @var KernelInterface $kernel */
-        $kernel = $this->getContainer()->get('kernel');
+        /** @var bool $isDebug */
+        $isDebug = $this->getParameter('kernel.debug');
 
-        return $kernel->isDebug();
+        return $isDebug;
     }
 
     /**
@@ -41,13 +35,13 @@ class DirectController extends Controller
     public function getApiAction(): Response
     {
         // instantiate the api object
-        $api = new Api($this->getContainer());
+        $api = $this->apiFactory->create();
 
         if ($this->isDebug()) {
             $exceptionLogStr = 'console.error("Remote Call:", event);';
         } else {
             /** @var string $exceptionMessage */
-            $exceptionMessage = $this->getContainer()->getParameter('direct.exception.message');
+            $exceptionMessage = $this->getParameter('direct.exception.message');
             $exceptionLogStr = \sprintf('console.error(%s);', \json_encode($exceptionMessage));
         }
         // create the response
@@ -68,7 +62,7 @@ class DirectController extends Controller
     public function getRemotingAction(): Response
     {
         // instantiate the api object
-        $api = new Api($this->getContainer());
+        $api = $this->apiFactory->create();
 
         // create the response
         $response = new Response(\sprintf('Ext.app.REMOTING_API = %s;', $api));

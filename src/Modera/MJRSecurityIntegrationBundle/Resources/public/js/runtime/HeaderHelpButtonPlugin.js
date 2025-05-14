@@ -1,7 +1,7 @@
 /**
  * Help button will be rendered only if there's at least one help-item available.
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2016 Modera Foundation
  */
 Ext.define('Modera.mjrsecurityintegration.runtime.HeaderHelpButtonPlugin', {
     extend: 'MF.runtime.extensibility.AbstractPlugin',

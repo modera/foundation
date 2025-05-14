@@ -5,7 +5,7 @@ namespace Modera\BackendTranslationsToolBundle\FileProvider;
 use Symfony\Component\Finder\Finder;
 
 /**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2022 Modera Foundation
  */
 class ExtjsClassesProvider implements FileProviderInterface
 {

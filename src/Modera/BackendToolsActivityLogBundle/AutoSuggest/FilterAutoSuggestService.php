@@ -9,21 +9,14 @@ use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Entity\User;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class FilterAutoSuggestService
 {
-    private EntityManagerInterface $em;
-
-    private ActivityManagerInterface $activityManager;
-
     public function __construct(
-        EntityManagerInterface $em,
-        ActivityManagerInterface $activityManager
+        private readonly EntityManagerInterface $em,
+        private readonly ActivityManagerInterface $activityManager,
     ) {
-        $this->em = $em;
-        $this->activityManager = $activityManager;
     }
 
     protected function stringifyUser(User $user): ?string

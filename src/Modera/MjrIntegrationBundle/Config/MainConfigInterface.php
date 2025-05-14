@@ -6,7 +6,6 @@ namespace Modera\MjrIntegrationBundle\Config;
  * Implementation of this interface will be used by the bundle to provide low-level user-specific configuration for the
  * MJR.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 interface MainConfigInterface

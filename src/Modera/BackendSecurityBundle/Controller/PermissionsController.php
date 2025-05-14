@@ -3,21 +3,26 @@
 namespace Modera\BackendSecurityBundle\Controller;
 
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
-use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 use Modera\SecurityBundle\Entity\Permission;
 use Modera\SecurityBundle\Entity\PermissionCategory;
 use Modera\SecurityBundle\Model\PermissionCategoryInterface;
 use Modera\SecurityBundle\Model\PermissionInterface;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsController]
 class PermissionsController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly ExtensionProvider $extensionProvider,
+    ) {
+    }
+
     public function getConfig(): array
     {
         return [
@@ -60,7 +65,7 @@ class PermissionsController extends AbstractCrudController
                     'list',
                 ],
             ],
-            'map_data_on_update' => function (array $params, Permission $permission, DataMapperInterface $defaultMapper, ContainerInterface $container) {
+            'map_data_on_update' => function (array $params, Permission $permission, DataMapperInterface $defaultMapper) {
                 $allowedFieldsToEdit = ['users', 'groups'];
                 $params = \array_intersect_key($params, \array_flip($allowedFieldsToEdit));
                 $defaultMapper->mapData($params, $permission);
@@ -74,8 +79,7 @@ class PermissionsController extends AbstractCrudController
             return null;
         }
 
-        /** @var PermissionCategoryInterface[] $permissionCategories */
-        $permissionCategories = $this->getPermissionCategoriesProvider()->getItems();
+        $permissionCategories = $this->getPermissionCategories();
         foreach ($permissionCategories as $permissionCategory) {
             if ($permissionCategory->getTechnicalName() === $entity->getTechnicalName()) {
                 return $permissionCategory->getName();
@@ -91,8 +95,7 @@ class PermissionsController extends AbstractCrudController
             return null;
         }
 
-        /** @var PermissionInterface[] $permissions */
-        $permissions = $this->getPermissionsProvider()->getItems();
+        $permissions = $this->getPermissions();
         foreach ($permissions as $permission) {
             if ($permission->getRole() === $entity->getRole()) {
                 return $permission->getName();
@@ -102,19 +105,35 @@ class PermissionsController extends AbstractCrudController
         return $entity->getName();
     }
 
-    private function getPermissionCategoriesProvider(): ContributorInterface
+    /**
+     * @return PermissionCategoryInterface[]
+     */
+    private function getPermissionCategories(): array
     {
-        /** @var ContributorInterface $permissionCategoriesProvider */
-        $permissionCategoriesProvider = $this->container->get('modera_security.permission_categories_provider');
+        $id = 'modera_security.permission_categories';
+        if ($this->extensionProvider->has($id)) {
+            /** @var PermissionCategoryInterface[] $permissionCategories */
+            $permissionCategories = $this->extensionProvider->get($id)->getItems();
 
-        return $permissionCategoriesProvider;
+            return $permissionCategories;
+        }
+
+        return [];
     }
 
-    private function getPermissionsProvider(): ContributorInterface
+    /**
+     * @return PermissionInterface[]
+     */
+    private function getPermissions(): array
     {
-        /** @var ContributorInterface $permissionsProvider */
-        $permissionsProvider = $this->container->get('modera_security.permissions_provider');
+        $id = 'modera_security.permissions';
+        if ($this->extensionProvider->has($id)) {
+            /** @var PermissionInterface[] $permissions */
+            $permissions = $this->extensionProvider->get($id)->getItems();
 
-        return $permissionsProvider;
+            return $permissions;
+        }
+
+        return [];
     }
 }

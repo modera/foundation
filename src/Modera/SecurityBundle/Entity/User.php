@@ -16,114 +16,73 @@ use Symfony\Component\Security\Core\User\UserInterface as SymfonyUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Table(name="modera_security_user")
- *
- * @ORM\Entity
- *
- * @UniqueEntity("personalId")
- * @UniqueEntity("username")
- * @UniqueEntity("email")
- *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class User implements \Serializable, UserInterface, PreferencesAwareUserInterface
+#[ORM\Entity]
+#[ORM\Table(name: 'modera_security_user')]
+#[UniqueEntity('personalId')]
+#[UniqueEntity('username')]
+#[UniqueEntity('email')]
+class User implements UserInterface, PreferencesAwareUserInterface
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @ORM\Id
-     *
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    /**
-     * @ORM\Column(name="is_active", type="boolean")
-     */
+    #[ORM\Column(name: 'is_active', type: 'boolean')]
     private bool $isActive;
 
-    /**
-     * @ORM\Column(type="string", length=60, unique=true)
-     *
-     * @Email
-     *
-     * @Assert\NotBlank
-     */
-    private ?string $email = null;
+    #[Email]
+    #[Assert\NotBlank]
+    #[ORM\Column(type: 'string', length: 60, unique: true)]
+    private string $email;
 
-    /**
-     * @ORM\Column(type="string", length=60, unique=true)
-     *
-     * @Username
-     *
-     * @Assert\NotBlank
-     */
-    private ?string $username = null;
+    #[Username]
+    #[Assert\NotBlank]
+    #[ORM\Column(type: 'string', length: 60, unique: true)]
+    private string $username;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
-    private ?string $password = null;
+    #[ORM\Column(type: 'string', length: 64)]
+    private string $password;
 
-    /**
-     * @ORM\Column(type="string", length=32)
-     */
+    #[ORM\Column(type: 'string', length: 32)]
     private string $salt;
 
-    /**
-     * @ORM\Column(name="personal_id", type="string", nullable=true, unique=true)
-     */
+    #[ORM\Column(name: 'personal_id', type: 'string', unique: true, nullable: true)]
     private ?string $personalId = null;
 
-    /**
-     * @ORM\Column(name="first_name", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'first_name', type: 'string', nullable: true)]
     private ?string $firstName = null;
 
-    /**
-     * @ORM\Column(name="last_name", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'last_name', type: 'string', nullable: true)]
     private ?string $lastName = null;
 
-    /**
-     * @ORM\Column(name="middle_name", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'middle_name', type: 'string', nullable: true)]
     private ?string $middleName = null;
 
-    /**
-     * @ORM\Column(type="string", length=1, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 1, nullable: true)]
     private ?string $gender = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=false)
-     */
+    #[ORM\Column(type: 'integer')]
     protected int $state = self::STATE_NEW;
 
-    /**
-     * @ORM\Column(name="last_login", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'last_login', type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $lastLogin = null;
 
     /**
      * @var Collection<int, Group>
-     *
-     * @ORM\ManyToMany(targetEntity="Group", inversedBy="users", cascade={"persist"})
-     *
-     * @ORM\JoinTable(
-     *   name="modera_security_users_groups",
-     *   joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
-     * )
      */
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'users', cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'modera_security_users_groups')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
     private Collection $groups;
 
     /**
      * @var Collection<int, Permission>
-     *
-     * @ORM\ManyToMany(targetEntity="Permission", mappedBy="users", cascade={"persist"})
      */
+    #[ORM\ManyToMany(targetEntity: Permission::class, mappedBy: 'users', cascade: ['persist'])]
     private Collection $permissions;
 
     /**
@@ -133,9 +92,8 @@ class User implements \Serializable, UserInterface, PreferencesAwareUserInterfac
      * under "acme_foo" key.
      *
      * @var array<string, mixed>
-     *
-     * @ORM\Column(type="json")
      */
+    #[ORM\Column(type: 'json')]
     private array $meta = [];
 
     private ?RootUserHandlerInterface $rootUserHandler = null;
@@ -224,19 +182,6 @@ class User implements \Serializable, UserInterface, PreferencesAwareUserInterfac
     {
     }
 
-    /**
-     * @deprecated Use User::isActive() method
-     */
-    public function isEnabled(): bool
-    {
-        @\trigger_error(sprintf(
-            'The "%s()" method is deprecated. Use User::isActive() method.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return $this->isActive;
-    }
-
     public function isEqualTo(SymfonyUserInterface $user): bool
     {
         if (!($user instanceof static)) {
@@ -262,26 +207,6 @@ class User implements \Serializable, UserInterface, PreferencesAwareUserInterfac
         return true;
     }
 
-    /**
-     * @deprecated will be removed in next version
-     * @see \Serializable::serialize()
-     */
-    public function serialize(): ?string
-    {
-        return \serialize($this->__serialize());
-    }
-
-    /**
-     * @deprecated will be removed in next version
-     * @see \Serializable::unserialize()
-     */
-    public function unserialize($data): void
-    {
-        /** @var array<string, mixed> $arr */
-        $arr = \unserialize($data);
-        $this->__unserialize($arr);
-    }
-
     public function __serialize(): array
     {
         return [
@@ -303,19 +228,6 @@ class User implements \Serializable, UserInterface, PreferencesAwareUserInterfac
         }
     }
 
-    /**
-     * @deprecated Use native ::class property
-     */
-    public static function clazz(): string
-    {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated. Use native ::class property.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return \get_called_class();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -331,32 +243,6 @@ class User implements \Serializable, UserInterface, PreferencesAwareUserInterfac
         $this->isActive = $isActive;
     }
 
-    /**
-     * @deprecated Use User::isActive() method
-     */
-    public function getIsActive(): bool
-    {
-        @\trigger_error(sprintf(
-            'The "%s()" method is deprecated. Use User::isActive() method.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return $this->isActive();
-    }
-
-    /**
-     * @deprecated Use User::setActive() method
-     */
-    public function setIsActive(bool $isActive): void
-    {
-        @\trigger_error(sprintf(
-            'The "%s()" method is deprecated. Use User::setActive() method.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        $this->setActive($isActive);
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
@@ -364,7 +250,7 @@ class User implements \Serializable, UserInterface, PreferencesAwareUserInterfac
 
     public function setEmail(string $email): void
     {
-        $this->email = \trim($email) ?: null;
+        $this->email = \trim($email);
     }
 
     public function getUserIdentifier(): string
@@ -379,7 +265,7 @@ class User implements \Serializable, UserInterface, PreferencesAwareUserInterfac
 
     public function setUsername(string $username): void
     {
-        $this->username = \trim($username) ?: null;
+        $this->username = \trim($username);
     }
 
     public function getPassword(): ?string
@@ -456,9 +342,9 @@ class User implements \Serializable, UserInterface, PreferencesAwareUserInterfac
     public function getFullName(string $pattern = 'first last'): ?string
     {
         $data = [
-            'first' => $this->getFirstName(),
-            'last' => $this->getLastName(),
-            'middle' => $this->getMiddleName(),
+            'first' => $this->getFirstName() ?? '',
+            'last' => $this->getLastName() ?? '',
+            'middle' => $this->getMiddleName() ?? '',
         ];
 
         $keys = [];
@@ -471,7 +357,7 @@ class User implements \Serializable, UserInterface, PreferencesAwareUserInterfac
         $name = \trim(\preg_replace($keys, $values, $pattern) ?? '');
 
         if (!$name) {
-            return $this->getUsername(); // TODO: return NULL
+            return null;
         }
 
         return $name;

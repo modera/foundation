@@ -7,7 +7,6 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
 class FileValidationException extends \RuntimeException
@@ -24,7 +23,7 @@ class FileValidationException extends \RuntimeException
     /**
      * @param ConstraintViolationListInterface|ConstraintViolationInterface[]|string[] $errors
      */
-    public static function create(\SplFileInfo $validatedFile, $errors, ?Repository $repository = null): self
+    public static function create(\SplFileInfo $validatedFile, ConstraintViolationListInterface|array $errors, ?Repository $repository = null): self
     {
         $parsedErrors = [];
         foreach ($errors as $error) {

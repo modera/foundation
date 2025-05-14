@@ -5,7 +5,6 @@ namespace Modera\TranslationsBundle\Handling;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 interface TranslationHandlerInterface

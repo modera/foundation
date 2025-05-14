@@ -3,16 +3,13 @@
 namespace Modera\ServerCrudBundle\Persistence;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class DelegatePersistenceHandler implements PersistenceHandlerInterface
 {
-    protected PersistenceHandlerInterface $delegate;
-
-    public function __construct(PersistenceHandlerInterface $delegate)
-    {
-        $this->delegate = $delegate;
+    public function __construct(
+        protected readonly PersistenceHandlerInterface $delegate,
+    ) {
     }
 
     public function resolveEntityPrimaryKeyFields(string $entityClass): array

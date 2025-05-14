@@ -2,33 +2,28 @@
 
 namespace Modera\ExpanderBundle\Contributing;
 
+use Modera\ExpanderBundle\DependencyInjection\ExtensionPointsCompilerPassTrait;
+use Modera\ExpanderBundle\Ext\ExtensionPoint;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * For every extension point contributed by bundles which implement ExtensionPointsAwareBundleInterface this
  * compiles pass will dynamically contribute a provider class to DI container, so later you can see a container
  * dump file to find all contributions for a certain extension-point.
  *
- * This compiler pass will be automatically registered if when you added {@class \Modera\ExpanderBundle\ModeraExpanderBundle}
- * to your app kernel you provided a link to kernel as its first argument.
+ * @copyright 2024 Modera Foundation
  */
 class ExtensionPointsAwareBundlesCollectorCompilerPass implements CompilerPassInterface
 {
-    private ?KernelInterface $kernel;
+    use ExtensionPointsCompilerPassTrait;
 
-    public function __construct(?KernelInterface $kernel = null)
+    private function createServiceId(string $bundleName, string $extensionPointId): string
     {
-        $this->kernel = $kernel;
-    }
-
-    private function createServiceName(string $bundleName, string $extensionPointName): string
-    {
-        return \strtolower($bundleName.'.dynamic_contribution.'.\str_replace('.', '_', $extensionPointName));
+        return \strtolower($bundleName.'.dynamic_contribution.'.\str_replace('.', '_', $extensionPointId));
     }
 
     /**
@@ -37,21 +32,13 @@ class ExtensionPointsAwareBundlesCollectorCompilerPass implements CompilerPassIn
     private function getExtensionPointsAwareBundles(ContainerBuilder $container): array
     {
         $bundles = [];
-        if ($this->kernel) {
-            foreach ($this->kernel->getBundles() as $bundle) {
-                if ($bundle instanceof ExtensionPointsAwareBundleInterface) {
-                    $bundles[] = $bundle;
-                }
-            }
-        } else {
-            /** @var string[] $registeredBundles */
-            $registeredBundles = $container->getParameter('kernel.bundles');
-            foreach ($registeredBundles as $bundleName) {
-                if (\is_subclass_of($bundleName, ExtensionPointsAwareBundleInterface::class)) {
-                    /** @var BundleInterface&ExtensionPointsAwareBundleInterface $bundle */
-                    $bundle = new $bundleName();
-                    $bundles[] = $bundle;
-                }
+        /** @var string[] $registeredBundles */
+        $registeredBundles = $container->getParameter('kernel.bundles');
+        foreach ($registeredBundles as $bundleName) {
+            if (\is_subclass_of($bundleName, ExtensionPointsAwareBundleInterface::class)) {
+                /** @var BundleInterface&ExtensionPointsAwareBundleInterface $bundle */
+                $bundle = new $bundleName();
+                $bundles[] = $bundle;
             }
         }
 
@@ -60,19 +47,34 @@ class ExtensionPointsAwareBundlesCollectorCompilerPass implements CompilerPassIn
 
     public function process(ContainerBuilder $container): void
     {
-        foreach ($this->getExtensionPointsAwareBundles($container) as $bundle) {
-            foreach ($bundle->getExtensionPointContributions() as $extensionPointName => $contributions) {
-                $serviceName = $this->createServiceName($bundle->getName(), $extensionPointName);
+        /** @var array<string, ExtensionPoint> $extensionPoints */
+        $extensionPoints = [];
+        foreach ($this->getExtensionPoints($container) as $extensionPoint) {
+            $extensionPoints[$extensionPoint->getId()] = $extensionPoint;
+        }
 
-                if ($container->hasDefinition($serviceName)) {
-                    throw new \RuntimeException("Unable to dynamically register a new service with ID '$serviceName', this ID is already in use.");
+        foreach ($this->getExtensionPointsAwareBundles($container) as $bundle) {
+            foreach ($bundle->getExtensionPointContributions() as $extensionPointId => $contributions) {
+                $serviceId = $this->createServiceId($bundle->getName(), $extensionPointId);
+                if ($container->hasDefinition($serviceId)) {
+                    throw new \RuntimeException(\sprintf('Unable to dynamically register a new service with ID "%s", this ID is already in use.', $serviceId));
                 }
 
-                $definitionArgs = [new Reference('kernel'), $bundle->getName(), $extensionPointName];
-                $definition = new Definition(BundleContributorAdapter::class, $definitionArgs);
-                $definition->addTag($extensionPointName);
+                $extensionPoint = $extensionPoints[$extensionPointId] ?? null;
+                if ($extensionPoint) {
+                    $contributionTag = $extensionPoint->getContributionTag();
+                } else {
+                    // TODO: throw exception
+                    // throw new \RuntimeException(\sprintf('Extension point with ID "%s" is not found.', $extensionPointId);
+                    @\trigger_error(\sprintf('Using "ContributionTag" as identifier in %s::getExtensionPointContributions is deprecated, use "ExtensionPointId" instead.', $bundle::class), E_USER_DEPRECATED);
+                    $contributionTag = $extensionPointId;
+                }
 
-                $container->setDefinition($serviceName, $definition);
+                $definitionArgs = [new Reference('kernel'), $bundle->getName(), $extensionPointId];
+                $definition = new Definition(BundleContributorAdapter::class, $definitionArgs);
+                $definition->addTag($contributionTag);
+
+                $container->setDefinition($serviceId, $definition);
             }
         }
     }

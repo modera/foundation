@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @internal
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2017 Modera Foundation
  */
 trait TableTrait
 {

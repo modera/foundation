@@ -5,41 +5,33 @@ namespace Modera\FileUploaderBundle\Controller;
 use Modera\FileRepositoryBundle\Exceptions\FileValidationException;
 use Modera\FileUploaderBundle\Uploading\WebUploader;
 use Modera\FoundationBundle\Translation\T;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class UniversalUploaderController extends Controller
+#[AsController]
+class UniversalUploaderController extends AbstractController
 {
-    protected function getContainer(): ContainerInterface
-    {
-        /** @var ContainerInterface $container */
-        $container = $this->container;
-
-        return $container;
+    public function __construct(
+        private readonly WebUploader $webUploader,
+    ) {
     }
 
-    /**
-     * @Route("%modera_file_uploader.uploader_url%", name="modera_file_uploader", options={"expose"=true})
-     */
+    #[Route(path: '%modera_file_uploader.uploader_url%', name: 'modera_file_uploader', options: ['expose' => true])]
     public function uploadAction(Request $request): Response
     {
-        if (!$this->getContainer()->getParameter('modera_file_uploader.is_enabled')) {
+        if (!$this->getParameter('modera_file_uploader.is_enabled')) {
             throw $this->createNotFoundException(T::trans('Uploader is not enabled.'));
         }
 
-        /** @var WebUploader $webUploader */
-        $webUploader = $this->getContainer()->get('modera_file_uploader.uploading.web_uploader');
-
         try {
-            $response = $webUploader->upload($request);
+            $response = $this->webUploader->upload($request);
         } catch (FileValidationException $e) {
             return new JsonResponse([
                 'success' => false,

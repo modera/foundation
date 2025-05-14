@@ -1,0 +1,12 @@
+framework:
+    test: true
+    secret: Hell yeah!
+    csrf_protection: true
+    session:
+        handler_id: ~
+        storage_factory_id: session.storage.factory.mock_file
+
+# Twig Configuration
+twig:
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'

@@ -4,6 +4,7 @@ namespace Modera\SecurityBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\SecurityBundle\Entity\User;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,28 +13,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2019 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:security:check-credentials',
+    description: 'Check user credentials.',
+)]
 class CheckCredentialsCommand extends Command
 {
-    private EntityManagerInterface $em;
-
-    private UserPasswordHasherInterface $hasher;
-
-    public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $hasher)
-    {
-        $this->em = $em;
-        $this->hasher = $hasher;
-
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly UserPasswordHasherInterface $hasher,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('modera:security:check-credentials')
-            ->setDescription('Check user credentials.')
             ->addArgument('property', InputArgument::OPTIONAL, '', 'username')
             ->addOption('identifier', null, InputOption::VALUE_REQUIRED)
             ->addOption('password', null, InputOption::VALUE_REQUIRED)
@@ -61,17 +58,17 @@ class CheckCredentialsCommand extends Command
         if (!$user) {
             $output->writeln(\sprintf('<error>User with identifier "%s" not found!</error>', $identifier));
 
-            return 1;
+            return Command::FAILURE;
         }
 
         if (!$this->hasher->isPasswordValid($user, $password)) {
             $output->writeln('<error>Password not valid!</error>');
 
-            return 2;
+            return Command::INVALID;
         }
 
         $output->writeln('<info>Password is valid!</info>');
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

@@ -5,7 +5,6 @@ namespace Modera\SecurityBundle\Model;
 /**
  * Allows to categorize implementations of {@class PermissionInterface}s.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 interface PermissionCategoryInterface

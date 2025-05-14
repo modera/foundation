@@ -11,16 +11,13 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  * If a user is authenticated when files are added to repository then we will try to set that
  * user as their author.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2017 Modera Foundation
  */
 class AuthoringInterceptor extends BaseOperationInterceptor
 {
-    private TokenStorageInterface $tokenStorage;
-
-    public function __construct(TokenStorageInterface $tokenStore)
-    {
-        $this->tokenStorage = $tokenStore;
+    public function __construct(
+        private readonly TokenStorageInterface $tokenStorage,
+    ) {
     }
 
     public function onPut(StoredFile $storedFile, \SplFileInfo $file, Repository $repository, array $context = []): void

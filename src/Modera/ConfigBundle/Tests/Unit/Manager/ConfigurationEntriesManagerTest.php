@@ -5,19 +5,14 @@ namespace Modera\ConfigBundle\Tests\Unit\Manager;
 use Doctrine\ORM\EntityManager;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 use Modera\ConfigBundle\Manager\ConfigurationEntriesManager;
+use Modera\ConfigBundle\Manager\ConfigurationEntryAlreadyExistsException;
 use Modera\ConfigBundle\Manager\UniquityValidator;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class ConfigurationEntriesManagerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @expectedException Modera\ConfigBundle\Manager\ConfigurationEntryAlreadyExistsException
-     */
     public function testSave()
     {
+        $this->expectException(ConfigurationEntryAlreadyExistsException::class);
         $entry = \Phake::mock(ConfigurationEntry::class);
 
         $em = \Phake::mock(EntityManager::class);
@@ -29,12 +24,12 @@ class ConfigurationEntriesManagerTest extends \PHPUnit\Framework\TestCase
             ->thenReturn(false)
         ;
 
-        $cem = new ConfigurationEntriesManager($em, array(), $uv);
+        $cem = new ConfigurationEntriesManager($em, [], $uv);
 
         $cem->save($entry);
     }
 
-    public function testSave_noUniquityValidatorGiven()
+    public function testSaveNoUniquityValidatorGiven(): void
     {
         $entry = \Phake::mock(ConfigurationEntry::class);
         $em = \Phake::mock(EntityManager::class);

@@ -2,13 +2,14 @@
 
 namespace Modera\MjrIntegrationBundle\DependencyInjection;
 
+use Modera\MjrIntegrationBundle\Config\BundleSemanticMainConfig;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
  * This is the class that validates and merges configuration from your app/config files.
  *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html#cookbook-bundles-extension-config-class}
+ * To learn more see {@link https://symfony.com/doc/current/bundles/extension.html#cookbook-bundles-extension-config-class}
  */
 class Configuration implements ConfigurationInterface
 {
@@ -87,16 +88,16 @@ class Configuration implements ConfigurationInterface
                     ->cannotBeEmpty()
                     ->defaultValue('get-config')
                 ->end()
-                // this property will be used only if 'main_config_provider' contains 'modera_mjr_integration.config.bundle_semantic_config'
+                // this property will be used only if 'main_config_provider' contains 'BundleSemanticMainConfig::class'
                 ->scalarNode('home_section')
                     ->defaultValue('home')
                     ->cannotBeEmpty()
                 ->end()
-                // this property will be used only if 'main_config_provider' contains 'modera_mjr_integration.config.bundle_semantic_config'
+                // this property will be used only if 'main_config_provider' contains 'BundleSemanticMainConfig::class'
                 ->scalarNode('deployment_name')
                     ->defaultValue(null)
                 ->end()
-                // this property will be used only if 'main_config_provider' contains 'modera_mjr_integration.config.bundle_semantic_config'
+                // this property will be used only if 'main_config_provider' contains 'BundleSemanticMainConfig::class'
                 ->scalarNode('deployment_url')
                     ->defaultValue(null)
                 ->end()
@@ -104,7 +105,7 @@ class Configuration implements ConfigurationInterface
                 // In your application code you can use "modera_mjr_integration.config.main_config" service which will
                 // get automatically resolved to a value configured by this property
                 ->scalarNode('main_config_provider')
-                    ->defaultValue('modera_mjr_integration.config.bundle_semantic_config')
+                    ->defaultValue(BundleSemanticMainConfig::class)
                 ->end()
                 // this is going to be used as configuration parameter for instance of Ext.app.Application and
                 // corresponding server controller's action that will be responsible for generating subclass
@@ -120,7 +121,7 @@ class Configuration implements ConfigurationInterface
                 // Used by MF to prefix all routes which are related to backend,
                 // it makes sense to have this value as a configuration key so later we would be able to refer
                 // to in routing configuration.
-                // NB! If you are changing this parameter don't forget to update firewall rules in security.yml
+                // NB! If you are changing this parameter don't forget to update firewall rules in security.yaml
                 // to keep you admin interface secured.
                 ->scalarNode('routes_prefix')
                     ->defaultValue('/backend')
@@ -133,7 +134,6 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('app_base_class')
                     ->defaultValue('')
                 ->end()
-                // since 2.56.0
                 ->scalarNode('moment_js_version')
                     ->cannotBeEmpty()
                     ->defaultValue('2.29.4')

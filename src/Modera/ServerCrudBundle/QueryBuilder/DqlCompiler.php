@@ -7,16 +7,13 @@ use Modera\ServerCrudBundle\QueryBuilder\Parsing\Expression;
 /**
  * @internal
  *
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  */
 class DqlCompiler
 {
-    private ExpressionManager $exprMgr;
-
-    public function __construct(ExpressionManager $exprMgr)
-    {
-        $this->exprMgr = $exprMgr;
+    public function __construct(
+        private readonly ExpressionManager $exprMgr,
+    ) {
     }
 
     public function compile(Expression $expression, DoctrineQueryBuilderParametersBinder $binder): string

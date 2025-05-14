@@ -2,18 +2,19 @@
 
 namespace Modera\FileUploaderBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2015 Modera Foundation
  */
+#[AsContributorFor('modera_routing.routing_resources')]
 class RoutingResourcesProvider implements ContributorInterface
 {
     public function getItems(): array
     {
         return [
-            '@ModeraFileUploaderBundle/Resources/config/routing.yml',
+            '@ModeraFileUploaderBundle/Resources/config/routing.yaml',
         ];
     }
 }

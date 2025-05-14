@@ -2,21 +2,18 @@
 
 namespace Modera\MjrIntegrationBundle\Config;
 
-use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 
 /**
  * Service is responsible for providing configuration used by JavaScript runtime.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.net>
  * @copyright 2013 Modera Foundation
  */
 class ConfigManager
 {
-    private ContributorInterface $provider;
-
-    public function __construct(ContributorInterface $provider)
-    {
-        $this->provider = $provider;
+    public function __construct(
+        private readonly ExtensionProvider $extensionProvider,
+    ) {
     }
 
     /**
@@ -27,7 +24,7 @@ class ConfigManager
     public function getConfig(): array
     {
         $result = [];
-        foreach ($this->provider->getItems() as $merger) {
+        foreach ($this->extensionProvider->get('modera_mjr_integration.config.config_mergers')->getItems() as $merger) {
             if (!($merger instanceof ConfigMergerInterface)) {
                 throw new \RuntimeException();
             }

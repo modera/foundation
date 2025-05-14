@@ -1,0 +1,33 @@
+imports:
+    - { resource: parameters.yaml }
+    - { resource: '@ModeraSecurityBundle/Resources/config/security.yaml' }
+
+framework:
+    test: true
+    secret: Hell yeah!
+    csrf_protection: true
+    router:
+        resource: '%kernel.project_dir%/app/config/routing.yaml'
+        strict_requirements: ~
+    session:
+        handler_id: ~
+        storage_factory_id: session.storage.factory.mock_file
+    translator: { fallback: '%locale%' }
+    validation: { enable_attributes: true }
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        # http://symfony.com/doc/current/configuration/external_parameters.html
+        driver: pdo_mysql
+        host: '%db_host%'
+        port: '%db_port%'
+        user: '%db_user%'
+        password: '%db_password%'
+        dbname: modera_security_bundle
+        charset: UTF8
+        auto_commit: false
+
+    orm:
+        auto_generate_proxy_classes: true
+        auto_mapping: true

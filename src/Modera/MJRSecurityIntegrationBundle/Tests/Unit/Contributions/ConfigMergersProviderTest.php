@@ -3,29 +3,19 @@
 namespace Modera\MJRSecurityIntegrationBundle\Tests\Unit\Contributions;
 
 use Modera\ExpanderBundle\Ext\ContributorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Modera\MJRSecurityIntegrationBundle\Contributions\ConfigMergersProvider;
 use Modera\MjrIntegrationBundle\Config\ConfigMergerInterface;
+use Modera\MJRSecurityIntegrationBundle\Contributions\ConfigMergersProvider;
 use Modera\SecurityBundle\Entity\User;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
-// TODO: remove in v5.x
-interface MockTokenInterface extends TokenInterface
-{
-    public function getRoleNames(): array;
-}
-
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
 {
-    public function testSecurityRolesMerger()
+    public function testSecurityRolesMerger(): void
     {
-        $roles = array(
+        $roles = [
             'ROLE_USER',
             'ROLE_ADMIN',
-        );
+        ];
 
         $user = \Phake::mock(User::class);
         \Phake::when($user)->getId()->thenReturn(777);
@@ -34,7 +24,7 @@ class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
         \Phake::when($user)->getUserIdentifier()->thenReturn('john.doe');
         \Phake::when($user)->getUsername()->thenReturn('john.doe');
 
-        $token = \Phake::mock(MockTokenInterface::class);
+        $token = \Phake::mock(TokenInterface::class);
         \Phake::when($token)
             ->getUser()
             ->thenReturn($user)
@@ -44,11 +34,12 @@ class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
             ->thenReturn($roles)
         ;
 
-        $serviceDefinitions = array(
-            'fooService', 'barService',
-        );
+        $serviceDefinitions = [
+            'fooService',
+            'barService',
+        ];
 
-        $clientDiDefinitionsProvider = $this->createMock(ContributorInterface::CLAZZ);
+        $clientDiDefinitionsProvider = $this->createMock(ContributorInterface::class);
         $clientDiDefinitionsProvider->expects($this->atLeastOnce())
             ->method('getItems')
             ->will($this->returnValue($serviceDefinitions));
@@ -68,27 +59,27 @@ class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
         $provider = new ConfigMergersProvider($router, $tokenStorage, $clientDiDefinitionsProvider);
         $mergers = $provider->getItems();
 
-        $this->assertEquals(2, count($mergers));
+        $this->assertEquals(2, \count($mergers));
 
-        /* @var ConfigMergerInterface $securityRolesMerger */
+        /** @var ConfigMergerInterface $securityRolesMerger */
         $securityRolesMerger = $mergers[0];
-        /* @var ConfigMergerInterface $clientDiDefinitionsProviderMerger */
+        /** @var ConfigMergerInterface $clientDiDefinitionsProviderMerger */
         $clientDiDefinitionsProviderMerger = $mergers[1];
 
         $this->assertInstanceOf('Modera\MjrIntegrationBundle\Config\ConfigMergerInterface', $securityRolesMerger);
         $this->assertInstanceOf('Modera\MjrIntegrationBundle\Config\ConfigMergerInterface', $clientDiDefinitionsProviderMerger);
 
-        $existingConfig = array(
+        $existingConfig = [
             'something' => 'blah',
-        );
+        ];
         $mergedConfig = $securityRolesMerger->merge($existingConfig);
 
-        $this->assertTrue(is_array($mergedConfig));
+        $this->assertTrue(\is_array($mergedConfig));
         $this->assertArrayHasKey('something', $mergedConfig);
         $this->assertEquals('blah', $mergedConfig['something']);
         $this->assertArrayHasKey('roles', $mergedConfig);
         $this->assertTrue(is_array($mergedConfig['roles']));
-        $this->assertEquals(2, count($mergedConfig['roles']));
+        $this->assertEquals(2, \count($mergedConfig['roles']));
         $this->assertTrue(in_array('ROLE_USER', $mergedConfig['roles']));
         $this->assertTrue(in_array('ROLE_ADMIN', $mergedConfig['roles']));
         $this->assertArrayHasKey('userProfile', $mergedConfig);
@@ -108,7 +99,7 @@ class ConfigMergersProviderTest extends \PHPUnit\Framework\TestCase
 
         $this->assertArrayHasKey('serviceDefinitions', $mergedConfig);
         $this->assertTrue(is_array($mergedConfig['serviceDefinitions']));
-        $this->assertEquals(2, count($mergedConfig['serviceDefinitions']));
+        $this->assertEquals(2, \count($mergedConfig['serviceDefinitions']));
         $this->assertTrue(in_array('fooService', $mergedConfig['serviceDefinitions']));
         $this->assertTrue(in_array('barService', $mergedConfig['serviceDefinitions']));
     }

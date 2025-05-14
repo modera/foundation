@@ -2,12 +2,13 @@
 
 namespace Modera\BackendConfigUtilsBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.class_loader_mappings')]
 class ClassLoaderMappingsProvider implements ContributorInterface
 {
     /**

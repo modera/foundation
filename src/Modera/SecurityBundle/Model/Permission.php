@@ -3,37 +3,28 @@
 namespace Modera\SecurityBundle\Model;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class Permission implements PermissionInterface
 {
-    /**
-     * @see PermissionInterface::getRole()
-     */
-    private string $role;
-
-    /**
-     * @see PermissionInterface::getName()
-     */
-    private string $name;
-
-    /**
-     * @see PermissionInterface::getCategory()
-     */
-    private ?string $category;
-
-    /**
-     * @see PermissionInterface::getDescription()
-     */
-    private ?string $description;
-
-    public function __construct(string $name, string $role, ?string $category = null, ?string $description = null)
-    {
-        $this->category = $category;
-        $this->description = $description;
-        $this->name = $name;
-        $this->role = $role;
+    public function __construct(
+        /**
+         * @see PermissionInterface::getName()
+         */
+        private readonly string $name,
+        /**
+         * @see PermissionInterface::getRole()
+         */
+        private readonly string $role,
+        /**
+         * @see PermissionInterface::getCategory()
+         */
+        private readonly ?string $category = null,
+        /**
+         * @see PermissionInterface::getDescription()
+         */
+        private readonly ?string $description = null,
+    ) {
     }
 
     public function getRole(): string

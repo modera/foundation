@@ -21,7 +21,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  * need to use them then you need to use "template methods" instead, just add "do" prefix to a method you need,
  * for instance, if you want to override "setUp" method then use "doSetUp" method instead.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class FunctionalTestCase extends WebTestCase

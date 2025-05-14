@@ -17,7 +17,7 @@ class MockFileRepository extends FileRepository
 {
     public array $invocations = [];
 
-    public function put($repositoryName, \SplFileInfo $file, array $context = []): StoredFile
+    public function put(string $repositoryName, \SplFileInfo $file, array $context = []): StoredFile
     {
         $this->invocations[] = [$repositoryName, $file, $context];
 
@@ -25,13 +25,9 @@ class MockFileRepository extends FileRepository
     }
 }
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class InterceptorTest extends \PHPUnit\Framework\TestCase
 {
-    private function createMocks()
+    private function createMocks(): array
     {
         $container = \Phake::mock(ContainerInterface::class);
         \Phake::when($container)
@@ -46,7 +42,7 @@ class InterceptorTest extends \PHPUnit\Framework\TestCase
         $repository = \Phake::mock(Repository::class);
         \Phake::when($repository)
             ->getConfig()
-            ->thenReturn(array())
+            ->thenReturn([])
         ;
 
         $storedFile = \Phake::mock(StoredFile::class);
@@ -57,16 +53,16 @@ class InterceptorTest extends \PHPUnit\Framework\TestCase
 
         $file = \Phake::mock(UploadedFile::class);
 
-        return array(
+        return [
             'file_repository' => $fr,
             'thumbnails_generator' => $tg,
             'repository' => $repository,
             'stored_file' => $storedFile,
             'file' => $file,
-        );
+        ];
     }
 
-    public function testDoPut_noConfig()
+    public function testDoPutNoConfig(): void
     {
         $m = $this->createMocks();
 
@@ -78,17 +74,17 @@ class InterceptorTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testDoPut_notImageGiven()
+    public function testDoPutNotImageGiven()
     {
         $m = $this->createMocks();
 
         \Phake::when($m['repository'])
             ->getConfig()
-            ->thenReturn(array('thumbnail_sizes' => ['foo']))
+            ->thenReturn(['thumbnail_sizes' => ['foo']])
         ;
 
-        $pathname = tempnam(sys_get_temp_dir(), 'test');
-        file_put_contents($pathname, 'foo');
+        $pathname = \tempnam(\sys_get_temp_dir(), 'test');
+        \file_put_contents($pathname, 'foo');
 
         \Phake::when($m['file'])
             ->getPathname()
@@ -103,26 +99,26 @@ class InterceptorTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testDoPut()
+    public function testDoPut(): void
     {
         $m = $this->createMocks();
 
         $thumbnailsConfig = [
-            array(
+            [
                 'width' => 150,
                 'height' => 100,
-            ),
-            array(
+            ],
+            [
                 'width' => 60,
                 'height' => 30,
-            ),
+            ],
         ];
 
         $imagePathname = __DIR__.'/../../Fixtures/backend.png';
 
         \Phake::when($m['repository'])
             ->getConfig()
-            ->thenReturn(array('thumbnail_sizes' => $thumbnailsConfig))
+            ->thenReturn(['thumbnail_sizes' => $thumbnailsConfig])
         ;
         \Phake::when($m['repository'])
             ->getName()
@@ -152,7 +148,7 @@ class InterceptorTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue(isset($m['file_repository']->invocations[0]));
 
-        /* @var AlternativeUploadedFile $firstScheduledFile */
+        /** @var AlternativeUploadedFile $firstScheduledFile */
         $firstScheduledFile = $m['file_repository']->invocations[0][1];
 
         $this->assertInstanceOf(AlternativeUploadedFile::class, $firstScheduledFile);
@@ -183,7 +179,7 @@ class InterceptorTest extends \PHPUnit\Framework\TestCase
         ;
 
         $this->assertTrue(isset($m['file_repository']->invocations[1]));
-        /* @var AlternativeUploadedFile $secondScheduledFile */
+        /** @var AlternativeUploadedFile $secondScheduledFile */
         $secondScheduledFile = $m['file_repository']->invocations[1][1];
 
         $this->assertInstanceOf(AlternativeUploadedFile::class, $secondScheduledFile);

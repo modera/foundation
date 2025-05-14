@@ -2,8 +2,10 @@
 
 namespace Modera\ConfigBundle\DependencyInjection;
 
+use Modera\ConfigBundle\Listener\OwnerRelationMappingListener;
 use Modera\ConfigBundle\ModeraConfigBundle;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -11,7 +13,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 /**
  * This is the class that loads and manages your bundle configuration.
  *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
+ * To learn more see {@link https://symfony.com/doc/current/bundles/extension.html}
  */
 class ModeraConfigExtension extends Extension
 {
@@ -20,18 +22,18 @@ class ModeraConfigExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.xml');
+        $loader = new Loader\PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.php');
 
         /*
         $kernelBundles = $container->getParameter('kernel.bundles');
-        if (isset($kernelBundles['ModeraSecurityBundle']) && null == $config['owner_entity']) {
+        if (isset($kernelBundles['ModeraSecurityBundle']) && null === $config['owner_entity']) {
             $config['owner_entity'] = 'Modera\SecurityBundle\Entity\User';
         }
         */
 
         if (\is_string($config['owner_entity'] ?? null)) {
-            $listener = $container->getDefinition('modera_config.listener.owner_relation_mapping_listener');
+            $listener = $container->getDefinition(OwnerRelationMappingListener::class);
 
             $listener->addTag('doctrine.event_listener', [
                 'event' => 'loadClassMetadata',
@@ -40,9 +42,9 @@ class ModeraConfigExtension extends Extension
 
         $container->setParameter(ModeraConfigBundle::CONFIG_KEY, $config);
 
-        if (\class_exists('Symfony\Component\Console\Application')) {
+        if (\class_exists(Application::class)) {
             try {
-                $loader->load('console.xml');
+                $loader->load('console.php');
             } catch (\Exception $e) {
             }
         }

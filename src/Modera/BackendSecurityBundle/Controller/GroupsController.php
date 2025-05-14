@@ -2,6 +2,7 @@
 
 namespace Modera\BackendSecurityBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Modera\BackendSecurityBundle\ModeraBackendSecurityBundle;
 use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Entity\Group;
@@ -9,17 +10,22 @@ use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
 use Modera\ServerCrudBundle\NewValuesFactory\NewValuesFactoryInterface;
 use Modera\ServerCrudBundle\Validation\EntityValidatorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsController]
 class GroupsController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ) {
+    }
+
     public function getConfig(): array
     {
-        $groupEntityValidator = function (array $params, Group $group, EntityValidatorInterface $defaultValidator, array $config, ContainerInterface $container) {
+        $groupEntityValidator = function (array $params, Group $group, EntityValidatorInterface $defaultValidator, array $config) {
             $validationResult = $defaultValidator->validate($group, $config);
 
             if (!$group->getRefName()) {
@@ -27,7 +33,7 @@ class GroupsController extends AbstractCrudController
             }
 
             /** @var Group[] $groupWithSuchRefNameList */
-            $groupWithSuchRefNameList = $this->em()->getRepository(Group::class)->findByRefName($group->getRefName());
+            $groupWithSuchRefNameList = $this->entityManager->getRepository(Group::class)->findByRefName($group->getRefName());
 
             if (\count($groupWithSuchRefNameList) > 0) {
                 $groupWithSuchRefName = $groupWithSuchRefNameList[0];
@@ -46,7 +52,7 @@ class GroupsController extends AbstractCrudController
             return $validationResult;
         };
 
-        $mapEntity = function (array $params, Group $group, DataMapperInterface $defaultMapper, ContainerInterface $container) {
+        $mapEntity = function (array $params, Group $group, DataMapperInterface $defaultMapper) {
             $allowedFieldsToEdit = ['name', 'refName', 'permissions'];
             $params = \array_intersect_key($params, \array_flip($allowedFieldsToEdit));
             $defaultMapper->mapData($params, $group);
@@ -64,7 +70,7 @@ class GroupsController extends AbstractCrudController
                 /*
                  * To help users avoid duplicates group we use normalizing for refName
                  */
-                $group->setRefName(Group::normalizeRefNameString($refName));
+                $group->setRefName(Group::normalizeRefName($refName));
             }
         };
 
@@ -98,7 +104,7 @@ class GroupsController extends AbstractCrudController
                     'edit-group' => ['main-form'],
                 ],
             ],
-            'format_new_entity_values' => function (array $params, array $config, NewValuesFactoryInterface $defaultImpl, ContainerInterface $container) {
+            'format_new_entity_values' => function (array $params, array $config, NewValuesFactoryInterface $defaultImpl) {
                 return [
                     'refName' => null,
                 ];

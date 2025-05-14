@@ -3,7 +3,6 @@
 namespace Modera\MjrIntegrationBundle\AssetsHandling;
 
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2022 Modera Foundation
  */
 interface AssetsProviderInterface

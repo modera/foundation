@@ -9,22 +9,16 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 /**
  * Interceptor allows to add security enforcement logic to AbstractCrudController.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class SecurityControllerActionsInterceptor implements ControllerActionsInterceptorInterface
 {
-    private AuthorizationCheckerInterface $authorizationChecker;
-
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
-    {
-        $this->authorizationChecker = $authorizationChecker;
+    public function __construct(
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+    ) {
     }
 
-    /**
-     * @param callable|string $role
-     */
-    private function throwAccessDeniedException($role): void
+    private function throwAccessDeniedException(callable|string $role): void
     {
         $msg = \is_callable($role)
              ? 'You are not allowed to perform this action.'

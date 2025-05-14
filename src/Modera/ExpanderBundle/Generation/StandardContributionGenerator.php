@@ -10,9 +10,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
+/**
+ * @copyright 2024 Modera Foundation
+ */
 class StandardContributionGenerator implements ContributionGeneratorInterface
 {
     private ?string $className = null;
+
+    private string $dirName = 'Contribution';
 
     /**
      * @param array<string, mixed> $config
@@ -22,6 +27,9 @@ class StandardContributionGenerator implements ContributionGeneratorInterface
         if (\is_string($config['className'] ?? null)) {
             $this->className = $config['className'];
         }
+        if (\is_string($config['dirName'] ?? null)) {
+            $this->dirName = $config['dirName'];
+        }
     }
 
     public function generate(
@@ -29,11 +37,12 @@ class StandardContributionGenerator implements ContributionGeneratorInterface
         ExtensionPoint $extensionPoint,
         InputInterface $input,
         OutputInterface $output,
-        ?HelperSet $helperSet = null
+        ?HelperSet $helperSet = null,
     ): void {
-        if (!\file_exists($bundle->getPath().'/Contributions')) {
-            $output->writeln('Creating contributions directory ...');
-            \mkdir($bundle->getPath().'/Contributions');
+        $dirName = $this->dirName;
+        if (!\file_exists($bundle->getPath().'/'.$dirName)) {
+            $output->writeln('Creating contribution directory ...');
+            \mkdir($bundle->getPath().'/'.$dirName);
         }
 
         /** @var string $className */
@@ -50,27 +59,19 @@ class StandardContributionGenerator implements ContributionGeneratorInterface
             $className = $questionHelper->ask($input, $output, $question);
         }
 
-        $contributionFilename = $bundle->getPath().'/Contributions/'.$className.'.php';
+        $contributionFilename = $bundle->getPath().'/'.$dirName.'/'.$className.'.php';
         if (\file_exists($contributionFilename)) {
-            throw new \RuntimeException("File '$contributionFilename' already exists!");
+            throw new \RuntimeException(\sprintf('File "%s" already exists!', $contributionFilename));
         }
-
-        $servicesFilename = $bundle->getPath().'/Resources/config/services.xml';
-        if (!\file_exists($servicesFilename)) {
-            throw new \RuntimeException("File '$servicesFilename' doesn't exist.");
-        }
-
-        $servicesXml = \file_get_contents($servicesFilename);
-        if (!$servicesXml) {
-            throw new \RuntimeException('Service XML file cannot be loaded.');
-        }
-
         \file_put_contents($contributionFilename, $this->compileContributionClassTemplate($bundle, $extensionPoint, $className));
-        \file_put_contents($servicesFilename, $this->compileServicesXml($bundle, $extensionPoint, $className, $servicesXml));
+
+        $output->writeln(' - New file: '.$contributionFilename);
+        $output->writeln(\sprintf(' - Register contribution in "%s":', $bundle->getPath().'/Resources/config/services.php'));
+        $output->writeln('');
+        $output->writeln($this->compileServices($bundle, $extensionPoint, $className));
+        $output->writeln('');
 
         $output->writeln('Done!');
-        $output->writeln(' - New file: '.$contributionFilename);
-        $output->writeln(' - Updated: '.$servicesFilename);
     }
 
     /**
@@ -88,10 +89,12 @@ class StandardContributionGenerator implements ContributionGeneratorInterface
         return <<<TPL
 <?php
 
-namespace %namespace%\Contributions;
+namespace %namespace%\%dir_name%;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
+#[AsContributorFor('%extension_point_id%')]
 class %class_name% implements ContributorInterface
 {
     public function getItems(): array
@@ -106,63 +109,43 @@ TPL;
     {
         $tpl = $this->getContributionClassTemplate();
 
-        return \str_replace(['%namespace%', '%class_name%'], [$bundle->getNamespace(), $className], $tpl);
+        return \str_replace(
+            ['%namespace%', '%dir_name%', '%class_name%', '%extension_point_id%'],
+            [$bundle->getNamespace(), $this->dirName, $className, $extensionPoint->getId()],
+            $tpl,
+        );
     }
 
-    protected function getServiceXmlTemplate(): string
+    protected function getServicesTemplate(): string
     {
         return <<<TPL
+<?php
 
-        <service id="%id%"
-                 class="%class_name%">
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-            <tag name="%tag_name%" />
-        </service>
+use %namespace%\%dir_name%\%class_name%;
+
+return static function (ContainerConfigurator \$container): void {
+    \$services = \$container->services()
+        ->defaults()
+            ->private()
+            ->autowire()
+            ->autoconfigure()
+    ;
+
+    \$services->set(%class_name%::class);
+};
 TPL;
     }
 
-    protected function compileServicesXml(BundleInterface $bundle, ExtensionPoint $extensionPoint, string $className, string $servicesXml): string
+    protected function compileServices(BundleInterface $bundle, ExtensionPoint $extensionPoint, string $className): string
     {
-        $tpl = $this->getServiceXmlTemplate();
+        $tpl = $this->getServicesTemplate();
 
-        $bundleServicesNamespace = \substr($this->camelToSnake($bundle->getName()), 0, -1 * \strlen('_bundle'));
-        $serviceId = $bundleServicesNamespace.'.contributions.'.$this->camelToSnake($className);
-        $fqcn = $bundle->getNamespace().'\\Contributions\\'.$className;
-        $tagName = $extensionPoint->getContributionTag();
-
-        $compiledServiceXml = \str_replace(['%id%', '%class_name%', '%tag_name%'], [$serviceId, $fqcn, $tagName], $tpl);
-        $compiledServiceXmlAsArray = \explode(PHP_EOL, $compiledServiceXml);
-
-        $servicesXmlAsArray = \explode(PHP_EOL, $servicesXml);
-
-        $closingServicesTagIndex = null;
-        foreach ($servicesXmlAsArray as $lineIndex => $rootLine) {
-            // we are going to add a new service right before a closing </services> tag
-            if ('</services>' === \trim($rootLine)) {
-                $closingServicesTagIndex = $lineIndex;
-            }
-        }
-
-        if (null === $closingServicesTagIndex) {
-            throw new \RuntimeException('Unable to find a closing </services> tag!');
-        }
-
-        $resultXmlArray = [];
-        foreach ($servicesXmlAsArray as $lineIndex => $rootLine) {
-            if ($lineIndex === $closingServicesTagIndex) {
-                foreach ($compiledServiceXmlAsArray as $innerLine) {
-                    $resultXmlArray[] = $innerLine;
-                }
-            }
-
-            $resultXmlArray[] = $rootLine;
-        }
-
-        return \implode(PHP_EOL, $resultXmlArray);
-    }
-
-    protected function camelToSnake(string $word): string
-    {
-        return \strtolower(\preg_replace('~(?<=\\w)([A-Z])~', '_$1', $word) ?? $word);
+        return \str_replace(
+            ['%namespace%', '%dir_name%', '%class_name%', '%extension_point_id%'],
+            [$bundle->getNamespace(), $this->dirName, $className, $extensionPoint->getId()],
+            $tpl,
+        );
     }
 }

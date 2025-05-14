@@ -5,13 +5,14 @@ namespace Modera\DirectBundle\Router;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @copyright 2025 Modera Foundation
+ */
 class RouterFactory implements RouterFactoryInterface
 {
-    private ContainerInterface $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        private readonly ContainerInterface $container,
+    ) {
     }
 
     public function create(Request $request): Router

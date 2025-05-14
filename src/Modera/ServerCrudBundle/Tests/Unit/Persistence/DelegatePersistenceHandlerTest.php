@@ -5,18 +5,11 @@ namespace Modera\ServerCrudBundle\Tests\Unit\Persistence;
 use Modera\ServerCrudBundle\Persistence\DelegatePersistenceHandler;
 use Modera\ServerCrudBundle\Persistence\PersistenceHandlerInterface;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class DelegatePersistenceHandlerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var DelegatePersistenceHandler
-     */
-    private $handler;
+    private DelegatePersistenceHandler $handler;
 
-    private $delegate;
+    private PersistenceHandlerInterface $delegate;
 
     protected function setUp(): void
     {
@@ -24,7 +17,7 @@ class DelegatePersistenceHandlerTest extends \PHPUnit\Framework\TestCase
         $this->handler = new DelegatePersistenceHandler($this->delegate);
     }
 
-    public function testResolveEntityPrimaryKeyFields()
+    public function testResolveEntityPrimaryKeyFields(): void
     {
         \Phake::when($this->delegate)
             ->resolveEntityPrimaryKeyFields('foo')
@@ -36,7 +29,7 @@ class DelegatePersistenceHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['bar-field'], $result);
     }
 
-    public function testSave()
+    public function testSave(): void
     {
         $entity = new \stdClass();
 
@@ -47,7 +40,7 @@ class DelegatePersistenceHandlerTest extends \PHPUnit\Framework\TestCase
         ;
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $entity = new \stdClass();
 
@@ -58,7 +51,7 @@ class DelegatePersistenceHandlerTest extends \PHPUnit\Framework\TestCase
         ;
     }
 
-    public function testUpdateBatch()
+    public function testUpdateBatch(): void
     {
         $entities = [new \stdClass(), new \stdClass()];
 
@@ -69,7 +62,7 @@ class DelegatePersistenceHandlerTest extends \PHPUnit\Framework\TestCase
         ;
     }
 
-    public function testQuery()
+    public function testQuery(): void
     {
         \Phake::when($this->delegate)
             ->query('foo', ['bar'])
@@ -85,7 +78,7 @@ class DelegatePersistenceHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['mega-result'], $result);
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $entities = [new \stdClass(), new \stdClass()];
 
@@ -96,7 +89,7 @@ class DelegatePersistenceHandlerTest extends \PHPUnit\Framework\TestCase
         ;
     }
 
-    public function testGetCount()
+    public function testGetCount(): void
     {
         \Phake::when($this->delegate)
             ->getCount('foo', ['bar'])

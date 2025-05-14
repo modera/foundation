@@ -6,7 +6,6 @@ namespace Modera\ServerCrudBundle\DataMapping;
  * Implementations are responsible for taking dta coming from client side and mapping it onto entities so eventually
  * then can be persisted to database.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 interface DataMapperInterface

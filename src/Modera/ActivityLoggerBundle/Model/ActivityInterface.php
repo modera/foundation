@@ -5,7 +5,6 @@ namespace Modera\ActivityLoggerBundle\Model;
 /**
  * Declares a bunch of methods that all activities must have.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 interface ActivityInterface
@@ -26,7 +25,7 @@ interface ActivityInterface
      * Returned value could be anything that your logic can understand later and figure out who originally created this
      * activity - for example, it could contain an ID of your USER entity.
      */
-    public function getAuthor(): string;
+    public function getAuthor(): ?string;
 
     /**
      * @return array<mixed>

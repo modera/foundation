@@ -5,25 +5,10 @@ namespace Modera\DynamicallyConfigurableAppBundle;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Runtime\SymfonyRuntime;
 
-if (\class_exists(SymfonyRuntime::class)) {
-    abstract class BaseRuntime extends SymfonyRuntime
-    {
-    }
-} else {
-    abstract class BaseRuntime
-    {
-        public function __construct()
-        {
-            throw new \RuntimeException('"symfony/runtime" package required');
-        }
-    }
-}
-
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2021 Modera Foundation
  */
-class Runtime extends BaseRuntime
+class Runtime extends SymfonyRuntime
 {
     /**
      * @param array{
@@ -37,12 +22,20 @@ class Runtime extends BaseRuntime
         $debugKey = $options['debug_var_name'] ?? $options['debug_var_name'] = 'APP_DEBUG';
 
         $kernelConfig = $this->getKernelConfig();
-        (new Dotenv())->populate([
-            $envKey => $kernelConfig['env'],
-            $debugKey => $kernelConfig['debug'] ? '1' : '0',
-        ]);
+        if (\class_exists(Dotenv::class)) {
+            (new Dotenv())->populate([
+                $envKey => $kernelConfig['env'],
+                $debugKey => $kernelConfig['debug'] ? '1' : '0',
+            ]);
+        } else {
+            if (\putenv($envKey.'='.$kernelConfig['env'])) {
+                $_SERVER[$envKey] = $_ENV[$envKey] = $kernelConfig['env'];
+            }
+            if (\putenv($debugKey.'='.($kernelConfig['debug'] ? '1' : '0'))) {
+                $_SERVER[$envKey] = $_ENV[$envKey] = $kernelConfig['debug'] ? '1' : '0';
+            }
+        }
 
-        // @phpstan-ignore-next-line
         parent::__construct($options);
     }
 

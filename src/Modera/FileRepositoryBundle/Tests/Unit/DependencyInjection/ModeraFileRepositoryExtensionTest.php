@@ -6,13 +6,9 @@ use Modera\FileRepositoryBundle\DependencyInjection\ModeraFileRepositoryExtensio
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2015 Modera Foundation
- */
 class ModeraFileRepositoryExtensionTest extends \PHPUnit\Framework\TestCase
 {
-    public function testLoad()
+    public function testLoad(): void
     {
         $ext = new ModeraFileRepositoryExtension();
 
@@ -21,11 +17,11 @@ class ModeraFileRepositoryExtensionTest extends \PHPUnit\Framework\TestCase
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->setDefinition('foo-service', $wannabeInterceptorsProviderDef);
 
-        $dummyConfig = array(
-            'modera_file_repository' => array(
+        $dummyConfig = [
+            'modera_file_repository' => [
                 'interceptors_provider' => 'foo-service',
-            ),
-        );
+            ],
+        ];
 
         $ext->load($dummyConfig, $containerBuilder);
 
@@ -36,8 +32,8 @@ class ModeraFileRepositoryExtensionTest extends \PHPUnit\Framework\TestCase
         // checking dynamic service linking
         $this->assertSame(
             $wannabeInterceptorsProviderDef,
-            $containerBuilder->getDefinition('modera_file_repository.intercepting.interceptors_provider')
+            $containerBuilder->getDefinition('modera_file_repository.intercepting.interceptors_provider'),
         );
-        $this->assertTrue(count($params) > 1);
+        $this->assertTrue(\count($params) > 1);
     }
 }

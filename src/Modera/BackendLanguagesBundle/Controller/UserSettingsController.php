@@ -8,12 +8,13 @@ use Modera\SecurityBundle\Entity\User;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\QueryBuilder\Parsing\Filter;
 use Modera\ServerCrudBundle\QueryBuilder\Parsing\Filters;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsController]
 class UserSettingsController extends AbstractCrudController
 {
     public function getConfig(): array

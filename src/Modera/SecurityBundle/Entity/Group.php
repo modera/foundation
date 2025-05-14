@@ -10,36 +10,27 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Groups are used to group users.
  *
- * @ORM\Entity(repositoryClass="Modera\SecurityBundle\Entity\GroupRepository")
- *
- * @ORM\Table(name="modera_security_usersgroup", uniqueConstraints={@ORM\UniqueConstraint(name="refName_idx", columns={"refName"})})
- *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2014 Modera Foundation
  */
+#[ORM\Entity(repositoryClass: GroupRepository::class)]
+#[ORM\Table(name: 'modera_security_usersgroup')]
+#[ORM\UniqueConstraint(name: 'refName_idx', columns: ['refName'])]
 class Group
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @ORM\Id
-     *
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     /**
-     * @var Collection<int, UserInterface>
-     *
-     * @ORM\ManyToMany(targetEntity="User", mappedBy="groups", cascade={"persist"})
+     * @var Collection<int, User>
      */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'groups', cascade: ['persist'])]
     private Collection $users;
 
-    /**
-     * @Assert\NotBlank
-     *
-     * @ORM\Column(type="string")
-     */
-    private ?string $name = null;
+    #[Assert\NotBlank]
+    #[ORM\Column(type: 'string')]
+    private string $name;
 
     /**
      * Reference name that maybe used in code to refer exact group.
@@ -47,21 +38,18 @@ class Group
      *
      * Please note, there is no mandatory Regex assert.
      * But in modera/backend-security-bindle controller this value will
-     * be normalized by self::normalizeRefNameString
+     * be normalized by self::normalizeRefName
      *
      * So if plan to use UI editing of your group, try to stick to this Regex assert.
-     *
-     * @Assert\Regex("/[A-Z_]{0,}/")
-     *
-     * @ORM\Column(type="string", nullable=true)
      */
+    #[Assert\Regex(pattern: '/[A-Z_]{0,}/')]
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $refName = null;
 
     /**
      * @var Collection<int, Permission>
-     *
-     * @ORM\ManyToMany(targetEntity="Permission", mappedBy="groups", cascade={"persist"})
      */
+    #[ORM\ManyToMany(targetEntity: Permission::class, mappedBy: 'groups', cascade: ['persist'])]
     private Collection $permissions;
 
     public function __construct()
@@ -70,20 +58,7 @@ class Group
         $this->permissions = new ArrayCollection();
     }
 
-    /**
-     * @deprecated Use native ::class property
-     */
-    public static function clazz(): string
-    {
-        @\trigger_error(\sprintf(
-            'The "%s()" method is deprecated. Use native ::class property.',
-            __METHOD__
-        ), \E_USER_DEPRECATED);
-
-        return \get_called_class();
-    }
-
-    public function addUser(UserInterface $user): void
+    public function addUser(User $user): void
     {
         $this->users->add($user);
         if (!$user->getGroups()->contains($this)) {
@@ -121,11 +96,11 @@ class Group
 
     public function getName(): string
     {
-        return $this->name ?? '';
+        return $this->name;
     }
 
     /**
-     * @param Collection<int, UserInterface> $users
+     * @param Collection<int, User> $users
      */
     public function setUsers(Collection $users): void
     {
@@ -133,7 +108,7 @@ class Group
     }
 
     /**
-     * @return Collection<int, UserInterface>
+     * @return Collection<int, User>
      */
     public function getUsers(): Collection
     {
@@ -166,7 +141,7 @@ class Group
         $this->refName = $refName;
     }
 
-    public static function normalizeRefNameString(string $proposedRefName): ?string
+    public static function normalizeRefName(string $proposedRefName): ?string
     {
         $modifiedRefName = \strtoupper($proposedRefName);
 

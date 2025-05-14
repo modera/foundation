@@ -8,17 +8,10 @@ use Doctrine\ORM\QueryBuilder;
 use Modera\ServerCrudBundle\QueryBuilder\Parsing\Expression;
 
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  */
 class ExpressionManager
 {
-    private string $fqcn;
-
-    private EntityManagerInterface $em;
-
-    private string $rootAlias;
-
     /**
      * @var array<string, string>
      */
@@ -29,11 +22,11 @@ class ExpressionManager
      */
     private array $validatedExpressions = [];
 
-    public function __construct(string $fqcn, EntityManagerInterface $em, string $rootAlias = 'e')
-    {
-        $this->fqcn = $fqcn;
-        $this->em = $em;
-        $this->rootAlias = $rootAlias;
+    public function __construct(
+        private readonly string $fqcn,
+        private readonly EntityManagerInterface $em,
+        private readonly string $rootAlias = 'e',
+    ) {
     }
 
     /**
@@ -69,7 +62,6 @@ class ExpressionManager
             $parsed = \explode('.', $expression);
 
             /**
-             * @var int    $index
              * @var string $propertyName
              */
             foreach ($parsed as $index => $propertyName) {

@@ -5,10 +5,9 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="modera_expander_dummy_bundle.contributions.dummy_resources_provider"
-                 class="Modera\ExpanderBundle\Tests\Fixtures\Bundles\DummyBundle\Contributions\DummyResourcesProvider">
-
-            <tag name="modera_expander.dummy_resources_provider" />
-        </service>
+        <service id="Modera\ExpanderBundle\Tests\Fixtures\Bundles\DummyBundle\Contributions\DummyResourcesProvider"
+                 autoconfigure="true"
+                 autowire="true"
+        />
     </services>
 </container>

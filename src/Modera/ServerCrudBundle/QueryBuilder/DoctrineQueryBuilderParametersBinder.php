@@ -7,7 +7,6 @@ use Doctrine\ORM\QueryBuilder;
 /**
  * @internal
  *
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  */
 class DoctrineQueryBuilderParametersBinder
@@ -24,10 +23,7 @@ class DoctrineQueryBuilderParametersBinder
         $this->qb = $qb;
     }
 
-    /**
-     * @param mixed $value Mixed value
-     */
-    public function bind($value): int
+    public function bind(mixed $value): int
     {
         $this->values[] = $value;
 

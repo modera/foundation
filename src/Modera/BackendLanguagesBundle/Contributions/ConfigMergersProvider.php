@@ -4,6 +4,7 @@ namespace Modera\BackendLanguagesBundle\Contributions;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\BackendLanguagesBundle\Entity\UserSettings;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\LanguagesBundle\Entity\Language;
 use Modera\LanguagesBundle\Helper\LocaleHelper;
@@ -12,22 +13,16 @@ use Modera\SecurityBundle\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.config.config_mergers')]
 class ConfigMergersProvider implements ContributorInterface, ConfigMergerInterface
 {
-    private EntityManagerInterface $em;
-
-    private TokenStorageInterface $tokenStorage;
-
-    private string $locale;
-
-    public function __construct(EntityManagerInterface $em, TokenStorageInterface $tokenStorage, string $locale = 'en')
-    {
-        $this->em = $em;
-        $this->tokenStorage = $tokenStorage;
-        $this->locale = $locale;
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly TokenStorageInterface $tokenStorage,
+        private readonly string $locale = 'en',
+    ) {
     }
 
     public function merge(array $existingConfig): array

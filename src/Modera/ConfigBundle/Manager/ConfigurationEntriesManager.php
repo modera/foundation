@@ -5,34 +5,20 @@ namespace Modera\ConfigBundle\Manager;
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\ConfigBundle\Config\ConfigurationEntryInterface;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class ConfigurationEntriesManager implements ConfigurationEntriesManagerInterface
 {
-    private EntityManagerInterface $em;
-
-    /**
-     * @var array<mixed>
-     */
-    private array $semanticConfig;
-
-    private ?UniquityValidator $uniquityValidator;
-
     /**
      * @param array<mixed> $semanticConfig
      */
     public function __construct(
-        EntityManagerInterface $em,
-        array $semanticConfig = [],
-        ?UniquityValidator $uniquityValidator = null
+        private readonly EntityManagerInterface $em,
+        private readonly array $semanticConfig = [],
+        private readonly ?UniquityValidator $uniquityValidator = null,
     ) {
-        $this->em = $em;
-        $this->semanticConfig = $semanticConfig;
-        $this->uniquityValidator = $uniquityValidator;
     }
 
     public function findOneByName(string $name, ?object $owner = null): ?ConfigurationEntryInterface
@@ -68,7 +54,7 @@ class ConfigurationEntriesManager implements ConfigurationEntriesManagerInterfac
 
     private function isOwnerConfigured(): bool
     {
-        return isset($this->semanticConfig['owner_entity']) && null !== $this->semanticConfig['owner_entity'];
+        return \is_string($this->semanticConfig['owner_entity'] ?? null);
     }
 
     public function findOneByNameOrDie(string $name, ?object $owner = null): ConfigurationEntryInterface
@@ -84,7 +70,7 @@ class ConfigurationEntriesManager implements ConfigurationEntriesManagerInterfac
     public function save(ConfigurationEntryInterface $entry): void
     {
         if (!($entry instanceof ConfigurationEntry)) {
-            throw new InvalidArgumentException('$entry must be an instance of '.ConfigurationEntry::class);
+            throw new \InvalidArgumentException('$entry must be an instance of '.ConfigurationEntry::class);
         }
 
         $this->em->beginTransaction();

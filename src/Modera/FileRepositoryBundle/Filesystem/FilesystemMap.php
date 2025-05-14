@@ -6,16 +6,13 @@ use Gaufrette\FilesystemInterface;
 use Gaufrette\FilesystemMapInterface as GaufretteFilesystemMapInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  */
 class FilesystemMap implements FilesystemMapInterface
 {
-    private GaufretteFilesystemMapInterface $filesystemMap;
-
-    public function __construct(GaufretteFilesystemMapInterface $filesystemMap)
-    {
-        $this->filesystemMap = $filesystemMap;
+    public function __construct(
+        private readonly GaufretteFilesystemMapInterface $filesystemMap,
+    ) {
     }
 
     public function has(string $name): bool

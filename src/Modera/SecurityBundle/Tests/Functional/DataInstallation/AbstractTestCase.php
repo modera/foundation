@@ -6,20 +6,17 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Modera\SecurityBundle\Entity\Group;
 use Modera\SecurityBundle\Entity\Permission;
-use Modera\SecurityBundle\Entity\PermissionCategory as PermissionCategoryEntity;
-use Modera\SecurityBundle\Entity\Permission as PermissionEntity;
+use Modera\SecurityBundle\Entity\PermissionCategory;
 use Modera\SecurityBundle\Entity\User;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2017 Modera Foundation
- */
-class AbstractTestCase extends FunctionalTestCase
+abstract class AbstractTestCase extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $st;
+    private static SchemaTool $st;
+
+    protected static function getIsolationLevel(): string
+    {
+        return static::IM_CLASS;
+    }
 
     public static function doSetUpBeforeClass(): void
     {
@@ -28,8 +25,7 @@ class AbstractTestCase extends FunctionalTestCase
             self::$em->getClassMetadata(User::class),
             self::$em->getClassMetadata(Group::class),
             self::$em->getClassMetadata(Permission::class),
-            self::$em->getClassMetadata(PermissionEntity::class),
-            self::$em->getClassMetadata(PermissionCategoryEntity::class),
+            self::$em->getClassMetadata(PermissionCategory::class),
         ]);
     }
 
@@ -39,8 +35,7 @@ class AbstractTestCase extends FunctionalTestCase
             self::$em->getClassMetadata(User::class),
             self::$em->getClassMetadata(Group::class),
             self::$em->getClassMetadata(Permission::class),
-            self::$em->getClassMetadata(PermissionEntity::class),
-            self::$em->getClassMetadata(PermissionCategoryEntity::class),
+            self::$em->getClassMetadata(PermissionCategory::class),
         ]);
     }
 }

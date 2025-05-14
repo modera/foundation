@@ -3,20 +3,16 @@
 namespace Modera\ConfigBundle\Tests\Functional\Entity;
 
 use Doctrine\ORM\Tools\SchemaTool;
-use Modera\ConfigBundle\Entity\ConfigurationEntry as CE;
+use Modera\ConfigBundle\Config\HandlerInterface;
+use Modera\ConfigBundle\Config\ValueUpdatedHandlerInterface;
 use Modera\ConfigBundle\Entity\ConfigurationEntry;
 use Modera\ConfigBundle\Tests\Fixtures\Entities\User;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-/**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
- */
 class ConfigurationEntryTest extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $st;
+    private static SchemaTool $st;
 
     public static function doSetUpBeforeClass(): void
     {
@@ -35,40 +31,40 @@ class ConfigurationEntryTest extends FunctionalTestCase
         ]);
     }
 
-    public function testSetClientValueAndGetClientValue()
+    public function testSetClientValueAndGetClientValue(): void
     {
         $em = self::$em;
 
-        $intEntry = new CE('entry1');
+        $intEntry = new ConfigurationEntry('entry1');
         $this->assertEquals('entry1', $intEntry->getName());
-        $this->assertEquals(CE::TYPE_INT, $intEntry->setDenormalizedValue(123));
+        $this->assertEquals(ConfigurationEntry::TYPE_INT, $intEntry->setDenormalizedValue(123));
         $this->assertEquals(123, $intEntry->getDenormalizedValue());
 
-        $stringValue = new CE('entry2');
-        $this->assertEquals(CE::TYPE_STRING, $stringValue->setDenormalizedValue('blahblah'));
+        $stringValue = new ConfigurationEntry('entry2');
+        $this->assertEquals(ConfigurationEntry::TYPE_STRING, $stringValue->setDenormalizedValue('blahblah'));
         $this->assertEquals('blahblah', $stringValue->getDenormalizedValue());
 
-        $textValue = new CE('entry3');
-        $this->assertEquals(CE::TYPE_TEXT, $textValue->setDenormalizedValue(str_repeat('foo', 100)));
+        $textValue = new ConfigurationEntry('entry3');
+        $this->assertEquals(ConfigurationEntry::TYPE_TEXT, $textValue->setDenormalizedValue(str_repeat('foo', 100)));
         $this->assertEquals(str_repeat('foo', 100), $textValue->getDenormalizedValue());
 
-        $arrayValue = new CE('entry4');
-        $this->assertEquals(CE::TYPE_ARRAY, $arrayValue->setDenormalizedValue(array('foo')));
-        $this->assertSame(array('foo'), $arrayValue->getDenormalizedValue());
+        $arrayValue = new ConfigurationEntry('entry4');
+        $this->assertEquals(ConfigurationEntry::TYPE_ARRAY, $arrayValue->setDenormalizedValue(['foo']));
+        $this->assertSame(['foo'], $arrayValue->getDenormalizedValue());
 
-        $floatValue = new CE('entry5');
-        $this->assertEquals(CE::TYPE_FLOAT, $floatValue->setDenormalizedValue(1.2345));
+        $floatValue = new ConfigurationEntry('entry5');
+        $this->assertEquals(ConfigurationEntry::TYPE_FLOAT, $floatValue->setDenormalizedValue(1.2345));
         $this->assertEquals(1.2345, $floatValue->getDenormalizedValue());
 
-        $floatValue2 = new CE('entry6');
-        $this->assertEquals(CE::TYPE_FLOAT, $floatValue2->setDenormalizedValue(0.009));
+        $floatValue2 = new ConfigurationEntry('entry6');
+        $this->assertEquals(ConfigurationEntry::TYPE_FLOAT, $floatValue2->setDenormalizedValue(0.009));
         $this->assertEquals(0.009, $floatValue2->getDenormalizedValue());
 
-        $boolValue = new CE('entry7');
-        $this->assertEquals(CE::TYPE_BOOL, $boolValue->setDenormalizedValue(true));
+        $boolValue = new ConfigurationEntry('entry7');
+        $this->assertEquals(ConfigurationEntry::TYPE_BOOL, $boolValue->setDenormalizedValue(true));
         $this->assertTrue(true === $boolValue->getDenormalizedValue());
 
-        foreach (array($intEntry, $stringValue, $textValue, $arrayValue, $floatValue, $floatValue2, $boolValue) as $ce) {
+        foreach ([$intEntry, $stringValue, $textValue, $arrayValue, $floatValue, $floatValue2, $boolValue] as $ce) {
             $em->persist($ce);
             $em->flush();
             $this->assertNotNull($intEntry->getId());
@@ -76,16 +72,16 @@ class ConfigurationEntryTest extends FunctionalTestCase
 
         $em->clear();
 
-        /* @var CE $floatValue2 */
-        $floatValue2 = self::$em->find(CE::class, $floatValue2->getId());
-        $this->assertEquals(CE::TYPE_FLOAT, $floatValue2->getSavedAs());
+        /** @var ConfigurationEntry $floatValue2 */
+        $floatValue2 = self::$em->find(ConfigurationEntry::class, $floatValue2->getId());
+        $this->assertEquals(ConfigurationEntry::TYPE_FLOAT, $floatValue2->getSavedAs());
         $this->assertTrue(is_float($floatValue2->getValue()));
         $this->assertEquals(0.009, $floatValue2->getValue());
     }
 
-    public function testInitialization()
+    public function testInitialization(): void
     {
-        $ce = new CE('greeting_msg');
+        $ce = new ConfigurationEntry('greeting_msg');
         $ce->setDenormalizedValue('hello world');
 
         $em = self::$em;
@@ -93,16 +89,16 @@ class ConfigurationEntryTest extends FunctionalTestCase
         $em->flush();
         $em->getUnitOfWork()->clear();
 
-        $ce = $em->getRepository(CE::class)->findOneBy(array(
+        $ce = $em->getRepository(ConfigurationEntry::class)->findOneBy([
             'name' => 'greeting_msg',
-        ));
-        $this->assertInstanceOf(CE::class, $ce);
-        $this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerInterface', $ce->getContainer());
+        ]);
+        $this->assertInstanceOf(ConfigurationEntry::class, $ce);
+        $this->assertInstanceOf(ContainerInterface::class, $ce->getContainer());
     }
 
-    private function createMockContainer($handlerId, $handlerInstance)
+    private function createMockContainer($handlerId, $handlerInstance): ContainerInterface
     {
-        $container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->atLeastOnce())
             ->method('get')
             ->with($this->equalTo($handlerId))
@@ -111,65 +107,65 @@ class ConfigurationEntryTest extends FunctionalTestCase
         return $container;
     }
 
-    public function testGetValue()
+    public function testGetValue(): void
     {
         $handlerServiceId = 'foo_handler';
         $expectedValue = 'jfksdljfdks';
 
-        $handler = $this->createMock('Modera\ConfigBundle\Config\HandlerInterface');
+        $handler = $this->createMock(HandlerInterface::class);
         $handler->expects($this->atLeastOnce())
             ->method('getValue')
-            ->with($this->isInstanceOf(CE::class))
+            ->with($this->isInstanceOf(ConfigurationEntry::class))
             ->will($this->returnValue($expectedValue));
 
         $container = $this->createMockContainer($handlerServiceId, $handler);
 
-        $ce = new CE('bar_prop');
-        $ce->setServerHandlerConfig(array(
+        $ce = new ConfigurationEntry('bar_prop');
+        $ce->setServerHandlerConfig([
             'handler' => $handlerServiceId,
-        ));
+        ]);
         $ce->init($container);
         $ce->setDenormalizedValue('foo_val');
 
         $this->assertEquals($expectedValue, $ce->getValue());
     }
 
-    public function testSetValue()
+    public function testSetValue(): void
     {
         $handlerServiceId = 'bar_handler';
 
         $clientValue = 'foo bar baz';
         $convertedValue = 'converted foo bar baz';
 
-        $handler = $this->createMock('Modera\ConfigBundle\Config\HandlerInterface');
+        $handler = $this->createMock(HandlerInterface::class);
         $handler->expects($this->atLeastOnce())
                ->method('convertToStorageValue')
-               ->with($this->equalTo($clientValue), $this->isInstanceOf(CE::class))
+               ->with($this->equalTo($clientValue), $this->isInstanceOf(ConfigurationEntry::class))
                ->will($this->returnValue($convertedValue));
 
         $container = $this->createMockContainer($handlerServiceId, $handler);
 
-        $ce = new CE('bar_prop');
-        $ce->setServerHandlerConfig(array(
+        $ce = new ConfigurationEntry('bar_prop');
+        $ce->setServerHandlerConfig([
             'handler' => $handlerServiceId,
-        ));
+        ]);
         $ce->init($container);
 
         $ce->setValue($clientValue);
         $this->assertEquals($convertedValue, $ce->getDenormalizedValue());
     }
 
-    public function testUpdateHandler()
+    public function testUpdateHandler(): void
     {
         $id = 'update_handler';
 
-        $handler = $this->createMock('Modera\ConfigBundle\Config\ValueUpdatedHandlerInterface');
+        $handler = $this->createMock(ValueUpdatedHandlerInterface::class);
         $container = $this->createMockContainer($id, $handler);
 
-        $ce = new CE('foo_prop');
-        $ce->setServerHandlerConfig(array(
+        $ce = new ConfigurationEntry('foo_prop');
+        $ce->setServerHandlerConfig([
             'update_handler' => $id,
-        ));
+        ]);
         $ce->init($container);
         $ce->setValue('foo');
 
@@ -186,12 +182,10 @@ class ConfigurationEntryTest extends FunctionalTestCase
         self::$em->flush();
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testSetClientValueWithBadValue()
+    public function testSetClientValueWithBadValue(): void
     {
-        $ce = new CE('blah');
+        $this->expectException(\RuntimeException::class);
+        $ce = new ConfigurationEntry('blah');
         $ce->setDenormalizedValue(new \stdClass());
     }
 }

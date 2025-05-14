@@ -11,7 +11,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use Modera\ServerCrudBundle\DataMapping\EntityDataMapperService;
 use Modera\ServerCrudBundle\QueryBuilder\Parsing\Expression;
 use Modera\ServerCrudBundle\QueryBuilder\Parsing\Filter;
-use Modera\ServerCrudBundle\QueryBuilder\Parsing\FilterInterface;
 use Modera\ServerCrudBundle\QueryBuilder\Parsing\Filters;
 use Modera\ServerCrudBundle\QueryBuilder\Parsing\OrderExpression;
 use Modera\ServerCrudBundle\QueryBuilder\Parsing\OrFilter;
@@ -19,25 +18,15 @@ use Modera\ServerCrudBundle\QueryBuilder\ResolvingAssociatedModelSortingField\Ch
 use Modera\ServerCrudBundle\QueryBuilder\ResolvingAssociatedModelSortingField\SortingFieldResolverInterface;
 
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  */
 class ArrayQueryBuilder
 {
-    private ManagerRegistry $doctrineRegistry;
-
-    private EntityDataMapperService $mapper;
-
-    private SortingFieldResolverInterface $sortingFieldResolver;
-
     public function __construct(
-        ManagerRegistry $doctrineRegistry,
-        EntityDataMapperService $mapper,
-        SortingFieldResolverInterface $sortingFieldResolver
+        private readonly ManagerRegistry $doctrineRegistry,
+        private readonly EntityDataMapperService $mapper,
+        private readonly SortingFieldResolverInterface $sortingFieldResolver,
     ) {
-        $this->doctrineRegistry = $doctrineRegistry;
-        $this->mapper = $mapper;
-        $this->sortingFieldResolver = $sortingFieldResolver;
     }
 
     /**
@@ -48,12 +37,7 @@ class ArrayQueryBuilder
         return $this->buildQueryBuilder($entityFqcn, $arrayQuery)->getQuery();
     }
 
-    /**
-     * @param mixed $value Mixed value
-     *
-     * @return mixed Mixed value
-     */
-    protected function convertValue(ExpressionManager $expressionManager, string $expression, $value)
+    protected function convertValue(ExpressionManager $expressionManager, string $expression, mixed $value): mixed
     {
         /** @var array{'type': string} $mapping */
         $mapping = $expressionManager->getMapping($expression);
@@ -89,7 +73,7 @@ class ArrayQueryBuilder
         string $entityFqcn,
         string $expression,
         SortingFieldResolverInterface $sortingFieldResolver,
-        ExpressionManager $exprMgr
+        ExpressionManager $exprMgr,
     ): string {
         if ($exprMgr->isAssociation($expression)) {
             /** @var array{'targetEntity': string} $mapping */
@@ -109,10 +93,7 @@ class ArrayQueryBuilder
         return $expression;
     }
 
-    /**
-     * @param mixed $value Mixed value
-     */
-    private function isUsefulInFilter(?string $comparator, $value): bool
+    private function isUsefulInFilter(?string $comparator, mixed $value): bool
     {
         // There's no point to create empty IN, NOT IN clause, even more - trying to use
         // empty IN, NOT IN will result in SQL error
@@ -123,10 +104,7 @@ class ArrayQueryBuilder
         );
     }
 
-    /**
-     * @param mixed $value Mixed value
-     */
-    private function isUsefulFilter(ExpressionManager $exprMgr, string $propertyName, $value): bool
+    private function isUsefulFilter(ExpressionManager $exprMgr, string $propertyName, mixed $value): bool
     {
         // if this is association field, then sometimes there could be just 'no-value'
         // state which is conventionally marked as '-' value
@@ -138,7 +116,7 @@ class ArrayQueryBuilder
         Expr\Composite $compositeExpr,
         QueryBuilder $qb,
         DoctrineQueryBuilderParametersBinder $binder,
-        Filter $filter
+        Filter $filter,
     ): void {
         /** @var string $name */
         $name = $filter->getProperty();
@@ -204,7 +182,7 @@ class ArrayQueryBuilder
                         }
 
                         if (\in_array($orFilter['comparator'], [Filter::COMPARATOR_IN, Filter::COMPARATOR_NOT_IN])) {
-                            $orStatements[] = $qb->expr()->{$orFilter['comparator']}($fieldName);
+                            $orStatements[] = $qb->expr()->{$orFilter['comparator']}($fieldName, []); // TODO: check
                         } else {
                             $orStatements[] = $qb->expr()->{$orFilter['comparator']}($fieldName, '?'.$binder->getNextIndex());
                         }
@@ -274,6 +252,12 @@ class ArrayQueryBuilder
 
         $orderStmts = []; // contains ready DQL orderBy statement that later will be joined together
         if (\is_array($arrayQuery['sort'] ?? null)) {
+            /**
+             * @var array{
+             *     'property'?: string,
+             *     'direction'?: string,
+             * } $entry
+             */
             foreach ($arrayQuery['sort'] as $entry) { // sanitizing and filtering
                 $orderExpression = new OrderExpression($entry);
 
@@ -347,8 +331,9 @@ class ArrayQueryBuilder
         if (\is_array($arrayQuery['filter'] ?? null)) {
             $andExpr = $qb->expr()->andX();
 
-            /** @var FilterInterface $filter */
-            foreach (new Filters($arrayQuery['filter']) as $filter) {
+            /** @var array<mixed[]> $rawFilters */
+            $rawFilters = $arrayQuery['filter'];
+            foreach (new Filters($rawFilters) as $filter) {
                 if (!$filter->isValid()) {
                     continue;
                 }
@@ -534,10 +519,8 @@ class ArrayQueryBuilder
 
     /**
      * @param array<string, mixed> $arrayQuery
-     *
-     * @return mixed Mixed value
      */
-    public function getResult(string $entityFqcn, array $arrayQuery)
+    public function getResult(string $entityFqcn, array $arrayQuery): mixed
     {
         /** @var mixed[] $result */
         $result = $this->buildQuery($entityFqcn, $arrayQuery)->getResult();

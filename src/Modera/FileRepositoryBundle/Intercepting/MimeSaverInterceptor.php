@@ -9,7 +9,6 @@ use Modera\FileRepositoryBundle\Entity\StoredFile;
 /**
  * Put content-type to metadata.
  *
- * @author Stas Chychkan <stas.chichkan@modera.net>
  * @copyright 2020 Modera Foundation
  */
 class MimeSaverInterceptor extends BaseOperationInterceptor

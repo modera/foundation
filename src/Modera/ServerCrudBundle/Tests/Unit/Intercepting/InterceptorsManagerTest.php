@@ -2,80 +2,77 @@
 
 namespace Modera\ServerCrudBundle\Tests\Unit\Intercepting;
 
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\Intercepting\InterceptorsManager;
 use Modera\ServerCrudBundle\Intercepting\InvalidInterceptorException;
 use Modera\ServerCrudBundle\Tests\Fixtures\DummyInterceptor;
-use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 require_once __DIR__.'/../../Fixtures/DummyInterceptor.php';
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class InterceptorsManagerTest extends \PHPUnit\Framework\TestCase
 {
-    /* @var InterceptorsManager */
-    private $mgr;
-    private $provider;
-    private $controller;
+    private InterceptorsManager $mgr;
+
+    private ContributorInterface $provider;
+
+    private AbstractCrudController $controller;
 
     protected function setUp(): void
     {
-        $this->provider = $this->createMock(ContributorInterface::CLAZZ);
+        $this->provider = $this->createMock(ContributorInterface::class);
         $this->mgr = new InterceptorsManager($this->provider);
         $this->controller = $this->createMock(AbstractCrudController::class);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testInvalidActionGiven()
+    public function testInvalidActionGiven(): void
     {
-        $this->mgr->intercept('xxx', array(), $this->controller);
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->mgr->intercept('xxx', [], $this->controller);
     }
 
-    public function testInvalidInterceptorProvided()
+    public function testInvalidInterceptorProvided(): void
     {
         $obj = new \stdClass();
 
         $this->provider->expects($this->atLeastOnce())
-                       ->method('getItems')
-                       ->will($this->returnValue(array($obj)));
+            ->method('getItems')
+            ->will($this->returnValue([$obj]))
+        ;
 
         $thrownException = null;
         try {
-            $this->mgr->intercept('get', array(), $this->controller);
+            $this->mgr->intercept('get', [], $this->controller);
         } catch (InvalidInterceptorException $e) {
             $thrownException = $e;
         }
 
         $this->assertNotNull($thrownException);
-        /* @var InvalidInterceptorException $e */
-        $this->assertSame($obj, $e->getInterceptor());
-        $this->assertTrue('' != $e->getMessage());
+        $this->assertSame($obj, $thrownException->getInterceptor());
+        $this->assertTrue('' != $thrownException->getMessage());
     }
 
-    private function assertInvocation($interceptor, $type)
+    private function assertInvocation($interceptor, $type): void
     {
-        $givenParams = array('foo', 'bar');
+        $givenParams = ['foo', 'bar'];
         $givenController = $this->controller;
 
         $this->mgr->intercept($type, $givenParams, $givenController);
 
-        $this->assertEquals(1, count($interceptor->invocations[$type]));
+        $this->assertEquals(1, \count($interceptor->invocations[$type]));
         $this->assertSame($givenParams, $interceptor->invocations[$type][0][0]);
         $this->assertSame($givenController, $interceptor->invocations[$type][0][1]);
     }
 
-    public function testIntercept()
+    public function testIntercept(): void
     {
         $interceptor1 = new DummyInterceptor();
 
         $this->provider->expects($this->atLeastOnce())
             ->method('getItems')
-            ->will($this->returnValue(array($interceptor1)));
+            ->will($this->returnValue([$interceptor1]))
+        ;
 
         $this->assertInvocation($interceptor1, 'create');
         $this->assertInvocation($interceptor1, 'get');

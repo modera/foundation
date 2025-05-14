@@ -2,30 +2,32 @@
 
 namespace Modera\BackendToolsActivityLogBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Modera\ActivityLoggerBundle\Manager\ActivityManagerInterface;
 use Modera\ActivityLoggerBundle\Model\ActivityInterface;
 use Modera\BackendToolsActivityLogBundle\AuthorResolving\ActivityAuthorResolver;
 use Modera\BackendToolsActivityLogBundle\AutoSuggest\FilterAutoSuggestService;
 use Modera\BackendToolsActivityLogBundle\ModeraBackendToolsActivityLogBundle;
-use Modera\DirectBundle\Annotation\Remote;
 use Modera\ServerCrudBundle\Hydration\DoctrineEntityHydrator;
 use Modera\ServerCrudBundle\Hydration\HydrationService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
-class DefaultController extends Controller
+#[AsController]
+class DefaultController extends AbstractController
 {
-    private AuthorizationCheckerInterface $authorizationChecker;
-
     public function __construct(
-        AuthorizationCheckerInterface $authorizationChecker
+        private readonly ActivityAuthorResolver $activityAuthorResolver,
+        private readonly ActivityManagerInterface $activityManager,
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly FilterAutoSuggestService $filterAutoSuggestService,
+        private readonly HydrationService $hydrationService,
     ) {
-        $this->authorizationChecker = $authorizationChecker;
     }
 
     private function checkAccess(): void
@@ -36,54 +38,30 @@ class DefaultController extends Controller
         }
     }
 
-    private function getHydrationService(): HydrationService
-    {
-        /** @var HydrationService $hydrationService */
-        $hydrationService = $this->container->get('modera_server_crud.hydration.hydration_service');
-
-        return $hydrationService;
-    }
-
-    private function getActivityManager(): ActivityManagerInterface
-    {
-        /** @var ActivityManagerInterface $activityManager */
-        $activityManager = $this->container->get('modera_activity_logger.manager.activity_manager');
-
-        return $activityManager;
-    }
-
-    private function getActivityAuthorResolver(): ActivityAuthorResolver
-    {
-        /** @var ActivityAuthorResolver $activityAuthorResolver */
-        $activityAuthorResolver = $this->container->get('modera_backend_tools_activity_log.activity_author_resolver');
-
-        return $activityAuthorResolver;
-    }
-
     /**
      * @return array<string, mixed>
      */
     private function getConfig(): array
     {
-        $authorResolver = $this->getActivityAuthorResolver();
-
         return [
             'groups' => [
-                'list' => function (ActivityInterface $activity, $container) use ($authorResolver) {
-                    $hydrator = DoctrineEntityHydrator::create(['meta', 'createdAt', 'author']);
-
-                    return \array_merge($hydrator($activity, $container), [
+                'list' => function (ActivityInterface $activity) {
+                    return \array_merge(DoctrineEntityHydrator::create($this->entityManager)->hydrate(
+                        entity: $activity,
+                        excludeFields: ['meta', 'createdAt', 'author'],
+                    ), [
                         'createdAt' => $activity->getCreatedAt()->format(\DateTime::W3C),
-                        'author' => \json_encode($authorResolver->resolve($activity)),
+                        'author' => \json_encode($this->activityAuthorResolver->resolve($activity)),
                         'meta' => $activity->getMeta(),
                     ]);
                 },
-                'details' => function (ActivityInterface $activity, ContainerInterface $container) use ($authorResolver) {
-                    $hydrator = DoctrineEntityHydrator::create(['meta', 'createdAt', 'author']);
-
-                    return \array_merge($hydrator($activity, $container), [
+                'details' => function (ActivityInterface $activity) {
+                    return \array_merge(DoctrineEntityHydrator::create($this->entityManager)->hydrate(
+                        entity: $activity,
+                        excludeFields: ['meta', 'createdAt', 'author'],
+                    ), [
                         'createdAt' => $activity->getCreatedAt()->format(\DateTime::W3C),
-                        'author' => $authorResolver->resolve($activity),
+                        'author' => $this->activityAuthorResolver->resolve($activity),
                         'meta' => $activity->getMeta(),
                     ]);
                 },
@@ -105,11 +83,11 @@ class DefaultController extends Controller
     {
         $this->checkAccess();
 
-        $result = $this->getActivityManager()->query($params);
+        $result = $this->activityManager->query($params);
 
         if (1 === \count($result['items'])) {
             return [
-                'result' => $this->getHydrationService()->hydrate($result['items'][0], $this->getConfig(), 'details'),
+                'result' => $this->hydrationService->hydrate($result['items'][0], $this->getConfig(), 'details'),
                 'success' => true,
             ];
         } else {
@@ -131,7 +109,7 @@ class DefaultController extends Controller
     {
         $this->checkAccess();
 
-        $result = $this->getActivityManager()->query($params);
+        $result = $this->activityManager->query($params);
 
         $response = [
             'items' => [],
@@ -139,7 +117,7 @@ class DefaultController extends Controller
 
         /** @var ActivityInterface $activity */
         foreach ($result['items'] as $activity) {
-            $response['items'][] = $this->getHydrationService()->hydrate($activity, $this->getConfig(), 'list');
+            $response['items'][] = $this->hydrationService->hydrate($activity, $this->getConfig(), 'list');
         }
 
         return \array_merge($result, $response, [
@@ -160,13 +138,10 @@ class DefaultController extends Controller
 
         $this->validateRequiredParams($params, ['queryType', 'query']);
 
-        /** @var FilterAutoSuggestService $service */
-        $service = $this->container->get('modera_backend_tools_activity_log.auto_suggest.filter_auto_suggest_service');
-
         $queryType = \is_string($params['queryType']) ? $params['queryType'] : '-';
         $query = \is_string($params['query']) ? $params['query'] : '-';
 
-        return $service->suggest($queryType, $query);
+        return $this->filterAutoSuggestService->suggest($queryType, $query);
     }
 
     /**

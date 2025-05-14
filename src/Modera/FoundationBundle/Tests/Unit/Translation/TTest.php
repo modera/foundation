@@ -2,41 +2,39 @@
 
 namespace Modera\FoundationBundle\Tests\Unit\Translation;
 
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Modera\FoundationBundle\Translation\T;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MockTranslator implements TranslatorInterface
 {
-    public function trans(string $id, array $parameters = [], string $domain = null, string $locale = null): string
+    public function trans(string $id, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
-        return \json_encode(array($id, $parameters, $domain, $locale));
+        return \json_encode([$id, $parameters, $domain, $locale]);
     }
 
-    public function setLocale($locale)
+    public function setLocale($locale): void
     {
     }
 
-    public function getLocale()
+    public function getLocale(): string
     {
+        return '';
     }
 }
 
-/**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class TTest extends \PHPUnit\Framework\TestCase
 {
-    private $t;
-    private $c;
-    private $reflMethod;
+    private MockTranslator $t;
+    private ContainerInterface $c;
+    private \ReflectionProperty $reflMethod;
 
     // override
     public function setUp(): void
     {
         $this->t = new MockTranslator();
 
-        $this->c = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $this->c = $this->createMock(ContainerInterface::class);
         $this->c->expects($this->atLeastOnce())
              ->method('get')
              ->with($this->equalTo('translator'))
@@ -54,15 +52,15 @@ class TTest extends \PHPUnit\Framework\TestCase
         $this->reflMethod->setValue(null, null);
     }
 
-    public function testTrans()
+    public function testTrans(): void
     {
-        $expectedOutput = array(
-            'foo id', array('params'), 'foo domain', 'foo locale',
-        );
+        $expectedOutput = [
+            'foo id', ['params'], 'foo domain', 'foo locale',
+        ];
 
         $this->assertSame(
             \json_encode($expectedOutput),
-            T::trans('foo id', array('params'), 'foo domain', 'foo locale')
+            T::trans('foo id', ['params'], 'foo domain', 'foo locale')
         );
     }
 }

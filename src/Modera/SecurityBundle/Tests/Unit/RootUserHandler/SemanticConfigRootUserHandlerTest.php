@@ -2,34 +2,28 @@
 
 namespace Modera\SecurityBundle\Tests\Unit\RootUserHandler;
 
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
-use Modera\SecurityBundle\RootUserHandling\SemanticConfigRootUserHandler;
-use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
-use Modera\SecurityBundle\ModeraSecurityBundle;
+use Doctrine\Persistence\ObjectRepository;
 use Modera\SecurityBundle\Entity\Permission;
 use Modera\SecurityBundle\Entity\User;
+use Modera\SecurityBundle\ModeraSecurityBundle;
+use Modera\SecurityBundle\RootUserHandling\SemanticConfigRootUserHandler;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class SemanticConfigRootUserHandlerTest extends \PHPUnit\Framework\TestCase
 {
-    public function testIsRootUser()
+    public function testIsRootUser(): void
     {
-        $container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
-        $bundleConfig = array(
-            'root_user' => array(
-                'query' => array('dat', 'is', 'query'),
-            ),
-        );
+        $bundleConfig = [
+            'root_user' => [
+                'query' => ['dat', 'is', 'query'],
+            ],
+        ];
 
-        $em = \Phake::mock('Doctrine\ORM\EntityManagerInterface');
+        $em = \Phake::mock(EntityManagerInterface::class);
 
-        \Phake::when($container)->getParameter(ModeraSecurityExtension::CONFIG_KEY)->thenReturn($bundleConfig);
-        \Phake::when($container)->get('doctrine.orm.entity_manager')->thenReturn($em);
-
-        $handler = new SemanticConfigRootUserHandler($container);
+        $handler = new SemanticConfigRootUserHandler($em, $bundleConfig);
 
         $anonymousUser = \Phake::mock(User::class);
         $rootUser = \Phake::mock(User::class);
@@ -38,7 +32,7 @@ class SemanticConfigRootUserHandlerTest extends \PHPUnit\Framework\TestCase
         \Phake::when($dbUser)->isEqualTo($anonymousUser)->thenReturn(false);
         \Phake::when($dbUser)->isEqualTo($rootUser)->thenReturn(true);
 
-        $userRepository = \Phake::mock('Doctrine\Persistence\ObjectRepository');
+        $userRepository = \Phake::mock(ObjectRepository::class);
         \Phake::when($userRepository)->findOneBy($bundleConfig['root_user']['query'])->thenReturn($dbUser);
         \Phake::when($em)->getRepository(User::class)->thenReturn($userRepository);
 
@@ -46,68 +40,59 @@ class SemanticConfigRootUserHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($handler->isRootUser($rootUser));
     }
 
-    public function testGetRolesWithAsterisk()
+    public function testGetRolesWithAsterisk(): void
     {
-        $em = \Phake::mock('Doctrine\ORM\EntityManagerInterface');
-        $container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
-        $bundleConfig = array(
-            'root_user' => array(
+        $em = \Phake::mock(EntityManagerInterface::class);
+
+        $bundleConfig = [
+            'root_user' => [
                 'roles' => '*',
-            ),
-        );
+            ],
+        ];
 
-        $databaseRoles = array(
-            array('roleName' => 'FOO_ROLE'),
-            array('roleName' => 'BAR_ROLE'),
-        );
+        $databaseRoles = [
+            ['roleName' => 'FOO_ROLE'],
+            ['roleName' => 'BAR_ROLE'],
+        ];
 
-        \Phake::when($container)->get('doctrine.orm.entity_manager')->thenReturn($em);
-        \Phake::when($container)->getParameter(ModeraSecurityExtension::CONFIG_KEY)->thenReturn($bundleConfig);
-        $query = \Phake::mock('Doctrine\ORM\AbstractQuery');
-        \Phake::when($em)->createQuery(sprintf('SELECT e.roleName FROM %s e', Permission::class))->thenReturn($query);
+        $query = \Phake::mock(AbstractQuery::class);
+        \Phake::when($em)->createQuery(\sprintf('SELECT e.roleName FROM %s e', Permission::class))->thenReturn($query);
         \Phake::when($query)->getResult(Query::HYDRATE_SCALAR)->thenReturn($databaseRoles);
 
-        $handler = new SemanticConfigRootUserHandler($container);
+        $handler = new SemanticConfigRootUserHandler($em, $bundleConfig);
 
-        $this->assertSame(array('FOO_ROLE', 'BAR_ROLE', ModeraSecurityBundle::ROLE_ROOT_USER), $handler->getRoles());
+        $this->assertSame(['FOO_ROLE', 'BAR_ROLE', ModeraSecurityBundle::ROLE_ROOT_USER], $handler->getRoles());
     }
 
-    public function testGetRolesAsArray()
+    public function testGetRolesAsArray(): void
     {
-        $em = \Phake::mock('Doctrine\ORM\EntityManagerInterface');
-        $container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
-        $bundleConfig = array(
-            'root_user' => array(
-                'roles' => array('FOO_ROLE', 'BAR_ROLE'),
-            ),
-        );
+        $em = \Phake::mock(EntityManagerInterface::class);
 
-        \Phake::when($container)->getParameter(ModeraSecurityExtension::CONFIG_KEY)->thenReturn($bundleConfig);
-        \Phake::when($container)->get('doctrine.orm.entity_manager')->thenReturn($em);
+        $bundleConfig = [
+            'root_user' => [
+                'roles' => ['FOO_ROLE', 'BAR_ROLE'],
+            ],
+        ];
 
-        $handler = new SemanticConfigRootUserHandler($container);
+        $handler = new SemanticConfigRootUserHandler($em, $bundleConfig);
 
-        $expected = array_merge($bundleConfig['root_user']['roles'], array(ModeraSecurityBundle::ROLE_ROOT_USER));
+        $expected = \array_merge($bundleConfig['root_user']['roles'], [ModeraSecurityBundle::ROLE_ROOT_USER]);
         $this->assertSame($expected, $handler->getRoles());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testGetRolesNeitherStringNorArrayDefined()
+    public function testGetRolesNeitherStringNorArrayDefined(): void
     {
-        $em = \Phake::mock('Doctrine\ORM\EntityManagerInterface');
-        $container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerInterface');
-        $bundleConfig = array(
-            'root_user' => array(
+        $this->expectException(\RuntimeException::class);
+
+        $em = \Phake::mock(EntityManagerInterface::class);
+
+        $bundleConfig = [
+            'root_user' => [
                 'roles' => new \stdClass(),
-            ),
-        );
+            ],
+        ];
 
-        \Phake::when($container)->getParameter(ModeraSecurityExtension::CONFIG_KEY)->thenReturn($bundleConfig);
-        \Phake::when($container)->get('doctrine.orm.entity_manager')->thenReturn($em);
-
-        $handler = new SemanticConfigRootUserHandler($container);
+        $handler = new SemanticConfigRootUserHandler($em, $bundleConfig);
 
         $handler->getRoles();
     }

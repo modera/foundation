@@ -4,7 +4,7 @@ namespace Modera\BackendLanguagesBundle\Twig;
 
 use Modera\BackendLanguagesBundle\ExtUtilFormatResolving\ExtUtilFormatResolverInterface;
 use Modera\BackendLanguagesBundle\Service\SanitizeInterface;
-use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
 use Symfony\Component\Intl\Locales;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
@@ -12,7 +12,7 @@ use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 /**
- * @author Sergei Vizel <sergei.vizel@gmail.com>
+ * @copyright 2018 Modera Foundation
  */
 class Extension extends AbstractExtension
 {
@@ -320,20 +320,10 @@ class Extension extends AbstractExtension
         'zzzz' => 'e', // Timezone
     ];
 
-    private ContributorInterface $customLocalesProvider;
-
-    private ContributorInterface $extUtilFormatResolverProvider;
-
-    private SanitizeInterface $sanitizationService;
-
     public function __construct(
-        ContributorInterface $customLocalesProvider,
-        ContributorInterface $extUtilFormatResolverProvider,
-        SanitizeInterface $sanitizationService
+        private readonly ExtensionProvider $extensionProvider,
+        private readonly SanitizeInterface $sanitizationService,
     ) {
-        $this->customLocalesProvider = $customLocalesProvider;
-        $this->extUtilFormatResolverProvider = $extUtilFormatResolverProvider;
-        $this->sanitizationService = $sanitizationService;
     }
 
     /**
@@ -437,7 +427,7 @@ class Extension extends AbstractExtension
     {
         $locales = [];
         /** @var string $locale */
-        foreach ($this->customLocalesProvider->getItems() as $locale) {
+        foreach ($this->extensionProvider->get('modera_backend_languages.locales')->getItems() as $locale) {
             $locales[] = $locale;
         }
 
@@ -465,6 +455,11 @@ class Extension extends AbstractExtension
      */
     private function getLocaleFormat(string $locale): array
     {
+        /** @var array{
+         *      'language': string,
+         *      'region'?: string,
+         * } $arr
+         */
         $arr = \Locale::parseLocale($locale) ?? [];
 
         if (isset($arr['region'])) {
@@ -490,7 +485,7 @@ class Extension extends AbstractExtension
             'currencyAtEnd' => $currencyAtEnd,
         ];
 
-        $items = $this->extUtilFormatResolverProvider->getItems();
+        $items = $this->extensionProvider->get('modera_backend_languages.ext_util_format_resolver')->getItems();
         foreach ($items as $index => $resolver) {
             if ($resolver instanceof ExtUtilFormatResolverInterface) {
                 $config = $resolver->resolveExtUtilFormat($locale, $config);
@@ -502,6 +497,11 @@ class Extension extends AbstractExtension
 
     private function getIntlDateFormatterPattern(string $locale, string $type = 'date'): string
     {
+        /** @var array{
+         *      'language': string,
+         *      'region'?: string,
+         * } $arr
+         */
         $arr = \Locale::parseLocale($locale) ?? [];
 
         if (isset($arr['region'])) {
@@ -524,7 +524,7 @@ class Extension extends AbstractExtension
     {
         $mapping = self::CLDR_MAPPING;
         $splitters = [', ', ' ', ',', '-', '\/', '\\.', '\'', ':'];
-        /** @var string[] $array */
+        /** @var list<string> $array */
         $array = \preg_split('/('.\implode('|', $splitters).')/', $value);
         \usort($array, function ($a, $b) {
             return \strlen($b) - \strlen($a);

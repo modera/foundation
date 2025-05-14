@@ -6,7 +6,6 @@ namespace Modera\ServerCrudBundle\Persistence;
  * Implementations are responsible for formatting a model name for entity fully qualified class name that can be used
  * later on client side as well as resolving server entity class name by client model name.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 interface ModelManagerInterface

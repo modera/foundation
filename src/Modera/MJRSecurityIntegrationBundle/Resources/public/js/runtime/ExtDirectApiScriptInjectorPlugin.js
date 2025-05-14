@@ -1,7 +1,7 @@
 /**
  * Plugin dynamically injects api.js which declares ExtDirect definition.
  *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2015 Modera Foundation
  */
 Ext.define('Modera.mjrsecurityintegration.runtime.ExtDirectApiScriptInjectorPlugin', {
     extend: 'MF.runtime.extensibility.AbstractPlugin',

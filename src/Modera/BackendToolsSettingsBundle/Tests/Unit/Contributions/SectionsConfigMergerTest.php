@@ -5,6 +5,10 @@ namespace Modera\BackendToolsSettingsBundle\Tests\Unit\Contributions;
 use Modera\BackendToolsSettingsBundle\Contributions\SectionsConfigMerger;
 use Modera\BackendToolsSettingsBundle\Section\SectionInterface;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
+use Modera\ExpanderBundle\Ext\ExtensionPoint;
+use Modera\ExpanderBundle\Ext\ExtensionPointManager;
+use Modera\ExpanderBundle\Ext\ExtensionProvider;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DummySection implements SectionInterface
 {
@@ -30,42 +34,58 @@ class DummySection implements SectionInterface
 
     public function getMeta(): array
     {
-        return array(
+        return [
             'megameta',
-        );
+        ];
     }
 }
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class SectionsConfigMergerTest extends \PHPUnit\Framework\TestCase
 {
-    public function testMerge()
+    public function testMerge(): void
     {
         $ds = new DummySection();
 
-        $sectionsProvider = $this->createMock(ContributorInterface::CLAZZ);
+        $sectionsProvider = $this->createMock(ContributorInterface::class);
         $sectionsProvider->expects($this->atLeastOnce())
                          ->method('getItems')
-                         ->will($this->returnValue(array($ds)));
+                         ->will($this->returnValue([$ds]));
 
-        $configMerger = new SectionsConfigMerger($sectionsProvider);
+        $container = \Phake::mock(ContainerInterface::class);
+        \Phake::when($container)
+            ->has('modera_backend_tools_settings.contributions.sections_provider')
+            ->thenReturn(true)
+        ;
+        \Phake::when($container)
+            ->get('modera_backend_tools_settings.contributions.sections_provider')
+            ->thenReturn($sectionsProvider)
+        ;
 
-        $existingConfig = array(
+        $extensionPointManager = \Phake::mock(ExtensionPointManager::class);
+        \Phake::when($extensionPointManager)
+            ->has('modera_backend_tools_settings.contributions.sections')
+            ->thenReturn(true)
+        ;
+        \Phake::when($extensionPointManager)
+            ->get('modera_backend_tools_settings.contributions.sections')
+            ->thenReturn(new ExtensionPoint('modera_backend_tools_settings.contributions.sections'))
+        ;
+
+        $configMerger = new SectionsConfigMerger(new ExtensionProvider($container, $extensionPointManager));
+
+        $existingConfig = [
             'someKey' => 'someValue',
-        );
+        ];
 
         $result = $configMerger->merge($existingConfig);
 
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('someKey', $result);
         $this->assertEquals('someValue', $result['someKey']);
 
         $this->assertArrayHasKey('settingsSections', $result);
         $this->assertTrue(is_array($result['settingsSections']));
-        $this->assertEquals(1, count($result['settingsSections']));
+        $this->assertEquals(1, \count($result['settingsSections']));
 
         $section = $result['settingsSections'][0];
 

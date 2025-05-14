@@ -2,47 +2,34 @@
 
 namespace Modera\SecurityBundle\Tests\Functional\DataInstallation;
 
-use Doctrine\ORM\Tools\SchemaTool;
-use Modera\FoundationBundle\Testing\FunctionalTestCase;
-use Modera\SecurityBundle\DataInstallation\BCLayer;
+use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\SecurityBundle\DataInstallation\PermissionAndCategoriesInstaller;
+use Modera\SecurityBundle\Entity\Permission as PermissionEntity;
+use Modera\SecurityBundle\Entity\PermissionCategory as PermissionCategoryEntity;
 use Modera\SecurityBundle\Model\Permission;
 use Modera\SecurityBundle\Model\PermissionCategory;
-use Modera\ExpanderBundle\Ext\ContributorInterface;
-use Modera\SecurityBundle\Entity\PermissionCategory as PermissionCategoryEntity;
-use Modera\SecurityBundle\Entity\Permission as PermissionEntity;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class PermissionAndCategoriesInstallerTest extends AbstractTestCase
 {
-    /**
-     * @var PermissionAndCategoriesInstaller
-     */
-    private $installer;
+    private PermissionAndCategoriesInstaller $installer;
 
-    private $permissionCategoriesProvider;
-    private $permissionsProvider;
+    private ContributorInterface $permissionCategoriesProvider;
 
-    /**
-     * {@inheritdoc}
-     */
+    private ContributorInterface $permissionsProvider;
+
     public function doSetUp(): void
     {
-        $this->permissionCategoriesProvider = $this->createMock(ContributorInterface::CLAZZ);
-        $this->permissionsProvider = $this->createMock(ContributorInterface::CLAZZ);
+        $this->permissionCategoriesProvider = $this->createMock(ContributorInterface::class);
+        $this->permissionsProvider = $this->createMock(ContributorInterface::class);
 
         $this->installer = new PermissionAndCategoriesInstaller(
             self::$em,
             $this->permissionCategoriesProvider,
             $this->permissionsProvider,
-            self::getContainer()->get('modera_security.data_installation.bc_layer')
         );
     }
 
-    private function getLastRecordInDatabase($entityClass)
+    private function getLastRecordInDatabase($entityClass): ?object
     {
         $query = self::$em->createQuery(sprintf('SELECT e FROM %s e ORDER BY e.id DESC', $entityClass));
         $query->setMaxResults(1);
@@ -50,29 +37,29 @@ class PermissionAndCategoriesInstallerTest extends AbstractTestCase
         return $query->getSingleResult();
     }
 
-    private function assertValidResultStructure(array $result)
+    private function assertValidResultStructure(array $result): void
     {
-        $this->assertTrue(is_array($result));
+        $this->assertTrue(\is_array($result));
         $this->assertArrayHasKey('installed', $result);
-        //$this->assertArrayHasKey('removed', $result);
+        // $this->assertArrayHasKey('removed', $result);
     }
 
-    public function testInstallCategories()
+    public function testInstallCategories(): void
     {
         $category = new PermissionCategory('foo category', 'foo_category');
 
         $pcp = $this->permissionCategoriesProvider;
         $pcp->expects($this->atLeastOnce())
             ->method('getItems')
-            ->will($this->returnValue(array($category)));
+            ->will($this->returnValue([$category]));
 
         $result = $this->installer->installCategories();
 
         $this->assertValidResultStructure($result);
         $this->assertEquals(1, $result['installed']);
-        //$this->assertEquals(0, $result['removed']);
+        // $this->assertEquals(0, $result['removed']);
 
-        /* @var PermissionCategoryEntity $installedCategory */
+        /** @var PermissionCategoryEntity $installedCategory */
         $installedCategory = $this->getLastRecordInDatabase(PermissionCategoryEntity::class);
 
         $this->assertNotNull($installedCategory);
@@ -85,32 +72,28 @@ class PermissionAndCategoriesInstallerTest extends AbstractTestCase
 
         $this->assertValidResultStructure($result);
         $this->assertEquals(0, $result['installed']);
-        //$this->assertEquals(0, $result['removed']);
+        // $this->assertEquals(0, $result['removed']);
     }
 
-    public function testInstallPermission()
+    public function testInstallPermission(): void
     {
-        $category = new PermissionCategoryEntity();
-        $category->setName('Foo category');
-        $category->setTechnicalName('foo_category');
-
-        self::$em->persist($category);
-        self::$em->flush();
+        /** @var PermissionCategoryEntity $installedCategory */
+        $category = $this->getLastRecordInDatabase(PermissionCategoryEntity::class);
 
         $permission = new Permission('foo name', 'FOO_ROLE', $category->getTechnicalName(), 'foo description');
 
         $pp = $this->permissionsProvider;
         $pp->expects($this->atLeastOnce())
            ->method('getItems')
-           ->will($this->returnValue(array($permission)));
+           ->will($this->returnValue([$permission]));
 
         $result = $this->installer->installPermissions();
 
         $this->assertValidResultStructure($result);
         $this->assertEquals(1, $result['installed']);
-        //$this->assertEquals(0, $result['removed']);
+        // $this->assertEquals(0, $result['removed']);
 
-        /* @var PermissionEntity $installedPermission */
+        /** @var PermissionEntity $installedPermission */
         $installedPermission = $this->getLastRecordInDatabase(PermissionEntity::class);
 
         $this->assertNotNull($installedPermission);
@@ -126,44 +109,6 @@ class PermissionAndCategoriesInstallerTest extends AbstractTestCase
 
         $this->assertValidResultStructure($result);
         $this->assertEquals(0, $result['installed']);
-        //$this->assertEquals(0, $result['removed']);
-    }
-
-    /**
-     * @group MPFE-964
-     */
-    public function testInstallPermissionWithBCLayer()
-    {
-        // emulating BCLayer class from ModeraBackendSecurityBundle
-        $category1 = new PermissionCategoryEntity();
-        $category1->setName('Administration');
-        $category1->setTechnicalName('user-management');
-
-        $category2 = new PermissionCategoryEntity();
-        $category2->setName('Administration');
-        $category2->setTechnicalName('administration');
-
-        self::$em->persist($category1);
-        self::$em->persist($category2);
-        self::$em->flush();
-
-        // refer to "old" technical name
-        $permission = new Permission('foo name', 'FOO_ROLE', $category1->getTechnicalName(), 'foo description');
-
-        $pp = $this->permissionsProvider;
-        $pp->expects($this->atLeastOnce())
-            ->method('getItems')
-            ->will($this->returnValue(array($permission)));
-
-        $result = $this->installer->installPermissions();
-
-        self::$em->clear();
-
-        /* @var PermissionEntity $permission */
-        $permission = self::$em->getRepository(PermissionEntity::class)->findOneBy(array('roleName' => 'FOO_ROLE'));
-
-        $this->assertNotNull($permission);
-        $this->assertNotNull($permission->getCategory());
-        $this->assertEquals('administration', $permission->getCategory()->getTechnicalName());
+        // $this->assertEquals(0, $result['removed']);
     }
 }

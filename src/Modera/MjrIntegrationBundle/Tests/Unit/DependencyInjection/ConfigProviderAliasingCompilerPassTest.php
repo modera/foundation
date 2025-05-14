@@ -5,13 +5,9 @@ namespace Modera\MjrIntegrationBundle\Tests\Unit\DependencyInjection;
 use Modera\MjrIntegrationBundle\DependencyInjection\ConfigProviderAliasingCompilerPass;
 use Modera\MjrIntegrationBundle\DependencyInjection\ModeraMjrIntegrationExtension;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class ConfigProviderAliasingCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $alias = \Phake::mock('Symfony\Component\DependencyInjection\Alias');
         \Phake::when($alias)
@@ -22,9 +18,9 @@ class ConfigProviderAliasingCompilerPassTest extends \PHPUnit\Framework\TestCase
         $container = \Phake::mock('Symfony\Component\DependencyInjection\ContainerBuilder');
         \Phake::when($container)
             ->getParameter(ModeraMjrIntegrationExtension::CONFIG_KEY)
-            ->thenReturn(array(
+            ->thenReturn([
                 'main_config_provider' => 'foo_service',
-            ))
+            ])
         ;
         \Phake::when($container)
             ->setAlias(\Phake::anyParameters())

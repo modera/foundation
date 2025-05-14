@@ -7,37 +7,34 @@ use Modera\ServerCrudBundle\Security\AccessDeniedHttpException;
 use Modera\ServerCrudBundle\Security\SecurityControllerActionsInterceptor;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class SecurityControllerActionsInterceptorTest extends \PHPUnit\Framework\TestCase
 {
-    private $controller;
-    private $authorizationChecker;
-    /* @var SecurityControllerActionsInterceptor */
-    private $interceptor;
+    private AbstractCrudController $controller;
+
+    private AuthorizationCheckerInterface $authorizationChecker;
+
+    private SecurityControllerActionsInterceptor $interceptor;
 
     protected function setUp(): void
     {
         $this->controller = $this->createMock(AbstractCrudController::class);
-        $this->authorizationChecker = $this->createMock('Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface');
+        $this->authorizationChecker = $this->createMock(AuthorizationCheckerInterface::class);
         $this->interceptor = new SecurityControllerActionsInterceptor($this->authorizationChecker);
     }
 
-    public function testCheckAccess()
+    public function testCheckAccess(): void
     {
-        $config = array(
-            'security' => array(
+        $config = [
+            'security' => [
                 'role' => 'ROLE_FOO',
-            ),
-        );
+            ],
+        ];
 
         $this->teachController($config);
 
         $thrownException = null;
         try {
-            $this->interceptor->checkAccess("it doesn't matter in this case", array(), $this->controller);
+            $this->interceptor->checkAccess("it doesn't matter in this case", [], $this->controller);
         } catch (AccessDeniedHttpException $e) {
             $thrownException = $e;
         }
@@ -46,26 +43,28 @@ class SecurityControllerActionsInterceptorTest extends \PHPUnit\Framework\TestCa
         $this->assertEquals('ROLE_FOO', $thrownException->getRole());
     }
 
-    private function teachController(array $preparedConfig)
+    private function teachController(array $preparedConfig): void
     {
         $this->controller->expects($this->atLeastOnce())
-             ->method('getPreparedConfig')
-             ->will($this->returnValue($preparedConfig));
+            ->method('getPreparedConfig')
+            ->will($this->returnValue($preparedConfig))
+        ;
     }
 
-    private function teachAuthorizationChecker($expectedArgValue, $returnValue)
+    private function teachAuthorizationChecker($expectedArgValue, $returnValue): void
     {
         $this->authorizationChecker->expects($this->atLeastOnce())
             ->method('isGranted')
             ->with($this->equalTo($expectedArgValue))
-            ->will($this->returnValue($returnValue));
+            ->will($this->returnValue($returnValue))
+        ;
     }
 
-    public function assertExceptionThrown($actionName)
+    public function assertExceptionThrown($actionName): void
     {
-        $config = array(
-            'security' => array(
-                'actions' => array(
+        $config = [
+            'security' => [
+                'actions' => [
                     'create' => 'ROLE_CREATE',
                     'update' => 'ROLE_UPDATE',
                     'get' => 'ROLE_GET',
@@ -73,16 +72,16 @@ class SecurityControllerActionsInterceptorTest extends \PHPUnit\Framework\TestCa
                     'remove' => 'ROLE_REMOVE',
                     'getNewRecordValues' => 'ROLE_GRV',
                     'batchUpdate' => 'ROLE_BATCH_UPDATE',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         $this->teachAuthorizationChecker($config['security']['actions'][$actionName], false);
         $this->teachController($config);
 
         $thrownException = null;
         try {
-            $this->interceptor->{'on'.ucfirst($actionName)}(array(), $this->controller);
+            $this->interceptor->{'on'.\ucfirst($actionName)}([], $this->controller);
         } catch (AccessDeniedHttpException $e) {
             $thrownException = $e;
         }
@@ -91,14 +90,11 @@ class SecurityControllerActionsInterceptorTest extends \PHPUnit\Framework\TestCa
         $this->assertEquals($config['security']['actions'][$actionName], $thrownException->getRole());
     }
 
-    /**
-     * @param string $actionName
-     */
-    private function assertAccessAllowed($actionName)
+    private function assertAccessAllowed(string $actionName): void
     {
-        $config = array(
-            'security' => array(
-                'actions' => array(
+        $config = [
+            'security' => [
+                'actions' => [
                     'create' => 'ROLE_CREATE',
                     'update' => 'ROLE_UPDATE',
                     'get' => 'ROLE_GET',
@@ -106,116 +102,116 @@ class SecurityControllerActionsInterceptorTest extends \PHPUnit\Framework\TestCa
                     'remove' => 'ROLE_REMOVE',
                     'getNewRecordValues' => 'ROLE_GRV',
                     'batchUpdate' => 'ROLE_BATCH_UPDATE',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         $this->teachAuthorizationChecker($config['security']['actions'][$actionName], true);
         $this->teachController($config);
 
-        $this->interceptor->{'on'.ucfirst($actionName)}(array(), $this->controller);
+        $this->interceptor->{'on'.\ucfirst($actionName)}([], $this->controller);
     }
 
-    public function testOnCreateDenied()
+    public function testOnCreateDenied(): void
     {
         $this->assertExceptionThrown('create');
     }
 
-    public function testOnCreateAllowed()
+    public function testOnCreateAllowed(): void
     {
         $this->assertAccessAllowed('create');
     }
 
-    public function testOnUpdate()
+    public function testOnUpdate(): void
     {
         $this->assertExceptionThrown('update');
     }
 
-    public function testOnUpdateAllowed()
+    public function testOnUpdateAllowed(): void
     {
         $this->assertAccessAllowed('update');
     }
 
-    public function testOnBatchUpdate()
+    public function testOnBatchUpdate(): void
     {
         $this->assertExceptionThrown('batchUpdate');
     }
 
-    public function testOnBatchUpdateAllowed()
+    public function testOnBatchUpdateAllowed(): void
     {
         $this->assertAccessAllowed('batchUpdate');
     }
 
-    public function testOnGet()
+    public function testOnGet(): void
     {
         $this->assertExceptionThrown('get');
     }
 
-    public function testOnGetAllowed()
+    public function testOnGetAllowed(): void
     {
         $this->assertAccessAllowed('get');
     }
 
-    public function testOnList()
+    public function testOnList(): void
     {
         $this->assertExceptionThrown('list');
     }
 
-    public function testOnListAllowed()
+    public function testOnListAllowed(): void
     {
         $this->assertAccessAllowed('list');
     }
 
-    public function testOnRemove()
+    public function testOnRemove(): void
     {
         $this->assertExceptionThrown('remove');
     }
 
-    public function testOnRemoveAllowed()
+    public function testOnRemoveAllowed(): void
     {
         $this->assertAccessAllowed('remove');
     }
 
-    public function testOnGetNewRecordValues()
+    public function testOnGetNewRecordValues(): void
     {
         $this->assertExceptionThrown('getNewRecordValues');
     }
 
-    public function testOnGetNewRecordValuesAllowed()
+    public function testOnGetNewRecordValuesAllowed(): void
     {
         $this->assertAccessAllowed('getNewRecordValues');
     }
 
-    public function testCheckAccessWithCallable()
+    public function testCheckAccessWithCallable(): void
     {
         $holder = new \stdClass();
 
-        $config = array(
-            'security' => array(
-                'actions' => array(
-                    'create' => function (AuthorizationCheckerInterface $ac, $params, $actionName) use ($holder) {
+        $config = [
+            'security' => [
+                'actions' => [
+                    'create' => function (AuthorizationCheckerInterface $ac, array $params, string $actionName) use ($holder) {
                         $holder->ac = $ac;
                         $holder->params = $params;
                         $holder->actionName = $actionName;
 
                         return false;
                     },
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         $this->teachController($config);
 
         $thrownException = null;
         try {
-            $this->interceptor->checkAccess('create', array('foo'), $this->controller);
+            $this->interceptor->checkAccess('create', ['foo'], $this->controller);
         } catch (AccessDeniedHttpException $e) {
             $thrownException = $e;
         }
 
         $this->assertNotNull($thrownException);
         $this->assertInstanceOf('Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface', $holder->ac);
-        $this->assertEquals(array('foo'), $holder->params);
+        $this->assertEquals(['foo'], $holder->params);
         $this->assertEquals('create', $holder->actionName);
     }
 }

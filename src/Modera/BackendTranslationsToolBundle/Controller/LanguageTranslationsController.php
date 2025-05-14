@@ -7,14 +7,19 @@ use Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
 use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsController]
 class LanguageTranslationsController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly CompileNeeded $compileNeeded,
+    ) {
+    }
+
     public function getConfig(): array
     {
         return [
@@ -28,9 +33,9 @@ class LanguageTranslationsController extends AbstractCrudController
                         return [
                             'id' => $ltt->getId(),
                             'translation' => $ltt->getTranslation(),
-                            'languageName' => $ltt->getLanguage() ? $ltt->getLanguage()->getName() : null,
-                            'domainName' => $ltt->getTranslationToken() ? $ltt->getTranslationToken()->getDomain() : null,
-                            'tokenName' => $ltt->getTranslationToken() ? $ltt->getTranslationToken()->getTokenName() : null,
+                            'languageName' => $ltt->getLanguage()?->getName(),
+                            'domainName' => $ltt->getTranslationToken()?->getDomain(),
+                            'tokenName' => $ltt->getTranslationToken()?->getTokenName(),
                         ];
                     },
                 ],
@@ -38,12 +43,9 @@ class LanguageTranslationsController extends AbstractCrudController
                     'main-form',
                 ],
             ],
-            'map_data_on_update' => function (array $params, LanguageTranslationToken $entity, DataMapperInterface $defaultMapper, ContainerInterface $container) {
+            'map_data_on_update' => function (array $params, LanguageTranslationToken $entity, DataMapperInterface $defaultMapper) {
                 $defaultMapper->mapData($params, $entity);
-
-                /** @var CompileNeeded $compileNeeded */
-                $compileNeeded = $container->get('modera_backend_translations_tool.cache.compile_needed');
-                $compileNeeded->set(true);
+                $this->compileNeeded->set(true);
             },
         ];
     }

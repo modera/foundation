@@ -9,48 +9,33 @@ use Modera\SecurityBundle\Entity\Group;
 use Modera\SecurityBundle\Entity\Permission;
 use Modera\SecurityBundle\Entity\PermissionCategory;
 use Modera\SecurityBundle\Entity\User;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
-/**
- * @author    Alex Plaksin <alex.plaksin@modera.net>
- * @copyright 2016 Modera Foundation
- */
 class GroupsControllerTest extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $schemaTool;
+    private static SchemaTool $schemaTool;
 
-    private static $encoder;
+    private static UserPasswordHasherInterface $passwordHasher;
 
-    /**
-     * @var User
-     */
-    private static $user;
+    private static User $user;
 
-    /**
-     * @var GroupsController
-     */
-    private static $controller;
+    private static GroupsController $controller;
 
-    /**
-     * {@inheritdoc}
-     */
     public static function doSetUpBeforeClass(): void
     {
         static::$schemaTool = new SchemaTool(static::$em);
         static::$schemaTool->dropSchema(static::getTablesMetadata());
         static::$schemaTool->createSchema(static::getTablesMetadata());
 
-        static::$encoder = static::getContainer()->get('modera_backend_security.test.encoder_factory');
+        static::$passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
 
         static::$user = new User();
         static::$user->setEmail('test@test.com');
-        static::$user->setPassword(
-            static::$encoder->getEncoder(static::$user)->encodePassword('1234', static::$user->getSalt())
-        );
         static::$user->setUsername('testUser');
+        static::$user->setPassword(
+            static::$passwordHasher->hashPassword(static::$user, '1234')
+        );
 
         $entityPermissionCategory = new PermissionCategory();
         $entityPermissionCategory->setName('backend_user');
@@ -94,8 +79,7 @@ class GroupsControllerTest extends FunctionalTestCase
 
         static::$em->flush();
 
-        static::$controller = new GroupsController();
-        static::$controller->setContainer(static::getContainer());
+        static::$controller = static::getContainer()->get(GroupsController::class);
     }
 
     public function doSetUp(): void
@@ -106,29 +90,19 @@ class GroupsControllerTest extends FunctionalTestCase
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public static function doTearDownAfterClass(): void
-    {
-        static::$schemaTool->dropSchema(static::getTablesMetadata());
-    }
-
-    /**
      * Simple correct behavior group create.
-     *
-     * @return null|object
      */
-    public function testCreateAction()
+    public function testCreateAction(): ?Group
     {
-        $beforeGroupsCount = count(static::$em->getRepository(Group::class)->findAll());
+        $beforeGroupsCount = \count(static::$em->getRepository(Group::class)->findAll());
 
-        $params = array(
-            'record' => array(
+        $params = [
+            'record' => [
                 'id' => '',
                 'name' => 'testName',
                 'refName' => 'testRefName',
-            ),
-        );
+            ],
+        ];
 
         $result = static::$controller->createAction($params);
 
@@ -138,7 +112,7 @@ class GroupsControllerTest extends FunctionalTestCase
         $this->assertArrayHasKey('modera.security_bundle.group', $result['created_models']);
         $this->assertCount(1, $result['created_models']['modera.security_bundle.group']);
 
-        $afterGroupsCount = count(static::$em->getRepository(Group::class)->findAll());
+        $afterGroupsCount = \count(static::$em->getRepository(Group::class)->findAll());
         $this->assertEquals($beforeGroupsCount + 1, $afterGroupsCount);
 
         $createdGroup = static::$em->getRepository(Group::class)->find($result['created_models']['modera.security_bundle.group'][0]);
@@ -152,15 +126,15 @@ class GroupsControllerTest extends FunctionalTestCase
     /**
      * @depends testCreateAction
      */
-    public function testCreateAction_EmptyName()
+    public function testCreateActionEmptyName(): void
     {
-        $params = array(
-            'record' => array(
+        $params = [
+            'record' => [
                 'id' => '',
                 'name' => '',
                 'refName' => '',
-            ),
-        );
+            ],
+        ];
 
         $result = static::$controller->createAction($params);
 
@@ -174,15 +148,15 @@ class GroupsControllerTest extends FunctionalTestCase
     /**
      * @depends testCreateAction
      */
-    public function testCreateAction_DuplicatedRefName()
+    public function testCreateActionDuplicatedRefName(): void
     {
-        $params = array(
-            'record' => array(
+        $params = [
+            'record' => [
                 'id' => '',
                 'name' => 'testName2',
                 'refName' => 'testRefName',
-            ),
-        );
+            ],
+        ];
 
         $result = static::$controller->createAction($params);
 
@@ -196,15 +170,15 @@ class GroupsControllerTest extends FunctionalTestCase
     /**
      * @depends testCreateAction
      */
-    public function testUpdateAction(Group $group)
+    public function testUpdateAction(Group $group): void
     {
-        $params = array(
-            'record' => array(
+        $params = [
+            'record' => [
                 'id' => $group->getId(),
                 'name' => 'testNameUpdated',
                 'refName' => 'testRefNameUpdated',
-            ),
-        );
+            ],
+        ];
 
         $result = static::$controller->updateAction($params);
 
@@ -225,22 +199,18 @@ class GroupsControllerTest extends FunctionalTestCase
     /**
      * @depends testCreateAction
      * @depends testUpdateAction
-     *
-     * @param Group $group
-     *
-     * @return Group
      */
-    public function testUpdateAction_SameRefName(Group $group)
+    public function testUpdateActionSameRefName(Group $group): Group
     {
         $this->assertEquals('TESTREFNAMEUPDATED', $group->getRefName());
 
-        $params = array(
-            'record' => array(
+        $params = [
+            'record' => [
                 'id' => $group->getId(),
                 'name' => 'newTestName',
                 'refName' => 'testRefNameUpdated',
-            ),
-        );
+            ],
+        ];
 
         $result = static::$controller->updateAction($params);
 
@@ -261,11 +231,9 @@ class GroupsControllerTest extends FunctionalTestCase
     }
 
     /**
-     * @depends testUpdateAction_SameRefName
-     *
-     * @param Group $group
+     * @depends testUpdateActionSameRefName
      */
-    public function testUpdateAction_ExistingRefNameUse(Group $group)
+    public function testUpdateActionExistingRefNameUse(Group $group): void
     {
         $newGroup = new Group();
         $newGroup->setName('brandNewGroup');
@@ -276,13 +244,13 @@ class GroupsControllerTest extends FunctionalTestCase
 
         $this->assertEquals('TESTREFNAMEUPDATED', $group->getRefName());
 
-        $params = array(
-            'record' => array(
+        $params = [
+            'record' => [
                 'id' => $group->getId(),
                 'name' => 'newTestNameExistingRef',
                 'refName' => 'brandNewRefName',
-            ),
-        );
+            ],
+        ];
 
         $result = static::$controller->updateAction($params);
 
@@ -293,22 +261,19 @@ class GroupsControllerTest extends FunctionalTestCase
         $this->assertArrayHasKey('refName', $result['field_errors']);
     }
 
-    /**
-     * @return array
-     */
-    private static function getTablesClasses()
+    private static function getTablesClasses(): array
     {
-        return array(
+        return [
             Permission::class,
             PermissionCategory::class,
             User::class,
             Group::class,
-        );
+        ];
     }
 
-    private static function getTablesMetadata()
+    private static function getTablesMetadata(): array
     {
-        $metaData = array();
+        $metaData = [];
 
         foreach (static::getTablesClasses() as $class) {
             $metaData[] = static::$em->getClassMetadata($class);
@@ -317,9 +282,6 @@ class GroupsControllerTest extends FunctionalTestCase
         return $metaData;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected static function getIsolationLevel(): string
     {
         return self::IM_CLASS;

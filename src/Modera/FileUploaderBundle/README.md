@@ -7,7 +7,7 @@ The bundle simplifies and introduces a consistent approach to uploading and stor
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/file-uploader-bundle:5.x-dev
+composer require modera/file-uploader-bundle:6.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -36,7 +36,7 @@ return [
 // config/routes.yaml
 
 file_uploader:
-    resource: "@ModeraFileUploaderBundle/Resources/config/routing.yml"
+    resource: '@ModeraFileUploaderBundle/Resources/config/routing.yaml'
 ```
 
 ### Step 4: Enable uploader

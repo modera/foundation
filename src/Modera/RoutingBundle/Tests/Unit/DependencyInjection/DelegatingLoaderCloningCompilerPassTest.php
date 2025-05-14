@@ -4,13 +4,9 @@ namespace Modera\RoutingBundle\Tests\Unit\DependencyInjection;
 
 use Modera\RoutingBundle\DependencyInjection\DelegatingLoaderCloningCompilerPass;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2015 Modera Foundation
- */
 class DelegatingLoaderCloningCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $routingLoaderWannaBe = \Phake::mock('Symfony\Component\DependencyInjection\Definition');
         $containerBuilder = \Phake::mock('Symfony\Component\DependencyInjection\ContainerBuilder');
@@ -22,6 +18,6 @@ class DelegatingLoaderCloningCompilerPassTest extends \PHPUnit\Framework\TestCas
 
         \Phake::verify($containerBuilder)->setDefinition('modera_routing.symfony_delegating_loader', \Phake::capture($clonedDefinition));
 
-        $this->assertInstanceOf(get_class($routingLoaderWannaBe), $clonedDefinition);
+        $this->assertInstanceOf(\get_class($routingLoaderWannaBe), $clonedDefinition);
     }
 }

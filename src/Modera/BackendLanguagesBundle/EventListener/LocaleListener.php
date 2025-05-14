@@ -12,27 +12,17 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class LocaleListener implements EventSubscriberInterface
 {
     private const LOCALE = 'LOCALE';
 
-    private EntityManagerInterface $em;
-
-    private string $defaultLocale;
-
-    private string $isAuthenticatedRoute;
-
     public function __construct(
-        EntityManagerInterface $em,
-        string $defaultLocale = 'en',
-        string $isAuthenticatedRoute = 'modera_mjr_security_integration.index.is_authenticated'
+        private readonly EntityManagerInterface $em,
+        private readonly string $defaultLocale = 'en',
+        private readonly string $isAuthenticatedRoute = 'modera_mjr_security_integration.index.is_authenticated',
     ) {
-        $this->em = $em;
-        $this->defaultLocale = $defaultLocale;
-        $this->isAuthenticatedRoute = $isAuthenticatedRoute;
     }
 
     public function onKernelRequest(RequestEvent $event): void

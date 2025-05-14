@@ -7,18 +7,14 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class DefaultEntityValidator implements EntityValidatorInterface
 {
-    private ValidatorInterface $validator;
-    private ContainerInterface $container;
-
-    public function __construct(ValidatorInterface $validator, ContainerInterface $container)
-    {
-        $this->validator = $validator;
-        $this->container = $container;
+    public function __construct(
+        private readonly ValidatorInterface $validator,
+        private readonly ContainerInterface $container,
+    ) {
     }
 
     public function validate(object $entity, array $config): ValidationResult

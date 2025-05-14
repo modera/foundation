@@ -5,17 +5,12 @@ namespace Modera\SecurityBundle\Tests\Unit\Service;
 use Modera\SecurityBundle\Entity\User;
 use Modera\SecurityBundle\Service\UserService;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class UserServiceTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testRemove()
+    public function testRemove(): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $em = \Phake::mock('Doctrine\ORM\EntityManager');
         $rootUserHandler = \Phake::mock('Modera\SecurityBundle\RootUserHandling\RootUserHandlerInterface');
 
@@ -27,11 +22,10 @@ class UserServiceTest extends \PHPUnit\Framework\TestCase
         $service->remove($user);
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testDisableRootUser()
+    public function testDisableRootUser(): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $em = \Phake::mock('Doctrine\ORM\EntityManager');
         $rootUserHandler = \Phake::mock('Modera\SecurityBundle\RootUserHandling\RootUserHandlerInterface');
 
@@ -43,7 +37,7 @@ class UserServiceTest extends \PHPUnit\Framework\TestCase
         $service->disable($user);
     }
 
-    public function testDisableEnableUser()
+    public function testDisableEnableUser(): void
     {
         $em = \Phake::mock('Doctrine\ORM\EntityManager');
         $rootUserHandler = \Phake::mock('Modera\SecurityBundle\RootUserHandling\RootUserHandlerInterface');
@@ -61,7 +55,7 @@ class UserServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($user->isActive());
     }
 
-    public function testFind()
+    public function testFind(): void
     {
         $em = \Phake::mock('Doctrine\ORM\EntityManager');
         $repo = \Phake::mock('Doctrine\Persistence\ObjectRepository');
@@ -80,17 +74,17 @@ class UserServiceTest extends \PHPUnit\Framework\TestCase
         \Phake::when($user3)->getId()->thenReturn(3);
         \Phake::when($user3)->getGender()->thenReturn(User::GENDER_MALE);
 
-        \Phake::when($repo)->findOneBy(array('id' => 0))->thenReturn(null);
+        \Phake::when($repo)->findOneBy(['id' => 0])->thenReturn(null);
         $this->assertNull($service->findUserBy('id', 0));
 
-        \Phake::when($repo)->findOneBy(array('id' => 1))->thenReturn($user1);
+        \Phake::when($repo)->findOneBy(['id' => 1])->thenReturn($user1);
         $this->assertEquals($user1, $service->findUserBy('id', 1));
 
-        \Phake::when($repo)->findBy(array('gender' => User::GENDER_MALE))->thenReturn(array($user1, $user3));
-        $this->assertEquals(array($user1, $user3), $service->findUsersBy('gender', User::GENDER_MALE));
+        \Phake::when($repo)->findBy(['gender' => User::GENDER_MALE])->thenReturn([$user1, $user3]);
+        $this->assertEquals([$user1, $user3], $service->findUsersBy('gender', User::GENDER_MALE));
     }
 
-    public function testRootUser()
+    public function testRootUser(): void
     {
         $em = \Phake::mock('Doctrine\ORM\EntityManager');
         $rootUserHandler = \Phake::mock('Modera\SecurityBundle\RootUserHandling\RootUserHandlerInterface');

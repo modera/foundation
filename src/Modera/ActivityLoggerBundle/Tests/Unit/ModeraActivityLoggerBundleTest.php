@@ -6,13 +6,9 @@ use Modera\ActivityLoggerBundle\DependencyInjection\ServiceAliasCompilerPass;
 use Modera\ActivityLoggerBundle\ModeraActivityLoggerBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class ModeraActivityLoggerBundleTest extends \PHPUnit\Framework\TestCase
 {
-    public function testBuild()
+    public function testBuild(): void
     {
         $bundle = new ModeraActivityLoggerBundle();
 

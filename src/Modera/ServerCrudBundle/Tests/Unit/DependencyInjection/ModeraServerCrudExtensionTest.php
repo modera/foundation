@@ -2,22 +2,26 @@
 
 namespace Modera\ServerCrudBundle\Tests\Unit\DependencyInjection;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
+use Modera\ServerCrudBundle\Contributions\ControllerActionInterceptorsProvider;
 use Modera\ServerCrudBundle\DependencyInjection\ModeraServerCrudExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class ModeraServerCrudExtensionTest extends \PHPUnit\Framework\TestCase
 {
-    public function testIfItHasServicesTagged()
+    public function testIfItHasServicesTagged(): void
     {
         $ext = new ModeraServerCrudExtension();
         $container = new ContainerBuilder();
 
-        $ext->load(array(), $container);
+        $ext->load([], $container);
 
-        $this->assertEquals(1, count($container->findTaggedServiceIds('modera_server_crud.intercepting.cai_provider')));
+        $classLoaderMappingProvider = $container->getDefinition(ControllerActionInterceptorsProvider::class);
+        $class = $classLoaderMappingProvider->getClass() ?? ControllerActionInterceptorsProvider::class;
+        $reflectionClass = $container->getReflectionClass($class);
+        $attribute = $reflectionClass->getAttributes(AsContributorFor::class)[0] ?? null;
+        /** @var ?AsContributorFor $asContributorFor */
+        $asContributorFor = $attribute?->newInstance();
+        $this->assertEquals('modera_server_crud.intercepting.cai', $asContributorFor?->id);
     }
 }

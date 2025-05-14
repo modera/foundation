@@ -11,19 +11,12 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class AbstractFunctionalTestCase extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $st;
+    private static SchemaTool $st;
 
     // override
-    public static function setUpDatabase()
+    public static function setUpDatabase(): void
     {
         self::$st = new SchemaTool(self::$em);
         self::$st->createSchema([
@@ -34,7 +27,7 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
     }
 
     // override
-    public static function dropDatabase()
+    public static function dropDatabase(): void
     {
         self::$st->dropSchema([
             self::$em->getClassMetadata(Language::class),
@@ -43,14 +36,14 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
         ]);
     }
 
-    protected function launchCompileCommand(array $parameters = array())
+    protected function launchCompileCommand(array $parameters = []): void
     {
         $app = new Application(self::getContainer()->get('kernel'));
         $app->setAutoExit(false);
 
-        $input = new ArrayInput(array_merge(array(
+        $input = new ArrayInput(\array_merge([
             'command' => 'modera:translations:compile',
-        ), $parameters));
+        ], $parameters));
         $input->setInteractive(false);
 
         $exitCode = $app->run($input, new NullOutput());
@@ -58,14 +51,14 @@ class AbstractFunctionalTestCase extends FunctionalTestCase
         $this->assertEquals(0, $exitCode);
     }
 
-    protected function launchImportCommand(array $parameters = array())
+    protected function launchImportCommand(array $parameters = []): void
     {
         $app = new Application(self::getContainer()->get('kernel'));
         $app->setAutoExit(false);
 
-        $input = new ArrayInput(array_merge(array(
+        $input = new ArrayInput(\array_merge([
             'command' => 'modera:translations:import',
-        ), $parameters));
+        ], $parameters));
         $input->setInteractive(false);
 
         $exitCode = $app->run($input, new NullOutput());

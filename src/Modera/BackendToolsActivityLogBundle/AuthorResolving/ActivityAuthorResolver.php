@@ -8,16 +8,13 @@ use Modera\FoundationBundle\Translation\T;
 use Modera\SecurityBundle\Entity\User;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class ActivityAuthorResolver
 {
-    private EntityManagerInterface $em;
-
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em = $em;
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+    ) {
     }
 
     /**
@@ -25,7 +22,7 @@ class ActivityAuthorResolver
      */
     public function resolve(ActivityInterface $activity): array
     {
-        $isId = \preg_match('/^[0-9]+$/', $activity->getAuthor());
+        $isId = \preg_match('/^[0-9]+$/', $activity->getAuthor() ?? '');
 
         if ($isId) {
             /** @var ?User $user */

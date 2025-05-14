@@ -2,13 +2,8 @@
 
 namespace Modera\SecurityBundle\Model;
 
-use Symfony\Component\Security\Core\Exception\DisabledException;
-
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
- *
- * @method ?string getUsername()
  */
 interface UserInterface
 {
@@ -20,7 +15,7 @@ interface UserInterface
 
     public function getEmail(): ?string;
 
-    // public function getUsername(): ?string;
+    public function getUsername(): ?string;
 
     public function getPersonalId(): ?string;
 
@@ -38,15 +33,5 @@ interface UserInterface
 
     public function getLastLogin(): ?\DateTimeInterface;
 
-    /**
-     * Checks whether the user is enabled.
-     *
-     * Internally, if this method returns false, the authentication system
-     * will throw a DisabledException and prevent login.
-     *
-     * true if the user is enabled, false otherwise
-     *
-     * @see DisabledException
-     */
-    public function isEnabled(): bool;
+    public function isActive(): bool;
 }

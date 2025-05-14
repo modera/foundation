@@ -6,7 +6,7 @@ use Modera\ServerCrudBundle\QueryBuilder\Parsing\Expression;
 
 class ExpressionTest extends \PHPUnit\Framework\TestCase
 {
-    public function testSimpleExpressionWithoutAlias()
+    public function testSimpleExpressionWithoutAlias(): void
     {
         $expr = new Expression('firstname');
 
@@ -15,7 +15,7 @@ class ExpressionTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($expr->getFunction());
     }
 
-    public function testSimpleExpressionWithAlias()
+    public function testSimpleExpressionWithAlias(): void
     {
         $expr = new Expression('firstname', 'fn');
 
@@ -24,47 +24,46 @@ class ExpressionTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($expr->getFunction());
     }
 
-    public function testFunctionCallExpressionWithAlias()
+    public function testFunctionCallExpressionWithAlias(): void
     {
-        $rawExpr = array(
+        $rawExpr = [
             'function' => 'CONCAT',
-            'args' => array(
+            'args' => [
                 ':firstname',
-                array(
+                [
                     'function' => 'CONCAT',
-                    'args' => array(' ',':lastname')
-                )
-            )
-        );
+                    'args' => [' ', ':lastname'],
+                ],
+            ],
+        ];
         $expr = new Expression($rawExpr, 'fullname');
 
         $this->assertEquals('fullname', $expr->getAlias());
         $this->assertSame($rawExpr, $expr->getExpression());
         $this->assertEquals($rawExpr['function'], $expr->getFunction());
-        $this->assertTrue(is_array($expr->getFunctionArgs()));
+        $this->assertTrue(\is_array($expr->getFunctionArgs()));
         $args1 = $expr->getFunctionArgs();
-        $this->assertEquals(2, count($args1));
+        $this->assertEquals(2, \count($args1));
         $this->assertEquals(':firstname', $args1[0]);
         $this->assertInstanceOf(Expression::class, $args1[1]);
-        /* @var Expression $fetchSubArg */
+        /** @var Expression $fetchSubArg */
         $fetchSubArg = $args1[1];
         $this->assertNull($fetchSubArg->getAlias());
         $args2 = $fetchSubArg->getFunctionArgs();
-        $this->assertTrue(is_array($args2));
-        $this->assertEquals(2, count($args2));
+        $this->assertTrue(\is_array($args2));
+        $this->assertEquals(2, \count($args2));
         $this->assertEquals(' ', $args2[0]);
         $this->assertEquals(':lastname', $args2[1]);
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testHowWellFunctionNameIsValidated()
+    public function testHowWellFunctionNameIsValidated(): void
     {
-        new Expression(array('function' => '; SELECT'));
+        $this->expectException(\RuntimeException::class);
+
+        new Expression(['function' => '; SELECT']);
     }
 
-    public function testSanitizeAlias()
+    public function testSanitizeAlias(): void
     {
         $expr = new Expression('foo', '; DELETE FROM xxx');
 

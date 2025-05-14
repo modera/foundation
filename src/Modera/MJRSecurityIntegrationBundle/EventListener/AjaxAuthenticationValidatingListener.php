@@ -8,9 +8,6 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
- * MPFE-817.
- *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2015 Modera Foundation
  */
 class AjaxAuthenticationValidatingListener
@@ -19,11 +16,9 @@ class AjaxAuthenticationValidatingListener
     public const RESULT_NOT_AJAX = 'not_ajax';
     public const RESULT_NOT_BACKEND_REQUEST = 'not_backend_request';
 
-    private string $backendRoutesPrefix;
-
-    public function __construct(string $backendRoutesPrefix)
-    {
-        $this->backendRoutesPrefix = $backendRoutesPrefix;
+    public function __construct(
+        private readonly string $backendRoutesPrefix,
+    ) {
     }
 
     public function onKernelException(ExceptionEvent $event): void

@@ -3,16 +3,18 @@
 namespace Modera\RoutingBundle\Tests\Unit;
 
 use Modera\RoutingBundle\ModeraRoutingBundle;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2015 Modera Foundation
- */
 class ModeraRoutingBundleTest extends \PHPUnit\Framework\TestCase
 {
-    public function testBuild()
+    public function testBuild(): void
     {
-        $containerBuilder = \Phake::mock('Symfony\Component\DependencyInjection\ContainerBuilder');
+        $containerBuilder = \Phake::mock(ContainerBuilder::class);
+        \Phake::when($containerBuilder)
+            ->addCompilerPass(\Phake::anyParameters())
+            ->thenReturn($containerBuilder)
+        ;
 
         $bundle = new ModeraRoutingBundle();
 
@@ -20,7 +22,7 @@ class ModeraRoutingBundleTest extends \PHPUnit\Framework\TestCase
 
         \Phake::verify($containerBuilder, \Phake::atLeast(2))
             ->addCompilerPass(
-                $this->isInstanceOf('Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface')
+                $this->isInstanceOf(CompilerPassInterface::class),
             )
         ;
     }

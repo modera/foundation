@@ -5,7 +5,6 @@ namespace Modera\TranslationsBundle\Service;
 use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class TranslationHandlersChain
@@ -15,14 +14,9 @@ class TranslationHandlersChain
      */
     private array $handlers = [];
 
-    /**
-     * @param TranslationHandlerInterface $handler
-     */
-    public function addHandler($handler): void
+    public function addHandler(TranslationHandlerInterface $handler): void
     {
-        if ($handler instanceof TranslationHandlerInterface) {
-            $this->handlers[] = $handler;
-        }
+        $this->handlers[] = $handler;
     }
 
     /**

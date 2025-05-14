@@ -3,9 +3,8 @@
 namespace Modera\BackendToolsBundle\Section;
 
 /**
- * Represents an item that will be displayed in backend' Tools section.
+ * Represents an item that will be displayed in backend Tools section.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 interface SectionInterface

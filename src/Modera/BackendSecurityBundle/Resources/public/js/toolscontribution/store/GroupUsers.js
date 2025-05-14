@@ -1,5 +1,5 @@
 /**
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
+ * @copyright 2014 Modera Foundation
  */
 Ext.define('Modera.backend.security.toolscontribution.store.GroupUsers', {
     extend: 'Ext.data.DirectStore',

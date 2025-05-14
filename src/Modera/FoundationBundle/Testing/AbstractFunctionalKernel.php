@@ -9,7 +9,6 @@ use Symfony\Component\HttpKernel\Kernel;
  * Extending this class when writing functional tests makes it possible to run several test-suites that contain
  * several instances of AppKernel without having colliding namespaces/paths.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 abstract class AbstractFunctionalKernel extends Kernel
@@ -46,7 +45,7 @@ abstract class AbstractFunctionalKernel extends Kernel
     }
 
     /**
-     * Conventionally assumes that entry and main configuration config.yml file lives in "config"
+     * Conventionally assumes that entry and main configuration config.yaml file lives in "config"
      * directory which is adjacent to you subclass of AbstractFunctionalKernel.
      */
     public function registerContainerConfiguration(LoaderInterface $loader): void
@@ -54,7 +53,7 @@ abstract class AbstractFunctionalKernel extends Kernel
         $reflClass = new \ReflectionClass($this);
         /** @var string $path */
         $path = $reflClass->getFileName();
-        $loader->load(\dirname($path).'/config/config.yml');
+        $loader->load(\dirname($path).'/config/config.yaml');
     }
 
     public function getProjectDir(): string

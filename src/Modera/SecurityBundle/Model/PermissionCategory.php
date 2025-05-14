@@ -3,19 +3,14 @@
 namespace Modera\SecurityBundle\Model;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class PermissionCategory implements PermissionCategoryInterface
 {
-    private string $name;
-
-    private string $technicalName;
-
-    public function __construct(string $name, string $technicalName)
-    {
-        $this->name = $name;
-        $this->technicalName = $technicalName;
+    public function __construct(
+        private readonly string $name,
+        private readonly string $technicalName,
+    ) {
     }
 
     public function getName(): string

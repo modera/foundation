@@ -2,24 +2,21 @@
 
 namespace Modera\ServerCrudBundle\Tests\Unit\Controller;
 
+use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Modera\ServerCrudBundle\DataMapping\DataMapperInterface;
 use Modera\ServerCrudBundle\DependencyInjection\ModeraServerCrudExtension;
+use Modera\ServerCrudBundle\Exceptions\BadConfigException;
+use Modera\ServerCrudBundle\Service\ConfiguredServiceManager;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Modera\ServerCrudBundle\Controller\AbstractCrudController;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
-/**
- * @author    Alex Plaksin <alex.plaksin@modera.net>
- * @copyright 2016 Modera Foundation
- */
 class AbstractCrudControllerTest extends \PHPUnit\Framework\TestCase
 {
-    public function testGetDataMapper_ContainerParameter()
+    public function testGetDataMapperContainerParameter(): void
     {
-        $config = array('data_mapper' => 'configDefinedMapper');
+        $config = ['data_mapper' => 'configDefinedMapper'];
 
-        /** @var ContainerBuilder $container */
-        $container = \Phake::partialMock('Symfony\Component\DependencyInjection\ContainerBuilder');
+        $container = \Phake::partialMock(ContainerBuilder::class);
         $container->setParameter(ModeraServerCrudExtension::CONFIG_KEY, $config);
         $container->compile();
 
@@ -27,25 +24,26 @@ class AbstractCrudControllerTest extends \PHPUnit\Framework\TestCase
         \Phake::when($container)->get('configDefinedMapper')->thenReturn($dataMapper);
 
         /** @var AbstractCrudController $controller */
-        $controller = \Phake::partialMock('Modera\ServerCrudBundle\Controller\AbstractCrudController');
+        $controller = \Phake::partialMock(AbstractCrudController::class);
         $controller->setContainer($container);
 
+        $configuredServiceManager = new ConfiguredServiceManager($container);
+        $controller->setConfiguredServiceManager($configuredServiceManager);
+
         \Phake::when($controller)->getConfig()->thenReturn(
-            array('entity' => 'testValue', 'hydration' => 'testValue')
+            ['entity' => 'testValue', 'hydration' => 'testValue']
         );
 
         $this->assertSame($dataMapper, \Phake::makeVisible($controller)->getDataMapper());
     }
 
-    /**
-     * @expectedException \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
-     */
-    public function testGetDataMapper_InConfigParameter_ServiceNotPresentInDIContainer()
+    public function testGetDataMapperInConfigParameterServiceNotPresentInDIContainer(): void
     {
-        $config = array('data_mapper' => 'configDefinedMapper');
+        $this->expectException(ServiceNotFoundException::class);
 
-        /** @var ContainerBuilder $container */
-        $container = \Phake::partialMock('Symfony\Component\DependencyInjection\ContainerBuilder');
+        $config = ['data_mapper' => 'configDefinedMapper'];
+
+        $container = \Phake::partialMock(ContainerBuilder::class);
         $container->setParameter(ModeraServerCrudExtension::CONFIG_KEY, $config);
         $container->compile();
 
@@ -53,24 +51,31 @@ class AbstractCrudControllerTest extends \PHPUnit\Framework\TestCase
         \Phake::when($container)->get('configDefinedMapper')->thenReturn($dataMapper);
 
         /** @var AbstractCrudController $controller */
-        $controller = \Phake::partialMock('Modera\ServerCrudBundle\Controller\AbstractCrudController');
+        $controller = \Phake::partialMock(AbstractCrudController::class);
         $controller->setContainer($container);
 
+        $configuredServiceManager = new ConfiguredServiceManager($container);
+        $controller->setConfiguredServiceManager($configuredServiceManager);
+
         \Phake::when($controller)->getConfig()->thenReturn(
-            array('create_default_data_mapper' => function (ContainerInterface $container) {
-                return $container->get('nonExistingService');
-            }, 'entity' => 'testValue', 'hydration' => 'testValue')
+            [
+                'create_default_data_mapper' => function () use ($container) {
+                    return $container->get('nonExistingService');
+                },
+                'entity' => 'testValue',
+                'hydration' => 'testValue',
+            ]
         );
 
         \Phake::makeVisible($controller)->getDataMapper();
     }
 
-    public function testGetDataMapper_InConfigParameter_AllOk()
+    public function testGetDataMapperInConfigParameterAllOk(): void
     {
-        $config = array('data_mapper' => 'configDefinedMapper');
+        $config = ['data_mapper' => 'configDefinedMapper'];
 
         /** @var ContainerBuilder $container */
-        $container = \Phake::partialMock('Symfony\Component\DependencyInjection\ContainerBuilder');
+        $container = \Phake::partialMock(ContainerBuilder::class);
         $container->setParameter(ModeraServerCrudExtension::CONFIG_KEY, $config);
         $container->compile();
 
@@ -80,58 +85,65 @@ class AbstractCrudControllerTest extends \PHPUnit\Framework\TestCase
         \Phake::when($container)->get('existingService')->thenReturn($dataMapper);
 
         /** @var AbstractCrudController $controller */
-        $controller = \Phake::partialMock('Modera\ServerCrudBundle\Controller\AbstractCrudController');
+        $controller = \Phake::partialMock(AbstractCrudController::class);
         $controller->setContainer($container);
 
+        $configuredServiceManager = new ConfiguredServiceManager($container);
+        $controller->setConfiguredServiceManager($configuredServiceManager);
+
         \Phake::when($controller)->getConfig()->thenReturn(
-            array(
-                'create_default_data_mapper' => function (ContainerInterface $container) {
+            [
+                'create_default_data_mapper' => function () use ($container) {
                     return $container->get('existingService');
                 },
                 'entity' => 'testValue',
                 'hydration' => 'testValue',
-            )
+            ]
         );
 
         $this->assertSame($dataMapper, \Phake::makeVisible($controller)->getDataMapper());
     }
 
-    /**
-     * @expectedException \Modera\ServerCrudBundle\Exceptions\BadConfigException
-     * @expectedExceptionMessage An error occurred while getting a configuration property "nonExisingService". No such property exists in config.
-     */
-    public function testGetConfiguredService_NoConfigOption()
+    public function testGetConfiguredServiceNoConfigOption(): void
     {
-        $config = array('nonExistingService' => 'configDefinedMapper');
+        $this->expectException(BadConfigException::class);
+        $this->expectExceptionMessage('An error occurred while getting a configuration property "nonExisingService". No such property exists in config.');
+
+        $config = ['nonExistingService' => 'configDefinedMapper'];
 
         /** @var ContainerBuilder $container */
-        $container = \Phake::partialMock('Symfony\Component\DependencyInjection\ContainerBuilder');
+        $container = \Phake::partialMock(ContainerBuilder::class);
         $container->setParameter(ModeraServerCrudExtension::CONFIG_KEY, $config);
         $container->compile();
 
         /** @var AbstractCrudController $controller */
-        $controller = \Phake::partialMock('Modera\ServerCrudBundle\Controller\AbstractCrudController');
+        $controller = \Phake::partialMock(AbstractCrudController::class);
         $controller->setContainer($container);
+
+        $configuredServiceManager = new ConfiguredServiceManager($container);
+        $controller->setConfiguredServiceManager($configuredServiceManager);
 
         \Phake::makeVisible($controller)->getConfiguredService('nonExisingService');
     }
 
-    /**
-     * @expectedException \Modera\ServerCrudBundle\Exceptions\BadConfigException
-     * @expectedExceptionMessage An error occurred while getting a service for configuration property "entity_validator" using DI service with ID "nonExistingServiceId" - You have requested a non-existent service "nonExistingServiceId"
-     */
-    public function testGetConfiguredService_NoContainerService()
+    public function testGetConfiguredServiceNoContainerService(): void
     {
-        $config = array('entity_validator' => 'nonExistingServiceId');
+        $this->expectException(BadConfigException::class);
+        $this->expectExceptionMessage('An error occurred while getting a service for configuration property "entity_validator" using DI service with ID "nonExistingServiceId" - You have requested a non-existent service "nonExistingServiceId"');
+
+        $config = ['entity_validator' => 'nonExistingServiceId'];
 
         /** @var ContainerBuilder $container */
-        $container = \Phake::partialMock('Symfony\Component\DependencyInjection\ContainerBuilder');
+        $container = \Phake::partialMock(ContainerBuilder::class);
         $container->setParameter(ModeraServerCrudExtension::CONFIG_KEY, $config);
         $container->compile();
 
         /** @var AbstractCrudController $controller */
-        $controller = \Phake::partialMock('Modera\ServerCrudBundle\Controller\AbstractCrudController');
+        $controller = \Phake::partialMock(AbstractCrudController::class);
         $controller->setContainer($container);
+
+        $configuredServiceManager = new ConfiguredServiceManager($container);
+        $controller->setConfiguredServiceManager($configuredServiceManager);
 
         \Phake::makeVisible($controller)->getConfiguredService('entity_validator');
     }

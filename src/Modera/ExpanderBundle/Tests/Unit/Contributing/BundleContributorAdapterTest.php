@@ -7,7 +7,7 @@ use Modera\ExpanderBundle\Tests\Unit\FooDummyBundle;
 
 class BundleContributorAdapterTest extends \PHPUnit\Framework\TestCase
 {
-    public function testGetItems()
+    public function testGetItems(): void
     {
         $extensionPointName = 'foo_extension_point';
 
@@ -34,7 +34,7 @@ class BundleContributorAdapterTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([], $a->getItems());
     }
 
-    public function testGetItemsWithVanillaBundle()
+    public function testGetItemsWithVanillaBundle(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 

@@ -2,62 +2,35 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Config\CallbackConfigMerger;
 use Modera\SecurityBundle\Entity\UserInterface;
 use Modera\SecurityBundle\Security\Authenticator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Provides runtime configuration which should become available after user has authenticated.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.config.config_mergers')]
 class ConfigMergersProvider implements ContributorInterface
 {
-    private RouterInterface $router;
-
-    private TokenStorageInterface $tokenStorage;
-
-    private ContributorInterface $clientDiDefinitionsProvider;
-
-    /**
-     * @var array<string, mixed>
-     */
-    private array $bundleConfig;
-
-    /**
-     * @var array<string, mixed>
-     */
-    private array $securityConfig;
-
-    /**
-     * @var array<string, string[]>
-     */
-    private array $roleHierarchy;
-
     /**
      * @param array<string, mixed>    $bundleConfig
      * @param array<string, mixed>    $securityConfig
      * @param array<string, string[]> $roleHierarchy
      */
     public function __construct(
-        RouterInterface $router,
-        TokenStorageInterface $tokenStorage,
-        ContributorInterface $clientDiDefinitionsProvider,
-        array $bundleConfig = [],
-        array $securityConfig = [],
-        array $roleHierarchy = []
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly TokenStorageInterface $tokenStorage,
+        private readonly ContributorInterface $clientDiDefinitionsProvider,
+        private readonly array $bundleConfig = [],
+        private readonly array $securityConfig = [],
+        private readonly array $roleHierarchy = [],
     ) {
-        $this->router = $router;
-        $this->tokenStorage = $tokenStorage;
-        $this->clientDiDefinitionsProvider = $clientDiDefinitionsProvider;
-        $this->bundleConfig = $bundleConfig;
-        $this->securityConfig = $securityConfig;
-        $this->roleHierarchy = $roleHierarchy;
     }
 
     public function getItems(): array
@@ -136,7 +109,7 @@ class ConfigMergersProvider implements ContributorInterface
     private function getUrl(string $route, array $parameters = []): string
     {
         if ('/' !== $route[0]) {
-            return $this->router->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
+            return $this->urlGenerator->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
         }
 
         return $route;

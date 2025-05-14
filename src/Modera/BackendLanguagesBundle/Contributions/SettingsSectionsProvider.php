@@ -4,22 +4,21 @@ namespace Modera\BackendLanguagesBundle\Contributions;
 
 use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
 use Modera\BackendToolsSettingsBundle\Section\StandardSection;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\FoundationBundle\Translation\T;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2017 Modera Foundation
  */
+#[AsContributorFor('modera_backend_tools_settings.contributions.sections')]
 class SettingsSectionsProvider implements ContributorInterface
 {
-    private AuthorizationCheckerInterface $authorizationChecker;
-
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
-    {
-        $this->authorizationChecker = $authorizationChecker;
+    public function __construct(
+        private AuthorizationCheckerInterface $authorizationChecker,
+    ) {
     }
 
     public function getItems(): array

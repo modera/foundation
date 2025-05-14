@@ -3,22 +3,15 @@
 namespace Modera\LanguagesBundle\Tests\Functional\Command;
 
 use Doctrine\ORM\Tools\SchemaTool;
-use Modera\LanguagesBundle\Entity\Language;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
+use Modera\LanguagesBundle\Entity\Language;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
-/**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class SyncLanguagesCommandTest extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $st;
+    private static SchemaTool $st;
 
     // override
     public static function doSetUpBeforeClass(): void
@@ -37,17 +30,14 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
         ]);
     }
 
-    /**
-     * @param null|string|array $config
-     */
-    private function launchCommand($config = null)
+    private function launchCommand(array|string|null $config = null): void
     {
         $app = new Application(self::$kernel->getContainer()->get('kernel'));
         $app->setAutoExit(false);
-        $input = new ArrayInput(array(
+        $input = new ArrayInput([
             'command' => 'modera:languages:config-sync-dummy',
-            'config' => $config ? json_encode($config) : null,
-        ));
+            'config' => $config ? \json_encode($config) : null,
+        ]);
         $input->setInteractive(false);
 
         $result = $app->run($input, new NullOutput());
@@ -55,13 +45,13 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
         $this->assertEquals(0, $result);
     }
 
-    private function checkCount($expected)
+    private function checkCount($expected): void
     {
         $dbLanguages = self::$em->getRepository(Language::class)->findAll();
         $this->assertEquals($expected, count($dbLanguages));
     }
 
-    private function checkEnabled($expected)
+    private function checkEnabled($expected): void
     {
         $actual = 0;
         $dbLanguages = self::$em->getRepository(Language::class)->findAll();
@@ -73,14 +63,14 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testEmptyConfig()
+    public function testEmptyConfig(): void
     {
         $this->checkCount(0);
         $this->launchCommand();
         $this->checkCount(0);
     }
 
-    public function testConfigFile()
+    public function testConfigFile(): void
     {
         $this->checkCount(0);
         $this->launchCommand('config-file');
@@ -88,95 +78,95 @@ class SyncLanguagesCommandTest extends FunctionalTestCase
         $this->checkEnabled(2);
     }
 
-    public function testSync()
+    public function testSync(): void
     {
         $this->checkCount(0);
 
-        $this->launchCommand(array(
-            array(
+        $this->launchCommand([
+            [
                 'locale' => 'en',
                 'is_enabled' => true,
-            ),
-        ));
+            ],
+        ]);
         $this->checkCount(1);
         $this->checkEnabled(1);
 
-        $this->launchCommand(array(
-            array(
+        $this->launchCommand([
+            [
                 'locale' => 'en',
                 'is_enabled' => false,
-            ),
-        ));
+            ],
+        ]);
         $this->checkCount(1);
         $this->checkEnabled(0);
 
-        $this->launchCommand(array(
-            array(
+        $this->launchCommand([
+            [
                 'locale' => 'en',
                 'is_enabled' => true,
-            ),
-            array(
+            ],
+            [
                 'locale' => 'ru',
                 'is_enabled' => true,
-            ),
-        ));
+            ],
+        ]);
         $this->checkCount(2);
         $this->checkEnabled(2);
 
-        $this->launchCommand(array(
-            array(
+        $this->launchCommand([
+            [
                 'locale' => 'en',
                 'is_enabled' => false,
-            ),
-            array(
+            ],
+            [
                 'locale' => 'ru',
                 'is_enabled' => true,
-            ),
-        ));
+            ],
+        ]);
         $this->checkCount(2);
         $this->checkEnabled(1);
 
-        $this->launchCommand(array(
-            array(
+        $this->launchCommand([
+            [
                 'locale' => 'en',
                 'is_enabled' => true,
-            ),
-            array(
+            ],
+            [
                 'locale' => 'ru',
                 'is_enabled' => false,
-            ),
-        ));
+            ],
+        ]);
         $this->checkCount(2);
         $this->checkEnabled(1);
 
-        $this->launchCommand(array(
-            array(
+        $this->launchCommand([
+            [
                 'locale' => 'ru',
                 'is_enabled' => true,
-            ),
-        ));
+            ],
+        ]);
         $this->checkCount(2);
         $this->checkEnabled(1);
 
-        $this->launchCommand(array(
-            array(
+        $this->launchCommand([
+            [
                 'locale' => 'ru',
                 'is_enabled' => false,
-            ),
-        ));
+            ],
+        ]);
         $this->checkCount(2);
         $this->checkEnabled(0);
 
-        $this->launchCommand(array(
-            array(
+        $this->launchCommand([
+            [
                 'locale' => 'en',
                 'is_enabled' => true,
-            ),
-            array(
+            ],
+            [
                 'locale' => 'ru',
                 'is_enabled' => true,
-            ),
-        ));
+            ],
+        ]);
         $this->checkCount(2);
         $this->checkEnabled(2);
 

@@ -3,52 +3,39 @@
 namespace Modera\SecurityBundle\Tests\Functional\Service;
 
 use Doctrine\ORM\Tools\SchemaTool;
-use Modera\SecurityBundle\Entity\PermissionCategory as PermissionCategoryEntity;
-use Modera\SecurityBundle\Entity\User;
+use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Modera\SecurityBundle\Entity\Group;
 use Modera\SecurityBundle\Entity\Permission;
+use Modera\SecurityBundle\Entity\PermissionCategory as PermissionCategoryEntity;
+use Modera\SecurityBundle\Entity\User;
 use Modera\SecurityBundle\Service\UserService;
-use Modera\FoundationBundle\Testing\FunctionalTestCase;
 
-/**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2015 Modera Foundation
- */
 class UserServiceTest extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $st;
+    private static SchemaTool $st;
 
-    /**
-     * {@inheritdoc}
-     */
     public static function doSetUpBeforeClass(): void
     {
         self::$st = new SchemaTool(self::$em);
-        self::$st->createSchema(array(
+        self::$st->createSchema([
             self::$em->getClassMetadata(User::class),
             self::$em->getClassMetadata(Group::class),
             self::$em->getClassMetadata(Permission::class),
             self::$em->getClassMetadata(PermissionCategoryEntity::class),
-        ));
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function doTearDownAfterClass(): void
     {
-        self::$st->dropSchema(array(
+        self::$st->dropSchema([
             self::$em->getClassMetadata(User::class),
             self::$em->getClassMetadata(Group::class),
             self::$em->getClassMetadata(Permission::class),
             self::$em->getClassMetadata(PermissionCategoryEntity::class),
-        ));
+        ]);
     }
 
-    public function testGetByRole()
+    public function testGetByRole(): void
     {
         $user1 = new User();
         $user2 = new User();
@@ -101,10 +88,10 @@ class UserServiceTest extends FunctionalTestCase
         $rootUserHandler = \Phake::mock('Modera\SecurityBundle\RootUserHandling\RootUserHandlerInterface');
         $service = new UserService(self::$em, $rootUserHandler);
 
-        $this->assertEquals(array($user1, $user3), $service->getUsersByRole('ROLE_USER'));
-        $this->assertEquals(array($user2, $user3), $service->getUsersByRole('ROLE_ADMIN'));
+        $this->assertEquals([$user1, $user3], $service->getUsersByRole('ROLE_USER'));
+        $this->assertEquals([$user2, $user3], $service->getUsersByRole('ROLE_ADMIN'));
 
-        $this->assertEquals(array($user1->getId(), $user3->getId()), $service->getIdsByRole('ROLE_USER'));
-        $this->assertEquals(array($user2->getId(), $user3->getId()), $service->getIdsByRole('ROLE_ADMIN'));
+        $this->assertEquals([$user1->getId(), $user3->getId()], $service->getIdsByRole('ROLE_USER'));
+        $this->assertEquals([$user2->getId(), $user3->getId()], $service->getIdsByRole('ROLE_ADMIN'));
     }
 }

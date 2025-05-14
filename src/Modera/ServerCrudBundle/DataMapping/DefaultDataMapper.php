@@ -5,24 +5,20 @@ namespace Modera\ServerCrudBundle\DataMapping;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class DefaultDataMapper implements DataMapperInterface
 {
-    private EntityDataMapperService $mapper;
-    private EntityManagerInterface $em;
-
-    public function __construct(EntityDataMapperService $mapper, EntityManagerInterface $em)
-    {
-        $this->mapper = $mapper;
-        $this->em = $em;
+    public function __construct(
+        private readonly EntityDataMapperService $mapper,
+        private readonly EntityManagerInterface $em,
+    ) {
     }
 
     /**
      * @return string[]
      */
-    protected function getAllowedFields(string $entityClass)
+    protected function getAllowedFields(string $entityClass): array
     {
         /** @var class-string $entityClass */
         $metadata = $this->em->getClassMetadata($entityClass);

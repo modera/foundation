@@ -11,16 +11,13 @@ use Symfony\Component\HttpKernel\KernelInterface;
  * You can use this service to compile translations, under the hood service relies on a console command because
  * some operations cannot be performed in scope of request and a separate process has be to be used instead.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class TranslationsCompiler
 {
-    private KernelInterface $kernel;
-
-    public function __construct(KernelInterface $kernel)
-    {
-        $this->kernel = $kernel;
+    public function __construct(
+        private readonly KernelInterface $kernel,
+    ) {
     }
 
     /**

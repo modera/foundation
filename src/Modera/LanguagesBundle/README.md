@@ -9,7 +9,7 @@ entities that your project has.
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/languages-bundle:5.x-dev
+composer require modera/languages-bundle:6.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -36,7 +36,7 @@ return [
 This is a sample configuration:
 
 ``` yaml
-// app/config/config.yml
+// app/config/config.yaml
 
 modera_languages:
     - { locale: en }

@@ -2,14 +2,15 @@
 
 namespace Modera\BackendSecurityBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * @internal
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_security_integration.client_di_service_defs')]
 class ClientDiServiceDefinitionsProvider implements ContributorInterface
 {
     public function getItems(): array

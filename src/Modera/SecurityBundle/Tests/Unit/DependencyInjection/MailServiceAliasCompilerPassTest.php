@@ -4,26 +4,23 @@ namespace Modera\SecurityBundle\Tests\Unit\DependencyInjection;
 
 use Modera\SecurityBundle\DependencyInjection\MailServiceAliasCompilerPass;
 use Modera\SecurityBundle\DependencyInjection\ModeraSecurityExtension;
+use Modera\SecurityBundle\PasswordStrength\Mail\MailServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2017 Modera Foundation
- */
 class MailServiceAliasCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $container = new ContainerBuilder();
         $container->setParameter(
             ModeraSecurityExtension::CONFIG_KEY,
-            array(
-                'password_strength' => array(
-                    'mail' => array(
+            [
+                'password_strength' => [
+                    'mail' => [
                         'service' => 'foo_service',
-                    ),
-                ),
-            )
+                    ],
+                ],
+            ],
         );
 
         $compilerPass = new MailServiceAliasCompilerPass();
@@ -31,7 +28,7 @@ class MailServiceAliasCompilerPassTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             'foo_service',
-            (string)$container->getAlias('modera_security.password_strength.mail.mail_service')
+            (string) $container->getAlias(MailServiceInterface::class),
         );
     }
 }

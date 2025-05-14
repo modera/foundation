@@ -8,6 +8,7 @@ use Modera\TranslationsBundle\Entity\LanguageTranslationToken;
 use Modera\TranslationsBundle\Entity\TranslationToken;
 use Modera\TranslationsBundle\Handling\TranslationHandlerInterface;
 use Modera\TranslationsBundle\Service\TranslationHandlersChain;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,31 +18,38 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\Catalogue\TargetOperation;
 use Symfony\Component\Translation\MessageCatalogue;
-use Symfony\Component\Translation\Reader\TranslationReader;
+use Symfony\Component\Translation\Reader\TranslationReaderInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 /**
  * From files to database.
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsCommand(
+    name: 'modera:translations:import',
+    description: 'Finds and imports translations from files to database.',
+)]
 class ImportTranslationsCommand extends Command
 {
     private ContainerInterface $container;
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
 
+    public function __construct(
+        private readonly TranslationHandlersChain $translationHandlersChain,
+        private readonly TranslationReaderInterface $translationReader,
+    ) {
+        parent::__construct();
+    }
+
     protected function configure(): void
     {
         $this
-            ->setName('modera:translations:import')
-            ->setDescription('Finds and imports translations from files to database.')
             ->addOption('strategy', null, InputOption::VALUE_REQUIRED, 'Import strategy')
             ->addOption('ignore-obsolete', null, InputOption::VALUE_NONE, 'Ignore marking messages as obsolete')
             ->addOption('mark-as-translated', null, InputOption::VALUE_NONE, 'Mark all imported translations as translated')
@@ -87,7 +95,7 @@ class ImportTranslationsCommand extends Command
             } catch (\RuntimeException $e) {
                 $output->writeln($e->getMessage());
 
-                return 1;
+                return Command::FAILURE;
             }
 
             /** @var array<string, array<string, string>> $dbMessages */
@@ -99,6 +107,7 @@ class ImportTranslationsCommand extends Command
                     }
 
                     if (\is_array($token['languageTranslationTokens'] ?? null)) {
+                        /** @var array{'language': int, 'translation': string} $ltt */
                         foreach ($token['languageTranslationTokens'] as $ltt) {
                             $lang = $this->findLanguage($languages, $ltt['language']);
                             if ($lang && $locale === $lang->getLocale()) {
@@ -413,7 +422,7 @@ class ImportTranslationsCommand extends Command
             $output->writeln('>>> Nothing to import');
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     protected function getImportStrategy(): string
@@ -448,7 +457,7 @@ class ImportTranslationsCommand extends Command
         $catalogue = new MessageCatalogue($locale);
 
         /** @var TranslationHandlerInterface[] $handlers */
-        $handlers = $this->getTranslationHandlersChain()->getHandlers();
+        $handlers = $this->translationHandlersChain->getHandlers();
         if (0 === \count($handlers)) {
             throw new \RuntimeException('No translation handler are found, aborting ...');
         }
@@ -484,13 +493,13 @@ class ImportTranslationsCommand extends Command
 
         $fs = new Filesystem();
         if ($fs->exists($translationsDir)) {
-            $this->getTranslationReader()->read($translationsDir, $extractedCatalogue);
+            $this->translationReader->read($translationsDir, $extractedCatalogue);
 
             // load fallback translations
             $parts = \explode('_', $locale);
             if (\count($parts) > 1) {
                 $fallbackCatalogue = new MessageCatalogue($parts[0]);
-                $this->getTranslationReader()->read($translationsDir, $fallbackCatalogue);
+                $this->translationReader->read($translationsDir, $fallbackCatalogue);
 
                 $mergeOperation = new MergeOperation(
                     $extractedCatalogue,
@@ -505,7 +514,7 @@ class ImportTranslationsCommand extends Command
                 $defaultLocale = $this->getTranslationsDefaultLocale();
                 if ($defaultLocale) {
                     $defaultCatalogue = new MessageCatalogue($defaultLocale);
-                    $this->getTranslationReader()->read($translationsDir, $defaultCatalogue);
+                    $this->translationReader->read($translationsDir, $defaultCatalogue);
 
                     $mergeOperation = new MergeOperation(
                         $extractedCatalogue,
@@ -523,7 +532,7 @@ class ImportTranslationsCommand extends Command
 
         if (!$markAsTranslated) {
             /** @var TranslationHandlerInterface[] $handlers */
-            $handlers = $this->getTranslationHandlersChain()->getHandlers();
+            $handlers = $this->translationHandlersChain->getHandlers();
             if (\count($handlers)) {
                 foreach ($handlers as $handler) {
                     if (\in_array(TranslationHandlerInterface::STRATEGY_RESOURCE_FILES, $handler->getStrategies())) {
@@ -582,22 +591,6 @@ class ImportTranslationsCommand extends Command
         }
 
         return $translationsDir;
-    }
-
-    private function getTranslationReader(): TranslationReader
-    {
-        /** @var TranslationReader $translationReader */
-        $translationReader = $this->container->get('modera_translations.translation.reader');
-
-        return $translationReader;
-    }
-
-    private function getTranslationHandlersChain(): TranslationHandlersChain
-    {
-        /** @var TranslationHandlersChain $translationHandlersChain */
-        $translationHandlersChain = $this->container->get('modera_translations.service.translation_handlers_chain');
-
-        return $translationHandlersChain;
     }
 
     private function em(): EntityManagerInterface

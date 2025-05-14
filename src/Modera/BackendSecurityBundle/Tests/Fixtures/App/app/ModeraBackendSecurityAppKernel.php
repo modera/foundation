@@ -1,19 +1,16 @@
 <?php
 
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Config\Loader\LoaderInterface;
-
-class ModeraBackendSecurityAppKernel extends \Modera\FoundationBundle\Testing\AbstractFunctionalKernel
+class ModeraBackendSecurityAppKernel extends Modera\FoundationBundle\Testing\AbstractFunctionalKernel
 {
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
-        return array(
+        return [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
 
-            new Modera\ExpanderBundle\ModeraExpanderBundle($this),
+            new Modera\ExpanderBundle\ModeraExpanderBundle(),
 
             new Modera\TranslationsBundle\ModeraTranslationsBundle(),
             new Modera\FoundationBundle\ModeraFoundationBundle(),
@@ -25,7 +22,6 @@ class ModeraBackendSecurityAppKernel extends \Modera\FoundationBundle\Testing\Ab
             new Modera\BackendTranslationsToolBundle\ModeraBackendTranslationsToolBundle(),
             new Modera\ServerCrudBundle\ModeraServerCrudBundle(),
             new Modera\BackendSecurityBundle\ModeraBackendSecurityBundle(),
-
-        );
+        ];
     }
 }

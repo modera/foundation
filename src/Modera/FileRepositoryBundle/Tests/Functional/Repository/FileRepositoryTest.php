@@ -9,10 +9,6 @@ use Modera\FileRepositoryBundle\Repository\FileRepository;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Symfony\Component\HttpFoundation\File\File;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class FileRepositoryTest extends FunctionalTestCase
 {
     private static $st;
@@ -34,17 +30,17 @@ class FileRepositoryTest extends FunctionalTestCase
         ]);
     }
 
-    public function testHowWellItWorks()
+    public function testHowWellItWorks(): void
     {
-        /* @var FileRepository $fr */
-        $fr = self::getContainer()->get('modera_file_repository.repository.file_repository');
+        /** @var FileRepository $fr */
+        $fr = self::getContainer()->get(FileRepository::class);
 
         $this->assertNull($fr->getRepository('dummy_repository'));
 
-        $repositoryConfig = array(
+        $repositoryConfig = [
             'storage_key_generator' => 'modera_file_repository.repository.uniqid_key_generator',
             'filesystem' => 'dummy_tmp_fs',
-        );
+        ];
 
         $this->assertFalse($fr->repositoryExists('dummy_repository'));
 
@@ -70,16 +66,16 @@ class FileRepositoryTest extends FunctionalTestCase
         // ---
 
         $fileContents = 'foo contents';
-        $filePath = sys_get_temp_dir().DIRECTORY_SEPARATOR.'our-dummy-file.txt';
-        file_put_contents($filePath, $fileContents);
+        $filePath = \sys_get_temp_dir().\DIRECTORY_SEPARATOR.'our-dummy-file.txt';
+        \file_put_contents($filePath, $fileContents);
 
         $file = new File($filePath);
 
-        $storedFile = $fr->put($repository->getName(), $file, array());
+        $storedFile = $fr->put($repository->getName(), $file);
 
         self::$em->clear(); // this way we will make sure that data is actually persisted in database
 
-        /* @var StoredFile $storedFile */
+        /** @var StoredFile $storedFile */
         $storedFile = self::$em->find(StoredFile::class, $storedFile->getId());
 
         $this->assertInstanceOf(StoredFile::class, $storedFile);
@@ -96,21 +92,21 @@ class FileRepositoryTest extends FunctionalTestCase
 
         // ---
 
-        $storedFileData = array(
+        $storedFileData = [
             'id' => $storedFile->getId(),
             'storageKey' => $storedFile->getStorageKey(),
             'filename' => $storedFile->getFilename(),
-        );
+        ];
         $fileContents = 'bar contents';
-        $filePath = sys_get_temp_dir().DIRECTORY_SEPARATOR.'bar-dummy-file.txt';
-        file_put_contents($filePath, $fileContents);
+        $filePath = \sys_get_temp_dir().\DIRECTORY_SEPARATOR.'bar-dummy-file.txt';
+        \file_put_contents($filePath, $fileContents);
 
         $file = new File($filePath);
 
-        $storedFile = $fr->put($repository->getName(), $file, array());
+        $storedFile = $fr->put($repository->getName(), $file);
         self::$em->clear(); // this way we will make sure that data is actually persisted in database
 
-        /* @var StoredFile $storedFile */
+        /** @var StoredFile $storedFile */
         $storedFile = self::$em->find(StoredFile::class, $storedFile->getId());
 
         $this->assertNotEquals($storedFileData['id'], $storedFile->getId());
@@ -125,15 +121,15 @@ class FileRepositoryTest extends FunctionalTestCase
         self::$em->persist($repository);
         self::$em->flush();
 
-        $storedFileData = array(
+        $storedFileData = [
             'id' => $storedFile->getId(),
             'storageKey' => $storedFile->getStorageKey(),
             'filename' => $storedFile->getFilename(),
-        );
-        $storedFile = $fr->put($repository->getName(), $file, array());
+        ];
+        $storedFile = $fr->put($repository->getName(), $file);
         self::$em->clear(); // this way we will make sure that data is actually persisted in database
 
-        /* @var StoredFile $storedFile */
+        /** @var StoredFile $storedFile */
         $storedFile = self::$em->find(StoredFile::class, $storedFile->getId());
 
         $this->assertEquals($storedFileData['id'], $storedFile->getId());

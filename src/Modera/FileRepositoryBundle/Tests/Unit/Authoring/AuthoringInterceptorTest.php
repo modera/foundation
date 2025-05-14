@@ -7,25 +7,35 @@ use Modera\FileRepositoryBundle\Entity\Repository;
 use Modera\FileRepositoryBundle\Entity\StoredFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\User\UserInterface;
 
-class DummyUser
+class DummyUser implements UserInterface
 {
-    public $id;
+    public ?int $id = null;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
+
+    public function getRoles(): array
+    {
+        return [];
+    }
+
+    public function eraseCredentials(): void
+    {
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->id;
+    }
 }
 
-/**
- * @group MPFE-1012
- *
- * @author Sergei Lissovski <sergei.lissovski@modera.org>
- */
 class AuthoringInterceptorTest extends \PHPUnit\Framework\TestCase
 {
-    public function testOnPut_happyPath()
+    public function testOnPutHappyPath(): void
     {
         $dummyUser = new DummyUser();
         $dummyUser->id = 777;
@@ -53,7 +63,7 @@ class AuthoringInterceptorTest extends \PHPUnit\Framework\TestCase
         ;
     }
 
-    public function testOnPut_userNotAuthenticated()
+    public function testOnPutUserNotAuthenticated(): void
     {
         $tokenMock = \Phake::mock(UsernamePasswordToken::class);
 
@@ -72,9 +82,9 @@ class AuthoringInterceptorTest extends \PHPUnit\Framework\TestCase
         \Phake::verifyNoInteraction($storedFile);
     }
 
-    public function testOnPut_userObjectHasNoId()
+    public function testOnPutUserObjectHasNoId(): void
     {
-        $dummyUser = new \stdClass();
+        $dummyUser = null;
 
         $tokenMock = \Phake::mock(UsernamePasswordToken::class);
         \Phake::when($tokenMock)
@@ -97,7 +107,7 @@ class AuthoringInterceptorTest extends \PHPUnit\Framework\TestCase
         \Phake::verifyNoInteraction($storedFile);
     }
 
-    public function testOnPut_authorIsAlreadySpecified()
+    public function testOnPutAuthorIsAlreadySpecified(): void
     {
         $dummyUser = new DummyUser();
         $dummyUser->id = 777;
@@ -123,7 +133,7 @@ class AuthoringInterceptorTest extends \PHPUnit\Framework\TestCase
             $storedFile,
             new \SplFileInfo(__FILE__),
             \Phake::mock(Repository::class),
-            array('author' => 'bob')
+            ['author' => 'bob'],
         );
     }
 }

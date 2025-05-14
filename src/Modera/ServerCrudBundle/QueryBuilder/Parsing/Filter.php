@@ -3,7 +3,6 @@
 namespace Modera\ServerCrudBundle\QueryBuilder\Parsing;
 
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  */
 class Filter implements FilterInterface
@@ -66,10 +65,12 @@ class Filter implements FilterInterface
      */
     public static function getSupportedComparators(): array
     {
-        if (null === self::$supportedComparators) {
-            /** @var string[] $supportedComparators */
-            $supportedComparators = [];
+        /** @var string[] $supportedComparators */
+        $supportedComparators = [];
 
+        if (\is_array(self::$supportedComparators)) {
+            $supportedComparators = self::$supportedComparators;
+        } else {
             $refClass = new \ReflectionClass(__CLASS__);
             /**
              * @var string $name
@@ -80,11 +81,10 @@ class Filter implements FilterInterface
                     $supportedComparators[] = $value;
                 }
             }
-
             self::$supportedComparators = $supportedComparators;
         }
 
-        return self::$supportedComparators;
+        return $supportedComparators;
     }
 
     /**
@@ -124,7 +124,6 @@ class Filter implements FilterInterface
     {
         $parsed = [];
 
-        /** @var int|false $separatorPosition */
         $separatorPosition = \strpos($value, ':');
         if (false === $separatorPosition) {
             $separatorPosition = null;
@@ -166,8 +165,9 @@ class Filter implements FilterInterface
      *     'comparator': ?string,
      *     'value': string|string[]|array{
      *         'comparator': string,
-     *         'value'?: string|string[]
-     *     }[]|null},
+     *         'value'?: string|string[],
+     *     }[]|null,
+     * }
      */
     private function parse(array $input): array
     {

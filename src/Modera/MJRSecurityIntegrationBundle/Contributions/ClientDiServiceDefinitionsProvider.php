@@ -2,27 +2,23 @@
 
 namespace Modera\MJRSecurityIntegrationBundle\Contributions;
 
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
  * Provides service definitions for client-side dependency injection container.
  *
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2019 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.csdi.service_definitions')]
 class ClientDiServiceDefinitionsProvider implements ContributorInterface
 {
     /**
-     * @var array<string, mixed>
-     */
-    private array $securityConfig;
-
-    /**
      * @param array<string, mixed> $securityConfig
      */
-    public function __construct(array $securityConfig = [])
-    {
-        $this->securityConfig = $securityConfig;
+    public function __construct(
+        private readonly array $securityConfig = [],
+    ) {
     }
 
     public function getItems(): array

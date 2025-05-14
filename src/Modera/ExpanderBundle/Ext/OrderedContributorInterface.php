@@ -7,6 +7,8 @@ namespace Modera\ExpanderBundle\Ext;
  *
  * Your implementations of {@class ContributorInterface} may optionally implement this interface when you need to achieve
  * a certain sorting when contributions are being merged.
+ *
+ * @copyright 2024 Modera Foundation
  */
 interface OrderedContributorInterface extends ContributorInterface
 {

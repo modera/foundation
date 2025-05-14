@@ -6,50 +6,50 @@ use Modera\ServerCrudBundle\QueryBuilder\Parsing\OrderExpression;
 
 class OrderExpressionTest extends \PHPUnit\Framework\TestCase
 {
-    public function testParsingBasics()
+    public function testParsingBasics(): void
     {
-        $expr = new OrderExpression(array('property' => 'foo', 'direction' => 'ASC'));
+        $expr = new OrderExpression(['property' => 'foo', 'direction' => 'ASC']);
 
         $this->assertEquals('foo', $expr->getProperty());
         $this->assertEquals('ASC', $expr->getDirection());
 
-        $expr = new OrderExpression(array());
+        $expr = new OrderExpression([]);
 
         $this->assertNull($expr->getProperty());
         $this->assertNull($expr->getDirection());
     }
 
-    public function testValidation()
+    public function testValidation(): void
     {
-        $expr = new OrderExpression(array('property' => 'foo', 'direction' => 'ASC'));
+        $expr = new OrderExpression(['property' => 'foo', 'direction' => 'ASC']);
 
         $this->assertTrue($expr->isValid());
 
-        $expr = new OrderExpression(array('property' => 'foo.bar', 'direction' => 'DESC'));
+        $expr = new OrderExpression(['property' => 'foo.bar', 'direction' => 'DESC']);
 
         $this->assertTrue($expr->isValid());
 
-        $expr = new OrderExpression(array('property' => 'foo', 'direction' => 'XXX'));
+        $expr = new OrderExpression(['property' => 'foo', 'direction' => 'XXX']);
 
         $this->assertFalse($expr->isValid());
 
-        $expr = new OrderExpression(array());
+        $expr = new OrderExpression([]);
 
         $this->assertFalse($expr->isValid());
 
-        $expr = new OrderExpression(array('property' => null, 'direction' => null));
+        $expr = new OrderExpression(['property' => null, 'direction' => null]);
 
         $this->assertFalse($expr->isValid());
 
-        $expr = new OrderExpression(array('property' => 'foo'));
+        $expr = new OrderExpression(['property' => 'foo']);
 
         $this->assertFalse($expr->isValid());
 
-        $expr = new OrderExpression(array('direction' => 'ASC'));
+        $expr = new OrderExpression(['direction' => 'ASC']);
 
         $this->assertFalse($expr->isValid());
 
-        $expr = new OrderExpression(array('property' => 'xxx', 'direction' => 'asc'));
+        $expr = new OrderExpression(['property' => 'xxx', 'direction' => 'asc']);
 
         $this->assertTrue($expr->isValid());
     }

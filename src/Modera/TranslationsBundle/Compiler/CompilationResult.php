@@ -6,22 +6,17 @@ namespace Modera\TranslationsBundle\Compiler;
  * You can use this instance of this class to get information regarding translations compilation result. Usually
  * you won't want to create instances of this class manually, but instead use AsyncTranslationsCompiler service.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2016 Modera Foundation
  */
 class CompilationResult
 {
-    private int $exitCode;
-
-    private string $rawOutput;
-
     /**
      * @internal
      */
-    public function __construct(int $exitCode, string $rawOutput)
-    {
-        $this->exitCode = $exitCode;
-        $this->rawOutput = $rawOutput;
+    public function __construct(
+        private readonly int $exitCode,
+        private readonly string $rawOutput,
+    ) {
     }
 
     public function isSuccessful(): bool

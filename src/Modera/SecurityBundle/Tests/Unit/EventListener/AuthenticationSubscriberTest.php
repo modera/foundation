@@ -2,16 +2,12 @@
 
 namespace Modera\SecurityBundle\Tests\Unit\EventListener;
 
-use Modera\SecurityBundle\EventListener\AuthenticationSubscriber;
 use Modera\SecurityBundle\Entity\User;
+use Modera\SecurityBundle\EventListener\AuthenticationSubscriber;
 
-/**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2021 Modera Foundation
- */
 class AuthenticationSubscriberTest extends \PHPUnit\Framework\TestCase
 {
-    private function createAuthenticationSubscriber()
+    private function createAuthenticationSubscriber(): AuthenticationSubscriber
     {
         $om = \Phake::mock('Doctrine\Persistence\ObjectManager');
         $user = \Phake::mock(User::class);
@@ -24,7 +20,7 @@ class AuthenticationSubscriberTest extends \PHPUnit\Framework\TestCase
         return new AuthenticationSubscriber($doctrine);
     }
 
-    public function testUserStateChangeOnAuthenticationSuccess()
+    public function testUserStateChangeOnAuthenticationSuccess(): void
     {
         $user = new User();
         $subscriber = $this->createAuthenticationSubscriber();

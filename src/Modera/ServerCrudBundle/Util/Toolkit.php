@@ -2,6 +2,11 @@
 
 namespace Modera\ServerCrudBundle\Util;
 
+/**
+ * @internal
+ *
+ * @copyright 2024 Modera Foundation
+ */
 class Toolkit
 {
     /**

@@ -4,13 +4,9 @@ namespace Modera\LanguagesBundle\Tests\Unit\Entity;
 
 use Modera\LanguagesBundle\Entity\Language;
 
-/**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class LanguageTest extends \PHPUnit\Framework\TestCase
 {
-    public function testName()
+    public function testName(): void
     {
         $language = new Language();
 

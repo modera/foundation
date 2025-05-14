@@ -4,16 +4,17 @@ namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 
 use Modera\BackendConfigUtilsBundle\ModeraBackendConfigUtilsBundle;
 use Modera\BackendToolsSettingsBundle\Section\StandardSection;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\MjrIntegrationBundle\Model\FontAwesome;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
- * @internal Since 2.56.0
+ * @internal
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
+#[AsContributorFor('modera_backend_tools_settings.contributions.sections')]
 class SettingsSectionsProvider implements ContributorInterface
 {
     /**
@@ -21,11 +22,9 @@ class SettingsSectionsProvider implements ContributorInterface
      */
     private ?array $items = null;
 
-    private AuthorizationCheckerInterface $authorizationChecker;
-
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
-    {
-        $this->authorizationChecker = $authorizationChecker;
+    public function __construct(
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+    ) {
     }
 
     public function getItems(): array
@@ -42,7 +41,7 @@ class SettingsSectionsProvider implements ContributorInterface
                         'activationParams' => [
                             'category' => 'general',
                         ],
-                    ]
+                    ],
                 );
             }
         }

@@ -14,7 +14,7 @@ class ExtensionPointTest extends \PHPUnit\Framework\TestCase
         $this->ep = new ExtensionPoint('foo.blah.cities');
     }
 
-    public function testCreateCompilerPass()
+    public function testCreateCompilerPass(): void
     {
         /** @var CompositeContributorsProviderCompilerPass $cp */
         $cp = $this->ep->createCompilerPass();
@@ -24,7 +24,7 @@ class ExtensionPointTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('foo.blah.cities_provider', $cp->getContributorServiceTagName());
     }
 
-    public function testMethodChaining()
+    public function testMethodChaining(): void
     {
         $result = $this->ep->setDescription('desc');
 

@@ -25,24 +25,24 @@ class EntityDataMapperServiceTest extends AbstractTestCase
         $ts = self::getContainer()->get('security.token_storage');
 
         /** @var ArrayQueryBuilder $builder */
-        $builder = self::getContainer()->get('modera_server_crud.array_query_builder');
+        $builder = self::getContainer()->get(ArrayQueryBuilder::class);
 
-        $qb = $builder->buildQueryBuilder(DummyUser::class, array(
-            'filter' => array(
-                array('property' => 'id', 'value' => 'eq:1')
-            )
-        ));
+        $qb = $builder->buildQueryBuilder(DummyUser::class, [
+            'filter' => [
+                ['property' => 'id', 'value' => 'eq:1'],
+            ],
+        ]);
 
-        /* @var DummyUser[] $users */
+        /** @var DummyUser[] $users */
         $users = $qb->getQuery()->getResult();
 
-        $token = new UsernamePasswordToken($users[0], null, 'main', ['ROLE_ADMIN']);
+        $token = new UsernamePasswordToken($users[0], 'main', ['ROLE_ADMIN']);
         $ts->setToken($token);
 
-        $this->mapper = self::getContainer()->get('modera_server_crud.entity_data_mapper');
+        $this->mapper = self::getContainer()->get(EntityDataMapperService::class);
     }
 
-    public function testConvertDate()
+    public function testConvertDate(): void
     {
         $date = $this->mapper->convertDate('02.01.06');
 
@@ -52,7 +52,7 @@ class EntityDataMapperServiceTest extends AbstractTestCase
         $this->assertEquals('06', $date->format('y'));
     }
 
-    public function testConvertDateTime()
+    public function testConvertDateTime(): void
     {
         $date = $this->mapper->convertDateTime('02.01.06 15:04');
 
@@ -64,7 +64,7 @@ class EntityDataMapperServiceTest extends AbstractTestCase
         $this->assertEquals('04', $date->format('i'));
     }
 
-    public function testConvertBoolean()
+    public function testConvertBoolean(): void
     {
         $this->assertTrue($this->mapper->convertBoolean(1));
         $this->assertTrue($this->mapper->convertBoolean('1'));
@@ -79,19 +79,19 @@ class EntityDataMapperServiceTest extends AbstractTestCase
         $this->assertFalse($this->mapper->convertBoolean(false));
     }
 
-    public function testMapEntity()
+    public function testMapEntity(): void
     {
         $user = new DummyUser();
-        $userParams = array(
+        $userParams = [
             'email' => 'john.doe@example.org',
             'isActive' => 'off',
             'accessLevel' => '5',
-            'meta' => array(
+            'meta' => [
                 'foo' => 'bar',
-            ),
-        );
+            ],
+        ];
 
-        $this->mapper->mapEntity($user, $userParams, array_keys($userParams));
+        $this->mapper->mapEntity($user, $userParams, \array_keys($userParams));
 
         $this->assertEquals($userParams['email'], $user->email);
         $this->assertFalse($user->isActive);

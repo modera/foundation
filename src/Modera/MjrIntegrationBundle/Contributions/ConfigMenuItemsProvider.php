@@ -11,7 +11,6 @@ use Modera\MjrIntegrationBundle\Menu\MenuItemInterface;
  *
  * @see \Modera\MjrIntegrationBundle\DependencyInjection\Configuration
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class ConfigMenuItemsProvider implements ContributorInterface
@@ -20,19 +19,6 @@ class ConfigMenuItemsProvider implements ContributorInterface
      * @var MenuItem[]
      */
     private array $items;
-
-    /**
-     * @var array{
-     *     'menu_items'?: array{
-     *         'id': string,
-     *         'name': string,
-     *         'namespace': string,
-     *         'controller': string,
-     *         'path': string
-     *     }[]
-     * }
-     */
-    private array $config;
 
     /**
      * @param array{
@@ -45,12 +31,12 @@ class ConfigMenuItemsProvider implements ContributorInterface
      *     }[]
      * } $config
      */
-    public function __construct(array $config)
-    {
+    public function __construct(
+        private readonly array $config,
+    ) {
         if (!\is_array($config['menu_items'] ?? null)) {
             throw new \InvalidArgumentException('Given "$config" doesn\'t have key "menu_items" or it is not array!.');
         }
-        $this->config = $config;
     }
 
     public function getItems(): array

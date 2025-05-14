@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\MimeTypes;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2022 Modera Foundation
  *
  * Example:
@@ -126,14 +125,14 @@ final class ConvertSourceToBase64File
             ],
         ]);
         if ($contents = \file_get_contents($source, false, $context) ?: null) {
-            /** @var ?string[] $http_response_header */
-            if (isset($http_response_header) && \is_array($http_response_header) && \count($http_response_header)) {
+            if (\count($http_response_header)) {
                 \preg_match('{HTTP\/\S*\s(\d{3})}', \array_shift($http_response_header), $matches);
                 $status = (int) ($matches[1] ?? 0);
                 if (Response::HTTP_OK === $status) {
                     $headers = [];
                     foreach ($http_response_header as $value) {
-                        if (false !== ($matches = \explode(':', $value, 2))) {
+                        $matches = \explode(':', $value, 2);
+                        if (2 === \count($matches)) {
                             $headers[\trim($matches[0])] = \trim($matches[1]);
                         }
                     }

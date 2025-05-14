@@ -3,7 +3,6 @@
 namespace Modera\ServerCrudBundle\EntityFactory;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 class DefaultEntityFactory implements EntityFactoryInterface

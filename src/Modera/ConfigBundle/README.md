@@ -10,7 +10,7 @@ integers, arrays) or complex ones - like objects or references to entities, this
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/config-bundle:5.x-dev
+composer require modera/config-bundle:6.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -48,28 +48,27 @@ This is how a simple provider class could look like:
 namespace MyCompany\SiteBundle\Contributions;
 
 use Modera\ConfigBundle\Config\ConfigurationEntryDefinition as CED;
+use Modera\ConfigBundle\Config\EntityRepositoryHandler;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 class ConfigEntriesProvider implements ContributorInterface
 {
-    private $em;
-
-    public function __construct(EntityManager $em)
-    {
-        $this->em = $em;
+    public function __construct(
+        private readony EntityManager $em,
+    ) {
     }
 
     public function getItems(): array
     {
-        $serverConfig = array(
-            'id' => 'modera_config.entity_repository_handler'
-        );
+        $serverConfig = [
+            'id' => EntityRepositoryHandler::class,
+        ];
 
         $admin = $this->em->find('MyCompany\SecurityBundle\Entity\User', 1);
 
-        return array(
-            new CED('admin_user', 'Site administrator', $admin)
-        );
+        return [
+            new CED('admin_user', 'Site administrator', $admin),
+        ];
     }
 }
 ```
@@ -78,9 +77,7 @@ Once you have a class you need to register it in a service container:
 
 ``` xml
 <services>
-    <service id="my_company_site.contributions.config_entries_provider"
-             class="MyCompany\SiteBundle\Contributions\ConfigEntriesProvider">
-
+    <service id="MyCompany\SiteBundle\Contributions\ConfigEntriesProvider">
         <tag name="modera_config.config_entries_provider" />
     </service>
 </services>
@@ -91,19 +88,19 @@ Now we can use `modera:config:install-config-entries` to publish our configurati
 ## Fetching configuration properties
 
 In order to fetch a configuration property in your application code you need to use
-`modera_config.configuration_entries_manager` service.
+`Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface` service.
 
 ``` php
 <?php
 
 /** @var \Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface $service */
-$service = $container->get('modera_config.configuration_entries_manager');
+$service = $container->get(\Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface);
 
 /** @var \Modera\ConfigBundle\Config\ConfigurationEntryInterface $entry */
 $entry = $service->findOneByNameOrDie('admin_user');
 
 // will yield "MyCompany\SecurityBundle\Entity\User"
-echo get_class($property->getValue());
+echo \get_class($property->getValue());
 ```
 
 ## Twig integration
@@ -149,7 +146,7 @@ to one single user, for example - user's preferred admin panel language. To achi
 
 ``` yaml
 modera_config:
-    owner_entity: "Modera\SecurityBundle\Entity\User"
+    owner_entity: 'Modera\SecurityBundle\Entity\User'
 ```
 
 Once `owner_entity` is configured don't forget to update your database schema by running `doctrine:schema:update --force`.
@@ -164,19 +161,10 @@ $bob = new \Modera\SecurityBundle\Entity\User();
 // ... configure and persist $bob
 
 $ce = new ConfigurationEntry();
-$ce->setOwner($myUser);
+$ce->setOwner($bob);
 
 $manager->save($ce);
 ```
-
-## Hints
-
-In your application code when working with components from ModeraConfigBundle you should rely on interfaces instead of
-implementations, that is, when you use `modera_config.configuration_entries_manager` rely on
-\Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface and when working with configuration entries rely on
-\Modera\ConfigBundle\Manager\ConfigurationEntryInterface this way you will make your code portable. By default the bundle
-uses Doctrine ORM to store values for configuration entries but later some more storage mechanism may be added and if you
-rely on interfaces then you won't need to update your code to leverage new possible storage engines.
 
 ## Licensing
 

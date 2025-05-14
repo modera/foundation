@@ -2,41 +2,28 @@
 
 namespace Modera\FileRepositoryBundle\Tests\Functional\Command;
 
-use Imagine\Gd\Imagine;
 use Doctrine\ORM\Tools\SchemaTool;
+use Imagine\Gd\Imagine;
+use Modera\FileRepositoryBundle\Command\GenerateThumbnailsCommand;
 use Modera\FileRepositoryBundle\Entity\Repository;
 use Modera\FileRepositoryBundle\Entity\StoredFile;
 use Modera\FileRepositoryBundle\Repository\FileRepository;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\Interceptor;
-use Modera\FileRepositoryBundle\Command\GenerateThumbnailsCommand;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\ThumbnailsGenerator;
 use Modera\FoundationBundle\Testing\FunctionalTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\HttpFoundation\File\File;
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2016 Modera Foundation
- */
 class GenerateThumbnailsCommandTest extends FunctionalTestCase
 {
-    private static $st;
+    private static SchemaTool $st;
 
-    /**
-     * @var Application
-     */
-    private $application;
+    private Application $application;
 
-    /**
-     * @var FileRepository
-     */
-    private static $fileRepository;
+    private static FileRepository $fileRepository;
 
-    /**
-     * @var ThumbnailsGenerator
-     */
-    private static $generator;
+    private static ThumbnailsGenerator $generator;
 
     public static function doSetUpBeforeClass(): void
     {
@@ -57,28 +44,26 @@ class GenerateThumbnailsCommandTest extends FunctionalTestCase
 
     public function doSetUp(): void
     {
-        /* @var FileRepository $fr */
-        self::$fileRepository = self::getContainer()->get('modera_file_repository.repository.file_repository');
+        self::$fileRepository = self::getContainer()->get(FileRepository::class);
 
-        /* @var ThumbnailsGenerator $generator */
-        self::$generator = self::getContainer()->get('modera_file_repository.interceptors.thumbnails_generator.thumbnails_generator');
+        self::$generator = self::getContainer()->get(ThumbnailsGenerator::class);
 
-        $repositoryConfig = array(
+        $repositoryConfig = [
             'filesystem' => 'dummy_tmp_fs',
             'interceptors' => [
-                Interceptor::ID,
+                Interceptor::class,
             ],
-            'thumbnail_sizes' => array(
-                array(
+            'thumbnail_sizes' => [
+                [
                     'width' => 215,
                     'height' => 285,
-                ),
-                array(
+                ],
+                [
                     'width' => 32,
                     'height' => 32,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         self::$fileRepository->createRepository('dummy_repo1', $repositoryConfig, 'Bla bla');
 
@@ -86,22 +71,22 @@ class GenerateThumbnailsCommandTest extends FunctionalTestCase
         $this->application->add(new GenerateThumbnailsCommand(self::$em, self::$fileRepository, self::$generator));
     }
 
-    public function testExecute_noThumbnailsToGenerate()
+    public function testExecuteNoThumbnailsToGenerate(): void
     {
         $commandName = 'modera:file-repository:generate-thumbnails';
         $command = $this->application->find('modera:file-repository:generate-thumbnails');
 
         $commandTester = new CommandTester($command);
 
-        $commandTester->execute(array(
+        $commandTester->execute([
             'command' => $commandName,
             'repository' => 'dummy_repo1',
-        ));
+        ]);
 
-        $this->assertContains('No thumbnails to generate', $commandTester->getDisplay());
+        $this->assertEquals('No thumbnails to generate', \trim($commandTester->getDisplay()));
     }
 
-    public function testExecute_dryRun()
+    public function testExecuteDryRun(): void
     {
         $originalStoredFile = static::$fileRepository->put('dummy_repo1', new File(__DIR__.'/../../Fixtures/backend.png'));
 
@@ -110,12 +95,12 @@ class GenerateThumbnailsCommandTest extends FunctionalTestCase
 
         $commandTester = new CommandTester($command);
 
-        $commandTester->execute(array(
+        $commandTester->execute([
             'command' => $commandName,
             'repository' => 'dummy_repo1',
             '--thumbnail' => ['100x100', '50x50'],
             '--dry-run' => true,
-        ));
+        ]);
 
         $output = $commandTester->getDisplay();
 
@@ -132,7 +117,7 @@ OUTPUT;
         $this->assertEquals($expectedOutput, $output);
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $originalStoredFile1 = static::$fileRepository->put('dummy_repo1', new File(__DIR__.'/../../Fixtures/backend.png'));
         static::$fileRepository->put('dummy_repo1', new File(__DIR__.'/../../Fixtures/backend.png'));
@@ -142,11 +127,11 @@ OUTPUT;
 
         $commandTester = new CommandTester($command);
 
-        $commandTester->execute(array(
+        $commandTester->execute([
             'command' => $commandName,
             'repository' => 'dummy_repo1',
             '--thumbnail' => ['100x100', '50x50'],
-        ));
+        ]);
 
         $output = $commandTester->getDisplay();
 
@@ -176,11 +161,11 @@ OUTPUT;
         $this->assertEquals($expectedOutput, $output);
 
         /** @var StoredFile[] $firstAlternatives */
-        $firstAlternatives = self::$em->getRepository(StoredFile::class)->findBy(array(
+        $firstAlternatives = self::$em->getRepository(StoredFile::class)->findBy([
             'alternativeOf' => $originalStoredFile1->getId(),
-        ));
+        ]);
 
-        $this->assertEquals(4, count($firstAlternatives));
+        $this->assertEquals(4, \count($firstAlternatives));
 
         $this->assertValidAlternative('backend.png', 100, 100, $firstAlternatives[2]);
         $this->assertValidAlternative('backend.png', 50, 50, $firstAlternatives[3]);
@@ -188,21 +173,21 @@ OUTPUT;
         $repoConfig = $repository->getConfig();
 
         $this->assertArrayHasKey('interceptors', $repoConfig);
-        $this->assertTrue(is_array($repoConfig['interceptors']));
-        $this->assertTrue(false !== array_search(Interceptor::ID, $repoConfig['interceptors']));
+        $this->assertTrue(\is_array($repoConfig['interceptors']));
+        $this->assertTrue(false !== \array_search(Interceptor::class, $repoConfig['interceptors']));
         $this->assertArrayHasKey('thumbnail_sizes', $repoConfig);
-        $this->assertTrue(is_array($repoConfig['thumbnail_sizes']));
-        $this->assertEquals(4, count($repoConfig['thumbnail_sizes']));
-        $this->assertEquals(array('width' => 100, 'height' => 100), $repoConfig['thumbnail_sizes'][2]);
-        $this->assertEquals(array('width' => 50, 'height' => 50), $repoConfig['thumbnail_sizes'][3]);
+        $this->assertTrue(\is_array($repoConfig['thumbnail_sizes']));
+        $this->assertEquals(4, \count($repoConfig['thumbnail_sizes']));
+        $this->assertEquals(['width' => 100, 'height' => 100], $repoConfig['thumbnail_sizes'][2]);
+        $this->assertEquals(['width' => 50, 'height' => 50], $repoConfig['thumbnail_sizes'][3]);
 
         // now making sure that no duplicate alternatives are created:
 
-        $commandTester->execute(array(
+        $commandTester->execute([
             'command' => $commandName,
             'repository' => 'dummy_repo1',
             '--thumbnail' => ['32x32', '50x50'],
-        ));
+        ]);
 
         $secondOutput = $commandTester->getDisplay();
 
@@ -224,14 +209,14 @@ OUTPUT;
         $repository = self::$em->getRepository(Repository::class)->find($originalStoredFile1->getRepository()->getId());
         $repoConfig = $repository->getConfig();
 
-        $this->assertEquals(1, count($repoConfig['interceptors']), 'No duplicate interceptors must have been registered.');
+        $this->assertEquals(1, \count($repoConfig['interceptors']), 'No duplicate interceptors must have been registered.');
     }
 
-    public function testExecute_noConfigUpdate()
+    public function testExecuteNoConfigUpdate(): void
     {
-        $repositoryConfig = array(
+        $repositoryConfig = [
             'filesystem' => 'dummy_tmp_fs',
-        );
+        ];
         self::$fileRepository->createRepository('dummy_repo2', $repositoryConfig, 'Bla bla');
 
         $originalStoredFile1 = static::$fileRepository->put('dummy_repo2', new File(__DIR__.'/../../Fixtures/backend.png'));
@@ -241,12 +226,12 @@ OUTPUT;
 
         $commandTester = new CommandTester($command);
 
-        $commandTester->execute(array(
+        $commandTester->execute([
             'command' => $commandName,
             'repository' => 'dummy_repo2',
             '--thumbnail' => ['100x100', '50x50'],
             '--update-config' => false,
-        ));
+        ]);
 
         $output = $commandTester->getDisplay();
 
@@ -259,17 +244,17 @@ OUTPUT;
 
         $this->assertEquals($expectedOutput, $output);
 
-        /* @var StoredFile[] $alternatives */
-        $alternatives = self::$em->getRepository(StoredFile::class)->findBy(array(
+        /** @var StoredFile[] $alternatives */
+        $alternatives = self::$em->getRepository(StoredFile::class)->findBy([
             'alternativeOf' => 14,
-        ));
+        ]);
 
-        $this->assertEquals(2, count($alternatives));
+        $this->assertEquals(2, \count($alternatives));
 
         $this->assertValidAlternative('backend.png', 100, 100, $alternatives[0]);
         $this->assertValidAlternative('backend.png', 50, 50, $alternatives[1]);
 
-        /* @var Repository $repository */
+        /** @var Repository $repository */
         $repository = self::$em->getRepository(Repository::class)->find($originalStoredFile1->getRepository()->getId());
         $repoConfig = $repository->getConfig();
 
@@ -277,7 +262,7 @@ OUTPUT;
         $this->assertArrayNotHasKey('thumbnail_sizes', $repoConfig);
     }
 
-    private function assertValidAlternative($expectedName, $expectedWidth, $expectedHeight, StoredFile $storedFile)
+    private function assertValidAlternative($expectedName, $expectedWidth, $expectedHeight, StoredFile $storedFile): void
     {
         $this->assertEquals($expectedName, $storedFile->getFilename());
         $meta = $storedFile->getMeta();
@@ -287,8 +272,8 @@ OUTPUT;
         $this->assertArrayHasKey('height', $meta['thumbnail']);
         $this->assertEquals($expectedHeight, $meta['thumbnail']['height']);
 
-        $tmpFile = tempnam(sys_get_temp_dir(), 'image_');
-        file_put_contents($tmpFile, $storedFile->getContents());
+        $tmpFile = \tempnam(\sys_get_temp_dir(), 'image_');
+        \file_put_contents($tmpFile, $storedFile->getContents());
 
         $imagine = new Imagine();
         $image = $imagine->open($tmpFile);

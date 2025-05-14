@@ -1,3 +1,0 @@
-modera_mjr_cache_aware_class_loader:
-    resource: "@ModeraMJRCacheAwareClassLoaderBundle/Controller/"
-    type:     annotation

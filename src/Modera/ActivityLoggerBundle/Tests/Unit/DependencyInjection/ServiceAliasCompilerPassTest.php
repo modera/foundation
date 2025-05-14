@@ -10,18 +10,14 @@ class DummyContainerBuilder extends ContainerBuilder
 {
 }
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class ServiceAliasCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $builder = new ContainerBuilder();
-        $builder->setParameter(ModeraActivityLoggerExtension::CONFIG_KEY, array(
+        $builder->setParameter(ModeraActivityLoggerExtension::CONFIG_KEY, [
             'activity_manager' => 'some_service_id',
-        ));
+        ]);
 
         $this->assertFalse($builder->hasAlias('modera_activity_logger.manager.activity_manager'));
 

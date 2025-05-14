@@ -2,15 +2,12 @@
 
 namespace Modera\FileRepositoryBundle\Tests\Unit\UrlGeneration;
 
-use Symfony\Component\Routing\RouterInterface;
 use Modera\FileRepositoryBundle\UrlGeneration\UrlGenerator;
+use Symfony\Component\Routing\RouterInterface;
 
-/**
- * @author Sergei Vizel <sergei.vizel@modera.org>
- */
 class UrlGeneratorTest extends \PHPUnit\Framework\TestCase
 {
-    public function testGenerateUrl()
+    public function testGenerateUrl(): void
     {
         $repository = \Phake::mock('Modera\FileRepositoryBundle\Entity\Repository');
         \Phake::when($repository)->getName()->thenReturn('repository-name');
@@ -28,9 +25,9 @@ class UrlGeneratorTest extends \PHPUnit\Framework\TestCase
         $url = $routeName.'/'.$storageKey;
 
         $router = \Phake::mock('Symfony\Component\Routing\RouterInterface');
-        \Phake::when($router)->generate($routeName, array(
+        \Phake::when($router)->generate($routeName, [
             'storageKey' => $storageKey,
-        ), RouterInterface::NETWORK_PATH)->thenReturn($url);
+        ], RouterInterface::NETWORK_PATH)->thenReturn($url);
 
         $urlGenerator = new UrlGenerator($router, $routeName);
 

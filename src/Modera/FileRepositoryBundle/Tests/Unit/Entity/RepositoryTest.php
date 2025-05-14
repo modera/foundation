@@ -11,19 +11,10 @@ use Modera\FileRepositoryBundle\Intercepting\OperationInterceptorInterface;
 // validate several method's invocations in one single tc
 class DummyInterceptor implements OperationInterceptorInterface
 {
-    /**
-     * @var array
-     */
     public array $beforePutInvocations = [];
 
-    /**
-     * @var array
-     */
     public array $onPutInvocations = [];
 
-    /**
-     * @var array
-     */
     public array $afterPutInvocations = [];
 
     public function beforePut(\SplFileInfo $file, Repository $repository, array $context = []): void
@@ -42,28 +33,24 @@ class DummyInterceptor implements OperationInterceptorInterface
     }
 }
 
-/**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
- * @copyright 2014 Modera Foundation
- */
 class RepositoryTest extends \PHPUnit\Framework\TestCase
 {
-    public function test__construct()
+    public function testConstruct(): void
     {
         $thrownException = null;
 
         try {
-            new Repository('foo', array());
+            new Repository('foo', []);
         } catch (InvalidRepositoryConfig $e) {
             $thrownException = $e;
         }
 
         $this->assertNotNull($thrownException);
         $this->assertEquals('filesystem', $thrownException->getMissingConfigurationKey());
-        $this->assertEquals(array(), $thrownException->getConfig());
+        $this->assertEquals([], $thrownException->getConfig());
     }
 
-    public function testInterceptors()
+    public function testInterceptors(): void
     {
         $itc = new DummyInterceptor();
 
@@ -79,7 +66,7 @@ class RepositoryTest extends \PHPUnit\Framework\TestCase
             ->thenReturn($interceptorsProvider)
         ;
 
-        $repository = new Repository('foo', array('filesystem' => 'foo'));
+        $repository = new Repository('foo', ['filesystem' => 'foo']);
         $repository->init($container);
 
         $splFile = new \SplFileInfo(__FILE__);
@@ -87,11 +74,11 @@ class RepositoryTest extends \PHPUnit\Framework\TestCase
 
         // ---
 
-        $this->assertEquals(0, count($itc->beforePutInvocations));
+        $this->assertEquals(0, \count($itc->beforePutInvocations));
 
         $repository->beforePut($splFile);
 
-        $this->assertEquals(1, count($itc->beforePutInvocations));
+        $this->assertEquals(1, \count($itc->beforePutInvocations));
         $this->assertSame($splFile, $itc->beforePutInvocations[0][0]);
         $this->assertSame($repository, $itc->beforePutInvocations[0][1]);
 
@@ -108,15 +95,15 @@ class RepositoryTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->assertSame($itc, $receivedInterceptor);
-        $this->assertEquals(1, count($itc->beforePutInvocations));
+        $this->assertEquals(1, \count($itc->beforePutInvocations));
 
         // ---
 
-        $this->assertEquals(0, count($itc->onPutInvocations));
+        $this->assertEquals(0, \count($itc->onPutInvocations));
 
         $repository->onPut($storedFile, $splFile);
 
-        $this->assertEquals(1, count($itc->onPutInvocations));
+        $this->assertEquals(1, \count($itc->onPutInvocations));
         $this->assertSame($storedFile, $itc->onPutInvocations[0][0]);
         $this->assertSame($splFile, $itc->onPutInvocations[0][1]);
         $this->assertSame($repository, $itc->onPutInvocations[0][2]);
@@ -135,15 +122,15 @@ class RepositoryTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->assertSame($itc, $receivedInterceptor);
-        $this->assertEquals(1, count($itc->onPutInvocations));
+        $this->assertEquals(1, \count($itc->onPutInvocations));
 
         // ---
 
-        $this->assertEquals(0, count($itc->afterPutInvocations));
+        $this->assertEquals(0, \count($itc->afterPutInvocations));
 
         $repository->afterPut($storedFile, $splFile);
 
-        $this->assertEquals(1, count($itc->afterPutInvocations));
+        $this->assertEquals(1, \count($itc->afterPutInvocations));
         $this->assertSame($storedFile, $itc->afterPutInvocations[0][0]);
         $this->assertSame($splFile, $itc->afterPutInvocations[0][1]);
         $this->assertSame($repository, $itc->afterPutInvocations[0][2]);
@@ -160,6 +147,6 @@ class RepositoryTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->assertSame($itc, $receivedInterceptor);
-        $this->assertEquals(1, count($itc->afterPutInvocations));
+        $this->assertEquals(1, \count($itc->afterPutInvocations));
     }
 }

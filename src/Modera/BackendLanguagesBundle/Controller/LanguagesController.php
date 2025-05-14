@@ -7,13 +7,19 @@ use Modera\LanguagesBundle\Entity\Language;
 use Modera\MJRSecurityIntegrationBundle\ModeraMJRSecurityIntegrationBundle;
 use Modera\ServerCrudBundle\Controller\AbstractCrudController;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2018 Modera Foundation
  */
+#[AsController]
 class LanguagesController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly RequestStack $requestStack,
+    ) {
+    }
+
     public function getConfig(): array
     {
         return [
@@ -53,10 +59,6 @@ class LanguagesController extends AbstractCrudController
 
     private function getDisplayLocale(): string
     {
-        /** @var RequestStack $rs */
-        $rs = $this->container->get('request_stack');
-        $request = $rs->getCurrentRequest();
-
-        return $request ? $request->getLocale() : 'en';
+        return $this->requestStack->getCurrentRequest()?->getLocale() ?? 'en';
     }
 }

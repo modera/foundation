@@ -5,7 +5,6 @@ namespace Modera\DirectBundle\Controller;
 use Modera\DirectBundle\Exception\CallException;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2021 Modera Foundation
  */
 trait ControllerTrait

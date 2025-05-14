@@ -1,6 +1,6 @@
 # ModeraActivityLoggerBundle
 
-Bundle provides facilities that let you to log different domain events that occur during your application logic execution,
+Bundle provides facilities that let you log different domain events that occur during your application logic execution,
 later you are able to query those logged events ( they are called Activities in scope of this bundle ). The point
 here is that later those activities can be reviewed by ordinary users to see what has been happening in the system.
 
@@ -12,7 +12,7 @@ to log your activities.
 ### Step 1: Download the Bundle
 
 ``` bash
-composer require modera/activity-logger-bundle:5.x-dev
+composer require modera/activity-logger-bundle:6.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -43,7 +43,7 @@ you can switch ( say that you decided to use some default Monolog log handler ) 
 Bundle declares two additional interfaces - `Modera\ActivityLoggerBundle\Manager\ActivityManagerInterface` and
 `Modera\ActivityLoggerBundle\Model\ActivityInterface`. The former extends Psr's LoggerInterface and adds one method -
 "query", this method can be used to query activities. Activities returned by this method are implementations of
-ActivityInterface. By default the bundle provides one implementation of ActivityManagerInterface which stores activities
+ActivityInterface. By default, the bundle provides one implementation of ActivityManagerInterface which stores activities
 using Doctrine ORM's EntityManager - `Modera\ActivityLoggerBundle\Manager\DoctrineOrmActivityManager`.
 
 ## Licensing

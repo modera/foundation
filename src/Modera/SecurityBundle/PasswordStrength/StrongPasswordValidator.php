@@ -15,19 +15,16 @@ use Symfony\Component\Validator\ConstraintValidator;
  *
  * @internal
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2017 Modera Foundation
  */
 class StrongPasswordValidator extends ConstraintValidator
 {
-    private PasswordConfigInterface $config;
-
-    public function __construct(PasswordConfigInterface $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        private readonly PasswordConfigInterface $config,
+    ) {
     }
 
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$this->config->isEnabled()) {
             return;

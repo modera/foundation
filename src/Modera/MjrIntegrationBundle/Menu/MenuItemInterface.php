@@ -8,7 +8,6 @@ use Modera\MjrIntegrationBundle\Sections\SectionInterface;
  * Represents a menu item which will be rendered on client-side. All META_* constants are just a recommendation
  * you may or may not opt to.
  *
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2013 Modera Foundation
  */
 interface MenuItemInterface extends SectionInterface

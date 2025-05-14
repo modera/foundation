@@ -9,18 +9,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class RepositoryGateway implements UploadGatewayInterface
 {
-    private FileRepository $fileRepository;
-    private string $repositoryName;
-
-    public function __construct(FileRepository $fileRepository, string $repositoryName)
-    {
-        $this->fileRepository = $fileRepository;
-        $this->repositoryName = $repositoryName;
+    public function __construct(
+        private readonly FileRepository $fileRepository,
+        private readonly string $repositoryName,
+    ) {
     }
 
     public function isResponsible(Request $request): bool

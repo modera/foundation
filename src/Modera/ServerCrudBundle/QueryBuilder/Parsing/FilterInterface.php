@@ -3,7 +3,6 @@
 namespace Modera\ServerCrudBundle\QueryBuilder\Parsing;
 
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2024 Modera Foundation
  */
 interface FilterInterface

@@ -1,5 +1,5 @@
 /**
- * @author Sergei Vizel <sergei.vizel@modera.org>
+ * @copyright 2018 Modera Foundation
  */
 Ext.define('Modera.backend.languages.runtime.language.NewWindowActivity', {
     extend: 'MF.activation.activities.AbstractActivity',

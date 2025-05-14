@@ -5,22 +5,19 @@ namespace Modera\DynamicallyConfigurableMJRBundle\Contributions;
 use Modera\ConfigBundle\Manager\ConfigurationEntriesManagerInterface;
 use Modera\DynamicallyConfigurableMJRBundle\ModeraDynamicallyConfigurableMJRBundle as Bundle;
 use Modera\DynamicallyConfigurableMJRBundle\Resolver\ValueResolverInterface;
+use Modera\ExpanderBundle\Ext\AsContributorFor;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 
 /**
- * @author    Sergei Vizel <sergei.vizel@modera.org>
  * @copyright 2019 Modera Foundation
  */
+#[AsContributorFor('modera_mjr_integration.css_resources')]
 class CssResourcesProvider implements ContributorInterface
 {
-    private ConfigurationEntriesManagerInterface $mgr;
-
-    private ?ValueResolverInterface $resolver;
-
-    public function __construct(ConfigurationEntriesManagerInterface $mgr, ?ValueResolverInterface $resolver = null)
-    {
-        $this->mgr = $mgr;
-        $this->resolver = $resolver;
+    public function __construct(
+        private readonly ConfigurationEntriesManagerInterface $mgr,
+        private readonly ?ValueResolverInterface $resolver = null,
+    ) {
     }
 
     public function getItems(): array
@@ -47,10 +44,7 @@ class CssResourcesProvider implements ContributorInterface
         return $items;
     }
 
-    /**
-     * @return mixed Mixed value
-     */
-    private function findAndResolve(string $name)
+    private function findAndResolve(string $name): mixed
     {
         $value = $this->mgr->findOneByNameOrDie($name)->getValue();
         if ($this->resolver) {

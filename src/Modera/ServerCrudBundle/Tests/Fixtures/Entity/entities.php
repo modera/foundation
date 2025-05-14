@@ -2,85 +2,56 @@
 
 namespace Modera\ServerCrudBundle\Tests\Functional;
 
-use Doctrine\ORM\Mapping as Orm;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Modera\ServerCrudBundle\DataMapping\PreferencesAwareUserInterface;
 use Modera\ServerCrudBundle\QueryBuilder\ResolvingAssociatedModelSortingField\QueryOrder;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @Orm\Entity
- */
+#[ORM\Entity]
 class DummyUser implements UserInterface, PreferencesAwareUserInterface
 {
-    /**
-     * @Orm\Column(type="integer")
-     * @Orm\Id
-     * @Orm\GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public ?int $id = null;
 
-    /**
-     * @Orm\Column(type="string")
-     */
-    public $firstname;
+    #[ORM\Column(type: 'string')]
+    public string $firstname = '';
 
-    /**
-     * @Orm\Column(type="string")
-     */
-    public $lastname;
+    #[ORM\Column(type: 'string')]
+    public string $lastname = '';
 
-    /**
-     * @Orm\Column(type="string", nullable=true)
-     */
-    public $email = null;
+    #[ORM\Column(type: 'string', nullable: true)]
+    public ?string $email = null;
 
-    /**
-     * @Orm\Column(type="boolean")
-     */
-    public $isActive = true;
+    #[ORM\Column(type: 'boolean')]
+    public bool $isActive = true;
 
-    /**
-     * @Orm\Column(type="integer")
-     */
-    public $accessLevel = 0;
+    #[ORM\Column(type: 'integer')]
+    public int $accessLevel = 0;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     public ?\DateTimeInterface $updatedAt = null;
 
-    /**
-     * @var DummyAddress
-     * @Orm\OneToOne(targetEntity="DummyAddress", cascade={"PERSIST"})
-     */
-    public $address;
+    #[ORM\OneToOne(targetEntity: DummyAddress::class, cascade: ['PERSIST'])]
+    public ?DummyAddress $address = null;
 
-    /**
-     * @var ArrayCollection
-     * @Orm\OneToMany(targetEntity="DummyNote", mappedBy="user")
-     */
-    public $notes;
+    #[ORM\OneToMany(targetEntity: DummyNote::class, mappedBy: 'user')]
+    public Collection $notes;
 
-    /**
-     * @Orm\ManyToOne(targetEntity="DummyCreditCard")
-     */
-    public $creditCard = null;
+    #[ORM\ManyToOne(targetEntity: DummyCreditCard::class)]
+    public ?DummyCreditCard $creditCard = null;
 
-    /**
-     * @Orm\ManyToMany(targetEntity="DummyGroup", inversedBy="users")
-     */
-    public $groups;
+    #[ORM\ManyToMany(targetEntity: DummyGroup::class, inversedBy: 'users')]
+    public Collection $groups;
 
-    /**
-     * @Orm\Column(type="integer", nullable=true)
-     */
-    public $price = 0;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    public ?int $price = 0;
 
-    /**
-     * @Orm\Column(type="json", nullable=false)
-     */
-    public $meta = [];
+    #[ORM\Column(type: 'json')]
+    public array $meta = [];
 
     public function __construct()
     {
@@ -88,30 +59,27 @@ class DummyUser implements UserInterface, PreferencesAwareUserInterface
         $this->groups = new ArrayCollection();
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setFirstname($firstname)
+    public function setFirstname(string $firstname): void
     {
         $this->firstname = $firstname;
     }
 
-    public function setLastname($lastname)
+    public function setLastname(string $lastname): void
     {
         $this->lastname = $lastname;
     }
 
-    public function addNote(DummyNote $note)
+    public function addNote(DummyNote $note): void
     {
         if (!$this->notes->contains($note)) {
             $note->setUser($this);
@@ -119,22 +87,22 @@ class DummyUser implements UserInterface, PreferencesAwareUserInterface
         }
     }
 
-    public function setActive($isActive)
+    public function setActive(bool $isActive): void
     {
         $this->isActive = $isActive;
     }
 
-    public function setAccessLevel($accessLevel)
+    public function setAccessLevel(int $accessLevel): void
     {
         $this->accessLevel = $accessLevel;
     }
 
-    public function setEmail($email)
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
 
-    public function setMeta($meta)
+    public function setMeta(array $meta): void
     {
         $this->meta = $meta;
     }
@@ -186,29 +154,21 @@ class DummyUser implements UserInterface, PreferencesAwareUserInterface
     }
 }
 
-/**
- * @Orm\Entity
- */
+#[ORM\Entity]
 class DummyGroup
 {
-    /**
-     * @Orm\Id
-     * @Orm\Column(type="integer")
-     * @Orm\GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public ?int $id = null;
 
-    /**
-     * @Orm\Column(type="string")
-     */
-    public $name;
+    #[ORM\Column(type: 'string')]
+    public string $name = '';
 
-    /**
-     * @Orm\ManyToMany(targetEntity="DummyUser", mappedBy="groups")
-     */
-    public $users;
+    #[ORM\ManyToMany(targetEntity: DummyUser::class, mappedBy: 'groups')]
+    public Collection $users;
 
-    public function addUser(DummyUser $user)
+    public function addUser(DummyUser $user): void
     {
         $user->groups->add($this);
         if (!$this->users->contains($user)) {
@@ -222,172 +182,114 @@ class DummyGroup
     }
 }
 
-/**
- * @Orm\Entity
- */
+#[ORM\Entity]
 class DummyCreditCard
 {
-    /**
-     * @Orm\Id
-     * @Orm\Column(type="integer")
-     * @Orm\GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public ?int $id = null;
 
-    /**
-     * @Orm\Column(type="integer")
-     */
-    public $number;
+    #[ORM\Column(type: 'integer')]
+    public int $number = 0;
 }
 
-/**
- * @Orm\Entity
- *
- * @QueryOrder("zip")
- */
+#[ORM\Entity]
+#[QueryOrder('zip')]
 class DummyAddress
 {
-    /**
-     * @Orm\Id
-     * @Orm\Column(type="integer")
-     * @Orm\GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public ?int $id = null;
 
-    /**
-     * @Orm\Column
-     */
-    public $zip;
+    #[ORM\Column(type: 'string')]
+    public string $zip = '';
 
-    /**
-     * @Orm\Column
-     */
-    public $street;
+    #[ORM\Column(type: 'string')]
+    public string $street = '';
 
-    /**
-     * @var DummyCountry
-     * @Orm\ManyToOne(targetEntity="DummyCountry", cascade={"PERSIST"})
-     */
-    public $country;
+    #[ORM\ManyToOne(targetEntity: DummyCountry::class, cascade: ['PERSIST'])]
+    public ?DummyCountry $country = null;
 
-    /**
-     * @var DummyCity
-     *
-     * @Orm\ManyToOne(targetEntity="DummyCity", cascade={"PERSIST"})
-     */
-    public $city;
+    #[ORM\ManyToOne(targetEntity: DummyCity::class, cascade: ['PERSIST'])]
+    public ?DummyCity $city = null;
 }
 
-/**
- * @Orm\Entity
- */
+#[ORM\Entity]
 class DummyCountry
 {
-    /**
-     * @Orm\Id
-     * @Orm\Column(type="integer")
-     * @Orm\GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public ?int $id = null;
 
-    /**
-     * @Orm\Column
-     */
-    public $name;
+    #[ORM\Column(type: 'string')]
+    public string $name = '';
 
-    /**
-     * @Orm\OneToOne(targetEntity="DummyCity")
-     */
-    public $capital = null;
+    #[ORM\OneToOne(targetEntity: DummyCity::class)]
+    public ?DummyCity $capital = null;
 }
 
-/**
- * @Orm\Entity
- */
+#[ORM\Entity]
 class DummyCity
 {
-    /**
-     * @Orm\Id
-     * @Orm\Column(type="integer")
-     * @Orm\GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public ?int $id = null;
 
-    /**
-     * @Orm\Column
-     */
-    public $name;
+    #[ORM\Column(type: 'string')]
+    public string $name = '';
 }
 
-/**
- * @Orm\Entity
- */
+#[ORM\Entity]
 class DummyNote
 {
-    /**
-     * @Orm\Column(type="integer")
-     * @Orm\Id
-     * @Orm\GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public ?int $id = null;
 
-    /**
-     * @Orm\Column(type="string")
-     */
-    public $text;
+    #[ORM\Column(type: 'string')]
+    public string $text = '';
 
-    /**
-     * @var DummyUser
-     * @Orm\ManyToOne(targetEntity="DummyUser", inversedBy="notes")
-     * @Orm\JoinColumn(name="user_id", referencedColumnName="id")
-     */
-    private $user;
+    #[ORM\ManyToOne(targetEntity: DummyUser::class, inversedBy: 'notes')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    private ?DummyUser $user = null;
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setText($text)
+    public function setText(string $text): void
     {
         $this->text = $text;
     }
 
-    public function setUser(DummyUser $user)
+    public function setUser(DummyUser $user): void
     {
         $this->user = $user;
     }
 }
 
-/**
- * @Orm\Entity
- */
+#[ORM\Entity]
 class DummyOrder
 {
-    /**
-     * @Orm\Id
-     * @Orm\Column(type="integer")
-     * @Orm\GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public ?int $id = null;
 
-    /**
-     * @var DummyUser
-     *
-     * @Orm\ManyToOne(targetEntity="DummyUser")
-     */
-    public $user;
+    #[ORM\ManyToOne(targetEntity: DummyUser::class)]
+    public ?DummyUser $user = null;
 
-    /**
-     * @Orm\Column(type="string")
-     */
-    public $number;
+    #[ORM\Column(type: 'string')]
+    public string $number = '';
 }

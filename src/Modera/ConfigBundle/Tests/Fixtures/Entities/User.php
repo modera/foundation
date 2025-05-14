@@ -4,29 +4,18 @@ namespace Modera\ConfigBundle\Tests\Fixtures\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @author Sergei Lissovski <sergei.lissovski@gmail.org>
- *
- * @ORM\Entity
- */
+#[ORM\Entity]
 class User
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $username;
+    #[ORM\Column(type: 'string')]
+    private string $username;
 
-    /**
-     * @param string $username
-     */
-    public function __construct($username = null)
+    public function __construct(string $username)
     {
         $this->username = $username;
     }

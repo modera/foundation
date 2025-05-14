@@ -9,10 +9,7 @@ use Modera\FoundationBundle\Testing\FunctionalTestCase;
 
 abstract class AbstractTestCase extends FunctionalTestCase
 {
-    /**
-     * @var SchemaTool
-     */
-    private static $st;
+    private static SchemaTool $st;
 
     public static function doSetUpBeforeClass(): void
     {
@@ -70,7 +67,7 @@ abstract class AbstractTestCase extends FunctionalTestCase
                 $address->zip = '1010';
 
                 $user->address = $address;
-            } else if ('jane' == $exp[0]) {
+            } elseif ('jane' == $exp[0]) {
                 $address = new DummyAddress();
                 $address->country = new DummyCountry();
                 $address->country->name = 'B';

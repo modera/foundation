@@ -6,7 +6,6 @@ use Modera\ExpanderBundle\Contributing\ExtensionPointsAwareBundleInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * @author    Sergei Lissovski <sergei.lissovski@modera.org>
  * @copyright 2014 Modera Foundation
  */
 class ModeraDynamicallyConfigurableMJRBundle extends Bundle implements ExtensionPointsAwareBundleInterface
@@ -21,8 +20,8 @@ class ModeraDynamicallyConfigurableMJRBundle extends Bundle implements Extension
     public function getExtensionPointContributions(): array
     {
         return [
-            'modera_routing.routing_resources_provider' => [
-                '@ModeraDynamicallyConfigurableMJRBundle/Resources/config/routing.yml',
+            'modera_routing.routing_resources' => [
+                '@ModeraDynamicallyConfigurableMJRBundle/Resources/config/routing.yaml',
             ],
         ];
     }
