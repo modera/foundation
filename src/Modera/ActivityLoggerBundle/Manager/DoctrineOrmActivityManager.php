@@ -38,8 +38,8 @@ class DoctrineOrmActivityManager extends AbstractLogger implements ActivityManag
             $activity->setLevel($level);
         }
 
-        if (isset($context['author']) && \is_string($context['author'])) {
-            $activity->setAuthor($context['author']);
+        if (isset($context['author']) && (\is_string($context['author']) || \is_int($context['author']))) {
+            $activity->setAuthor((string) $context['author']);
         }
 
         if (isset($context['type']) && \is_string($context['type'])) {
