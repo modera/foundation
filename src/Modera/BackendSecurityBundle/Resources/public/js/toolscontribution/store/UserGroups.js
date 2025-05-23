@@ -41,7 +41,16 @@ Ext.define('Modera.backend.security.toolscontribution.store.UserGroups', {
      * @param {String} userId
      */
     filterByUser: function(userId, exp) {
-        this.filters.clear();
-        this.filter({ property: 'users', value: (exp || 'in') + ':' + userId });
+        this.permanentFilters = [
+            { property: 'users', value: (exp || 'in') + ':' + userId }
+        ];
+        this.applyFilters([]);
+    },
+
+    applyFilters: function(arr) {
+        Ext.apply(this.proxy.extraParams, {
+            filter: Ext.Array.merge(this.permanentFilters || [], arr)
+        });
+        this.load();
     }
 });

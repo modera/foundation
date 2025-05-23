@@ -35,6 +35,9 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
     stateActiveText: 'Active',
     stateInactiveText: 'Inactive',
     directPermissionsText: 'Direct permissions: {0}',
+    filterPlaceholderText: 'type here to filter...',
+    resetFiltersBtnText: 'Reset',
+    noneText: '-- None --',
 
     // override
     constructor: function(config) {
@@ -165,12 +168,129 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                                 role: 'ROLE_MANAGE_USER_ACCOUNTS',
                                 strategy: 'hide'
                             },
+                            handler: function(btn) {
+                                me.fireEvent('newrecord', me);
+                            },
                             tid: 'newUserBtn'
                         },
                         '->',
                         {
+                            xtype: 'combo',
+                            itemId: 'stateFilter',
+                            selectionAware: function(selected) {
+                                this.applyVisibility = selected.length < 1;
+                                this.setVisible(this.applyVisibility);
+                            },
+                            name: 'state',
+                            editable: false,
+                            emptyText: me.stateColumnHeaderText,
+                            store: Ext.create('Ext.data.Store', {
+                                fields: ['id', 'name'],
+                                data : [
+                                    {
+                                        id: null,
+                                        name: me.noneText
+                                    },
+                                    {
+                                        id: 0,
+                                        name: me.stateNewText
+                                    },
+                                    {
+                                        id: 1,
+                                        name: me.stateActiveText
+                                    },
+                                    {
+                                        id: -1,
+                                        name: me.stateInactiveText
+                                    }
+                                ]
+                            }),
+                            listeners: {
+                                change: function(combo, newValue, oldValue) {
+                                    if (null === newValue) {
+                                        combo.reset();
+                                    }
+                                }
+                            },
+                            queryMode: 'local',
+                            displayField: 'name',
+                            valueField: 'id',
+                            tid: 'stateComboBox'
+                        },
+                        {
+                            xtype: 'combo',
+                            itemId: 'groupFilter',
+                            hidden: config.hideViewAwareComponents || false,
+                            selectionAware: function(selected) {
+                                if (!config.hideViewAwareComponents) {
+                                    this.applyVisibility = selected.length < 1;
+                                    this.setVisible(this.applyVisibility);
+                                }
+                            },
+                            name: 'group',
+                            editable: false,
+                            emptyText: me.groupsColumnHeaderText,
+                            store: Ext.create('Modera.backend.security.toolscontribution.store.Groups', {
+                                autoLoad: false,
+                                listeners: {
+                                    load: function(store, records) {
+                                        store.insert(0, { id: null, name: me.noneText });
+                                    }
+                                }
+                            }),
+                            listeners: {
+                                change: function(combo, newValue, oldValue) {
+                                    if (null === newValue) {
+                                        combo.reset();
+                                    }
+                                }
+                            },
+                            displayField: 'name',
+                            valueField: 'id',
+                            tid: 'groupComboBox'
+                        },
+                        {
+                            flex: 1,
+                            height: 30,
+                            itemId: 'inputFilter',
+                            xtype: 'textfield',
+                            selectionAware: function(selected) {
+                                this.applyVisibility = selected.length < 1;
+                                this.setVisible(this.applyVisibility);
+                            },
+                            emptyText: this.filterPlaceholderText,
+                            listeners: {
+                                keyup: function(field) {
+                                    if (field.__timeoutId) {
+                                        clearTimeout(field.__timeoutId);
+                                    }
+                                    field.__timeoutId = setTimeout(function() {
+                                        if (field.__searchValue !== field.getValue()) {
+                                            field.__searchValue = field.getValue();
+                                            field.fireEvent('inputfinished', field);
+                                        }
+                                    }, 800);
+                                }
+                            },
+                            enableKeyEvents: true,
+                            tid: 'searchField'
+                        },
+                        {
+                            selectionAware: function(selected) {
+                                this.applyVisibility = selected.length < 1;
+                                this.setVisible(this.applyVisibility);
+                            },
+                            handler: function() {
+                                me.resetFilters();
+                                me.applyFilters();
+                            },
+                            text: me.resetFiltersBtnText,
+                            scale: 'medium',
+                            tid: 'resetFiltersButton'
+                        },
+                        {
+                            hidden: true,
                             xtype: 'splitbutton',
-                            disabled: true,
                             handleSecurity: function(securityMgr, application) {
                                 var btn = this;
                                 securityMgr.isAllowed(function(roles, callback) {
@@ -179,9 +299,13 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                                     }).length > 0);
                                 }, function(isAllowed) {
                                     btn.isAllowed = isAllowed;
+                                    btn.setVisible(btn.isAllowed && btn.applyVisibility);
                                 });
                             },
-                            selectionAware: true,
+                            selectionAware: function(selected) {
+                                this.applyVisibility = selected.length > 0;
+                                this.setVisible(this.isAllowed && this.applyVisibility);
+                            },
                             multipleSelectionSupported: true,
                             itemId: 'editRecordBtn',
                             iconCls: 'mfc-icon-edit-24',
@@ -242,23 +366,33 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                             tid: 'editUserButton'
                         },
                         {
-                            disabled: true,
-                            selectionAware: true,
+                            hidden: true,
+                            handleSecurity: function(securityMgr, application) {
+                                var btn = this;
+                                securityMgr.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
+                                    btn.isAllowed = isAllowed;
+                                    btn.setVisible(btn.isAllowed && btn.applyVisibility);
+                                });
+                            },
+                            selectionAware: function(selected) {
+                                this.applyVisibility = selected.length > 0;
+                                this.setVisible(this.isAllowed && this.applyVisibility);
+                            },
                             multipleSelectionSupported: true,
                             itemId: 'editGroupsBtn',
                             iconCls: 'modera-backend-security-icon-group-24',
                             text: me.groupsBtnText,
                             scale: 'medium',
-                            security: {
-                                role: 'ROLE_MANAGE_USER_PROFILES',
-                                strategy: 'hide'
-                            },
                             tid: 'modifyGroupsBtn'
                         },
                         {
-                            hidden: config.hideViewAwareComponents || false,
+                            hidden: true,
                             disabled: true,
-                            selectionAware: true,
+                            selectionAware: function(selected) {
+                                this.applyVisibility = selected.length > 0 && !config.hideViewAwareComponents;
+                                this.setVisible(this.applyVisibility);
+                                this.setDisabled(1 != selected.length);
+                            },
                             itemId: 'editPermissionsBtn',
                             iconCls: 'modera-backend-security-icon-permission-24',
                             text: me.permissionsBtnText,
@@ -266,17 +400,24 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                             tid: 'editPermissionsButton'
                         },
                         {
-                            hidden: config.hideViewAwareComponents || false,
+                            hidden: true,
                             disabled: true,
-                            selectionAware: true,
+                            handleSecurity: function(securityMgr, application) {
+                                var btn = this;
+                                securityMgr.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
+                                    btn.isAllowed = isAllowed;
+                                    btn.setVisible(btn.isAllowed && btn.applyVisibility);
+                                });
+                            },
+                            selectionAware: function(selected) {
+                                this.applyVisibility = selected.length > 0 && !config.hideViewAwareComponents;
+                                this.setVisible(this.isAllowed && this.applyVisibility);
+                                this.setDisabled(1 != selected.length);
+                            },
                             itemId: 'editPasswordBtn',
                             iconCls: 'modera-backend-security-icon-password-24',
                             text: me.changePasswordBtnText,
                             scale: 'medium',
-                            security: {
-                                role: 'ROLE_MANAGE_USER_PROFILES',
-                                strategy: 'hide'
-                            },
                             tid: 'changePasswordBtn'
                         }
                     ]
@@ -285,7 +426,99 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                     xtype: 'pagingtoolbar',
                     store: store,
                     dock: 'bottom',
-                    displayInfo: true
+                    displayInfo: true,
+                    items: [
+                        {
+                            itemId: 'pageSizeSeparator',
+                            xtype: 'tbseparator'
+                        },
+                        {
+                            itemId: 'pageSizeButtonsContainer',
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '0 0 0 10',
+                            defaults: {
+                                xtype: 'button',
+                                scale: 'medium',
+                                enableToggle: true,
+                                allowDepress: false,
+                                toggleGroup: Ext.id(null, 'pageSizeToggle'),
+                                margin: '0 5 0 0'
+                            },
+                            items: [
+                                {
+                                    text: '25',
+                                    pressed: true,
+                                    handler: function() {
+                                        store.pageSize = 25;
+                                        store.loadPage(1);
+                                    }
+                                },
+                                {
+                                    text: '50',
+                                    handler: function() {
+                                        store.pageSize = 50;
+                                        store.loadPage(1);
+                                    }
+                                },
+                                {
+                                    text: '100',
+                                    handler: function() {
+                                        store.pageSize = 100;
+                                        store.loadPage(1);
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    listeners: {
+                        afterrender: function(toolbar) {
+                            var displayItem = toolbar.down('#displayItem');
+                            var pageSizeSeparator = toolbar.down('#pageSizeSeparator');
+                            var pageSizeButtonsContainer = toolbar.down('#pageSizeButtonsContainer');
+
+                            function hide(component) {
+                                if (component && component.el) {
+                                    component.el.setStyle({
+                                        opacity: '0',
+                                        zIndex: '-1',
+                                        pointerEvents: 'none'
+                                    });
+                                }
+                            }
+
+                            function show(component) {
+                                if (component && component.el) {
+                                    component.el.setStyle({
+                                        opacity: null,
+                                        zIndex: null,
+                                        pointerEvents: null
+                                    });
+                                }
+                            }
+
+                            function updateVisibility() {
+                                var availableWidth = toolbar.getWidth();
+
+                                var padding = 10;
+                                var baseWidth = parseFloat(pageSizeSeparator.el.getStyle('left')) + padding;
+                                var pageSizeSeparatorWidth = pageSizeSeparator.getWidth() + padding;
+                                var pageSizeButtonsContainerWidth = pageSizeButtonsContainer.getWidth() + padding;
+                                var pageSizeWidth = pageSizeSeparatorWidth + pageSizeButtonsContainerWidth;
+                                var displayItemWidth = displayItem.getWidth() + padding + 5;
+
+                                var pageSizeVisible = availableWidth >= baseWidth + pageSizeWidth;
+                                var displayItemVisible = availableWidth >= baseWidth + pageSizeWidth + displayItemWidth;
+
+                                displayItemVisible ? show(displayItem) : hide(displayItem);
+                                pageSizeVisible ? show(pageSizeSeparator) : hide(pageSizeSeparator);
+                                pageSizeVisible ? show(pageSizeButtonsContainer) : hide(pageSizeButtonsContainer);
+                            }
+
+                            toolbar.on('resize', updateVisibility);
+                            setTimeout(updateVisibility, 100);
+                        }
+                    }
                 }
             ]
         };
@@ -386,8 +619,18 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
             firstLoad = false;
         });
 
-        me.down('#newRecordBtn').on('click', function() {
-            me.fireEvent('newrecord', me);
+        me.down('#newRecordBtn').on('click', function(btn) {
+            // return false;
+        });
+
+        me.down('#stateFilter').on('change', function(combo, newValue) {
+            me.applyFilters();
+        });
+        me.down('#groupFilter').on('change', function(combo, newValue) {
+            me.applyFilters();
+        });
+        me.down('#inputFilter').on('inputfinished', function(field) {
+            me.applyFilters();
         });
 
         me.on('selectionchange', function() {
@@ -438,5 +681,56 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
             var ids = me.getSelectedIds();
             me.fireEvent('editgroups', me, { id: ids.length > 1 ? ids : ids[0] });
         });
+    },
+
+    applyFilters: function() {
+        var me = this;
+
+        var filters = [];
+
+        var state = me.down('#stateFilter').getValue();
+        if (null !== state) {
+            filters.push({ property: 'isActive', value: 'eq:' + (state >= 0 ? 'true' : 'false') });
+            if (state >= 0) {
+                filters.push({ property: 'state', value: 'eq:' + state });
+            }
+        }
+
+        var group = me.down('#groupFilter').getValue();
+        if (null !== group) {
+            filters.push({ property: 'groups', value: 'in:' + group });
+        }
+
+        var search = me.down('#inputFilter').getValue();
+        if (search) {
+            filters.push([
+                { property: 'firstName', value: 'like:%' + search + '%' },
+                { property: 'lastName', value: 'like:%' + search + '%' },
+                { property: 'username', value: 'like:%' + search + '%' },
+                { property: 'email', value: 'like:%' + search + '%' }
+            ]);
+        }
+
+        me.getStore().applyFilters(filters);
+    },
+
+    resetFilters: function() {
+        var me = this;
+
+        var stateFilter = me.down('#stateFilter');
+        stateFilter.suspendEvents();
+        stateFilter.reset();
+        stateFilter.resumeEvents();
+
+        var groupFilter = me.down('#groupFilter');
+        groupFilter.suspendEvents();
+        groupFilter.reset();
+        groupFilter.resumeEvents();
+
+        var inputFilter = me.down('#inputFilter');
+        inputFilter.suspendEvents();
+        inputFilter.reset();
+        inputFilter.__searchValue = '';
+        inputFilter.resumeEvents();
     }
 });
