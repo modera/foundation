@@ -185,6 +185,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.group.Overview', {
 
         var ui = this.down('#groupUsers #users');
 
+        ui.resetFilters();
         ui.setTitle(Ext.util.Format.htmlEncode(groupName));
         ui.getStore().filterByGroup(groupId);
     }

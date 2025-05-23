@@ -33,5 +33,12 @@ Ext.define('Modera.backend.security.toolscontribution.store.Groups', {
         };
         this.config = Ext.apply(defaults, config || {});
         this.callParent([this.config]);
+    },
+
+    applyFilters: function(arr) {
+        Ext.apply(this.proxy.extraParams, {
+            filter: Ext.Array.merge(this.permanentFilters || [], arr)
+        });
+        this.load();
     }
 });
