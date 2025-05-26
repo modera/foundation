@@ -23,7 +23,10 @@ class UserSettingsController extends AbstractCrudController
             'security' => [
                 'actions' => [
                     'create' => function (AuthorizationCheckerInterface $ac, array $params) {
-                        if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)) {
+                        if (
+                            $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                            || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
+                        ) {
                             return true;
                         } else {
                             // irrespectively of what privileges user has we will always allow him to create his
@@ -36,7 +39,10 @@ class UserSettingsController extends AbstractCrudController
                         }
                     },
                     'update' => function (AuthorizationCheckerInterface $ac, array $params) {
-                        if ($ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)) {
+                        if (
+                            $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                            || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
+                        ) {
                             return true;
                         } elseif (isset($params['record']['id'])) {
                             /** @var UserSettings[] $entities */
@@ -83,7 +89,10 @@ class UserSettingsController extends AbstractCrudController
                             }
                         }
 
-                        return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+                        return
+                            $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                            || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
+                        ;
                     },
                     'list' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
                 ],

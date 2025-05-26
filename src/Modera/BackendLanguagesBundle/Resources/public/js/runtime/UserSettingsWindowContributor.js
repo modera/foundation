@@ -29,7 +29,11 @@ Ext.define('Modera.backend.languages.runtime.UserSettingsWindowContributor', {
                     'mf-theme-header component[extensionPoint=profileContextMenuActions]',
                     me.onContributedButtonClicked
                 );
-                sm.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
+                sm.isAllowed(function(roles, callback) {
+                    callback(['ROLE_MANAGE_USER_PROFILES', 'ROLE_MANAGE_USER_PROFILE_INFORMATION'].filter(function(role) {
+                        return roles.indexOf(role) > -1;
+                    }).length > 0);
+                }, function(isAllowed) {
                     if (isAllowed) {
                         me.contributeButton(
                             'modera-backend-security-user-list component[extensionPoint=userActions] menu',
