@@ -51,7 +51,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
             }
         ];
 
-        if (!config.onlyProfileInformation) {
+        if (config.allowChangeUsername) {
             items.push({
                 name: 'username',
                 tid: 'usernameField',
@@ -60,12 +60,14 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.EditWindow', {
             });
         }
 
-        items.push({
-            name: 'email',
-            tid: 'emailField',
-            fieldLabel: me.emailLabelText,
-            emptyText: me.placeHolderText
-        });
+        if (config.allowChangeEmail) {
+            items.push({
+                name: 'email',
+                tid: 'emailField',
+                fieldLabel: me.emailLabelText,
+                emptyText: me.placeHolderText
+            });
+        }
 
         var defaults = {
             type: 'edit',

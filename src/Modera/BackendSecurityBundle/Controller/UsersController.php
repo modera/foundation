@@ -30,22 +30,46 @@ class UsersController extends AbstractCrudController
 {
     public function getConfig(): array
     {
+        $checkRecord = function (AuthorizationCheckerInterface $ac, array $record): bool {
+            $allowedFieldsToEdit = $this->getAllowedFieldsToEdit($record['id'] ?? 0);
+            foreach ($record as $key => $value) {
+                if (!\in_array($key, $allowedFieldsToEdit, true)) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
         return [
             'entity' => User::class,
             'security' => [
                 'actions' => [
-                    'create' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS,
-                    'remove' => ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS,
-                    'update' => function (AuthorizationCheckerInterface $ac, array $params) {
-                        if (isset($params['record']) && isset($params['record']['permissions'])) {
-                            if (!$ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS)) {
+                    'create' => function (AuthorizationCheckerInterface $ac, array $params) {
+                        return
+                            $ac->isGranted(ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION)
+                            && $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS)
+                        ;
+                    },
+                    'remove' => function (AuthorizationCheckerInterface $ac, array $params) {
+                        return
+                            $ac->isGranted(ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION)
+                            && $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS)
+                        ;
+                    },
+                    'update' => function (AuthorizationCheckerInterface $ac, array $params) use ($checkRecord) {
+                        if (\is_array($params['record'] ?? null)) {
+                            if (!$checkRecord($ac, $params['record'])) {
                                 return false;
                             }
                         }
 
                         if (
-                            $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
-                            || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
+                            $ac->isGranted(ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION)
+                            && (
+                                $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS)
+                                || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                            )
                         ) {
                             return true;
                         } else {
@@ -58,24 +82,30 @@ class UsersController extends AbstractCrudController
                             ;
                         }
                     },
-                    'batchUpdate' => function (AuthorizationCheckerInterface $ac, array $params) {
-                        if (isset($params['record']) && isset($params['record']['permissions'])) {
-                            if (!$ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS)) {
+                    'batchUpdate' => function (AuthorizationCheckerInterface $ac, array $params) use ($checkRecord) {
+                        if (\is_array($params['record'] ?? null)) {
+                            if (!$checkRecord($ac, $params['record'])) {
                                 return false;
                             }
                         }
 
-                        if (isset($params['records'])) {
+                        if (\is_array($params['records'] ?? null)) {
                             foreach ($params['records'] as $record) {
-                                if (isset($record['permissions'])) {
-                                    if (!$ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS)) {
+                                if (\is_array($record)) {
+                                    if (!$checkRecord($ac, $record)) {
                                         return false;
                                     }
                                 }
                             }
                         }
 
-                        return $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES);
+                        return
+                            $ac->isGranted(ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION)
+                            && (
+                                $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS)
+                                || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                            )
+                        ;
                     },
                     'get' => function (AuthorizationCheckerInterface $ac, array $params) {
                         $userId = null;
@@ -96,9 +126,11 @@ class UsersController extends AbstractCrudController
                         }
 
                         return
-                            $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS)
-                            || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
-                            || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
+                            $ac->isGranted(ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION)
+                            && (
+                                $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS)
+                                || $ac->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
+                            )
                         ;
                     },
                     'list' => ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
@@ -109,8 +141,8 @@ class UsersController extends AbstractCrudController
                     'main-form' => function (User $user) {
                         $meta = [];
                         if (
-                            $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
-                            || $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
+                            $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS)
+                            || $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
                         ) {
                             $meta = $user->getMeta();
                         }
@@ -139,8 +171,8 @@ class UsersController extends AbstractCrudController
 
                         $meta = [];
                         if (
-                            $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
-                            || $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION)
+                            $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS)
+                            || $this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)
                         ) {
                             $meta = $user->getMeta();
                         }
@@ -213,7 +245,7 @@ class UsersController extends AbstractCrudController
             },
             'map_data_on_update' => function (array $params, User $user, DataMapperInterface $defaultMapper, ContainerInterface $container) {
                 $ignoreMapping = ['active', 'plainPassword', 'sendPassword'];
-                $params = \array_intersect_key($params, \array_flip($this->getAllowedFieldsToEdit($user)));
+                $params = \array_intersect_key($params, \array_flip($this->getAllowedFieldsToEdit($user->getId() ?? 0)));
                 $params = \array_diff_key($params, \array_flip($ignoreMapping));
                 $defaultMapper->mapData($params, $user);
             },
@@ -265,7 +297,7 @@ class UsersController extends AbstractCrudController
                 }
 
                 $result = new ValidationResult();
-                foreach (\array_diff_key($params['record'], \array_flip($this->getAllowedFieldsToEdit($user))) as $key => $value) {
+                foreach (\array_diff_key($params['record'], \array_flip($this->getAllowedFieldsToEdit($user->getId() ?? 0))) as $key => $value) {
                     $result->addFieldError($key, 'Access denied.');
                 }
                 if ($result->hasErrors()) {
@@ -414,40 +446,48 @@ class UsersController extends AbstractCrudController
     /**
      * @return string[]
      */
-    private function getAllowedFieldsToEdit(User $user): array
+    private function getAllowedFieldsToEdit(int $userId): array
     {
         $allowedFields = [
             'id',
-            'email',
             'personalId',
             'firstName',
             'lastName',
             'middleName',
         ];
 
+        if (
+            ($loggedInUser = $this->getUser()) instanceof User
+            && $loggedInUser->getId() === $userId
+        ) {
+            $allowedFields = \array_merge($allowedFields, [
+                'plainPassword',
+                'email',
+            ]);
+        }
+
         if ($this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_PERMISSIONS)) {
-            $allowedFields = array_merge($allowedFields, [
+            $allowedFields = \array_merge($allowedFields, [
                 'permissions',
             ]);
         }
 
-        if ($this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)) {
-            $allowedFields = array_merge($allowedFields, [
+        if ($this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS)) {
+            $allowedFields = \array_merge($allowedFields, [
+                'groups',
                 'plainPassword',
                 'sendPassword',
                 'username',
-                'active',
-                'groups',
-            ]);
-        } elseif (
-            ($loggedInUser = $this->getUser()) instanceof User
-            && $loggedInUser->getId() === $user->getId()
-        ) {
-            $allowedFields = array_merge($allowedFields, [
-                'plainPassword',
+                'email',
             ]);
         }
 
-        return $allowedFields;
+        if ($this->isGranted(ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILES)) {
+            $allowedFields = \array_merge($allowedFields, [
+                'active',
+            ]);
+        }
+
+        return \array_values(\array_unique($allowedFields));
     }
 }

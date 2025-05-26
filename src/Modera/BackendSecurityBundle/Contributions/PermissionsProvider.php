@@ -23,13 +23,13 @@ class PermissionsProvider implements ContributorInterface
         if (!$this->items) {
             $this->items = [
                 new Permission(
-                    T::trans('Access Users Manager'),
-                    ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
+                    T::trans('Manage User Preferences'),
+                    ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION,
                     'administration'
                 ),
                 new Permission(
-                    T::trans('Add and remove User Accounts'),
-                    ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS,
+                    T::trans('Access Security Manager'),
+                    ModeraBackendSecurityBundle::ROLE_ACCESS_BACKEND_TOOLS_SECURITY_SECTION,
                     'administration'
                 ),
                 new Permission(
@@ -38,8 +38,8 @@ class PermissionsProvider implements ContributorInterface
                     'administration'
                 ),
                 new Permission(
-                    T::trans('Manage User Profile Information'),
-                    ModeraBackendSecurityBundle::ROLE_MANAGE_USER_PROFILE_INFORMATION,
+                    T::trans('Manage User Accounts'),
+                    ModeraBackendSecurityBundle::ROLE_MANAGE_USER_ACCOUNTS,
                     'administration'
                 ),
                 new Permission(

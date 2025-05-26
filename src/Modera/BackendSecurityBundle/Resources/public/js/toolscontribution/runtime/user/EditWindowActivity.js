@@ -27,7 +27,7 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.EditWindowAct
                         // and will be edit other people's profiles only when he has this security role
                         sm.isAllowed(
                             function(roles, callback) {
-                                callback(['ROLE_MANAGE_USER_PROFILES', 'ROLE_MANAGE_USER_PROFILE_INFORMATION'].filter(function(role) {
+                                callback(['ROLE_MANAGE_USER_PROFILES'].filter(function(role) {
                                         return roles.indexOf(role) > -1;
                                     }).length > 0);
                             },
@@ -47,6 +47,15 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.EditWindowAct
 
     // override
     doCreateUi: function(params, callback) {
+        var me = this;
+
+        me.workbench.getService('config_provider').getConfig(function(config) {
+            me.createComponentUi(config, params, callback);
+        });
+    },
+
+    // private
+    createComponentUi: function(config, params, callback) {
         var requestParams = {
             filter: [
                 { property: 'id', value: 'eq:' + params.id }
@@ -56,17 +65,18 @@ Ext.define('Modera.backend.security.toolscontribution.runtime.user.EditWindowAct
             }
         };
 
-        var onlyProfileInformation = true;
+        var allowChangeEmail = false;
+        var allowChangeUsername = false;
         var sm = this.workbench.getService('security_manager');
-        sm.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
-            if (isAllowed) {
-                onlyProfileInformation = false;
-            }
+        sm.isAllowed('ROLE_MANAGE_USER_ACCOUNTS', function(isAllowed) {
+            allowChangeEmail = config.userProfile.id == params.id || isAllowed;
+            allowChangeUsername = isAllowed;
         });
 
         Actions.ModeraBackendSecurity_Users.get(requestParams, function(response) {
             var window = Ext.create('Modera.backend.security.toolscontribution.view.user.EditWindow', {
-                onlyProfileInformation: onlyProfileInformation
+                allowChangeEmail: allowChangeEmail,
+                allowChangeUsername: allowChangeUsername
             });
 
             window.loadData(response.result);

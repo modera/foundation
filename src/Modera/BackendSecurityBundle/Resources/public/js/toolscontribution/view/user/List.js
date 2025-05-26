@@ -291,12 +291,17 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                         {
                             hidden: true,
                             xtype: 'splitbutton',
+                            onlyPreferences: true,
                             handleSecurity: function(securityMgr, application) {
                                 var btn = this;
                                 securityMgr.isAllowed(function(roles, callback) {
-                                    callback(['ROLE_MANAGE_USER_PROFILES', 'ROLE_MANAGE_USER_PROFILE_INFORMATION'].filter(function(role) {
-                                        return roles.indexOf(role) > -1;
-                                    }).length > 0);
+                                    var isAllowed = roles.indexOf('ROLE_MANAGE_USER_PROFILES') > -1;
+                                    if (isAllowed) {
+                                        btn.onlyPreferences = false;
+                                        callback(true);
+                                    } else {
+                                        callback(roles.indexOf('ROLE_MANAGE_USER_PROFILE_INFORMATION') > -1);
+                                    }
                                 }, function(isAllowed) {
                                     btn.isAllowed = isAllowed;
                                     btn.setVisible(btn.isAllowed && btn.applyVisibility);
@@ -369,7 +374,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                             hidden: true,
                             handleSecurity: function(securityMgr, application) {
                                 var btn = this;
-                                securityMgr.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
+                                securityMgr.isAllowed('ROLE_MANAGE_USER_ACCOUNTS', function(isAllowed) {
                                     btn.isAllowed = isAllowed;
                                     btn.setVisible(btn.isAllowed && btn.applyVisibility);
                                 });
@@ -388,9 +393,20 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                         {
                             hidden: true,
                             disabled: true,
+                            handleSecurity: function(securityMgr, application) {
+                                var btn = this;
+                                securityMgr.isAllowed(function(roles, callback) {
+                                    callback(['ROLE_MANAGE_USER_ACCOUNTS', 'ROLE_MANAGE_USER_PROFILES'].filter(function(role) {
+                                        return roles.indexOf(role) > -1;
+                                    }).length > 0);
+                                }, function(isAllowed) {
+                                    btn.isAllowed = isAllowed;
+                                    btn.setVisible(btn.isAllowed && btn.applyVisibility);
+                                });
+                            },
                             selectionAware: function(selected) {
                                 this.applyVisibility = selected.length > 0 && !config.hideViewAwareComponents;
-                                this.setVisible(this.applyVisibility);
+                                this.setVisible(this.isAllowed && this.applyVisibility);
                                 this.setDisabled(1 != selected.length);
                             },
                             itemId: 'editPermissionsBtn',
@@ -404,7 +420,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
                             disabled: true,
                             handleSecurity: function(securityMgr, application) {
                                 var btn = this;
-                                securityMgr.isAllowed('ROLE_MANAGE_USER_PROFILES', function(isAllowed) {
+                                securityMgr.isAllowed('ROLE_MANAGE_USER_ACCOUNTS', function(isAllowed) {
                                     btn.isAllowed = isAllowed;
                                     btn.setVisible(btn.isAllowed && btn.applyVisibility);
                                 });
@@ -635,7 +651,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
 
         me.on('selectionchange', function() {
             var btn = me.down('#editRecordBtn');
-            if (!btn.isAllowed || me.getSelectedRecords().length > 1) {
+            if (!btn.isAllowed || btn.onlyPreferences || me.getSelectedRecords().length > 1) {
                 btn.btnEl.addCls('modera-backend-security-btn-disabled');
             } else {
                 btn.btnEl.removeCls('modera-backend-security-btn-disabled');
@@ -644,7 +660,7 @@ Ext.define('Modera.backend.security.toolscontribution.view.user.List', {
 
         me.down('#editRecordBtn').on('click', function(btn) {
             var records = me.getSelectedRecords();
-            if (!btn.isAllowed || records.length > 1) {
+            if (!btn.isAllowed || btn.onlyPreferences || records.length > 1) {
                 btn.maybeShowMenu();
             } else {
                 var record = records[0];
