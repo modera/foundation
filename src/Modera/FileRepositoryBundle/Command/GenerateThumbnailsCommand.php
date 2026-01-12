@@ -5,6 +5,7 @@ namespace Modera\FileRepositoryBundle\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Modera\FileRepositoryBundle\Entity\StoredFile;
 use Modera\FileRepositoryBundle\Repository\FileRepository;
+use Modera\FileRepositoryBundle\ThumbnailsGenerator\CommandInterceptor;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\EmulatedUploadedFile;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\Interceptor;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\NotImageGivenException;
@@ -46,6 +47,12 @@ class GenerateThumbnailsCommand extends Command
                 'Dimensions are to be delimited by x, for example - 300x200'
             )
             ->addOption(
+                'file-id',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Generate thumbnails only for a specific stored file id'
+            )
+            ->addOption(
                 'dry-run',
                 null,
                 InputOption::VALUE_NONE,
@@ -70,16 +77,42 @@ class GenerateThumbnailsCommand extends Command
             throw new \RuntimeException(\sprintf('Unable to find a repository with name "%s"', $name));
         }
 
+        $repoConfig = $repository->getConfig();
+        if (!isset($repoConfig['overwrite_files']) || $repoConfig['overwrite_files']) {
+            $repoConfig['overwrite_files'] = false;
+            $repository->setConfig($repoConfig);
+            $this->em->flush($repository);
+        }
+
         /** @var string[] $expectedThumbnailsConfig */
         $expectedThumbnailsConfig = $input->getOption('thumbnail');
+        /** @var string|null $fileIdOption */
+        $fileIdOption = $input->getOption('file-id');
 
         // indexed by original file's ID
         $report = [];
 
         // fetching original files
-        $query = \sprintf('SELECT e.id FROM %s e WHERE e.alternativeOf IS NULL AND e.repository = ?0', StoredFile::class);
-        $query = $this->em->createQuery($query);
+        $dql = \sprintf('SELECT e.id FROM %s e WHERE e.alternativeOf IS NULL AND e.repository = ?0', StoredFile::class);
+        $query = $this->em->createQuery($dql);
         $query->setParameter(0, $repository);
+        if (null !== $fileIdOption && '' !== \trim((string) $fileIdOption)) {
+            $fileId = (int) $fileIdOption;
+            /** @var StoredFile|null $storedFile */
+            $storedFile = $this->em->getRepository(StoredFile::class)->find($fileId);
+            if (!$storedFile) {
+                throw new \RuntimeException(\sprintf('Unable to find a stored file with id "%d"', $fileId));
+            }
+            if ($storedFile->getRepository()->getName() !== $repository->getName()) {
+                throw new \RuntimeException(\sprintf('Stored file "%d" does not belong to repository "%s"', $fileId, $name));
+            }
+            if ($storedFile->getAlternativeOf()) {
+                $storedFile = $storedFile->getAlternativeOf();
+            }
+            $query = $this->em->createQuery($dql.' AND e.id = ?1');
+            $query->setParameter(0, $repository);
+            $query->setParameter(1, $storedFile->getId());
+        }
 
         foreach ($query->getArrayResult() as $fileData) {
             /** @var array{'id': int} $fileData */
@@ -188,7 +221,13 @@ class GenerateThumbnailsCommand extends Command
                             // we are disabling thumbnails-generator-filter because if
                             // a repository has already this interceptor configured then putting thumbnails
                             // into repository will result in attempts to generate thumbnails for thumbnails ...
-                            return !$itc instanceof Interceptor;
+                            return !$itc instanceof Interceptor && !$itc instanceof CommandInterceptor;
+                        },
+                        'after_interceptor_filter' => function ($itc) {
+                            // we are disabling thumbnails-generator-filter because if
+                            // a repository has already this interceptor configured then putting thumbnails
+                            // into repository will result in attempts to generate thumbnails for thumbnails ...
+                            return !$itc instanceof Interceptor && !$itc instanceof CommandInterceptor;
                         },
                     ]
                 );
@@ -218,8 +257,8 @@ class GenerateThumbnailsCommand extends Command
             if (!is_array($repositoryConfig['interceptors'] ?? null)) {
                 $repositoryConfig['interceptors'] = [];
             }
-            if (!\in_array(Interceptor::ID, $repositoryConfig['interceptors']) && !\in_array(Interceptor::class, $repositoryConfig['interceptors'])) {
-                $repositoryConfig['interceptors'][] = Interceptor::class;
+            if (!\in_array(CommandInterceptor::ID, $repositoryConfig['interceptors']) && !\in_array(CommandInterceptor::class, $repositoryConfig['interceptors'])) {
+                $repositoryConfig['interceptors'][] = CommandInterceptor::ID;
 
                 $isInterceptorAdded = true;
             }

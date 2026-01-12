@@ -12,6 +12,7 @@ use Modera\FileRepositoryBundle\Intercepting\MimeSaverInterceptor;
 use Modera\FileRepositoryBundle\Repository\AsIsKeyGenerator;
 use Modera\FileRepositoryBundle\Repository\FileRepository;
 use Modera\FileRepositoryBundle\Repository\UniqidKeyGenerator;
+use Modera\FileRepositoryBundle\ThumbnailsGenerator\CommandInterceptor;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\Interceptor;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\ThumbnailsGenerator;
 use Modera\FileRepositoryBundle\UrlGeneration\UrlGenerator;
@@ -65,6 +66,12 @@ return static function (ContainerConfigurator $container): void {
     $services->set(Interceptor::class)->public();
     // TODO: remove, BC
     $services->alias('modera_file_repository.interceptors.thumbnails_generator.interceptor', Interceptor::class)->public();
+
+    $services->set(CommandInterceptor::class)
+        ->public()
+        ->arg('$deploymentName', param('deployment.name'));
+    // TODO: remove, BC
+    $services->alias(CommandInterceptor::ID, CommandInterceptor::class)->public();
 
     $services->set(ThumbnailsGenerator::class);
 
