@@ -114,7 +114,7 @@ class Authenticator implements AuthenticationFailureHandlerInterface, Authentica
     {
         return [
             'id' => $user->getId(),
-            'name' => $user->getFullName(),
+            'name' => $user->getFullName() ?? $user->getUsername(),
             'email' => $user->getEmail(),
             'username' => $user->getUsername(),
             'meta' => $user->getMeta(),
