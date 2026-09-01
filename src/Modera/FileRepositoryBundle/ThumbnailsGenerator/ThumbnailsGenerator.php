@@ -16,13 +16,15 @@ use Symfony\Component\HttpFoundation\File\File;
 class ThumbnailsGenerator
 {
     /**
-     * @param string $mode Either "inset" or "outbound", see ImageInterface::THUMBNAIL_* constants for more details
+     * @param int|string|null $mode One of the ImageInterface::THUMBNAIL_* constants, when omitted
+     *                              then ImageInterface::THUMBNAIL_INSET is used. A string is accepted
+     *                              for backward compatibility with old constant values that were strings
      *
      * @return string A path to a temporary file where thumbnail is saved
      *
      * @throws NotImageGivenException
      */
-    public function generate(File $image, int $width, int $height, ?string $mode = null): string
+    public function generate(File $image, int $width, int $height, int|string|null $mode = null): string
     {
         $isImage = 'image/' === \substr($image->getMimeType() ?? '', 0, \strlen('image/'));
         if (!$isImage) {

@@ -3,6 +3,7 @@
 namespace Modera\FileRepositoryBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Imagine\Image\ImageInterface;
 use Modera\FileRepositoryBundle\Entity\StoredFile;
 use Modera\FileRepositoryBundle\Repository\FileRepository;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\EmulatedUploadedFile;
@@ -12,6 +13,7 @@ use Modera\FileRepositoryBundle\ThumbnailsGenerator\ThumbnailsGenerator;
 use Modera\FileRepositoryBundle\ThumbnailsGenerator\ThumbnailsInterceptorInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,6 +30,16 @@ use Symfony\Component\HttpFoundation\File\File;
 )]
 class GenerateThumbnailsCommand extends Command
 {
+    /**
+     * Thumbnail modes accepted by the "mode" option, indexed by their command line name.
+     *
+     * @var array<string, int>
+     */
+    private const MODES = [
+        'inset' => ImageInterface::THUMBNAIL_INSET,
+        'outbound' => ImageInterface::THUMBNAIL_OUTBOUND,
+    ];
+
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly FileRepository $fr,
@@ -45,6 +57,15 @@ class GenerateThumbnailsCommand extends Command
                 null,
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,
                 'Dimensions are to be delimited by x, for example - 300x200'
+            )
+            ->addOption(
+                'mode',
+                null,
+                InputOption::VALUE_REQUIRED,
+                \sprintf(
+                    'Either "%s", see ImageInterface::THUMBNAIL_* constants for more details',
+                    \implode('" or "', \array_keys(self::MODES))
+                )
             )
             ->addOption(
                 'file-id',
@@ -81,6 +102,11 @@ class GenerateThumbnailsCommand extends Command
         $expectedThumbnailsConfig = $input->getOption('thumbnail');
         /** @var string|null $fileIdOption */
         $fileIdOption = $input->getOption('file-id');
+        /** @var string|null $modeOption */
+        $modeOption = $input->getOption('mode');
+
+        $mode = $this->resolveMode($modeOption);
+        $modeFlag = null !== $mode ? self::MODES[$mode] : null;
 
         // indexed by original file's ID
         $report = [];
@@ -114,6 +140,7 @@ class GenerateThumbnailsCommand extends Command
             $originalId = $fileData['id'];
 
             $existingThumbnails = [];
+            $existingThumbnailLabels = [];
             $missingThumbnails = [];
 
             // fetching original file's alternatives
@@ -126,12 +153,17 @@ class GenerateThumbnailsCommand extends Command
                         /** @var array{
                          *      'width'?: int|string,
                          *      'height'?: int|string,
+                         *      'mode'?: string,
                          * } $thumbnailConfig
                          */
                         $thumbnailConfig = $alternativeData['meta']['thumbnail'];
 
                         if (isset($thumbnailConfig['width']) && isset($thumbnailConfig['height'])) {
-                            $existingThumbnails[] = $thumbnailConfig['width'].'x'.$thumbnailConfig['height'];
+                            $existingDimensions = $thumbnailConfig['width'].'x'.$thumbnailConfig['height'];
+                            $existingMode = $this->resolveMode($thumbnailConfig['mode'] ?? null, false);
+
+                            $existingThumbnails[] = $existingDimensions;
+                            $existingThumbnailLabels[] = $this->formatThumbnail($existingDimensions, $existingMode);
                         }
                     }
                 }
@@ -145,6 +177,7 @@ class GenerateThumbnailsCommand extends Command
 
             $report[$originalId] = [
                 'existing' => $existingThumbnails,
+                'existing_labels' => $existingThumbnailLabels,
                 'missing' => $missingThumbnails,
             ];
         }
@@ -163,8 +196,13 @@ class GenerateThumbnailsCommand extends Command
                 /** @var StoredFile $storedFile */
                 $storedFile = $this->em->getRepository(StoredFile::class)->find($id);
 
-                $missingOnes = \count($entry['missing']) > 0 ? \implode(', ', $entry['missing']) : '-';
-                $existingOnes = \count($entry['existing']) > 0 ? \implode(', ', $entry['existing']) : '-';
+                $missingLabels = \array_map(
+                    fn (string $dimensions): string => $this->formatThumbnail($dimensions, $mode),
+                    $entry['missing']
+                );
+
+                $missingOnes = \count($missingLabels) > 0 ? \implode(', ', $missingLabels) : '-';
+                $existingOnes = \count($entry['existing_labels']) > 0 ? \implode(', ', $entry['existing_labels']) : '-';
 
                 $rows[] = [$id, $storedFile->getFilename(), $missingOnes, $existingOnes];
             }
@@ -193,7 +231,7 @@ class GenerateThumbnailsCommand extends Command
                 $image = new File($originalPathname);
 
                 try {
-                    $thumbnailPathname = $this->generator->generate($image, (int) $width, (int) $height);
+                    $thumbnailPathname = $this->generator->generate($image, (int) $width, (int) $height, $modeFlag);
                 } catch (NotImageGivenException $e) {
                     $output->writeln('  * Skipping, file is not an image.');
 
@@ -227,9 +265,14 @@ class GenerateThumbnailsCommand extends Command
                     ]
                 );
 
+                $thumbnailMeta = ['width' => $width, 'height' => $height];
+                if (null !== $mode) {
+                    $thumbnailMeta['mode'] = $mode;
+                }
+
                 $this->generator->updateStoredFileAlternativeMeta(
                     $thumbnailStoredFile,
-                    ['width' => $width, 'height' => $height]
+                    $thumbnailMeta
                 );
 
                 $originalStoredFile->addAlternative($thumbnailStoredFile);
@@ -240,7 +283,7 @@ class GenerateThumbnailsCommand extends Command
 
                 $this->em->flush();
 
-                $output->writeln(\sprintf('  * %dx%d', $width, $height));
+                $output->writeln(\sprintf('  * %s', $this->formatThumbnail($dimensions, $mode)));
             }
         }
 
@@ -295,5 +338,35 @@ class GenerateThumbnailsCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * @return string|null A name of one of the self::MODES entries
+     */
+    private function resolveMode(mixed $mode, bool $strict = true): ?string
+    {
+        if (!\is_string($mode) || '' === \trim($mode)) {
+            return null;
+        }
+
+        $mode = \trim($mode);
+        if (!\array_key_exists($mode, self::MODES)) {
+            if ($strict) {
+                throw new InvalidArgumentException(\sprintf(
+                    'Unsupported thumbnail mode "%s" given, expected one of - %s',
+                    $mode,
+                    \implode(', ', \array_keys(self::MODES))
+                ));
+            }
+
+            return null;
+        }
+
+        return $mode;
+    }
+
+    private function formatThumbnail(string $dimensions, ?string $mode): string
+    {
+        return null !== $mode ? \sprintf('%s (%s)', $dimensions, $mode) : $dimensions;
     }
 }
