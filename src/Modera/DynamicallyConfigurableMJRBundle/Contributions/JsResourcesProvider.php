@@ -31,7 +31,7 @@ class JsResourcesProvider implements ContributorInterface
             if (false !== \mb_strpos($mjrExtJsUrl, $needle)) {
                 $mjrExtJsUrl = \str_replace($needle, (string) \time(), $mjrExtJsUrl);
             }
-            $items[] = ['order' => PHP_INT_MAX, 'resource' => $mjrExtJsUrl];
+            $items[] = ['order' => PHP_INT_MAX - 10, 'resource' => $mjrExtJsUrl];
         }
 
         return $items;
