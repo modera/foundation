@@ -187,6 +187,7 @@ class PhpClassTokenExtractor implements ExtractorInterface
      */
     private function extractArgumentTokens(array $invocation): array
     {
+        /** @var array<int, string|array<int, int|string>> $tokens */
         $tokens = (array) $invocation['body'];
 
         // if method contains no parameters, like Helper::trans()
@@ -415,7 +416,7 @@ class PhpClassTokenExtractor implements ExtractorInterface
     /**
      * Will make sure if a token stream which represents a file has required USE statement.
      *
-     * @param array<int, mixed> $tokens
+     * @param array<int, string|array<int, int|string>> $tokens
      */
     private function containsRequiredUseStatements(array $tokens): bool
     {
@@ -443,7 +444,7 @@ class PhpClassTokenExtractor implements ExtractorInterface
     }
 
     /**
-     * @param array<mixed> $tokenSequence
+     * @param array<int, string|array<int, int|string>> $tokenSequence
      */
     private function joinTokenSequence(array $tokenSequence): string
     {

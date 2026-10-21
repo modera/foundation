@@ -17,8 +17,8 @@ class BooleanHandler implements HandlerInterface
     {
         $cfg = $entry->getServerHandlerConfig();
 
-        $trueValue = $cfg['true_text'] ?? 'true';
-        $falseValue = $cfg['false_text'] ?? 'false';
+        $trueValue = \is_string($cfg['true_text'] ?? null) ? $cfg['true_text'] : 'true';
+        $falseValue = \is_string($cfg['false_text'] ?? null) ? $cfg['false_text'] : 'false';
 
         return 1 == $entry->getDenormalizedValue() ? $trueValue : $falseValue;
     }

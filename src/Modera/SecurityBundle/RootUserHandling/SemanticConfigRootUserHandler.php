@@ -63,6 +63,7 @@ class SemanticConfigRootUserHandler implements RootUserHandlerInterface
 
     public function getRoles(): array
     {
+        /** @var string|string[] $roles */
         $roles = $this->config['roles'];
 
         if (\is_string($roles) && '*' === $roles) {
@@ -83,8 +84,9 @@ class SemanticConfigRootUserHandler implements RootUserHandlerInterface
             throw new \RuntimeException('Neither "*" nor array is used to define root user roles!');
         }
 
-        if ($this->config['switch_user_role']) {
-            $roles[] = $this->config['switch_user_role'];
+        $switchUserRole = $this->config['switch_user_role'];
+        if (\is_string($switchUserRole) && '' !== $switchUserRole) {
+            $roles[] = $switchUserRole;
         }
 
         $roles[] = ModeraSecurityBundle::ROLE_ROOT_USER;

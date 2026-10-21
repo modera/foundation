@@ -36,10 +36,10 @@ class ExtjsClassesProvider implements FileProviderInterface
         $paths = [];
 
         $finder = new Finder();
-        foreach ($finder->files()->name('*.js')->in($directory) as $filepath) {
-            $className = self::extractExtJsClassName(\file_get_contents($filepath) ?: '');
+        foreach ($finder->files()->name('*.js')->in($directory) as $file) {
+            $className = self::extractExtJsClassName($file->getContents());
             if (null !== $className) {
-                $paths[] = $filepath;
+                $paths[] = $file->getPathname();
             }
         }
 

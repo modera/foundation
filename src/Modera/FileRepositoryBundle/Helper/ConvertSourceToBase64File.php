@@ -168,12 +168,13 @@ final class ConvertSourceToBase64File
         ]);
         if ($content = \file_get_contents($source, false, $context) ?: null) {
             if (\function_exists('http_get_last_response_headers')) {
+                /** @var ?string[] $rawHeaders */
                 $rawHeaders = \http_get_last_response_headers();
             } else {
                 $rawHeaders = $http_response_header;
             }
 
-            if (\is_array($rawHeaders) && isset($rawHeaders[0]) && \is_string($rawHeaders[0])) {
+            if (\is_array($rawHeaders) && isset($rawHeaders[0])) {
                 \preg_match('{HTTP\/\S*\s(\d{3})}', \array_shift($rawHeaders), $matches);
                 $status = (int) ($matches[1] ?? 0);
 

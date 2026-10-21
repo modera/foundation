@@ -161,7 +161,7 @@ class ArrayQueryBuilder
 
                     if (Filter::COMPARATOR_IN === $comparatorName) {
                         $compositeExpr->add(
-                            \call_user_func_array([$qb->expr(), 'orX'], $statements)
+                            $qb->expr()->orX(...$statements)
                         );
                     } else {
                         $compositeExpr->addMultiple($statements);
@@ -191,7 +191,7 @@ class ArrayQueryBuilder
                     }
 
                     $compositeExpr->add(
-                        \call_user_func_array([$qb->expr(), 'orX'], $orStatements)
+                        $qb->expr()->orX(...$orStatements)
                     );
                 } else {
                     $compositeExpr->add(
@@ -270,7 +270,7 @@ class ArrayQueryBuilder
                 // if expression cannot be directly resolved again the model we will check
                 // if there's an alias introduced in "fetch" and then allow to use it
                 if (!$expressionManager->isValidExpression($orderExpression->getProperty() ?? '')
-                    && $hasFetch && \is_array($arrayQuery['fetch']) && isset($arrayQuery['fetch'][$orderExpression->getProperty()])) {
+                    && $hasFetch && isset($arrayQuery['fetch'][$orderExpression->getProperty()])) {
                     $statement = $orderExpression->getProperty();
                 } elseif ($expressionManager->isValidExpression($orderExpression->getProperty() ?? '')) {
                     $statement = $expressionManager->getDqlPropertyName(
@@ -290,7 +290,7 @@ class ArrayQueryBuilder
 
         /** @var Expression[] $groupByExpressions */
         $groupByExpressions = [];
-        if ($hasGroupBy && \is_array($arrayQuery['groupBy'])) {
+        if ($hasGroupBy) {
             /** @var array{'property': string, 'direction': string} $groupExpr */
             foreach ($arrayQuery['groupBy'] as $groupExpr) {
                 $groupByExpressions[] = new Expression($groupExpr);

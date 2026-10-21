@@ -47,7 +47,7 @@ class LocaleListener implements EventSubscriberInterface
         if ($this->isAuthenticatedRoute === $request->attributes->get('_route')) {
             if ($response instanceof JsonResponse) {
                 $content = \json_decode($response->getContent() ?: '', true);
-                if (\is_array($content) && $content['success']) {
+                if (\is_array($content) && $content['success'] && \is_array($content['profile'] ?? null)) {
                     $locale = null;
 
                     /** @var ?UserSettings $settings */

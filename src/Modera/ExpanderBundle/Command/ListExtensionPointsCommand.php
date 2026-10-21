@@ -42,7 +42,7 @@ class ListExtensionPointsCommand extends AbstractCommand
         $idFilter = $input->getArgument('id-filter');
 
         $i = 0;
-        /** @var mixed[] $rows */
+        /** @var array<int, array{int, string, string, ?string}> $rows */
         $rows = [];
         foreach ($this->getExtensionPoints() as $ep) {
             if (\is_string($idFilter) && false === \strpos($ep->getId(), $idFilter)) {

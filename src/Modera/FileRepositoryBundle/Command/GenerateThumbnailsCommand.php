@@ -301,11 +301,12 @@ class GenerateThumbnailsCommand extends Command
                 $isInterceptorAdded = true;
             }
 
-            if (!isset($repositoryConfig['thumbnail_sizes'])) {
+            if (!\is_array($repositoryConfig['thumbnail_sizes'] ?? null)) {
                 $repositoryConfig['thumbnail_sizes'] = [];
             }
 
             $existingThumbnailsConfigEntries = [];
+            /** @var array{'width'?: int|string, 'height'?: int|string} $thumbnailConfig */
             foreach ($repositoryConfig['thumbnail_sizes'] as $thumbnailConfig) {
                 if (isset($thumbnailConfig['width']) && isset($thumbnailConfig['height'])) {
                     $existingThumbnailsConfigEntries[] = $thumbnailConfig['width'].'x'.$thumbnailConfig['height'];
