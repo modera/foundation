@@ -17,6 +17,7 @@ return $config
     ->setRules([
         '@PSR12' => true,
         '@Symfony' => true,
+        'single_line_throw' => false,
     ])
     ->setUsingCache(false)
     ->setFinder($finder)
