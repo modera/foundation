@@ -85,11 +85,20 @@ class ExtjsClassesExtractor implements ExtractorInterface
         $tokenLines = \array_slice($lines, $tokensStartPosition, $tokensEndPosition - $tokensStartPosition);
 
         $tokens = [];
-        foreach ($tokenLines as $line) {
+        foreach ($tokenLines as $index => $line) {
             $exp = \explode(':', $line, 2);  // split by  first ":" only with limit=2
 
             $token = \trim($exp[0]);
-            $value = \trim($exp[1]); // getting rid of white spaces
+            $value = \trim($exp[1] ?? ''); // getting rid of white spaces
+
+            if ('' === $value) {
+                $msg = \implode('', [
+                    'Unexpected line "%s" in the "// l10n" block of class "%s". ',
+                    'The block must contain only "xxxText: \'...\'" properties and end with an empty line. ',
+                    'File path: "%s", line %d',
+                ]);
+                throw new \RuntimeException(\sprintf($msg, \trim($line), $className, $filename, $tokensStartPosition + $index + 1));
+            }
 
             // getting rid of coma
             if (',' === $value[\strlen($value) - 1]) {

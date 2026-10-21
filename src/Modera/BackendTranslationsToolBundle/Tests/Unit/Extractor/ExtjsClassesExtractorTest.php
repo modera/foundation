@@ -30,6 +30,21 @@ class ExtjsClassesExtractorTest extends \PHPUnit\Framework\TestCase
         $this->assetToken('Company.foo.bar.MyClass.options', '**Options:', $tokens);
     }
 
+    public function testExtractBlockWithoutTrailingEmptyLine(): void
+    {
+        $provider = $this->createMock(FileProviderInterface::class);
+        $provider->expects($this->any())
+                 ->method('getFiles')
+                 ->will($this->returnValue([__DIR__.'/resources/class2.js']));
+
+        $extractor = new ExtjsClassesExtractor($provider);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Unexpected line "});" in the "// l10n" block of class "Company.foo.bar.MyClass"');
+
+        $extractor->extract(__DIR__.'/resources', new MessageCatalogue('en'));
+    }
+
     public function testConstruct(): void
     {
         $extractor = new ExtjsClassesExtractor();
