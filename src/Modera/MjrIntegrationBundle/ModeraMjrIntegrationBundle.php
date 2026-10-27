@@ -193,7 +193,7 @@ class JsResourcesProvider implements ContributorInterface
     public function getItems(): array
     {
         return [
-            '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js',
+            '//cdn.example.com/lib.js',
         ];
     }
 }

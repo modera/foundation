@@ -51,7 +51,7 @@ class JsResourcesProvider implements ContributorInterface
             ],
             [
                 'order' => PHP_INT_MIN + 5,
-                'resource' => '//cdnjs.cloudflare.com/ajax/libs/moment.js/'.$this->bundleConfig['moment_js_version'].'/moment-with-locales.min.js',
+                'resource' => '//cdn.jsdelivr.net/npm/moment@'.$this->bundleConfig['moment_js_version'].'/min/moment-with-locales.min.js',
             ],
             [
                 'order' => PHP_INT_MIN + 5,
