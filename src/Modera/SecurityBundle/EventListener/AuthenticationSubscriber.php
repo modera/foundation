@@ -51,6 +51,12 @@ class AuthenticationSubscriber implements EventSubscriberInterface
                     ->setParameter('id', $user->getId())
                     ->execute()
                 ;
+
+                // the query bypasses the unit of work, which would take the user for changed and write it once more
+                // on the next flush of the request
+                if ($this->om->contains($user)) {
+                    $this->om->refresh($user);
+                }
             } else {
                 $this->om->persist($user);
                 $this->om->flush();
