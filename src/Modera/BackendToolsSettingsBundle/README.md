@@ -80,6 +80,30 @@ Now if you go to "Backend / Tools / Settings" you should see a section there wit
 named as "blog", icon will be "gear" ( see FontAwesome library ) and `Modera.backend.dcab.runtime.SettingsListActivity`
 javascript activity will be used to create its UI.
 
+## Submenus
+
+A section can be shown as a submenu item of another section by passing the parent's ID as the `parent` argument.
+The parent is collapsed by default; a deep link to a subsection expands it. Only one parent is expanded at a time:
+opening another section collapses the others. There are two kinds of parent:
+
+* a regular `StandardSection` - clicking it opens its own section on the right and expands its subsections;
+* a `GroupSection` - it has no activity, clicking it expands its subsections and opens the first one
+  (unless one of them is already open).
+
+``` php
+return [
+    new GroupSection('pricing', 'Pricing', FontAwesome::resolve('tags', 'fas')),
+    new StandardSection('vat', 'VAT', 'MyCompany.runtime.VatActivity', null, [], 'pricing'),
+    new StandardSection('margins', 'Margins', 'MyCompany.runtime.MarginsActivity', parent: 'pricing'),
+];
+```
+
+Subsections are listed right under their parent whatever bundle contributes them. There is a single level of
+nesting: the parent must be a top-level section. Subsections are shown without an icon, their glyph is ignored.
+A section whose parent does not exist or is itself a subsection is shown at the top level.
+Sections implementing only `SectionInterface` are top-level; implement `NestedSectionInterface` to support a parent
+in a custom section class.
+
 ## Licensing
 
 This bundle is under the MIT license. See the complete license in the bundle:

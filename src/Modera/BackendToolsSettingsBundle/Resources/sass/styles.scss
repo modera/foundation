@@ -35,10 +35,22 @@
                     padding-left: 0 !important;
                     padding-right: 0 !important;
                 }
+
+                &.section-child {
+                    background-image: linear-gradient(#E4E4E4, #E4E4E4);
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: 1px 100%;
+                    background-color: transparent !important;
+                }
             }
             &.right {
                 font-size: 16px;
                 @include border-radius(0px 3px 3px 0px);
+
+                &.section-child {
+                    @include border-radius(3px);
+                }
             }
           }
 

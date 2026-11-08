@@ -5,7 +5,7 @@ namespace Modera\BackendToolsSettingsBundle\Section;
 /**
  * @copyright 2014 Modera Foundation
  */
-class StandardSection implements SectionInterface
+class StandardSection implements NestedSectionInterface
 {
     /**
      * @param array<mixed> $meta
@@ -16,6 +16,7 @@ class StandardSection implements SectionInterface
         private readonly string $activityClass,
         private readonly ?string $glyph = null,
         private readonly array $meta = [],
+        private readonly ?string $parent = null,
     ) {
     }
 
@@ -42,5 +43,10 @@ class StandardSection implements SectionInterface
     public function getMeta(): array
     {
         return $this->meta;
+    }
+
+    public function getParent(): ?string
+    {
+        return $this->parent;
     }
 }

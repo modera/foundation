@@ -3,7 +3,9 @@
 namespace Modera\BackendToolsSettingsBundle\Tests\Unit\Contributions;
 
 use Modera\BackendToolsSettingsBundle\Contributions\SectionsConfigMerger;
+use Modera\BackendToolsSettingsBundle\Section\GroupSection;
 use Modera\BackendToolsSettingsBundle\Section\SectionInterface;
+use Modera\BackendToolsSettingsBundle\Section\StandardSection;
 use Modera\ExpanderBundle\Ext\ContributorInterface;
 use Modera\ExpanderBundle\Ext\ExtensionPoint;
 use Modera\ExpanderBundle\Ext\ExtensionPointManager;
@@ -100,5 +102,78 @@ class SectionsConfigMergerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($ds->getGlyph(), $section['glyph']);
         $this->assertArrayHasKey('meta', $section);
         $this->assertEquals($ds->getMeta(), $section['meta']);
+        $this->assertNull($section['parent']);
+        $this->assertFalse($section['group']);
+    }
+
+    public function testChildrenFollowTheirParent(): void
+    {
+        $result = $this->mergeSections([
+            new StandardSection('vat', 'VAT', 'Vat.Activity', null, [], 'pricing'),
+            new StandardSection('users', 'Users', 'Users.Activity'),
+            new GroupSection('pricing', 'Pricing'),
+            new StandardSection('margins', 'Margins', 'Margins.Activity', null, [], 'pricing'),
+        ]);
+
+        $this->assertSame(['users', 'pricing', 'vat', 'margins'], \array_column($result, 'id'));
+        $this->assertSame([null, null, 'pricing', 'pricing'], \array_column($result, 'parent'));
+    }
+
+    public function testGroupSectionHasNoActivity(): void
+    {
+        $result = $this->mergeSections([new GroupSection('pricing', 'Pricing', 'tags')]);
+
+        $this->assertTrue($result[0]['group']);
+        $this->assertSame('', $result[0]['activityClass']);
+        $this->assertSame('tags', $result[0]['glyph']);
+    }
+
+    public function testOrphanIsShownAtTopLevel(): void
+    {
+        $result = $this->mergeSections([
+            new StandardSection('vat', 'VAT', 'Vat.Activity', null, [], 'missing'),
+        ]);
+
+        $this->assertSame('vat', $result[0]['id']);
+        $this->assertNull($result[0]['parent']);
+    }
+
+    public function testGrandchildIsShownAtTopLevel(): void
+    {
+        $result = $this->mergeSections([
+            new GroupSection('pricing', 'Pricing'),
+            new StandardSection('vat', 'VAT', 'Vat.Activity', null, [], 'pricing'),
+            new StandardSection('rates', 'Rates', 'Rates.Activity', null, [], 'vat'),
+        ]);
+
+        $this->assertSame(['pricing', 'vat', 'rates'], \array_column($result, 'id'));
+        $this->assertSame([null, 'pricing', null], \array_column($result, 'parent'));
+    }
+
+    public function testParentLoopIsShownAtTopLevel(): void
+    {
+        $result = $this->mergeSections([
+            new StandardSection('a', 'A', 'A.Activity', null, [], 'b'),
+            new StandardSection('b', 'B', 'B.Activity', null, [], 'a'),
+        ]);
+
+        $this->assertSame(['a', 'b'], \array_column($result, 'id'));
+        $this->assertSame([null, null], \array_column($result, 'parent'));
+    }
+
+    /**
+     * @param SectionInterface[] $sections
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function mergeSections(array $sections): array
+    {
+        $contributor = $this->createMock(ContributorInterface::class);
+        $contributor->method('getItems')->willReturn($sections);
+
+        $extensionProvider = $this->createMock(ExtensionProvider::class);
+        $extensionProvider->method('get')->willReturn($contributor);
+
+        return (new SectionsConfigMerger($extensionProvider))->merge([])['settingsSections'];
     }
 }
