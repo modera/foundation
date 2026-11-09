@@ -39,6 +39,10 @@ Ext.define('Modera.backend.tools.settings.runtime.HostActivity', {
                 var activities = {},
                     indexedParams = {};
                 Ext.each(sections, function(section) {
+                    if (section.group) {
+                        return;
+                    }
+
                     var activity = Ext.create(section.activityClass, {
                         id: section.id,
                         name: section.name
@@ -102,7 +106,9 @@ Ext.define('Modera.backend.tools.settings.runtime.HostActivity', {
                     id: section.id,
                     name: section.name,
                     glyph: section.glyph,
-                    ui: {
+                    parent: section.parent || null,
+                    group: !!section.group,
+                    ui: section.group ? null : {
                         layout: 'fit',
                         activity: section.id
                     }

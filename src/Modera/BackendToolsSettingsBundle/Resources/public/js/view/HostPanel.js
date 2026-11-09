@@ -72,9 +72,9 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
                             {
                                 dataIndex: 'glyph',
                                 width: 30,
-                                renderer: function(v, md) {
-                                    md.tdCls = 'left';
-                                    if (!v) {
+                                renderer: function(v, md, record) {
+                                    md.tdCls = record.get('parent') ? 'left section-child' : 'left';
+                                    if (!v || record.get('parent')) {
                                         return '';
                                     }
 
@@ -89,15 +89,21 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
                             {
                                 dataIndex: 'name',
                                 flex: 1,
-                                renderer: function(v, md) {
-                                    md.tdCls = 'right';
+                                renderer: function(v, md, record) {
+                                    md.tdCls = record.get('parent') ? 'right section-child' : 'right';
 
                                     return Ext.util.Format.htmlEncode(v);
                                 }
                             }
                         ],
                         store: Ext.create('Ext.data.Store', {
-                            fields: ['id', 'name', 'glyph'],
+                            fields: [
+                                'id', 'name', 'glyph',
+                                { name: 'parent', defaultValue: null },
+                                { name: 'group', type: 'boolean', defaultValue: false },
+                                { name: 'hasChildren', type: 'boolean', defaultValue: false },
+                                { name: 'expanded', type: 'boolean', defaultValue: false }
+                            ],
                             proxy: {
                                 type: 'memory'
                             }
@@ -139,18 +145,119 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
         var ui = section.ui;
         delete section.ui;
 
-        this.down('#sectionsGrid').getStore().add(section);
-        this.down('#hostPanel').add(ui);
+        var parent = section.parent ? this.findSection(section.parent) : null;
+        if (parent && !parent.get('parent')) {
+            parent.set('hasChildren', true);
+        } else {
+            section.parent = null;
+        }
+
+        var store = this.down('#sectionsGrid').getStore();
+        store.clearFilter(true);
+        store.add(section);
+        this.refreshVisibleSections();
+
+        if (ui) {
+            this.down('#hostPanel').add(ui);
+        }
+    },
+
+    /**
+     * Finds a section among all sections, including ones hidden inside collapsed parents.
+     *
+     * @param {String} id
+     * @return {Ext.data.Model}
+     */
+    findSection: function(id) {
+        var store = this.down('#sectionsGrid').getStore();
+        var all = store.snapshot || store.data;
+
+        return all.findBy(function(record) {
+            return record.get('id') === id;
+        });
+    },
+
+    /**
+     * @param {Ext.data.Model} record
+     * @return {Ext.data.Model}
+     */
+    findFirstChild: function(record) {
+        var store = this.down('#sectionsGrid').getStore();
+        var all = store.snapshot || store.data;
+
+        return all.findBy(function(child) {
+            return child.get('parent') === record.get('id');
+        });
+    },
+
+    /**
+     * Expands a section and collapses the others.
+     *
+     * @param {Ext.data.Model} record
+     */
+    expandSection: function(record) {
+        if (record.get('hasChildren') && !record.get('expanded')) {
+            this.collapseSectionsExcept([record]);
+            record.set('expanded', true);
+            this.refreshVisibleSections();
+        }
+    },
+
+    // private
+    collapseSectionsExcept: function(keep) {
+        var store = this.down('#sectionsGrid').getStore();
+
+        (store.snapshot || store.data).each(function(record) {
+            if (record.get('expanded') && keep.indexOf(record) === -1) {
+                record.set('expanded', false);
+            }
+        });
+    },
+
+    // private
+    refreshVisibleSections: function() {
+        var me = this;
+        var store = me.down('#sectionsGrid').getStore();
+
+        store.clearFilter(true);
+        store.filterBy(function(record) {
+            var parent = me.findSection(record.get('parent'));
+
+            return !parent || parent.get('expanded');
+        });
+
+        me.selectActiveSection();
+    },
+
+    // private
+    selectActiveSection: function() {
+        var grid = this.down('#sectionsGrid');
+        var store = grid.getStore();
+        var active = this.activeSectionId ? store.findRecord('id', this.activeSectionId, 0, false, true, true) : null;
+
+        if (active && this.rendered) {
+            grid.getSelectionModel().select(active, false, true);
+        }
     },
 
     /**
      * @param {String} id
      */
     showSection: function(id) {
-        var sectionsGrid = this.down('#sectionsGrid'),
-            record = sectionsGrid.getStore().findRecord('id', id);
+        var sectionsGrid = this.down('#sectionsGrid');
+        var record = this.findSection(id);
 
-        if (record) {
+        if (record && !record.get('group')) {
+            this.activeSectionId = id;
+
+            var parent = this.findSection(record.get('parent'));
+            this.collapseSectionsExcept([parent, record]);
+            if (parent) {
+                parent.set('expanded', true);
+            }
+            record.set('expanded', record.get('hasChildren'));
+            this.refreshVisibleSections();
+
             var hostPanel = this.down('#hostPanel'),
                 activityContainer = hostPanel.down(Ext.String.format('component[activity={0}]', id));
 
@@ -181,8 +288,40 @@ Ext.define('Modera.backend.tools.settings.view.HostPanel', {
     assignListeners: function() {
         var me = this;
 
-        this.down('#sectionsGrid').on('itemclick', function(grid, record) {
-            me.fireEvent('showsection', grid, record.data);
+        var sectionsGrid = this.down('#sectionsGrid');
+
+        sectionsGrid.on('beforeselect', function(selModel, record) {
+            return !record.get('group');
+        });
+
+        // the grid changes the selection on mouse down and on click; groups cancel both, so the open
+        // section stays selected
+        sectionsGrid.on('beforeitemmousedown', function(view, record) {
+            return !record.get('group');
+        });
+
+        sectionsGrid.on('beforeitemclick', function(view, record) {
+            if (!record.get('group')) {
+                return;
+            }
+
+            if (!record.get('expanded')) {
+                var firstChild = me.findFirstChild(record);
+                var active = me.findSection(me.activeSectionId);
+
+                me.expandSection(record);
+                if (firstChild && !(active && active.get('parent') === record.get('id'))) {
+                    me.fireEvent('showsection', view, firstChild.data);
+                }
+            }
+
+            return false;
+        });
+
+        sectionsGrid.on('itemclick', function(grid, record) {
+            if (!(record.get('expanded') && me.activeSectionId === record.get('id'))) {
+                me.fireEvent('showsection', grid, record.data);
+            }
         });
     }
 });
