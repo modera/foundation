@@ -57,43 +57,51 @@ Or if you are not using a template engine:
 
 ### Expose your controller methods to ExtDirect Api
 
+Mark the actions to expose with PHP attributes from `Modera\DirectBundle\Attribute`:
+
 ``` php
 // .../Acme/DemoBundle/Controller/ExampleController.php
 
 namespace Acme\DemoBundle\Controller;
 
+use Modera\DirectBundle\Attribute\Form;
+use Modera\DirectBundle\Attribute\Remote;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ExampleController extends AbstractController
 {
-   /**
-    * Single exposed method.
-    *
-    * @Remote // this annotation expose the method to API
-    *
-    * @param array<string, mixed> $params
-    */
+    /**
+     * @param array<string, mixed> $params
+     */
+    #[Remote] // exposes the method to the API
     public function indexAction(array $params): string
     {
         return 'Hello '.$params['name'];
     }
 
     /**
-     * An action to handle forms.
-     *
-     * @Remote // this annotation expose the method to API
-     * @Form   // this annotation expose the method to API with formHandler option
-     *
      * @param array<string, mixed> $params Form submitted values
-     * @param array<mixed> $files Uploaded files like $_FILES
+     * @param array<mixed>         $files  Uploaded files like $_FILES
      */
-    public function testFormAction(array $params, array $files)
+    #[Remote]
+    #[Form] // exposes the method to the API with the formHandler option
+    public function testFormAction(array $params, array $files): bool
     {
-        // your proccessing
+        // your processing
         return true;
     }
 }
 ```
+
+| Attribute | Docblock tag | Effect |
+|---|---|---|
+| `#[Remote]` | `@Remote` | Exposes the action in the `Actions.*` API |
+| `#[Form]` | `@Form` | Marks the action as a form handler (form values and uploaded files) |
+| `#[Secure]` | `@Secure` | Requires a session to call the action |
+| `#[Anonymous]` | `@Anonymous` | Allows the call without a session, also when `direct.api.default_access` is `secure` |
+
+The docblock tags still work, so existing controllers need no change; prefer the attributes in new code.
+A method is marked when it has the attribute or the tag.
 
 ### Call the exposed methods from JavaScript
 
