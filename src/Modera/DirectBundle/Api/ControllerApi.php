@@ -2,6 +2,10 @@
 
 namespace Modera\DirectBundle\Api;
 
+use Modera\DirectBundle\Attribute\Anonymous;
+use Modera\DirectBundle\Attribute\Form;
+use Modera\DirectBundle\Attribute\Remote;
+use Modera\DirectBundle\Attribute\Secure;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -87,23 +91,17 @@ class ControllerApi
      */
     public function getMethodAccess(string $method): string
     {
-        $doc = $this->reflection->getMethod($method)->getDocComment();
+        $reflection = $this->reflection->getMethod($method);
 
-        // default access type is none
-        $access = 'n';
-
-        if (\is_string($doc) && \strlen($doc) > 0) {
-            $safe = \preg_match('/'.$this->safeAttribute.'/i', $doc);
-            $unsafe = \preg_match('/'.$this->unsafeAttribute.'/i', $doc);
-
-            if ($safe) {
-                $access = 'secure';
-            } elseif ($unsafe) {
-                $access = 'anonymous';
-            }
+        if ($this->hasMarker($reflection, Secure::class, $this->safeAttribute)) {
+            return 'secure';
+        }
+        if ($this->hasMarker($reflection, Anonymous::class, $this->unsafeAttribute)) {
+            return 'anonymous';
         }
 
-        return $access;
+        // default access type is none
+        return 'n';
     }
 
     /**
@@ -136,18 +134,30 @@ class ControllerApi
      */
     private function getMethodApi(\ReflectionMethod $method): ?array
     {
-        $doc = $method->getDocComment();
-        if (\is_string($doc) && \strlen($doc) > 0) {
-            $isRemote = \preg_match('/'.$this->remoteAttribute.'/i', $doc);
-            if ($isRemote) {
-                return [
-                    'name' => \str_replace('Action', '', $method->getName()),
-                    'len' => $method->getNumberOfParameters(),
-                    'formHandler' => (bool) \preg_match('/'.$this->formAttribute.'/i', $doc),
-                ];
-            }
+        if (!$this->hasMarker($method, Remote::class, $this->remoteAttribute)) {
+            return null;
         }
 
-        return null;
+        return [
+            'name' => \str_replace('Action', '', $method->getName()),
+            'len' => $method->getNumberOfParameters(),
+            'formHandler' => $this->hasMarker($method, Form::class, $this->formAttribute),
+        ];
+    }
+
+    /**
+     * A method is marked by the PHP attribute or, for backward compatibility, by the docblock tag.
+     *
+     * @param class-string $attributeClass
+     */
+    private function hasMarker(\ReflectionMethod $method, string $attributeClass, string $docTag): bool
+    {
+        if ([] !== $method->getAttributes($attributeClass)) {
+            return true;
+        }
+
+        $doc = $method->getDocComment();
+
+        return \is_string($doc) && '' !== $doc && 1 === \preg_match('/'.$docTag.'/i', $doc);
     }
 }

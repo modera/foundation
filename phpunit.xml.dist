@@ -14,7 +14,8 @@
     <testsuites>
         <testsuite name="Foundation Test Suite">
             <directory>./src/Modera/*/Tests/</directory>
-            <exclude>./src/Modera/DirectBundle/Tests/*</exclude>
+            <exclude>./src/Modera/DirectBundle/Tests/Api/ApiTest.php</exclude>
+            <exclude>./src/Modera/DirectBundle/Tests/Controller</exclude>
         </testsuite>
     </testsuites>
 </phpunit>
